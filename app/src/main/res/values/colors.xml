@@ -9,6 +9,7 @@
     <color name="assu_box">#F4F4F5</color>
     <color name="assu_font_main">#040404</color>
     <color name="assu_font_sub">#8E9398</color>
+    <color name="assu_font_white">#F4F6FE</color>
     <color name="assu_background">#FEFEFE</color>
     <color name="unselected_btn">#B2D2FE</color>
     <color name="not_selected_nav_btn">#B4B4B4</color>

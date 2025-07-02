@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_bottom_nav_home"
         android:title="@string/home" />
     <item
-        android:id="@+id/partnerLocationFragment"
+        android:id="@+id/LocationFragment"
         android:icon="@drawable/ic_bottom_nav_location"
         android:title="@string/partner_location"/>
     <item

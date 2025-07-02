@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/view_item_admin_partner_location_search_result_item_bg"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintDimensionRatio="365:122" />
+
+        <View
+            android:id="@+id/view_item_admin_partner_location_search_result_item_margin_start"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="11:122"
+            app:layout_constraintStart_toStartOf="@id/view_item_admin_partner_location_search_result_item_bg"
+            app:layout_constraintTop_toTopOf="@id/view_item_admin_partner_location_search_result_item_bg"
+            app:layout_constraintBottom_toBottomOf="@id/view_item_admin_partner_location_search_result_item_bg"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_item_admin_partner_location_search_result_item_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintWidth_percent="0.1917"
+            app:cardCornerRadius="7dp"
+            app:layout_constraintTop_toTopOf="@id/view_item_admin_partner_location_search_result_item_bg"
+            app:layout_constraintBottom_toBottomOf="@id/view_item_admin_partner_location_search_result_item_bg"
+            app:layout_constraintStart_toEndOf="@id/view_item_admin_partner_location_search_result_item_margin_start">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_item_admin_partner_location_search_result_item_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/img_location_beer"/>
+        </androidx.cardview.widget.CardView>
+
+        <View
+            android:id="@+id/view_item_admin_partner_location_search_result_item_margin_between"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="20:122"
+            app:layout_constraintStart_toEndOf="@id/cv_item_admin_partner_location_search_result_item_image"
+            app:layout_constraintTop_toTopOf="@id/view_item_admin_partner_location_search_result_item_bg"
+            app:layout_constraintBottom_toBottomOf="@id/view_item_admin_partner_location_search_result_item_bg" />
+
+        <LinearLayout
+            android:id="@+id/ll_item_admin_partner_location_search_result_item_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="@id/view_item_admin_partner_location_search_result_item_bg"
+            app:layout_constraintBottom_toBottomOf="@id/view_item_admin_partner_location_search_result_item_bg"
+            app:layout_constraintStart_toEndOf="@id/view_item_admin_partner_location_search_result_item_margin_between">
+
+            <TextView
+                android:id="@+id/tv_item_admin_partner_location_search_result_item_shop_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="역전할머니 숭실대점"
+                android:textSize="17sp"
+                android:fontFamily="@font/pretendard_medium"
+                android:textColor="@color/assu_font_main"
+                android:layout_marginBottom="4dp"/>
+
+            <LinearLayout
+                android:id="@+id/ll_item_admin_partner_location_search_result_item_tags"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_item_admin_partner_location_search_result_item_partnered"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="제휴중"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/pretendard_regular"
+                    android:textColor="@color/assu_font_white"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_location_capsule_blue"/>
+
+                <TextView
+                    android:id="@+id/tv_item_admin_partner_location_search_result_item_term"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2025.02.24 ~ 2025.06.15"
+                    android:textSize="13sp"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:fontFamily="@font/pretendard_regular"
+                    android:textColor="@color/assu_font_sub"/>
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_item_admin_partner_location_search_result_item_contact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <ImageView
+                    android:id="@+id/iv_item_admin_partner_location_search_result_item_contact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/btn_location_contact_white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_item_admin_partner_location_search_result_item_contact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="제휴 계약서 보기"
+                    android:textColor="@color/assu_font_main"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/pretendard_regular"
+                    app:layout_constraintTop_toTopOf="@id/iv_item_admin_partner_location_search_result_item_contact"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_item_admin_partner_location_search_result_item_contact"
+                    app:layout_constraintStart_toStartOf="@id/iv_item_admin_partner_location_search_result_item_contact"
+                    app:layout_constraintEnd_toEndOf="@id/iv_item_admin_partner_location_search_result_item_contact"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view_item_admin_partner_location_search_result_item_divider"
+            android:layout_width="353dp"
+            android:layout_height="1dp"
+            android:background="#DCDFDF"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_item_admin_partner_location_search_result_item_bg"
+            android:visibility="visible"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

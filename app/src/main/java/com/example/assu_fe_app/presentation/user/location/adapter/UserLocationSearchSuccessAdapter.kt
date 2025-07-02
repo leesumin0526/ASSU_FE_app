@@ -1,22 +1,22 @@
-package com.example.assu_fe_app.presentation.common.location.adapter
+package com.example.assu_fe_app.presentation.user.location.adapter
 
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.assu_fe_app.data.dto.location.LocationSearchResultItem
-import com.example.assu_fe_app.databinding.ItemLocationSearchResultItemBinding
+import com.example.assu_fe_app.data.dto.location.LocationUserSearchResultItem
+import com.example.assu_fe_app.databinding.ItemUserLocationSearchResultItemBinding
 import com.example.assu_fe_app.presentation.user.review.store.UserReviewStoreActivity
 
-class LocationSearchSuccessAdapter(
-    private val items: List<LocationSearchResultItem>
-) : RecyclerView.Adapter<LocationSearchSuccessAdapter.ViewHolder>() {
+class UserLocationSearchSuccessAdapter(
+    private val items: List<LocationUserSearchResultItem>
+) : RecyclerView.Adapter<UserLocationSearchSuccessAdapter.ViewHolder>() {
 
-    inner class ViewHolder(private val binding: ItemLocationSearchResultItemBinding) :
+    inner class ViewHolder(private val binding: ItemUserLocationSearchResultItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: LocationSearchResultItem, isLastItem: Boolean) {
+        fun bind(item: LocationUserSearchResultItem, isLastItem: Boolean) {
             binding.tvLocationSearchResultItemShopName.text = item.shopName
             binding.tvLocationSearchResultItemOrganization.text = item.organization
             binding.tvLocationItemContent.text = item.content
@@ -37,7 +37,7 @@ class LocationSearchSuccessAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemLocationSearchResultItemBinding.inflate(
+        val binding = ItemUserLocationSearchResultItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false

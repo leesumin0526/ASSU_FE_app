@@ -52,6 +52,7 @@
         <activity android:name=".presentation.common.location.LocationSearchActivity" />
         <activity android:name=".presentation.user.review.store.UserReviewStoreActivity" />
         <activity android:name=".presentation.user.home.CertifyActivity" />
+        <activity android:name=".presentation.user.location.UserLocationSearchActivity"/>
         <activity
             android:name=".presentation.admin.AdminMainActivity"
             android:exported="false">

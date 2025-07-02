@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/locationFragment"
-        android:name="com.example.assu_fe_app.presentation.common.location.LocationFragment"
+        android:name="com.example.assu_fe_app.presentation.user.location.UserLocationFragment"
         android:label="Location"/>
 
     <fragment

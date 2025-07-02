@@ -24,7 +24,7 @@
 
     <!-- 주변 매장(지도) 공용 처리 -->
     <fragment
-        android:id="@+id/adminLocationFragment"
+        android:id="@+id/LocationFragment"
         android:name="com.example.assu_fe_app.presentation.common.location.LocationFragment"
         android:label="Location" />
 

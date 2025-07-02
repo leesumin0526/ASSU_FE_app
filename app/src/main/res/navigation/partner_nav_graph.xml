@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/partner_nav_graph"
     app:startDestination="@id/partnerHomeFragment">
 
@@ -65,4 +64,17 @@
         android:name="com.example.assu_fe_app.presentation.partner.dashboard.review.PartnerReviewNoneFragment"
         android:label="Review None" />
 
+
+    <fragment
+        android:id="@+id/serviceProposalWritingFragment"
+        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalWritingFragment"
+    >
+        <action
+            android:id="@+id/action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment"
+            app:destination="@id/serviceProposalTermWritingFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/serviceProposalTermWritingFragment"
+        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalTermWritingFragment" />
 </navigation>

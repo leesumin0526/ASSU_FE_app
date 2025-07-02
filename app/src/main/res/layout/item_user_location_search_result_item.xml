@@ -2,7 +2,7 @@
 <layout>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="365dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:text="역전할머니 숭실대점"
             android:textSize="17sp"
-            android:fontFamily="@font/pretendard_regular"
+            android:fontFamily="@font/pretendard_medium"
             android:textColor="@color/assu_font_main"
             android:layout_marginBottom="10dp"/>
 
@@ -89,7 +89,6 @@
             android:paddingTop="5dp"
             android:background="@drawable/bg_location_search_result_item_round"/>
 
-
         <TextView
             android:id="@+id/tv_location_item_content"
             android:layout_width="wrap_content"
@@ -97,7 +96,6 @@
             android:text="4인 이상 식사시, 음료 제공"
             android:textSize="13sp"
             android:layout_marginStart="6dp"
-            android:layout_gravity="center_vertical"
             android:fontFamily="@font/pretendard_regular"
             android:textColor="@color/assu_font_sub"/>
         </LinearLayout>
