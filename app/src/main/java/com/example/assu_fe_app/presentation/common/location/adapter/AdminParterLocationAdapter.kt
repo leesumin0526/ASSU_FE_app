@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.example.assu_fe_app.databinding.ItemAdminPartnerLocationSearchResultItemBinding
-import com.example.assu_fe_app.presentation.user.review.store.ReviewStoreActivity
+import com.example.assu_fe_app.presentation.user.review.store.UserReviewStoreActivity
 
 class AdminPartnerLocationAdapter(
     private val items: List<LocationAdminPartnerSearchResultItem>
@@ -35,7 +35,8 @@ class AdminPartnerLocationAdapter(
 
             binding.root.setOnClickListener {
                 val context = it.context
-                val intent = Intent(context, ReviewStoreActivity::class.java)
+                val intent = Intent(context, UserReviewStoreActivity::class.java)
+
                 intent.putExtra("shopName", item.shopName)
                 context.startActivity(intent)
             }

@@ -24,7 +24,7 @@
 
     <!-- 주변 관리자(지도) 공용 처리 -->
     <fragment
-        android:id="@+id/partnerLocationFragment"
+        android:id="@+id/LocationFragment"
         android:name="com.example.assu_fe_app.presentation.common.location.LocationFragment"
         android:label="Location" />
 
@@ -42,7 +42,11 @@
     <fragment
         android:id="@+id/partnerChattingFragment"
         android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingListFragment"
-        android:label="Chatting" />
+        android:label="Chatting" >
+        <action
+            android:id="@+id/action_partnerChattingFragment_to_serviceProposalTermWritingFragment"
+            app:destination="@id/serviceProposalTermWritingFragment" />
+    </fragment>
 
 
     <!-- 마이페이지 공용 처리 -->
@@ -67,8 +71,7 @@
 
     <fragment
         android:id="@+id/serviceProposalWritingFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalWritingFragment"
-    >
+        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalWritingFragment">
         <action
             android:id="@+id/action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment"
             app:destination="@id/serviceProposalTermWritingFragment" />
@@ -76,5 +79,13 @@
 
     <fragment
         android:id="@+id/serviceProposalTermWritingFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalTermWritingFragment" />
+        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalTermWritingFragment">
+        <action
+            android:id="@+id/action_serviceProposalTermWritingFragment_to_chattingSentProposalFragment"
+            app:destination="@id/chattingSentProposalFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/chattingSentProposalFragment"
+        android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingSentProposalFragment" />
 </navigation>

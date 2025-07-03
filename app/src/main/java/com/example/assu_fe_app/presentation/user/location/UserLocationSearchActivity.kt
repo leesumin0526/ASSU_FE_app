@@ -1,21 +1,20 @@
 package com.example.assu_fe_app.presentation.user.location
 
 import android.content.Context
-import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.databinding.ActivityLocationSearchBinding
+import com.example.assu_fe_app.databinding.ActivityUserLocationSearchBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 
 class UserLocationSearchActivity :
-    BaseActivity<ActivityLocationSearchBinding>(R.layout.activity_location_search) {
+    BaseActivity<ActivityUserLocationSearchBinding>(R.layout.activity_user_location_search) {
+
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
