@@ -7,7 +7,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.assu_fe_app.PartnershipContentFragment
+import com.example.assu_fe_app.PartnershipContentDialogFragment
+import com.example.assu_fe_app.data.dto.partner.home.PartnershipContractItem
 
 // 데이터 모델 정의
 data class PartnerAdminListItem(
@@ -30,10 +31,8 @@ class PartnerAdminListAdapter(
             binding.tvBenefitPeriod.text = item.benefitPeriod
 
             itemView.setOnClickListener {
-                val dialog = PartnershipContentFragment()
-                Log.d("DialogTest", "show() 호출 전 isAdded: ${dialog.isAdded}")
+                val dialog = PartnershipContentDialogFragment(dummyItem)
                 dialog.show(fragmentManager, "PartnershipContentFragment")
-                Log.d("DialogTest", "show() 호출 완료")
             }
         }
     }
@@ -50,4 +49,11 @@ class PartnerAdminListAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+
+    val dummyItem = listOf(
+        PartnershipContractItem.Service.ByPeople(4,"캔음료"),
+        PartnershipContractItem.Discount.ByPeople(4, 10),
+        PartnershipContractItem.Service.ByAmount(10000, "캔음료"),
+        PartnershipContractItem.Discount.ByAmount(10000, 10)
+    )
 }
