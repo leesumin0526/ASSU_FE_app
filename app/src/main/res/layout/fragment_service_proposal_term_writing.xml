@@ -2,11 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presentation.common.chatting.proposal.serviceProposalTermWritingFragment">
+    tools:context=".presentation.common.chatting.proposal.ServiceProposalTermWritingFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/assu_background">
 
         <View
             android:id="@+id/view_fragment_service_proposal_title"
@@ -238,7 +239,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:text="2025년 03월 29일\n대표 (인)"
+            android:text="2025년 03월 29일\n대표"
             android:textColor="@color/assu_font_sub"
             android:fontFamily="@font/pretendard_medium"
             android:layout_marginStart="15dp"
@@ -246,35 +247,45 @@
             app:layout_constraintBottom_toBottomOf="@id/iv_fragment_service_proposal_sign"
             app:layout_constraintStart_toStartOf="@id/iv_fragment_service_proposal_sign" />
 
-        <!-- 인증 완료 버튼 (하단 고정) -->
+        <EditText
+            android:id="@+id/et_fragment_service_proposal_sign4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:hint="(인)"
+            android:textColor="@color/assu_font_sub"
+            android:fontFamily="@font/pretendard_medium"
+            android:background="@android:color/transparent"
+            android:layout_marginBottom="17dp"
+            android:layout_marginStart="-75dp"
+            app:layout_constraintBottom_toBottomOf="@id/iv_fragment_service_proposal_sign"
+            app:layout_constraintStart_toEndOf="@id/tv_fragment_service_proposal_sign3" />
+
         <ImageButton
             android:id="@+id/btn_completed"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_marginBottom="46dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
             android:textColor="@android:color/white"
             android:background="@drawable/btn_basic_unselected"
             android:fontFamily="@font/pretendard_semibold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            />
 
         <TextView
             android:id="@+id/tv_completed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="57dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
             android:text="제안서 보내기"
             android:textSize="20sp"
             android:textColor="@android:color/white"
             android:fontFamily="@font/pretendard_bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
+            app:layout_constraintStart_toStartOf="@id/btn_completed"
+            app:layout_constraintEnd_toEndOf="@id/btn_completed"
+            app:layout_constraintTop_toTopOf="@id/btn_completed"
+            app:layout_constraintBottom_toBottomOf="@id/btn_completed"/>
+        <!-- 인증 완료 버튼 (하단 고정) -->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

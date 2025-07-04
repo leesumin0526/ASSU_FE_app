@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@id/partner_home_linear_layout_1"
-            app:layout_constraintHeight_percent="0.0285" />
+            app:layout_constraintHeight_percent="0.0200" />
 
         <TextView
             android:id="@+id/tv_partner_home_name"
@@ -69,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@id/tv_partner_home_name"
-            app:layout_constraintHeight_percent="0.042" />
+            app:layout_constraintHeight_percent="0.030" />
 
         <!-- 콘텐츠 묶음 -->
         <LinearLayout
@@ -311,7 +311,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="20dp"
                 android:drawablePadding="6dp"
                 android:text="🔍 제휴단체 추천"
                 android:fontFamily="@font/pretendard_semibold"
@@ -324,7 +324,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 android:weightSum="2"
                 android:layout_marginBottom="8dp">
@@ -333,9 +333,9 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="15dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    app:cardCornerRadius="12dp"
+                    app:cardCornerRadius="7dp"
                     app:cardElevation="0dp"
                     app:cardUseCompatPadding="false"
                     app:cardPreventCornerOverlap="false">
@@ -345,10 +345,12 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:background="@drawable/bg_recommend_card"
-                        android:padding="22dp">
+                        android:paddingTop="18dp"
+                        android:paddingBottom="18dp"
+                        android:gravity="center">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="124dp"
                             android:layout_height="wrap_content"
                             android:text="숭실대학교\n경영학부 학생회"
                             android:textSize="17sp"
@@ -356,20 +358,28 @@
                             android:textColor="@color/assu_font_main" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="124dp"
                             android:layout_height="wrap_content"
-                            android:text="서울 동작구 사당로 36-1\n서경예술"
+                            android:text="서울 동작구 사당로 36-1 서경예술"
                             android:textSize="13sp"
                             android:textColor="@color/assu_font_sub"
                             android:layout_marginTop="10dp"
                             android:fontFamily="@font/pretendard_regular" />
 
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="32dp"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_marginTop="10dp"
-                            android:background="@drawable/btn_recommend_inquiry"
-                            android:clickable="true">
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <View
+                                android:id="@+id/view_partner_home_card_bg"
+                                android:layout_width="124dp"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_common_home_card"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
 
                             <TextView
                                 android:layout_width="match_parent"
@@ -378,8 +388,12 @@
                                 android:text="문의하기"
                                 android:textColor="@android:color/white"
                                 android:textSize="11sp"
+                                app:layout_constraintEnd_toEndOf="@id/view_partner_home_card_bg"
+                                app:layout_constraintStart_toStartOf="@id/view_partner_home_card_bg"
+                                app:layout_constraintBottom_toBottomOf="@id/view_partner_home_card_bg"
+                                app:layout_constraintTop_toTopOf="@+id/view_partner_home_card_bg"
                                 android:fontFamily="@font/pretendard_regular" />
-                        </FrameLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -389,7 +403,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    app:cardCornerRadius="12dp"
+                    app:cardCornerRadius="7dp"
                     app:cardElevation="0dp"
                     app:cardUseCompatPadding="false"
                     app:cardPreventCornerOverlap="false">
@@ -399,10 +413,13 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:background="@drawable/bg_recommend_card"
-                        android:padding="22dp">
+                        android:paddingTop="18dp"
+                        android:paddingBottom="18dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="124dp"
                             android:layout_height="wrap_content"
                             android:text="숭실대학교\n스포츠학부 학생회"
                             android:textSize="17sp"
@@ -410,9 +427,9 @@
                             android:textColor="@color/assu_font_main" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="124dp"
                             android:layout_height="wrap_content"
-                            android:text="서울 동작구 사당로 36-1\n서경예술"
+                            android:text="서울 동작구 사당로 36-1 서경예술"
                             android:textSize="13sp"
                             android:textColor="@color/assu_font_sub"
                             android:layout_marginTop="10dp"

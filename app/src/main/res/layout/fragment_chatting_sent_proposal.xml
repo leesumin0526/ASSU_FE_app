@@ -5,13 +5,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.common.chatting.ChattingSentProposalActivity">
-
-        <FrameLayout
-            android:id="@+id/finish_review_fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
+        android:background="@color/assu_background"
+        tools:context=".presentation.common.chatting.ChattingSentProposalFragment">
 
         <ImageView
             android:id="@+id/iv_cross"
@@ -98,7 +93,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
