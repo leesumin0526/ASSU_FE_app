@@ -1,4 +1,4 @@
-package com.example.assu_fe_app
+package com.example.assu_fe_app.presentation.common.contract
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.assu_fe_app.data.dto.partner.home.PartnershipContractItem
+import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
 import com.example.assu_fe_app.databinding.FragmentPartnershipContentBinding
-import com.example.assu_fe_app.presentation.partner.home.adapter.PartnershipContractAdapter
+import com.example.assu_fe_app.presentation.common.contract.adapter.PartnershipContractAdapter
 
 class PartnershipContentDialogFragment(
     private val partnershipContractItems: List<PartnershipContractItem>

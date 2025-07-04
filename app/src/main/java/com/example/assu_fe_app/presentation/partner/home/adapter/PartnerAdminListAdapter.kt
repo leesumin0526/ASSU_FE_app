@@ -1,14 +1,13 @@
 package com.example.assu_fe_app.presentation.partner.home.adapter
 
-import android.util.Log
 import com.example.assu_fe_app.databinding.ItemAssociationListBinding
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.assu_fe_app.PartnershipContentDialogFragment
-import com.example.assu_fe_app.data.dto.partner.home.PartnershipContractItem
+import com.example.assu_fe_app.presentation.common.contract.PartnershipContentDialogFragment
+import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
 
 // 데이터 모델 정의
 data class PartnerAdminListItem(

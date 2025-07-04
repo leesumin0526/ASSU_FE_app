@@ -1,10 +1,10 @@
-package com.example.assu_fe_app.presentation.partner.home.adapter
+package com.example.assu_fe_app.presentation.common.contract.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.dto.partner.home.PartnershipContractItem
+import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
 import com.example.assu_fe_app.databinding.ItemPartnershipContentListBinding
 
 class PartnershipContractAdapter (

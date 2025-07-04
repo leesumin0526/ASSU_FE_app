@@ -1,9 +1,9 @@
 package com.example.assu_fe_app.presentation.partner.home
 
 import androidx.navigation.Navigation
-import com.example.assu_fe_app.PartnershipContentDialogFragment
+import com.example.assu_fe_app.presentation.common.contract.PartnershipContentDialogFragment
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.dto.partner.home.PartnershipContractItem
+import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
 import com.example.assu_fe_app.databinding.FragmentPartnerHomeBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 

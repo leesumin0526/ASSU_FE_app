@@ -1,4 +1,4 @@
-package com.example.assu_fe_app.data.dto.partner.home
+package com.example.assu_fe_app.data.dto.partner_admin.home
 
 sealed class PartnershipContractItem {
     sealed class Service : PartnershipContractItem() {
