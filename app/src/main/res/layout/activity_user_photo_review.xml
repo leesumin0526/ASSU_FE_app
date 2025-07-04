@@ -97,7 +97,7 @@
         <View
             android:id="@+id/view_photo_review_mg2"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="10dp"
             app:layout_constraintTop_toBottomOf="@id/layout_partnership_info"/>
 
         <ImageView
