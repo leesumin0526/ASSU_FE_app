@@ -1,10 +1,12 @@
 package com.example.assu_fe_app.presentation.partner.home
 
+import android.app.Fragment
 import android.content.Context
 import android.graphics.Rect
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
@@ -59,7 +61,7 @@ class PartnerHomeViewAdminListActivity : BaseActivity<ActivityPartnerHomeViewAdm
             PartnerAdminListItem("숭실대학교 IT대학 학생회", "2인 이상 주문 시 음료 서비스", "2025-04-01  ~  2025-07-31")
         )
 
-        val adapter = PartnerAdminListAdapter(dummyList)
+        val adapter = PartnerAdminListAdapter(dummyList, supportFragmentManager)
         binding.rvPartnerList.layoutManager = LinearLayoutManager(this)
         binding.rvPartnerList.adapter = adapter
 

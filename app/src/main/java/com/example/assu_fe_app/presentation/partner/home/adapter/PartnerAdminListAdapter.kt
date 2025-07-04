@@ -4,7 +4,10 @@ import com.example.assu_fe_app.databinding.ItemAssociationListBinding
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
+import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
 
 // 데이터 모델 정의
 data class PartnerAdminListItem(
@@ -14,7 +17,8 @@ data class PartnerAdminListItem(
 )
 
 class PartnerAdminListAdapter(
-    private val items: List<PartnerAdminListItem>
+    private val items: List<PartnerAdminListItem>,
+    private val fragmentManager: FragmentManager
 ) : RecyclerView.Adapter<PartnerAdminListAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemAssociationListBinding)
@@ -24,6 +28,11 @@ class PartnerAdminListAdapter(
             binding.tvAssociationName.text = item.adminName
             binding.tvBenefitDescription.text = item.benefitDescription
             binding.tvBenefitPeriod.text = item.benefitPeriod
+
+            itemView.setOnClickListener {
+                val dialog = PartnershipContractDialogFragment(dummyItem)
+                dialog.show(fragmentManager, "PartnershipContentFragment")
+            }
         }
     }
 
@@ -39,4 +48,11 @@ class PartnerAdminListAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+
+    val dummyItem = listOf(
+        PartnershipContractItem.Service.ByPeople(4,"캔음료"),
+        PartnershipContractItem.Discount.ByPeople(4, 10),
+        PartnershipContractItem.Service.ByAmount(10000, "캔음료"),
+        PartnershipContractItem.Discount.ByAmount(10000, 10)
+    )
 }

@@ -16,4 +16,5 @@
         <item>단과대 학생회</item>
         <item>과 학생회</item>
     </string-array>
+    <string name="discount_percent">%1$d%%</string>
 </resources>

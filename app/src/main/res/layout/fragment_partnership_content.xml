@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.common.contract.PartnershipContractDialogFragment"
+    android:background="@drawable/bg_dialog_rounded">
+
+    <View
+        android:id="@+id/partnership_content_mg1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.04180602007"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/layout_partnership_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.04013377926"
+        app:layout_constraintTop_toBottomOf="@id/partnership_content_mg1"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <View
+            android:id="@+id/partnership_content_mg2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="26"/>
+
+        <ImageView
+            android:id="@+id/iv_partnership_content_cross"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_cross"
+            android:layout_gravity="center"
+            android:layout_weight="24"/>
+
+        <View
+            android:id="@+id/partnership_content_mg3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="77.5"/>
+
+        <TextView
+            android:id="@+id/tv_partnership_content_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="제휴 계약서"
+            android:fontFamily="@font/pretendard_semibold"
+            android:textSize="20sp"
+            android:textColor="@color/assu_font_main"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="90"/>
+
+        <View
+            android:id="@+id/partnership_content_mg4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="127.5"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/partnership_content_mg5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.05852842809"
+        app:layout_constraintTop_toBottomOf="@id/layout_partnership_content"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+    <LinearLayout
+        android:id="@+id/layout_partnership_content_partner"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.03511705686"
+        app:layout_constraintTop_toBottomOf="@id/partnership_content_mg5"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <View
+            android:id="@+id/partnership_content_mg6"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="제휴 제안업체"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="13sp"
+            android:textColor="@color/assu_font_sub"
+            android:gravity="center_vertical"
+            android:layout_weight="100"/>
+
+        <View
+            android:id="@+id/partnership_content_mg7"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="40"/>
+
+        <TextView
+            android:id="@+id/tv_partnership_content_partner"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="역전할머니 맥주"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="13sp"
+            android:textColor="@color/assu_font_main"
+            android:gravity="center_vertical"
+            android:layout_weight="206"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/partnership_content_mg8"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.02508361204"
+        app:layout_constraintTop_toBottomOf="@id/layout_partnership_content_partner"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/layout_partnership_content_admin"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.03511705686"
+        app:layout_constraintTop_toBottomOf="@id/partnership_content_mg8"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <View
+            android:id="@+id/partnership_content_mg9"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="제휴 제안인"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="13sp"
+            android:textColor="@color/assu_font_sub"
+            android:gravity="center_vertical"
+            android:layout_weight="100"/>
+
+        <View
+            android:id="@+id/partnership_content_mg10"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="40"/>
+
+        <TextView
+            android:id="@+id/tv_partnership_content_admin"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="숭실대학교 총학생회"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="13sp"
+            android:textColor="@color/assu_font_main"
+            android:gravity="center_vertical"
+            android:layout_weight="206"/>
+
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/partnership_content_mg11"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.04180602007"
+        app:layout_constraintTop_toBottomOf="@id/layout_partnership_content_admin"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+    <LinearLayout
+        android:id="@+id/layout_partnership_content_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.03511705686"
+        app:layout_constraintTop_toBottomOf="@id/partnership_content_mg11"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <View
+            android:id="@+id/partnership_content_mg12"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="제휴내용"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="13sp"
+            android:textColor="@color/assu_font_sub"
+            android:gravity="center_vertical"
+            android:layout_weight="75"/>
+
+        <View
+            android:id="@+id/partnership_content_mg13"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="271"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/partnership_content_mg14"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.02849498328"
+        app:layout_constraintTop_toBottomOf="@id/layout_partnership_content_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_partnership_content_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        tools:listitem="@layout/item_partnership_content_list"
+        tools:itemCount="2"
+        app:layout_constraintTop_toBottomOf="@id/partnership_content_mg14"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHeight_percent="0.3076923077"/>
+
+
+    <View
+        android:id="@+id/partnership_content_mg15"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.04180602007"
+        app:layout_constraintTop_toBottomOf="@id/rv_partnership_content_list"/>
+
+    <LinearLayout
+        android:id="@+id/layout_partnership_content_period"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.03511705686"
+        app:layout_constraintTop_toBottomOf="@id/partnership_content_mg15"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <View
+            android:id="@+id/partnership_content_mg16"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="제휴 기간"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="13sp"
+            android:textColor="@color/assu_font_sub"
+            android:gravity="center_vertical"
+            android:layout_weight="108"/>
+
+
+        <TextView
+            android:id="@+id/tv_partnership_content_start_date"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="2025-05-05"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="13sp"
+            android:textColor="@color/assu_font_main"
+            android:gravity="center"
+            android:layout_weight="90"/>
+
+        <View
+            android:id="@+id/partnership_content_mg18"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="9.5"/>
+
+        <TextView
+            android:id="@+id/tv_partnership_content_wave"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="~"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="13sp"
+            android:textColor="@color/assu_font_main"
+            android:gravity="center_vertical"
+            android:layout_weight="9"/>
+
+        <View
+            android:id="@+id/partnership_content_mg19"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="9.5"/>
+
+        <TextView
+            android:id="@+id/tv_partnership_content_end_date"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="2025-12-12"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="13sp"
+            android:textColor="@color/assu_font_main"
+            android:gravity="center"
+            android:layout_weight="90"/>
+
+        <View
+            android:id="@+id/partnership_content_mg20"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"/>
+    </LinearLayout>
+
+
+
+    <View
+        android:id="@+id/partnership_content_mg21"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.04180602007"
+        app:layout_constraintTop_toBottomOf="@id/layout_partnership_content_period"/>
+
+    <LinearLayout
+        android:id="@+id/layout_partnership_content_final"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.1740802676"
+        app:layout_constraintTop_toBottomOf="@id/partnership_content_mg21"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/partnership_content_mg22"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"/>
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@id/partnership_content_mg21"
+            android:background="@drawable/bg_review_box"
+            android:text="위와 같이 숭실대학교 총학생회 \n제휴를 제안합니다.\n\n2025 03월 29일\n대표 (인)"
+            android:textColor="@color/assu_font_sub"
+            android:fontFamily="@font/pretendard_medium"
+            android:textSize="14sp"
+            android:layout_weight="316"
+            android:gravity="center_vertical"
+            android:padding="10dp"/>
+
+        <View
+            android:id="@+id/partnership_content_mg23"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"/>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

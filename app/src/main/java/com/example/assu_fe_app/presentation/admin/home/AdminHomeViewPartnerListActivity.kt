@@ -59,7 +59,7 @@ class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartn
             AdminPartnerListItem("인쌩맥주 숭실대점", "2인 이상 주문 시 음료 서비스", "2025-04-01  ~  2025-07-31")
         )
 
-        val adapter = AdminPartnerListAdapter(dummyList)
+        val adapter = AdminPartnerListAdapter(dummyList, supportFragmentManager)
         binding.rvPartnerList.layoutManager = LinearLayoutManager(this)
         binding.rvPartnerList.adapter = adapter
 
