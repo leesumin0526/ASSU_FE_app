@@ -10,7 +10,7 @@ import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractIt
 import com.example.assu_fe_app.databinding.FragmentPartnershipContentBinding
 import com.example.assu_fe_app.presentation.common.contract.adapter.PartnershipContractAdapter
 
-class PartnershipContentDialogFragment(
+class PartnershipContractDialogFragment(
     private val partnershipContractItems: List<PartnershipContractItem>
 ) : DialogFragment( ) {
 

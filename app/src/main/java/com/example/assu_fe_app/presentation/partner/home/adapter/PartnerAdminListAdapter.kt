@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.assu_fe_app.presentation.common.contract.PartnershipContentDialogFragment
+import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
 
 // 데이터 모델 정의
@@ -30,7 +30,7 @@ class PartnerAdminListAdapter(
             binding.tvBenefitPeriod.text = item.benefitPeriod
 
             itemView.setOnClickListener {
-                val dialog = PartnershipContentDialogFragment(dummyItem)
+                val dialog = PartnershipContractDialogFragment(dummyItem)
                 dialog.show(fragmentManager, "PartnershipContentFragment")
             }
         }
