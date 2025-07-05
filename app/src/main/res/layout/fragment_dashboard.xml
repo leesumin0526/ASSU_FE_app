@@ -162,7 +162,7 @@
         android:id="@+id/dashboard_mg11"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.0315"
+        app:layout_constraintHeight_percent="0.0277"
         app:layout_constraintTop_toBottomOf="@id/ll_service"
         app:layout_constraintStart_toStartOf="@id/ll_service"/>
 
@@ -321,7 +321,7 @@
         android:id="@+id/dashboard_mg10"
         android:layout_width="10dp"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.0357"
+        app:layout_constraintHeight_percent="0.0222"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tv_suggest_title"/>
@@ -331,7 +331,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/assu_sub3"
-        app:layout_constraintHeight_percent="0.0928"
+        app:layout_constraintHeight_percent="0.0828"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/dashboard_mg10">
@@ -340,7 +340,7 @@
             android:id="@+id/dashboard_mg1_1"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.22"
+            app:layout_constraintHeight_percent="0.19"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
         <TextView
@@ -351,7 +351,7 @@
             android:layout_marginStart="24dp"
             android:text="받고 싶은 제휴 혜택이 없나요?"
             android:fontFamily="@font/pretendard_regular"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:textColor="@color/assu_main"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dashboard_mg1_1"/>
@@ -359,7 +359,7 @@
             android:id="@+id/dashboard_mg1_2"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.22"
+            app:layout_constraintHeight_percent="0.19"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
@@ -371,7 +371,7 @@
             android:layout_marginStart="24dp"
             android:text="제휴 건의함에서 받고싶은 제휴를 건의할 수 있어요!"
             android:fontFamily="@font/pretendard_medium"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:textColor="@color/assu_font_main"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/dashboard_mg1_2"/>
