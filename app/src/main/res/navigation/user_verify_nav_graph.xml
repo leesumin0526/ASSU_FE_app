@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/user_verify_nav_graph"
+    app:startDestination="@id/verifyFragment">
+
+    <fragment
+        android:id="@+id/verifyFragment"
+        android:name="com.example.assu_fe_app.presentation.user.home.GroupVerifyFragment"
+        android:label="VerifyFragment">
+        <action
+            android:id="@+id/action_verifyFragment_to_selectServiceFragment"
+            app:destination="@id/selectServiceFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/selectServiceFragment"
+        android:name="com.example.assu_fe_app.presentation.user.home.SelectServiceFragment"
+        android:label="SelectServiceFragment">
+        <action
+            android:id="@+id/action_selectServiceFragment_to_homeFragment"
+            app:destination="@id/homeFragment"/>
+    </fragment>
+
+
+</navigation>

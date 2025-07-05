@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/assu_background"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.user.home.GroupVerifyFragment">
+
+    <View
+        android:id="@+id/group_h1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0141"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <View
+        android:id="@+id/group_w1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.0763"
+        app:layout_constraintTop_toBottomOf="@id/group_h1"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageView
+        android:id="@+id/btn_group_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_back"
+        app:layout_constraintTop_toBottomOf="@id/group_h1"
+        app:layout_constraintStart_toEndOf="@id/group_w1"/>
+
+    <View
+        android:id="@+id/group_h2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0563"
+        app:layout_constraintTop_toBottomOf="@id/btn_group_back"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_group_market_name"
+        android:fontFamily="@font/pretendard_semibold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textColor="@color/assu_main"
+        android:text="역전할머니맥주 숭실대점"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/group_h2"/>
+
+    <View
+        android:id="@+id/group_h3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0141"
+        app:layout_constraintTop_toBottomOf="@id/tv_group_market_name"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_group_partnership_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4인 이상 식사시, 캔음료 제공"
+        android:textSize="25sp"
+        android:textColor="@color/assu_font_main"
+        android:fontFamily="@font/pretendard_semibold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/group_h3"
+        android:includeFontPadding="false"/>
+
+    <View
+        android:id="@+id/group_h4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0657"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_group_partnership_content"/>
+
+
+    <ImageView
+        android:id="@+id/iv_group_qr"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintHeight_percent="0.6336"
+        app:layout_constraintWidth_percent="0.6336"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/group_h4"/>
+
+    <View
+        android:id="@+id/group_h5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0446"
+        app:layout_constraintTop_toBottomOf="@id/iv_group_qr"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    
+    <TextView
+        android:id="@+id/tv_group_verfify_box"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_group_verify"
+        app:layout_constraintWidth_percent="0.842"
+        app:layout_constraintHeight_percent="0.0986"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/group_h5"/>
+    <TextView
+        android:id="@+id/tv_group_people_cnt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="제휴 인증 인원"
+        android:textSize="13sp"
+        android:fontFamily="@font/pretendard_regular"
+        app:layout_constraintStart_toStartOf="@id/tv_group_verfify_box"
+        app:layout_constraintEnd_toEndOf="@id/tv_group_verfify_box"
+        app:layout_constraintTop_toTopOf="@id/tv_group_verfify_box"
+        android:layout_marginTop="15dp"/>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_group_verfify_box"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="11dp">
+        <ImageView
+            android:id="@+id/iv_group_info_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_info_circle_empty"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_group_info"
+            app:layout_constraintBottom_toBottomOf="@id/tv_group_info"/>
+
+        <TextView
+            android:id="@+id/tv_group_info"
+            android:textSize="11sp"
+            android:fontFamily="@font/pretendard_regular"
+            android:textColor="@color/assu_font_sub"
+            android:text="인원 조건이 있는 혜택으로, 모든 인원이 QR코드를 스캔해 인증해야 합니다."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/iv_group_info_circle"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="4dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <View
+        android:id="@+id/group_h6"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0141"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+    
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/btn_basic_unselected"
+        android:text="인증완료"
+        android:textColor="@color/assu_font_white"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:fontFamily="@font/pretendard_bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.879"
+        app:layout_constraintHeight_percent="0.0657"
+        app:layout_constraintBottom_toTopOf="@id/group_h6"/>
+
+        
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
