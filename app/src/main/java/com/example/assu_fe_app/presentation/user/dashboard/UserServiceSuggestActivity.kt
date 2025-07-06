@@ -1,14 +1,22 @@
 package com.example.assu_fe_app.presentation.user.dashboard
 
+import android.R.attr.elevation
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.AdapterView
+import android.widget.PopupWindow
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityUserServiceSuggestBinding
+import com.example.assu_fe_app.databinding.FragmentServiceSuggestDropDownBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
+import com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalDropDownFragment
 import com.example.assu_fe_app.presentation.user.dashboard.adapter.SuggestTargetAdapter
 
 class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBinding>(R.layout.activity_user_service_suggest){
@@ -25,25 +33,12 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
             )
             insets
         }
-        val targetList = resources.getStringArray(R.array.suggest_target).toList()
-        val adapter = SuggestTargetAdapter(this, targetList)
-        binding.spinnerTarget.adapter = adapter
+//        val targetList = resources.getStringArray(R.array.suggest_target).toList()
 
-        binding.spinnerTarget.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val selectedItem = parent?.getItemAtPosition(position).toString()
-                binding.tvServiceSelectTarget.text = selectedItem  // 여기에 선택된 값 출력
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                binding.tvServiceSelectTarget.text="건의대상 선택"
-            }
+        binding.btnServiceDropDown.setOnClickListener {
+            showDropdownMenu(binding.spinnerTarget)
         }
+
 
         // 뒤로가기 버튼
         binding.btnSuggestBack.setOnClickListener {
@@ -64,5 +59,48 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
 
     private fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
+    }
+
+    private fun showDropdownMenu(anchor : View) {
+//        val popupBinding = FragmentServiceSuggestDropDownBinding.inflate(layoutInflater, null, false)
+//
+//        val popupWidth = anchor.width
+//
+//        val popupWindow = PopupWindow(
+//            popupBinding.root,
+//            popupWidth,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+//            true
+//        ).apply {
+//            elevation = 8f
+//            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//            isOutsideTouchable = true
+//        }
+
+        val popupBinding = FragmentServiceSuggestDropDownBinding.inflate(layoutInflater)
+        val popupWindow = PopupWindow(popupBinding.root, WRAP_CONTENT, WRAP_CONTENT, true)
+
+        // 그림자 및 radius 배경 처리
+        popupWindow.setBackgroundDrawable(ColorDrawable(Color.GRAY))
+        popupWindow.elevation = 10f
+
+        // 드롭다운 항목 클릭 이벤트 처리
+        popupBinding.tvSuggestDropTarget1.setOnClickListener {
+            binding.tvServiceSelectTarget.text = popupBinding.tvSuggestDropTarget1.text
+            popupWindow.dismiss()
+        }
+
+        popupBinding.tvSuggestDropTarget2.setOnClickListener {
+            binding.tvServiceSelectTarget.text = popupBinding.tvSuggestDropTarget2.text
+            popupWindow.dismiss()
+        }
+
+        popupBinding.tvSuggestDropTarget3.setOnClickListener {
+            binding.tvServiceSelectTarget.text = popupBinding.tvSuggestDropTarget3.text
+            popupWindow.dismiss()
+        }
+
+        // 버튼 바로 아래에 띄우기
+        popupWindow.showAsDropDown(anchor, 0,-160)
     }
 }
