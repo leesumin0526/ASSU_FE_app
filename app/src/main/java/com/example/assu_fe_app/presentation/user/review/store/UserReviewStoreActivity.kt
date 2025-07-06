@@ -13,6 +13,7 @@ import com.example.assu_fe_app.databinding.ActivityUserReviewStoreBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewStoreAdapter
+import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
 import java.time.LocalDateTime
 
 class UserReviewStoreActivity :
@@ -45,7 +46,14 @@ class UserReviewStoreActivity :
         binding.rcReviewStore.adapter = adapter
 
         // 리뷰 어댑터 초기화 및 바인딩
-        userReviewAdapter = UserReviewAdapter(showDeleteButton = false)
+        userReviewAdapter = UserReviewAdapter(
+            showDeleteButton = false,
+            listener = object : OnItemClickListener {
+                override fun onClick(position: Int) {
+                    // 삭제 기능 없음 → 아무 일도 하지 않음
+                }
+            }
+        )
         userReviewAdapter.setData(createDummyData())
         binding.fcvReviewStoreRank.layoutManager = LinearLayoutManager(this)
         binding.fcvReviewStoreRank.adapter = userReviewAdapter

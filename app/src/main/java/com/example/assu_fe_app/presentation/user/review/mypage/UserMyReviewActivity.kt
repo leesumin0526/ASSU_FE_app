@@ -13,7 +13,8 @@ import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
 import java.time.LocalDateTime
 
-class UserMyReviewActivity : BaseActivity<ActivityUserMyReviewBinding>(R.layout.activity_user_my_review) {
+class UserMyReviewActivity : BaseActivity<ActivityUserMyReviewBinding>(R.layout.activity_user_my_review)
+    , OnItemClickListener, OnReviewDeleteConfirmedListener {
 
     private lateinit var userReviewAdapter : UserReviewAdapter
     val manager = supportFragmentManager
@@ -51,7 +52,7 @@ class UserMyReviewActivity : BaseActivity<ActivityUserMyReviewBinding>(R.layout.
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initAdapter(){
         //adapter초기화
-        userReviewAdapter = UserReviewAdapter(showDeleteButton = true)
+        userReviewAdapter = UserReviewAdapter(showDeleteButton = true, listener = this )
 
         binding.rvManageReview.apply {
             layoutManager = LinearLayoutManager(this@UserMyReviewActivity)
@@ -65,7 +66,15 @@ class UserMyReviewActivity : BaseActivity<ActivityUserMyReviewBinding>(R.layout.
 
     }
 
+    override fun onClick(position : Int) {
+        val dialog = ReviewDeleteDialogFragment.newInstance(position)
+        dialog.show(manager, "ReviewDeleteDialogFragment")
+    }
 
+    override fun onReviewDeleteConfirmed(position: Int) {
+        userReviewAdapter.removeAt(position)
+        binding.tvManageReviewReviewCount.text = userReviewAdapter.itemCount.toString()
+    }
 
     // 임의의 DummyData를 생성하는 함수
     @RequiresApi(Build.VERSION_CODES.O)
