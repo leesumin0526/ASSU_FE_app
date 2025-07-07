@@ -17,8 +17,8 @@ class ChattingChatListAdapter (
         :RecyclerView.ViewHolder(binding.root) {
             fun bind(item: ChattingListItem, isLastItem: Boolean) {
                 binding.ivItemChattingListRestaurantProfile.setImageResource(item.profileImage)
-                binding.tvChattingCounterpart.text = item.chatName
-                binding.tvChattingLastChat.text = item.lastChat
+                binding.tvChattingCounterpart.text = item.opponentName
+                binding.tvChattingLastChat.text = item.lastMessage
 
                 // 마지막 아이템이면 선 숨기기
                 binding.viewLocationSearchResultItemLine.visibility =
