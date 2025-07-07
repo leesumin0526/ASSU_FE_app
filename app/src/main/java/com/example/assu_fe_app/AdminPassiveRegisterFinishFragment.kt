@@ -5,23 +5,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.navigation.fragment.findNavController
-import com.example.assu_fe_app.databinding.FragmentContractPassiveRegisterBinding
+import com.example.assu_fe_app.databinding.FragmentAdminPassiveRegisterFinishBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 
 
-class ContractPassiveRegisterFragment : BaseFragment<FragmentContractPassiveRegisterBinding>(R.layout.fragment_contract_passive_register) {
+class AdminPassiveRegisterFinishFragment : BaseFragment<FragmentAdminPassiveRegisterFinishBinding>(R.layout.fragment_admin_passive_register_finish) {
     override fun initObserver() {
     }
 
     override fun initView() {
-        binding.ivFragmentContractPassiveRegisterBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
-        binding.layoutContractPassiveRegisterActivatedButton.setOnClickListener {view ->
-            findNavController().navigate(R.id.action_contract_passive_register_to_contract_passive_register_finish)
+        binding.ivCross.setOnClickListener { view ->
+            findNavController().navigate(R.id.action_admin_passive_register_finish_to_admin_home)
         }
     }
 

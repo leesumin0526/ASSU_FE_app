@@ -268,30 +268,76 @@
         </LinearLayout>
 
 
-        <ImageButton
-            android:id="@+id/btn_completed"
-            android:layout_width="wrap_content"
-            android:layout_height="56dp"
-            android:layout_marginBottom="46dp"
-            android:textColor="@android:color/white"
-            android:background="@drawable/btn_basic_unselected"
-            android:fontFamily="@font/pretendard_semibold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_completed"
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_contract_passive_register_deactivated_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="제안서 보내기"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="@font/pretendard_bold"
-            app:layout_constraintStart_toStartOf="@id/btn_completed"
-            app:layout_constraintEnd_toEndOf="@id/btn_completed"
-            app:layout_constraintTop_toTopOf="@id/btn_completed"
-            app:layout_constraintBottom_toBottomOf="@id/btn_completed"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="30dp"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/iv_contract_passive_register_deactivated_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/btn_basic_unselected" />
+
+            <TextView
+                android:id="@+id/tv_contract_passive_register_deactivated"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="계약서 등록하기"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/pretendard_bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_contract_passive_register_activated_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="30dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/iv_contract_passive_register_activated_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/btn_basic_selected" />
+
+            <TextView
+                android:id="@+id/tv_contract_passive_register_activated"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="계약서 등록하기"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/pretendard_bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
         <!-- 인증 완료 버튼 (하단 고정) -->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
