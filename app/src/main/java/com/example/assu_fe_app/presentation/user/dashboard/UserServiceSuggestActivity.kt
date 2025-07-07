@@ -81,7 +81,7 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
         val popupWindow = PopupWindow(popupBinding.root, WRAP_CONTENT, WRAP_CONTENT, true)
 
         // 그림자 및 radius 배경 처리
-        popupWindow.setBackgroundDrawable(ColorDrawable(Color.GRAY))
+        popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         popupWindow.elevation = 10f
 
         // 드롭다운 항목 클릭 이벤트 처리
@@ -101,6 +101,6 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
         }
 
         // 버튼 바로 아래에 띄우기
-        popupWindow.showAsDropDown(anchor, 0,-160)
+        popupWindow.showAsDropDown(anchor, -5,-155)
     }
 }
