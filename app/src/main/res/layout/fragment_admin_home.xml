@@ -405,6 +405,7 @@
                     android:layout_height="24dp"/>
 
                 <TextView
+                    android:id="@+id/tv_contract_passive_register"
                     android:layout_width="match_parent"
                     android:layout_height="31dp"
                     android:background="@drawable/ic_home_basic_box_radius_8"
