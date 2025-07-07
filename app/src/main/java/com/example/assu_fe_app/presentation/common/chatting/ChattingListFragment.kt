@@ -16,16 +16,19 @@ class ChattingListFragment : BaseFragment<FragmentChattingListBinding> (R.layout
     override fun initObserver() {
         val dummyList = List(15) {
             ChattingListItem(
-                R.drawable.ic_restaurant_ex,
+                "roomId1",
+                "제휴 가능할까요?",
+                "12:00",
+                3,
+                        R.drawable.ic_restaurant_ex,
                 "인쌩믹주 숭실대점",
-                "제휴 가능할까요?"
             )
         }
 
         adapter = ChattingChatListAdapter(dummyList) { item ->
             val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
-                putExtra("CHAT_NAME", item.chatName)
-                putExtra("LAST_CHAT", item.lastChat)
+                putExtra("CHAT_NAME", item.opponentName)
+                putExtra("LAST_CHAT", item.lastMessage)
                 putExtra("CHAT", item.profileImage)
             }
             startActivity(intent)

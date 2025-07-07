@@ -15,11 +15,14 @@ import com.example.assu_fe_app.databinding.ActivityChattingBinding
 import com.example.assu_fe_app.presentation.admin.AdminMainActivity
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.common.chatting.adapter.ChattingChatListAdapter
+import com.example.assu_fe_app.presentation.common.chatting.adapter.ChattingMessageAdapter
 import com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalWritingFragment
 import com.example.assu_fe_app.presentation.user.UserMainActivity
 
 
 class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity_chatting) {
+
+    private lateinit var adapter: ChattingMessageAdapter
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -33,6 +36,28 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             )
             insets
         }
+
+        val messages = listOf(
+            ChattingMessageItem.OtherMessage(
+                profileImageUrl = "https://example.com/profile.jpg",
+                message = "안녕하세요, 제휴 문의 드리고 싶어요!",
+                sentAt = "오후 3:50"
+            ),
+            ChattingMessageItem.MyMessage(
+                message = "네! 어떤 내용이신가요?",
+                sentAt = "오후 3:52",
+                isRead = true
+            ),
+            ChattingMessageItem.OtherMessage(
+                profileImageUrl = "https://example.com/profile.jpg",
+                message = "특정 조건에 대한 혜택을 드리고 싶습니다.",
+                sentAt = "오후 3:55"
+            )
+        )
+
+        adapter = ChattingMessageAdapter(messages)
+        binding.rvChattingMessageList.adapter = adapter
+        binding.rvChattingMessageList.layoutManager = LinearLayoutManager(this)
 
         binding.ivChattingBack.setOnClickListener {
             navigateToChatting()

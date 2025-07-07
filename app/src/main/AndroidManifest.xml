@@ -25,9 +25,6 @@
             android:exported="false">
         </activity>
         <activity
-            android:name=".presentation.common.chatting.ChattingSentProposalActivity"
-            android:exported="false" />
-        <activity
             android:name=".presentation.common.login.LoginActivity"
             android:exported="true">
             <intent-filter>
