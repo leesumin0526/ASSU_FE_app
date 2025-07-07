@@ -36,6 +36,12 @@ class ReviewDeleteDialogFragment : DialogFragment() {
 
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_review_delete_dialog)
+
+    }
+
 //    override fun onStart() {
 //        super.onStart()
 //
@@ -62,11 +68,12 @@ class ReviewDeleteDialogFragment : DialogFragment() {
 
 }
 
-
+// 콜백 리스터 선언
 interface OnItemClickListener{
     fun onClick(position: Int)
 }
 
+// 콜백 리스너 선언
 interface OnReviewDeleteConfirmedListener {
     fun onReviewDeleteConfirmed(position: Int)
 }
