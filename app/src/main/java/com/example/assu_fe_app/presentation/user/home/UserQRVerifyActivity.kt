@@ -9,12 +9,14 @@ import com.example.assu_fe_app.databinding.ActivityUserQrVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import androidx.core.content.ContextCompat
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.camera.core.Preview
 import androidx.camera.core.CameraSelector
 import android.util.Log
 import androidx.camera.lifecycle.ProcessCameraProvider
+
 
 class UserQRVerifyActivity :
     BaseActivity<ActivityUserQrVerifyBinding>(R.layout.activity_user_qr_verify) {
@@ -35,6 +37,8 @@ class UserQRVerifyActivity :
         binding.btnConfirm.setOnClickListener {
             Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
             // 실제 인증 처리 로직 연결 예정
+            val intent = Intent(this, UserPartnershipVerifyActivity::class.java)
+            startActivity(intent)
         }
 
         // 예시로 학교명, 단과대 표시

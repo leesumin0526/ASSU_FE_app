@@ -1,10 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/assu_background"
     tools:context=".presentation.user.home.SelectServiceFragment">
+
+
+    <View
+        android:id="@+id/select_service_h1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0158"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <View
+        android:id="@+id/select_service_w1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.0763"
+        app:layout_constraintTop_toBottomOf="@id/select_service_h1"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageView
+        android:id="@+id/btn_select_service_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_back"
+        app:layout_constraintTop_toBottomOf="@id/select_service_h1"
+        app:layout_constraintStart_toEndOf="@id/select_service_w1"/>
+
+
+    <View
+        android:id="@+id/select_service_h2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0563"
+        app:layout_constraintTop_toBottomOf="@id/btn_select_service_back"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_select_service_market_name"
+        android:fontFamily="@font/pretendard_semibold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textColor="@color/assu_main"
+        android:text="제휴 사용자 인증완료"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:includeFontPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/select_service_h2"/>
+
+    <View
+        android:id="@+id/select_service_h3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0158"
+        app:layout_constraintTop_toBottomOf="@id/tv_select_service_market_name"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/ll_select_service"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_service_h3">
+        <TextView
+            android:id="@+id/tv_select_service_partnership_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="캔음료"
+            android:textSize="25sp"
+            android:textColor="@color/assu_font_main"
+            android:fontFamily="@font/pretendard_semibold"
+            android:includeFontPadding="false"/>
+
+        <TextView
+            android:id="@+id/tv_select_service_explain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="를 선택해주세요!"
+            android:textSize="25sp"
+            android:textColor="@color/assu_font_main"
+            android:fontFamily="@font/pretendard_semibold"
+            android:includeFontPadding="false"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/select_service_h4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0739"
+        app:layout_constraintTop_toBottomOf="@id/ll_select_service"
+        app:layout_constraintStart_toStartOf="parent"/>
+    
+    <TextView
+        android:id="@+id/tv_service_goods1"
+        android:gravity="center"
+        android:text="콜라"
+        android:textSize="18sp"
+        android:fontFamily="@font/pretendard_semibold"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.079"
+        app:layout_constraintWidth_percent="0.774"
+        android:background="@drawable/btn_service_box_selector"
+        app:layout_constraintTop_toBottomOf="@id/select_service_h4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    
+    <View
+        android:id="@+id/select_service_h5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.025"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_goods1"/>
+
+    <TextView
+        android:id="@+id/tv_service_goods2"
+        android:gravity="center"
+        android:text="사이다"
+        android:textSize="18sp"
+        android:fontFamily="@font/pretendard_semibold"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.079"
+        app:layout_constraintWidth_percent="0.774"
+        android:background="@drawable/btn_service_box_selector"
+        app:layout_constraintTop_toBottomOf="@id/select_service_h5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View
+        android:id="@+id/select_service_h6"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.025"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_goods2"/>
+
+    <TextView
+        android:id="@+id/tv_service_goods3"
+        android:gravity="center"
+        android:text="환타"
+        android:visibility="gone"
+        android:textSize="18sp"
+        android:fontFamily="@font/pretendard_semibold"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.079"
+        app:layout_constraintWidth_percent="0.774"
+        android:background="@drawable/btn_service_box_selector"
+        app:layout_constraintTop_toBottomOf="@id/select_service_h6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+
+    <View
+        android:id="@+id/group_h6"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0158"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/btn_group_verify_complete"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/btn_basic_selected"
+        android:text="선택 완료"
+        android:textColor="@color/assu_font_white"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:fontFamily="@font/pretendard_bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.879"
+        app:layout_constraintHeight_percent="0.0657"
+        app:layout_constraintBottom_toTopOf="@id/group_h6"/>
+    
+
+
 
     
 

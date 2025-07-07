@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/sign_up_nav_graph" />
+        app:navGraph="@navigation/user_verify_nav_graph" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
