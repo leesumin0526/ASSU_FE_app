@@ -13,7 +13,7 @@
         android:id="@+id/group_h1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.0141"
+        app:layout_constraintHeight_percent="0.0158"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -108,7 +108,7 @@
         android:layout_height="0dp"
         android:background="@drawable/bg_group_verify"
         app:layout_constraintWidth_percent="0.842"
-        app:layout_constraintHeight_percent="0.0986"
+        app:layout_constraintHeight_percent="0.1106"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/group_h5"/>
@@ -118,6 +118,7 @@
         android:layout_height="wrap_content"
         android:text="제휴 인증 인원"
         android:textSize="13sp"
+        android:textColor="@color/assu_main"
         android:fontFamily="@font/pretendard_regular"
         app:layout_constraintStart_toStartOf="@id/tv_group_verfify_box"
         app:layout_constraintEnd_toEndOf="@id/tv_group_verfify_box"
@@ -164,6 +165,7 @@
         app:layout_constraintStart_toStartOf="parent"/>
     
     <TextView
+        android:id="@+id/btn_group_verify_complete"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/btn_basic_unselected"
@@ -177,6 +179,65 @@
         app:layout_constraintWidth_percent="0.879"
         app:layout_constraintHeight_percent="0.0657"
         app:layout_constraintBottom_toTopOf="@id/group_h6"/>
+
+    <View
+        android:id="@+id/group_w2_left"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.202"
+        app:layout_constraintStart_toStartOf="@id/tv_group_verfify_box"
+        app:layout_constraintTop_toTopOf="@id/tv_group_verfify_box"/>
+
+    <View
+        android:id="@+id/group_w2_right"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.202"
+        app:layout_constraintEnd_toEndOf="@id/tv_group_verfify_box"
+        app:layout_constraintTop_toTopOf="@id/tv_group_verfify_box"/>
+
+    <View
+        android:id="@+id/group_h7"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0158"
+        app:layout_constraintTop_toBottomOf="@id/tv_group_people_cnt"
+        app:layout_constraintStart_toStartOf="@id/tv_group_verfify_box"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/group_w2_left"
+        app:layout_constraintEnd_toStartOf="@id/group_w2_right"
+        app:layout_constraintTop_toBottomOf="@id/group_h7">
+        <ImageView
+            android:id="@+id/group_verify1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_group_verified"/>
+        <ImageView
+            android:id="@+id/group_verify2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_group_verified"/>
+        <ImageView
+            android:id="@+id/group_verify3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_group_verified"/>
+        <ImageView
+            android:id="@+id/group_verify4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_group_unverified"/>
+
+
+
+    </LinearLayout>
 
         
 

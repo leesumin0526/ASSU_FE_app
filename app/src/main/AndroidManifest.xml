@@ -26,10 +26,10 @@
             android:exported="false" />
         <activity
             android:name=".presentation.common.chatting.ChattingActivity"
-            android:exported="false"></activity>
-        <activity
-            android:name=".presentation.common.chatting.ChattingSentProposalActivity"
-            android:exported="false" />
+            android:exported="false"/>
+<!--        <activity-->
+<!--            android:name=".presentation.common.chatting.ChattingSentProposalActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".presentation.common.login.LoginActivity"
             android:exported="true">
@@ -59,12 +59,12 @@
         <activity android:name=".presentation.user.location.UserLocationSearchActivity" />
         <activity
             android:name=".presentation.admin.AdminMainActivity"
-            android:exported="false"></activity>
+            android:exported="false"/>
         <activity android:name=".presentation.admin.home.AdminHomeViewPartnerListActivity" />
         <activity android:name=".presentation.admin.dashboard.AdminDashboardSuggestionsActivity" />
         <activity
             android:name=".presentation.partner.PartnerMainActivity"
-            android:exported="false"></activity>
+            android:exported="false"/>
         <activity android:name=".presentation.partner.home.PartnerHomeViewAdminListActivity" />
     </application>
 
