@@ -87,9 +87,10 @@
     <ImageView
         android:id="@+id/iv_group_qr"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintHeight_percent="0.6336"
+        android:layout_height="0dp"
+        android:src="@drawable/bg_review_box"
         app:layout_constraintWidth_percent="0.6336"
+        app:layout_constraintHeight_percent="0.3281"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/group_h4"/>
