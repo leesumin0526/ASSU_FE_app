@@ -50,4 +50,42 @@
         android:label="StarReviewActivity">
     </activity>
 
+<!--    &lt;!&ndash; 테이블 번호 선택 &ndash;&gt;-->
+<!--    <fragment-->
+<!--        android:id="@+id/userTableNumberSelectFragment"-->
+<!--        android:name="com.example.assu_fe_app.presentation.user.home.UserTableNumberSelectFragment"-->
+<!--        android:label="UserTableNumberSelectFragment">-->
+
+<!--        &lt;!&ndash; → 제휴 선택 &ndash;&gt;-->
+<!--        <action-->
+<!--            android:id="@+id/action_userTableNumberSelectFragment_to_userPartnershipSelectFragment"-->
+<!--            app:destination="@id/userPartnershipSelectFragment" />-->
+<!--    </fragment>-->
+
+<!--    &lt;!&ndash; 제휴 선택 &ndash;&gt;-->
+<!--    <fragment-->
+<!--        android:id="@+id/userPartnershipSelectFragment"-->
+<!--        android:name="com.example.assu_fe_app.presentation.user.home.UserPartnershipSelectFragment"-->
+<!--        android:label="UserPartnershipSelectFragment">-->
+
+<!--        &lt;!&ndash; → 인증 완료 &ndash;&gt;-->
+<!--        <action-->
+<!--            android:id="@+id/action_userPartnershipSelectFragment_to_userPartnershipVerifyCompleteFragment"-->
+<!--            app:destination="@id/userPartnershipVerifyCompleteFragment" />-->
+<!--    </fragment>-->
+
+<!--    &lt;!&ndash; 인증 완료 &ndash;&gt;-->
+<!--    <fragment-->
+<!--        android:id="@+id/userPartnershipVerifyCompleteFragment"-->
+<!--        android:name="com.example.assu_fe_app.presentation.user.home.UserPartnershipVerifyCompleteFragment"-->
+<!--        android:label="UserPartnershipVerifyCompleteFragment">-->
+
+<!--        &lt;!&ndash; X 버튼 클릭 시 홈으로 &ndash;&gt;-->
+<!--        <action-->
+<!--            android:id="@+id/action_userPartnershipVerifyCompleteFragment_to_homeFragment"-->
+<!--            app:destination="@id/homeFragment"-->
+<!--            app:popUpTo="@id/homeFragment"-->
+<!--            app:popUpToInclusive="true"/>-->
+<!--    </fragment>-->
+
 </navigation>
