@@ -150,7 +150,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="제휴 인증조건이 있는 경우 모든 사용자기 인증해야합니다"
-                        android:textSize="13sp"
+                        android:textSize="11sp"
                         android:textColor="@color/assu_font_sub"
                         android:fontFamily="@font/pretendard_medium" />
                 </LinearLayout>
