@@ -23,6 +23,7 @@ BaseFragment<FragmentUserLoactionBinding>(R.layout.fragment_user_loaction) {
         }
 
         binding.viewLocationMap.setOnClickListener{
+            binding.includeSpeechBubble.visibility = View.VISIBLE
             binding.fvUserLocationItem.visibility = View.VISIBLE
         }
 

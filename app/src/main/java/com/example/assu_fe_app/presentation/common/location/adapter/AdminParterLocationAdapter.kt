@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.example.assu_fe_app.databinding.ItemAdminPartnerLocationSearchResultItemBinding
+import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.presentation.user.review.store.UserReviewStoreActivity
 
 class AdminPartnerLocationAdapter(
@@ -33,10 +34,17 @@ class AdminPartnerLocationAdapter(
             binding.viewItemAdminPartnerLocationSearchResultItemDivider.visibility =
                 if (isLastItem) View.GONE else View.VISIBLE
 
-            binding.root.setOnClickListener {
+            binding.tvItemAdminPartnerLocationSearchResultItemContact.setOnClickListener {
                 val context = it.context
-                val intent = Intent(context, UserReviewStoreActivity::class.java)
-                intent.putExtra("shopName", item.shopName)
+                val intent = Intent(context, ChattingActivity::class.java)
+
+                val message = if (item.isPartnered) {
+                    "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
+                } else {
+                    "'문의하기' 버튼을 통해 이동했습니다."
+                }
+
+                intent.putExtra("entryMessage", message)
                 context.startActivity(intent)
             }
         }
