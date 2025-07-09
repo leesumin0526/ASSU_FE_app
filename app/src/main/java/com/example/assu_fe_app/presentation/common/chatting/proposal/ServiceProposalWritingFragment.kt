@@ -24,14 +24,14 @@ class ServiceProposalWritingFragment
     }
 
     override fun initView() {
-        binding.clFragmentServiceProposalItemSet.adapter = adapter
-        binding.clFragmentServiceProposalItemSet.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvFragmentServiceProposalItemSet.adapter = adapter
+        binding.rvFragmentServiceProposalItemSet.layoutManager = LinearLayoutManager(requireContext())
 
         if (adapter.getItems().isEmpty()) {
             adapter.addItem()
         }
 
-        binding.ivFragmentServiceProposalAddBtn.setOnClickListener {
+        binding.tvAddProposalItem.setOnClickListener {
             adapter.addItem()
             Log.d("addItem", "writingFragment2")
         }
@@ -45,15 +45,16 @@ class ServiceProposalWritingFragment
 
         binding.ivFragmentServiceProposalBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
-
         }
+
+
 
         setUpFragmentEditTextWatchers()
         checkAllFieldsFilled()
     }
 
     private fun onItemOptionSelected() {
-        binding.ivFragmentServiceProposalAddBtn.visibility = View.VISIBLE
+        binding.tvAddProposalItem.visibility = View.VISIBLE
     }
 
     override fun initObserver() {}

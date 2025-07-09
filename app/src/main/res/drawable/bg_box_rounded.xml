@@ -1,0 +1,9 @@
+<!-- res/drawable/bg_box_rounded.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- 배경색 -->
+    <solid android:color="@color/assu_box" />
+
+    <!-- 코너 반경 -->
+    <corners android:radius="8dp"/>
+</shape>

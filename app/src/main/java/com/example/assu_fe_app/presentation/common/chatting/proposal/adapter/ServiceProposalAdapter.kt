@@ -5,10 +5,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.ProposalItem
 import com.example.assu_fe_app.databinding.ItemServiceProposalSetBinding
 
@@ -22,30 +19,11 @@ class ServiceProposalAdapter(
         private val binding: ItemServiceProposalSetBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private fun updateConstraints(bindToDropdown: Boolean) {
-            val constraintSet = ConstraintSet()
-            constraintSet.clone(binding.clFragmentServiceProposalItemSet)
-            val topId = if (bindToDropdown) binding.dropdownMenu.id else binding.viewFragmentServiceProposalMg14.id
-            constraintSet.connect(binding.llFragmentServiceProposalItem.id, ConstraintSet.TOP, topId, ConstraintSet.BOTTOM)
-            constraintSet.applyTo(binding.clFragmentServiceProposalItemSet)
-        }
-
         fun bind(item: ProposalItem) {
-            binding.llFragmentServiceProposalItem.visibility = View.GONE
-            binding.dropdownMenu.visibility = View.GONE
+            binding.clDropdownMenu.visibility = View.GONE
+            binding.tvFragmentServiceProposalDropDown.text = item.content.ifEmpty { "서비스 제공" }
 
-            binding.etFragmentServiceProposalNum2.setText(item.num)
             binding.etFragmentServiceProposalContent2.setText(item.content)
-
-            binding.etFragmentServiceProposalNum2.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                    item.num = s.toString()
-                    onItemChanged()
-                }
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            })
-
             binding.etFragmentServiceProposalContent2.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                     item.content = s.toString()
@@ -55,42 +33,34 @@ class ServiceProposalAdapter(
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
 
-            val showDropdown = View.OnClickListener {
-                binding.ivFragmentServiceProposalDropDownBg.visibility = View.GONE
-                binding.ivFragmentServiceProposalDropDownIc.visibility = View.GONE
-                binding.tvFragmentServiceProposalDropDown.visibility = View.GONE
-                binding.dropdownMenu.visibility = View.VISIBLE
-                updateConstraints(true)
+            binding.layoutFragmentServiceProposalDropDownBg.setOnClickListener {
+                binding.clDropdownMenu.bringToFront()
+
+                // 2) 메뉴 내부 헤더에만 현재 선택값(또는 기본값) 세팅
+                val current = item.content.ifEmpty { "서비스 제공" }
+                binding.tvProposalDropDown.text = current
+
+                binding.clDropdownMenu.visibility = View.VISIBLE
             }
 
-            binding.ivFragmentServiceProposalDropDownBg.setOnClickListener(showDropdown)
-            binding.ivFragmentServiceProposalDropDownIc.setOnClickListener(showDropdown)
-            binding.tvFragmentServiceProposalDropDown.setOnClickListener(showDropdown)
-
             binding.tvProposalOption1.setOnClickListener {
-                applySelection("서비스 제공")
+                selectOption("서비스 제공",item)
             }
 
             binding.tvProposalOption2.setOnClickListener {
-                applySelection("할인 혜택")
+                selectOption("할인 혜택",item)
             }
+
+
         }
-
-        private fun applySelection(option: String) {
+        private fun selectOption(option: String, item: ProposalItem) {
             binding.tvFragmentServiceProposalDropDown.text = option
-            binding.tvFragmentServiceProposalWhich.text = if (option == "서비스 제공") "제공" else "할인"
-            binding.etFragmentServiceProposalContent2.hint = if (option == "서비스 제공") "캔콜라" else "10%"
-
-            binding.ivFragmentServiceProposalDropDownBg.visibility = View.VISIBLE
-            binding.ivFragmentServiceProposalDropDownIc.visibility = View.VISIBLE
-            binding.tvFragmentServiceProposalDropDown.visibility = View.VISIBLE
-            binding.dropdownMenu.visibility = View.GONE
-            binding.llFragmentServiceProposalItem.visibility = View.VISIBLE
-
+            item.content = option
+            binding.clDropdownMenu.visibility = View.GONE
             onItemChanged()
-            updateConstraints(false)
         }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServiceProposalViewHolder {
         val inflater = LayoutInflater.from(parent.context)
