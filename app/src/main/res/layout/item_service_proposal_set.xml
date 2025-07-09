@@ -56,6 +56,7 @@
 
 
         <TextView
+            android:id="@+id/tv_proposal_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="삭제하기"
@@ -207,100 +208,52 @@
 
 
         <LinearLayout
-            android:id="@+id/layout_proposal_condition_cost_selected"
+            android:id="@+id/layout_proposal_condition_cost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintStart_toEndOf="@id/tv_proposal_condition"
-            app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg14"
-            android:layout_marginLeft="25dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_check_selected"
-                android:layout_gravity="center"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="금액"
-                android:fontFamily="@font/pretendard_regular"
-                android:textSize="15sp"
-                android:textColor="@color/assu_main"
-                android:layout_marginLeft="10dp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_proposal_condition_cost_unselected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintStart_toEndOf="@id/tv_proposal_condition"
-            app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg14"
-            android:layout_marginLeft="25dp"
-            android:visibility="invisible">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_check_unselected"
-                android:layout_gravity="center"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="금액"
-                android:fontFamily="@font/pretendard_regular"
-                android:textSize="15sp"
-                android:textColor="@color/assu_font_sub"
-                android:layout_marginLeft="10dp"/>
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/layout_proposal_condition_people_selected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintStart_toEndOf="@id/layout_proposal_condition_cost_selected"
-            app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg14"
-            android:layout_marginLeft="25dp"
-            android:visibility="invisible">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_check_selected"
-                android:layout_gravity="center"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="인원 수"
-                android:fontFamily="@font/pretendard_regular"
-                android:textSize="15sp"
-                android:textColor="@color/assu_main"
-                android:layout_marginLeft="10dp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_proposal_condition_people_unselected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintStart_toEndOf="@id/layout_proposal_condition_cost_selected"
             app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg14"
             android:layout_marginLeft="25dp"
             android:visibility="visible">
 
             <ImageView
+                android:id="@+id/iv_proposal_condition_cost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_check_selected"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:id="@+id/tv_proposal_condition_cost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="금액"
+                android:fontFamily="@font/pretendard_regular"
+                android:textSize="15sp"
+                android:textColor="@color/assu_main"
+                android:layout_marginLeft="10dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_proposal_condition_people"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/layout_proposal_condition_cost"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg14"
+            android:layout_marginLeft="25dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/iv_proposal_condition_people"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_check_unselected"
                 android:layout_gravity="center"/>
 
             <TextView
+                android:id="@+id/tv_proposal_condition_people"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="인원 수"
@@ -315,7 +268,7 @@
             android:id="@+id/layout_proposal_condition"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/layout_proposal_condition_people_unselected"
+            app:layout_constraintTop_toBottomOf="@id/layout_proposal_condition_people"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="13dp"
             android:layout_marginBottom="16dp">
@@ -332,6 +285,7 @@
                 android:paddingStart="10dp"/>
 
             <TextView
+                android:id="@+id/tv_proposal_condition_unit"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="원 이상일 경우,"/>
@@ -366,7 +320,7 @@
 
 
         <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/ll_fragment_service_proposal_item"
+            android:id="@+id/flexbox_service_proposal_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -413,7 +367,7 @@
             android:id="@+id/view_fragment_service_proposal_mg18"
             android:layout_width="0dp"
             android:layout_height="15dp"
-            app:layout_constraintTop_toBottomOf="@id/ll_fragment_service_proposal_item"
+            app:layout_constraintTop_toBottomOf="@id/flexbox_service_proposal_item"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

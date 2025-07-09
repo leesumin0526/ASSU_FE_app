@@ -5,7 +5,9 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.ProposalItem
 import com.example.assu_fe_app.databinding.ItemServiceProposalSetBinding
 
@@ -39,16 +41,77 @@ class ServiceProposalAdapter(
                 // 2) 메뉴 내부 헤더에만 현재 선택값(또는 기본값) 세팅
                 val current = item.content.ifEmpty { "서비스 제공" }
                 binding.tvProposalDropDown.text = current
-
                 binding.clDropdownMenu.visibility = View.VISIBLE
             }
 
+            // 삭제하기 클릭 리스너
+            binding.tvProposalDelete.setOnClickListener {
+                val pos = adapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    items.removeAt(pos)
+                    notifyItemRemoved(pos)
+                    onItemChanged()
+                }
+            }
+
+
+
+            // 인원수 vs 금액
+            val ctx = binding.root.context  // 뷰의 컨텍스트를 가져옴
+
+            binding.layoutProposalConditionCost.setOnClickListener {
+                // “금액” 선택됐을 때
+                // 1) 금액 텍스트 색 바꾸기
+                binding.tvProposalConditionCost.setTextColor(
+                    ContextCompat.getColor(ctx, R.color.assu_main)
+                )
+                // 2) 금액 아이콘(체크) 변경
+                binding.ivProposalConditionCost.setImageResource(R.drawable.ic_check_selected)
+                // 3) 인원 수는 원래 색(비활성)으로
+                binding.tvProposalConditionPeople.setTextColor(
+                    ContextCompat.getColor(ctx, R.color.assu_font_sub)
+                )
+                binding.ivProposalConditionPeople.setImageResource(R.drawable.ic_check_unselected)
+
+                binding.tvProposalConditionUnit.setText("원 이상일 경우,")
+
+                // 저장 로직
+                item.condition = ProposalItem.CONDITION_COST
+                onItemChanged()
+            }
+
+            binding.layoutProposalConditionPeople.setOnClickListener {
+                // “인원 수” 선택됐을 때
+                // 1) 인원 수 텍스트 색 바꾸기
+                binding.tvProposalConditionPeople.setTextColor(
+                    ContextCompat.getColor(ctx, R.color.assu_main)
+                )
+                // 2) 인원 수 아이콘(체크) 변경
+                binding.ivProposalConditionPeople.setImageResource(R.drawable.ic_check_selected)
+                // 3) 금액은 원래 색(비활성)으로
+                binding.tvProposalConditionCost.setTextColor(
+                    ContextCompat.getColor(ctx, R.color.assu_font_sub)
+                )
+                binding.ivProposalConditionCost.setImageResource(R.drawable.ic_check_unselected)
+
+                binding.tvProposalConditionUnit.setText("명 이상일 경우,")
+
+                // 저장 로직
+                item.condition = ProposalItem.CONDITION_COST
+                onItemChanged()
+            }
+
+
             binding.tvProposalOption1.setOnClickListener {
                 selectOption("서비스 제공",item)
+                binding.ivFragmentServiceProposalAddGoodsBtn.text = "+  추가"
+                binding.etFragmentServiceProposalContent2.setHint("캔콜라")
             }
 
             binding.tvProposalOption2.setOnClickListener {
                 selectOption("할인 혜택",item)
+                binding.ivFragmentServiceProposalAddGoodsBtn.text = "% 할인"
+                binding.etFragmentServiceProposalContent2.setHint("10%")
             }
 
 
