@@ -24,10 +24,9 @@
 
         <activity
             android:name=".presentation.common.chatting.ChattingActivity"
-            android:exported="false"/>
-<!--        <activity-->
-<!--            android:name=".presentation.common.chatting.ChattingSentProposalActivity"-->
-<!--            android:exported="false" />-->
+            android:exported="false">
+        </activity>
+
         <activity
             android:name=".presentation.common.login.LoginActivity"
             android:exported="true">

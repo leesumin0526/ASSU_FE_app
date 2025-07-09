@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_gravity="end">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="end">
+
+        <TextView
+            android:id="@+id/tv_my_message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="17 : 22"
+            android:textSize="8sp"
+            android:fontFamily="@font/pretendard_regular"
+            android:textColor="#666666"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="2dp"/>
+
+        <View
+            android:layout_width="6dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/tv_my_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_message_mine"
+            android:padding="5dp"
+            android:text="혹시 생각하신 내용 있을까요?"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:fontFamily="@font/pretendard_regular"/>
+    </LinearLayout>
+
+</FrameLayout>

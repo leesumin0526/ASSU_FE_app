@@ -10,6 +10,7 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.example.assu_fe_app.databinding.FragmentLoactionBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.presentation.common.location.adapter.AdminPartnerLocationAdapter
 import com.example.assu_fe_app.presentation.common.location.adapter.LocationSharedViewModel
 import com.example.assu_fe_app.presentation.user.review.store.UserReviewStoreActivity
@@ -43,29 +44,30 @@ BaseFragment<FragmentLoactionBinding>(R.layout.fragment_loaction) {
         }
 
         binding.fvLocationItem.setOnClickListener {
-            val intent = Intent(requireContext(), UserReviewStoreActivity::class.java)
-            startActivity(intent)
-        }
+            val item = currentItem ?: return@setOnClickListener
+            val context = it.context
+            val intent = Intent(context, ChattingActivity::class.java)
 
-        sharedViewModel.locationList.observe(viewLifecycleOwner) { list ->
-            Log.d("ViewModel", "list size = ${list?.size}")
-            list.forEachIndexed { index, item ->
-                Log.d("ViewModel", "$index: ${item.shopName}")
+            val message = if (item.isPartnered) {
+                "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
+            } else {
+                "'문의하기' 버튼을 통해 이동했습니다."
             }
 
-            currentItem = list.getOrNull(1)
+            intent.putExtra("entryMessage", message)
+            context.startActivity(intent)
         }
 
+    }
+
+    override fun initObserver() {
         sharedViewModel.locationList.observe(viewLifecycleOwner) { list ->
             val item = list.getOrNull(1) ?: return@observe
+            currentItem = item
 
             val fragment = childFragmentManager.findFragmentById(R.id.fv_location_item) as? LocationItemFragment
             fragment?.showCapsuleInfo(item)
         }
-    }
-
-    override fun initObserver() {
-
     }
 
     private fun navigateToSearch() {

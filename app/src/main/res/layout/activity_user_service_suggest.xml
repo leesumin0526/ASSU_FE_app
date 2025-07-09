@@ -79,27 +79,36 @@
         app:layout_constraintStart_toEndOf="@id/suggest_mg2"
         app:layout_constraintEnd_toStartOf="@id/suggest_mg2_2">
 
-        <Spinner
+        <View
             android:id="@+id/spinner_target"
             android:layout_width="0dp"
-            android:layout_height="54dp"
-            android:background="@drawable/bg_suggest_spinner"
-            app:layout_constraintWidth_percent="0.6985"
+            android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHeight_percent="0.0634"
+            app:layout_constraintWidth_percent="0.6985" />
+
+        <View
+            android:id="@+id/suggest_mg6"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.0382"
+            app:layout_constraintTop_toTopOf="@id/spinner_target"
+            app:layout_constraintStart_toStartOf="@id/spinner_target"
+            app:layout_constraintBottom_toBottomOf="@id/spinner_target"/>
 
         <TextView
             android:id="@+id/tv_service_select_target"
             android:text="건의대상 선택"
             android:fontFamily="@font/pretendard_medium"
             android:textColor="@color/assu_font_sub"
-            android:layout_marginStart="15dp"
             android:textSize="17sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/spinner_target"
+            android:layout_marginBottom="5dp"
             app:layout_constraintBottom_toBottomOf="@id/spinner_target"
-            app:layout_constraintStart_toStartOf="@id/spinner_target"/>
+            app:layout_constraintStart_toEndOf="@id/suggest_mg6"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -111,6 +120,34 @@
             app:layout_constraintTop_toTopOf="@id/spinner_target"
             app:layout_constraintBottom_toBottomOf="@id/spinner_target"
             app:layout_constraintStart_toStartOf="@id/cl_suggest"/>
+
+        <ImageView
+            android:id="@+id/btn_service_drop_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btn_suggest_drop_down"
+            app:layout_constraintEnd_toStartOf="@id/suggest_mg7"
+            app:layout_constraintTop_toTopOf="@id/tv_service_select_target"
+            app:layout_constraintBottom_toBottomOf="@id/tv_service_select_target"
+            />
+
+        <View
+            android:id="@+id/suggest_mg7"
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            app:layout_constraintWidth_percent="0.0458"
+            app:layout_constraintEnd_toEndOf="@id/spinner_target"
+            app:layout_constraintTop_toTopOf="@id/spinner_target"/>
+
+        <ImageView
+            android:id="@+id/service_line"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent="0.7"
+            android:layout_height="wrap_content"
+            android:src="@drawable/line_suggest"
+            app:layout_constraintBottom_toBottomOf="@id/spinner_target"
+            app:layout_constraintStart_toStartOf="@id/spinner_target"
+            app:layout_constraintEnd_toEndOf="@id/spinner_target"/>
         
         <TextView
             android:id="@+id/tv_service_want_market"
