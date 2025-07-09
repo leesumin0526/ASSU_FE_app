@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/assu_background"
-    tools:context=".presentation.user.home.PriceConfirmFragment">
+    tools:context=".presentation.user.home.UserPriceConfirmFragment">
 
     <View
         android:id="@+id/price_h1"

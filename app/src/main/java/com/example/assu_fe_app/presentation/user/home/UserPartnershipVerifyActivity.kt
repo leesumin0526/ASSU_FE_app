@@ -1,9 +1,6 @@
 package com.example.assu_fe_app.presentation.user.home
 
 import android.content.Context
-import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
@@ -24,7 +21,7 @@ class UserPartnershipVerifyActivity : BaseActivity<ActivityUserPartnershipVerify
             insets
         }
 
-        val fragment = GroupVerifyFragment()
+        val fragment = UserGroupVerifyFragment()
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.user_verify_fragment_container, fragment)

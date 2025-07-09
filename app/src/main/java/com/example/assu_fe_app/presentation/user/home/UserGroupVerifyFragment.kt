@@ -1,18 +1,10 @@
 package com.example.assu_fe_app.presentation.user.home
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.databinding.FragmentUserGroupVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.example.assu_fe_app.databinding.FragmentGroupVerifyBinding
 
-class GroupVerifyFragment : BaseFragment<FragmentGroupVerifyBinding>(R.layout.fragment_group_verify) {
+class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.layout.fragment_user_group_verify) {
     override fun initObserver() {
 
     }
@@ -30,7 +22,7 @@ class GroupVerifyFragment : BaseFragment<FragmentGroupVerifyBinding>(R.layout.fr
 
 
         binding.btnGroupVerifyComplete.setOnClickListener {
-            val fragment = SelectServiceFragment()
+            val fragment = UserSelectServiceFragment()
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
             transaction.replace(R.id.user_verify_fragment_container, fragment)
             transaction.addToBackStack(null)

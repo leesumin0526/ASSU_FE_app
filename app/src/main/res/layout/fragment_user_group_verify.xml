@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/assu_background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.user.home.GroupVerifyFragment">
+    tools:context=".presentation.user.home.UserGroupVerifyFragment">
 
     <View
         android:id="@+id/group_h1"
