@@ -9,13 +9,10 @@
     android:layout_height="match_parent"
     tools:context=".presentation.user.home.UserPartnershipVerifyActivity">
 
-    <fragment
-        android:id="@+id/user_verify_nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+    <FrameLayout
+        android:id="@+id/user_verify_fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/user_verify_nav_graph" />
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

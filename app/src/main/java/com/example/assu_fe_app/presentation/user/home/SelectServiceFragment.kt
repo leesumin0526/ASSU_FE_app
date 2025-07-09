@@ -41,13 +41,16 @@ class SelectServiceFragment : BaseFragment<FragmentSelectServiceBinding>(R.layou
                 binding.btnGroupVerifyComplete.isEnabled= true
                 binding.btnGroupVerifyComplete.background = resources.getDrawable(R.drawable.btn_basic_selected, null)
                 binding.btnGroupVerifyComplete.setOnClickListener {
-                    val navController = findNavController()
-                    navController.navigate(R.id.action_selectServiceFragment_to_priceConfirmFragment)
+                    val fragment = PriceConfirmFragment()
+                    val transaction = requireActivity().supportFragmentManager.beginTransaction()
+                    transaction.replace(R.id.user_verify_fragment_container, fragment)
+                    transaction.addToBackStack(null)
+                    transaction.commit()
                 }
             }
         }
         binding.btnSelectServiceBack.setOnClickListener {
-            findNavController().popBackStack()
+            parentFragmentManager.popBackStack()
         }
     }
 

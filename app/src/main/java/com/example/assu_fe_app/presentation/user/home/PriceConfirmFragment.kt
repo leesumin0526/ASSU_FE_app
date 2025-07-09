@@ -18,7 +18,7 @@ class PriceConfirmFragment : BaseFragment<FragmentPriceConfirmBinding>(R.layout.
 
     override fun initView() {
         binding.btnPriceBack.setOnClickListener {
-            findNavController().popBackStack()
+            parentFragmentManager.popBackStack()
         }
     }
 

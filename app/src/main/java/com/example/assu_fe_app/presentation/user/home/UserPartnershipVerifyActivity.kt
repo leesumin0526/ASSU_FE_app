@@ -24,6 +24,12 @@ class UserPartnershipVerifyActivity : BaseActivity<ActivityUserPartnershipVerify
             insets
         }
 
+        val fragment = GroupVerifyFragment()
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.user_verify_fragment_container, fragment)
+            .commit()
+
     }
 
     private fun Int.dpToPx(context: Context): Int {

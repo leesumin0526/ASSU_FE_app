@@ -30,8 +30,11 @@ class GroupVerifyFragment : BaseFragment<FragmentGroupVerifyBinding>(R.layout.fr
 
 
         binding.btnGroupVerifyComplete.setOnClickListener {
-            val navController = findNavController()
-            navController.navigate(R.id.action_verifyFragment_to_selectServiceFragment)
+            val fragment = SelectServiceFragment()
+            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.user_verify_fragment_container, fragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
         }
 
         binding.btnGroupBack.setOnClickListener {
