@@ -37,8 +37,11 @@ class UserQRVerifyActivity :
         binding.btnConfirm.setOnClickListener {
             Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
             // 실제 인증 처리 로직 연결 예정
-            val intent = Intent(this, UserPartnershipVerifyActivity::class.java)
-            startActivity(intent)
+
+
+            // 서희 인증 로직 연결 부분
+//            val intent = Intent(this, UserPartnershipVerifyActivity::class.java)
+//            startActivity(intent)
         }
 
         // 예시로 학교명, 단과대 표시
