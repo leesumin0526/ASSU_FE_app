@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_admin_partner_location_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/btn_speech_bubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/bg_speech_bubble" />
+        
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="9dp"
+            app:layout_constraintStart_toStartOf="@id/btn_speech_bubble"
+            app:layout_constraintEnd_toEndOf="@id/btn_speech_bubble"
+            app:layout_constraintTop_toTopOf="@id/btn_speech_bubble"
+            app:layout_constraintBottom_toBottomOf="@id/btn_speech_bubble">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="@font/pretendard_regular"
+                android:text="파란색으로 표시되는 업체는\n간편 제휴 인증 지원 업체입니다."
+                android:textColor="@color/assu_font_sub"/>
+
+            <ImageView
+                android:id="@+id/speech_bubble_cancle"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/ic_cross"
+                app:tint="@color/assu_font_sub" />
+
+        </LinearLayout>
+        
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

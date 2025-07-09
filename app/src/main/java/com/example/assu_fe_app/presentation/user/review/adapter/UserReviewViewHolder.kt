@@ -2,18 +2,21 @@ package com.example.assu_fe_app.presentation.user.review.adapter
 
 import android.os.Build
 import android.view.View
+import android.widget.AdapterView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.review.Review
 import com.example.assu_fe_app.databinding.ItemReviewBinding
+import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
 import java.time.format.DateTimeFormatter
 
 class UserReviewViewHolder(
     private val binding: ItemReviewBinding,
-    private val showDeleteButton: Boolean
-) : RecyclerView.ViewHolder(binding.root) {
+    private val showDeleteButton: Boolean,
+    private val listener : OnItemClickListener
+) : RecyclerView.ViewHolder(binding.root){
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun bind(review: Review) {
@@ -36,6 +39,9 @@ class UserReviewViewHolder(
         }
 
         binding.tvReviewDelete.visibility = if (showDeleteButton) View.VISIBLE else View.GONE
+        binding.tvReviewDelete.setOnClickListener {
+            listener.onClick(adapterPosition)
+        }
     }
 
     private fun setRating(rating: Int) {
@@ -54,4 +60,8 @@ class UserReviewViewHolder(
             )
         }
     }
+}
+
+interface onItemClickListener{
+    fun onClick()
 }

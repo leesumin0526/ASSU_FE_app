@@ -8,6 +8,7 @@ import com.example.assu_fe_app.data.dto.review.Review
 import com.example.assu_fe_app.databinding.FragmentUserReviewStoreDetailBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
+import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
 import java.time.LocalDateTime
 
 class UserReviewStoreDetailFragment :
@@ -17,7 +18,14 @@ class UserReviewStoreDetailFragment :
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun initView() {
-        userReviewAdapter = UserReviewAdapter(showDeleteButton = false)
+        userReviewAdapter = UserReviewAdapter(
+            showDeleteButton = false,
+            listener = object : OnItemClickListener {
+                override fun onClick(position: Int) {
+                    // 삭제 기능 없음 → 아무 일도 하지 않음
+                }
+            }
+        )
         userReviewAdapter.setData(createDummyData())
 
         binding.fcvReviewStoreRank.apply {

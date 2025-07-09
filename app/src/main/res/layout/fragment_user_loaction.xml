@@ -129,6 +129,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+
         <View
             android:id="@+id/view_location_mg4"
             android:layout_width="0dp"
@@ -138,6 +139,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/include_speech_bubble"
+            android:name="com.example.assu_fe_app.presentation.user.location.UserLocationSpeechBubbleItemFragment"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_location_search_bar"
+            app:layout_constraintBottom_toTopOf="@id/fv_user_location_item" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fv_user_location_item"
