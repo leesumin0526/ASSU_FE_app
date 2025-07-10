@@ -8,4 +8,25 @@
         <!-- (Optional) View의 기본 배경색 속성 -->
         <item name="android:colorBackground">@color/assu_background</item>
     </style>
+
+    <style name="ProvidedItemEditText">
+        <!-- 배경 -->
+        <item name="android:background">@drawable/bg_box_rounded</item>
+        <!-- 최소 너비 -->
+        <item name="android:minWidth">100dp</item>
+        <!-- 글자 크기 -->
+        <item name="android:textSize">17sp</item>
+        <!-- 패딩 -->
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <!-- 글자 색 -->
+        <item name="android:textColor">@color/assu_font_main</item>
+        <!-- 폰트 패밀리 -->
+        <item name="android:fontFamily">@font/pretendard_regular</item>
+        <!-- 높이는 wrap_content, 가로 여유 공간은 Margin으로 처리 -->
+        <item name="android:layout_height">23dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>

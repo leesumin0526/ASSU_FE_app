@@ -275,9 +275,10 @@
 
 
             <EditText
+                android:id="@+id/et_fragment_service_proposal_content"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:hint="10000"
+                android:hint="10,000"
                 android:textSize="15sp"
                 android:background="@color/assu_box"
                 android:layout_marginStart="115dp"
@@ -321,7 +322,7 @@
 
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/flexbox_service_proposal_item"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginStart="20dp"
@@ -330,6 +331,7 @@
             app:justifyContent="flex_start"
             android:paddingBottom="8dp"
             app:layout_constraintStart_toEndOf="@id/tv_proposal_provide"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_main_line">
 
 
@@ -340,8 +342,6 @@
                 android:layout_height="23dp"
                 android:textSize="17sp"
                 android:hint="캔콜라"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
                 android:textColor="@color/assu_font_main"
                 android:fontFamily="@font/pretendard_regular"
                 android:background="@drawable/bg_box_rounded"
@@ -356,8 +356,7 @@
                 android:textSize="11sp"
                 android:textColor="@color/white"
                 android:gravity="center"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
+                android:layout_marginStart="26dp"
                 app:layout_constraintStart_toEndOf="@id/iv_fragment_service_proposal_content"
                 app:layout_constraintTop_toTopOf="parent" />
 

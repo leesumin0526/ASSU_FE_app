@@ -70,4 +70,6 @@ dependencies {
 
     // 자동 줄바꿈
     implementation (libs.flexbox)
+
+    implementation (libs.androidx.recyclerview)
 }
