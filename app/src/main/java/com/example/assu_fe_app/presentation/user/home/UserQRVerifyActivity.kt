@@ -1,7 +1,16 @@
 package com.example.assu_fe_app.presentation.user.home
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
+import android.view.View
 import android.widget.Toast
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
@@ -17,13 +26,13 @@ import androidx.camera.core.CameraSelector
 import android.util.Log
 import androidx.camera.lifecycle.ProcessCameraProvider
 
-
 class UserQRVerifyActivity :
     BaseActivity<ActivityUserQrVerifyBinding>(R.layout.activity_user_qr_verify) {
 
     override fun initView() {
         applyWindowInsetPadding()
 
+        // 오버레이 위치 설정
         binding.previewView.post {
             binding.overlay.updateHoleRectFromView(binding.qrGuideBox)
         }
@@ -36,12 +45,16 @@ class UserQRVerifyActivity :
         // 확인 버튼 클릭 처리
         binding.btnConfirm.setOnClickListener {
             Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
-            // 실제 인증 처리 로직 연결 예정
 
+            // 카메라 및 오버레이 숨기기
+            binding.previewView.visibility = View.GONE
+            binding.overlay.visibility = View.GONE
 
-            // 서희 인증 로직 연결 부분
-//            val intent = Intent(this, UserPartnershipVerifyActivity::class.java)
-//            startActivity(intent)
+            // FragmentContainerView 보이게
+            binding.fragmentContainerView.visibility = View.VISIBLE
+
+            // 처음 프래그먼트로 테이블 선택 띄우기
+            showTableNumberFragment()
         }
 
         // 예시로 학교명, 단과대 표시
@@ -99,6 +112,27 @@ class UserQRVerifyActivity :
             Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             finish()
         }
+    }
+
+    fun showTableNumberFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container_view, UserTableNumberSelectFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    fun showPartnershipSelectFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container_view, UserPartnershipSelectFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    fun showVerifyCompleteFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container_view, UserPartnershipVerifyCompleteFragment())
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun initObserver() {
