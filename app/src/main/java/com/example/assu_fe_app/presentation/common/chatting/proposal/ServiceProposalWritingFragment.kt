@@ -33,6 +33,7 @@ class ServiceProposalWritingFragment
 
         binding.tvAddProposalItem.setOnClickListener {
             adapter.addItem()
+            checkAllFieldsFilled()
             Log.d("addItem", "writingFragment2")
         }
 
@@ -73,11 +74,15 @@ class ServiceProposalWritingFragment
     private fun checkAllFieldsFilled() {
         val partnerFilled = binding.etFragmentServiceProposalPartner.text?.isNotBlank() == true
         val adminFilled = binding.etFragmentServiceProposalAdmin.text?.isNotBlank() == true
-        val itemFieldsFilled = adapter.getItems().all {
-            it.num.isNotBlank() && it.content.isNotBlank()
+        val itemFieldsFilled = adapter.getItems().all { item ->
+            item.contents.all{it.isNotBlank()}
         }
 
-        val colorRes = if (partnerFilled && adminFilled && itemFieldsFilled) R.color.assu_main else R.color.assu_sub
+        val allFilled = partnerFilled && adminFilled && itemFieldsFilled
+
+        val colorRes = if (allFilled) R.color.assu_main else R.color.assu_sub
         binding.btnCompleted.backgroundTintList = ContextCompat.getColorStateList(requireContext(), colorRes)
+
+        binding.btnCompleted.isEnabled = allFilled
     }
 }

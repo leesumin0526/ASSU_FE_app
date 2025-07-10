@@ -197,7 +197,7 @@ class ServiceProposalAdapter(
             addBtn.setOnClickListener {
                 item.contents.add("")
                 notifyItemChanged(adapterPosition)
-                onItemChanged
+                onItemChanged()
             }
         }
 
@@ -224,6 +224,7 @@ class ServiceProposalAdapter(
     fun addItem() {
         items.add(ProposalItem())
         notifyItemInserted(items.size - 1)
+        onItemChanged()
     }
 
     fun getItems(): List<ProposalItem> = items
