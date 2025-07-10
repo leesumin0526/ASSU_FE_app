@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.user.dashboard.adapter
 
+import android.content.Intent
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,7 +8,9 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.data.dto.servicerecord.ServiceRecord
 import com.example.assu_fe_app.databinding.ItemServiceRecordBinding
+import com.example.assu_fe_app.presentation.user.review.writing.UserStarReviewActivity
 import java.time.format.DateTimeFormatter
+import kotlin.jvm.java
 
 class ServiceRecordAdapter : RecyclerView.Adapter<ServiceRecordAdapter.ServiceRecordViewHolder>() {
 
@@ -42,6 +45,15 @@ class ServiceRecordAdapter : RecyclerView.Adapter<ServiceRecordAdapter.ServiceRe
 
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
             binding.tvServiceDatetime.text = serviceRecord.dateTime.format(formatter)
+
+            binding.btnServiceWriteReview.setOnClickListener {
+                val intent = Intent(itemView.context, UserStarReviewActivity::class.java)
+                    .apply{
+                        putExtra("marketName", serviceRecord.marketName)
+                    }
+
+                itemView.context.startActivity(intent)
+            }
 
         }
     }

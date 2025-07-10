@@ -5,9 +5,10 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -20,24 +21,27 @@
         android:theme="@style/Theme.ASSU_FE_app"
         tools:ignore="ExtraText"
         tools:targetApi="31">
+
         <activity
             android:name=".presentation.common.chatting.ChattingActivity"
             android:exported="false">
         </activity>
+
         <activity
             android:name=".presentation.common.login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".presentation.common.signup.SignUpActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".presentation.user.UserMainActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity android:name=".presentation.user.dashboard.UserServiceRecordActivity" />
         <activity android:name=".presentation.user.home.UserQRVerifyActivity" />
         <activity android:name=".presentation.user.dashboard.UserSuggestCompleteActivity" />
@@ -49,19 +53,17 @@
         <activity android:name=".presentation.common.location.LocationSearchActivity" />
         <activity android:name=".presentation.user.review.store.UserReviewStoreActivity" />
         <activity android:name=".presentation.user.home.CertifyActivity" />
-        <activity android:name=".presentation.user.location.UserLocationSearchActivity"/>
+        <activity android:name=".presentation.user.location.UserLocationSearchActivity" />
+        <activity android:name=".presentation.user.home.UserPartnershipVerifyActivity" />
         <activity
             android:name=".presentation.admin.AdminMainActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false"/>
         <activity android:name=".presentation.admin.home.AdminHomeViewPartnerListActivity" />
         <activity android:name=".presentation.admin.dashboard.AdminDashboardSuggestionsActivity" />
         <activity
             android:name=".presentation.partner.PartnerMainActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false"/>
         <activity android:name=".presentation.partner.home.PartnerHomeViewAdminListActivity" />
-
     </application>
 
 </manifest>

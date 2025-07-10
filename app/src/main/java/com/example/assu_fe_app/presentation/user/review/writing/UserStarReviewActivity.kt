@@ -2,6 +2,8 @@ package com.example.assu_fe_app.presentation.user.review.writing
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -49,6 +51,8 @@ class UserStarReviewActivity : BaseActivity<ActivityUserStarReviewBinding>(R.lay
                 activatedButton.visibility=View.VISIBLE
             }
         }
+        // 리뷰 가게 이름 넣어주기..
+        binding.tvStarReviewPlaceName.text = intent.getStringExtra("marketName") + "점"
 
         // 뒤로 가기 버튼 (activity -> fragment 전환. 그저 백스텝이어서 finish로 activity 끝냄)
         val backButton = binding.ivStarReviewBackArrow
@@ -64,6 +68,12 @@ class UserStarReviewActivity : BaseActivity<ActivityUserStarReviewBinding>(R.lay
     }
 
     override fun initObserver() {
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
+
+        val marketName = intent.getStringExtra("marketName")
     }
 
     private fun Int.dpToPx(context: Context): Int {
