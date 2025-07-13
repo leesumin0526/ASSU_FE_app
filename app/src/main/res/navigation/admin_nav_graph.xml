@@ -14,6 +14,11 @@
         <action
             android:id="@+id/action_admin_home_to_admin_view_partner_list"
             app:destination="@id/adminHomeViewPartnerListActivity" />
+
+        <action
+            android:id="@+id/action_admin_home_to_contract_passive_register"
+            app:destination="@id/adminContractPassiveRegisterFragment"/>
+
     </fragment>
 
     <!-- 액티비티: 제휴업체 목록 -->
@@ -57,4 +62,22 @@
         android:id="@+id/adminMyPageFragment"
         android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminMypageFragment"
         android:label="My Page" />
-    </navigation>
+
+    <fragment
+        android:id="@+id/adminContractPassiveRegisterFragment"
+        android:name="com.example.assu_fe_app.ContractPassiveRegisterFragment">
+
+        <action
+            android:id="@+id/action_contract_passive_register_to_contract_passive_register_finish"
+            app:destination="@id/adminPassiveRegisterFinishFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/adminPassiveRegisterFinishFragment"
+        android:name="com.example.assu_fe_app.AdminPassiveRegisterFinishFragment">
+        <action
+            android:id="@+id/action_admin_passive_register_finish_to_admin_home"
+            app:destination="@id/adminHomeFragment"/>
+    </fragment>
+
+</navigation>

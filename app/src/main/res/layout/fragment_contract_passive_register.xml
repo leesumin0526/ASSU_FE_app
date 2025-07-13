@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ContractPassiveRegisterFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/assu_background">
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_title"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/assu_background"
+            app:layout_constraintHeight_percent="0.0914"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.0157"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_fragment_contract_passive_register_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.01816" />
+
+        <ImageView
+            android:id="@+id/iv_fragment_contract_passive_register_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_location_search_left_arrow"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_contract_passive_register_mg2"
+            app:layout_constraintTop_toTopOf="@id/view_fragment_contract_passive_register_title"
+            app:layout_constraintBottom_toBottomOf="@id/view_fragment_contract_passive_register_title" />
+
+        <TextView
+            android:id="@+id/tv_fragment_contract_passive_register_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/pretendard_semibold"
+            android:text="제휴 계약서"
+            android:textColor="@color/assu_font_main"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/view_fragment_contract_passive_register_mg4"
+            app:layout_constraintEnd_toStartOf="@id/view_fragment_contract_passive_register_mg3"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_contract_passive_register_mg2"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_contract_passive_register_mg1" />
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_fragment_contract_passive_register_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.03816" />
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg4"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_fragment_contract_passive_register_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.01712"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg5"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_contract_passive_register_mg4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.0329"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg6"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_contract_passive_register_mg5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintWidth_percent="0.0610"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg7"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_contract_passive_register_mg5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintWidth_percent="0.0610"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_fragment_contract_passive_register_guide"
+            android:layout_width="79dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="15dp"
+            android:fontFamily="@font/pretendard_regular"
+            android:text="제휴 기간 선택"
+            android:textColor="@color/assu_font_sub"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_contract_passive_register_mg6"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_contract_passive_register_mg5" />
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg8"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_fragment_contract_passive_register_guide"
+            app:layout_constraintEnd_toStartOf="@id/view_fragment_contract_passive_register_mg7"
+            app:layout_constraintHeight_percent="0.0263"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_contract_passive_register_mg6" />
+
+        <ImageView
+            android:id="@+id/iv_fragment_contract_passive_register_content"
+            android:layout_width="150.5dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_contract_passive_register_mg8"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_contract_passive_register_mg6"
+            android:background="@drawable/bg_service_proposal_box" />
+
+        <EditText
+            android:id="@+id/et_fragment_contract_passive_register_start_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="2025 - 05 - 05 "
+            android:textColor="@color/assu_font_sub"
+            android:fontFamily="@font/pretendard_medium"
+            android:backgroundTint="@color/assu_box"
+            android:layout_marginStart="15dp"
+            app:layout_constraintTop_toTopOf="@id/iv_fragment_contract_passive_register_content"
+            app:layout_constraintStart_toStartOf="@id/iv_fragment_contract_passive_register_content"
+            app:layout_constraintEnd_toStartOf="@id/iv_fragment_contract_passive_register_calendar"
+            app:layout_constraintBottom_toBottomOf="@id/iv_fragment_contract_passive_register_content" />
+
+        <ImageView
+            android:id="@+id/iv_fragment_contract_passive_register_calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_proposal_calendar"
+            android:layout_marginEnd="15dp"
+            app:layout_constraintTop_toTopOf="@id/iv_fragment_contract_passive_register_content"
+            app:layout_constraintEnd_toEndOf="@id/iv_fragment_contract_passive_register_content"
+            app:layout_constraintBottom_toBottomOf="@id/iv_fragment_contract_passive_register_content"/>
+
+        <TextView
+            android:id="@+id/iv_fragment_contract_passive_register_wave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="~"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textColor="@color/assu_font_sub"
+            android:fontFamily="@font/pretendard_bold"
+            app:layout_constraintTop_toTopOf="@id/iv_fragment_contract_passive_register_content"
+            app:layout_constraintStart_toEndOf="@id/iv_fragment_contract_passive_register_content"
+            app:layout_constraintBottom_toBottomOf="@id/iv_fragment_contract_passive_register_content" />
+
+        <ImageView
+            android:id="@+id/iv_fragment_contract_passive_register_content3"
+            android:layout_width="150.5dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_contract_passive_register_mg8"
+            app:layout_constraintEnd_toStartOf="@id/view_fragment_contract_passive_register_mg7"
+            android:background="@drawable/bg_service_proposal_box" />
+
+        <EditText
+            android:id="@+id/et_fragment_contract_passive_register_end_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="2025 - 05 - 05 "
+            android:textColor="@color/assu_font_sub"
+            android:fontFamily="@font/pretendard_medium"
+            android:layout_marginStart="15dp"
+            android:backgroundTint="@color/assu_box"
+            app:layout_constraintTop_toTopOf="@id/iv_fragment_contract_passive_register_content3"
+            app:layout_constraintStart_toStartOf="@id/iv_fragment_contract_passive_register_content3"
+            app:layout_constraintEnd_toStartOf="@id/iv_fragment_contract_passive_register_calendar2"
+            app:layout_constraintBottom_toBottomOf="@id/iv_fragment_contract_passive_register_content3" />
+
+        <ImageView
+            android:id="@+id/iv_fragment_contract_passive_register_calendar2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_proposal_calendar"
+            android:layout_marginEnd="15dp"
+            app:layout_constraintTop_toTopOf="@id/iv_fragment_contract_passive_register_content3"
+            app:layout_constraintEnd_toEndOf="@id/iv_fragment_contract_passive_register_content3"
+            app:layout_constraintBottom_toBottomOf="@id/iv_fragment_contract_passive_register_content3"/>
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg9"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/iv_fragment_contract_passive_register_content"
+            app:layout_constraintEnd_toStartOf="@id/view_fragment_contract_passive_register_mg7"
+            app:layout_constraintHeight_percent="0.0263"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_contract_passive_register_mg6" />
+
+        <TextView
+            android:id="@+id/tv_fragment_contract_passive_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="제휴 계약서 등록"
+            android:textSize="13sp"
+            android:layout_marginStart="15dp"
+            android:fontFamily="@font/pretendard_regular"
+            android:textColor="@color/assu_font_sub"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_contract_passive_register_mg9"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_contract_passive_register_mg6"/>
+
+        <View
+            android:id="@+id/view_fragment_contract_passive_register_mg10"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_fragment_contract_passive_register"
+            app:layout_constraintEnd_toStartOf="@id/view_fragment_contract_passive_register_mg7"
+            app:layout_constraintHeight_percent="0.0263"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_contract_passive_register_mg6" />
+
+
+
+        <LinearLayout
+            android:id="@+id/layout_fragment_contract_passive_register"
+            android:layout_width="316dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_contract_passive_register_mg10"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_contract_passive_register_mg6"
+            android:background="@drawable/ic_home_basic_box_radius_8"
+            android:clickable="true">
+
+            <TextView
+                android:id="@+id/tv_fragment_contract_passive_register_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="갤러리에서 사진 업로드"
+                android:textSize="14sp"
+                android:textColor="@color/assu_font_sub"
+                android:fontFamily="@font/pretendard_medium"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:paddingStart="15dp"/>
+
+            <ImageView
+                android:id="@+id/iv_fragment_contract_passive_register_calendar3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_signup_upload"
+                android:layout_gravity="center_vertical"
+                android:paddingEnd="15dp"/>
+
+        </LinearLayout>
+
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_contract_passive_register_deactivated_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="30dp"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/iv_contract_passive_register_deactivated_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/btn_basic_unselected" />
+
+            <TextView
+                android:id="@+id/tv_contract_passive_register_deactivated"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="계약서 등록하기"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/pretendard_bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_contract_passive_register_activated_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="30dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/iv_contract_passive_register_activated_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/btn_basic_selected" />
+
+            <TextView
+                android:id="@+id/tv_contract_passive_register_activated"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="계약서 등록하기"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/pretendard_bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- 인증 완료 버튼 (하단 고정) -->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

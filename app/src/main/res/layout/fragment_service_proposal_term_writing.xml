@@ -132,7 +132,7 @@
             app:layout_constraintStart_toEndOf="@id/view_fragment_service_proposal_mg6"
             android:background="@drawable/bg_service_proposal_box" />
 
-        <TextView
+        <EditText
             android:id="@+id/et_fragment_service_proposal_content2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -141,11 +141,11 @@
             android:textColor="@color/assu_font_sub"
             android:fontFamily="@font/pretendard_medium"
             android:layout_marginStart="15dp"
+            android:background="@color/assu_box"
             app:layout_constraintTop_toTopOf="@id/iv_fragment_service_proposal_content"
             app:layout_constraintStart_toStartOf="@id/iv_fragment_service_proposal_content"
             app:layout_constraintEnd_toStartOf="@id/iv_fragment_service_proposal_calendar"
-            app:layout_constraintBottom_toBottomOf="@id/iv_fragment_service_proposal_content"
-            />
+            app:layout_constraintBottom_toBottomOf="@id/iv_fragment_service_proposal_content" />
 
         <ImageView
             android:id="@+id/iv_fragment_service_proposal_calendar"
@@ -169,6 +169,7 @@
             android:fontFamily="@font/pretendard_bold"
             app:layout_constraintTop_toTopOf="@id/iv_fragment_service_proposal_content"
             app:layout_constraintStart_toEndOf="@id/iv_fragment_service_proposal_content"
+            app:layout_constraintEnd_toStartOf="@id/iv_fragment_service_proposal_content3"
             app:layout_constraintBottom_toBottomOf="@id/iv_fragment_service_proposal_content" />
 
         <ImageView
@@ -179,12 +180,13 @@
             app:layout_constraintEnd_toStartOf="@id/view_fragment_service_proposal_mg7"
             android:background="@drawable/bg_service_proposal_box" />
 
-        <TextView
+        <EditText
             android:id="@+id/iv_fragment_service_proposal_content4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:text="2025 - 05 - 05 "
+            android:background="@color/assu_box"
             android:textColor="@color/assu_font_sub"
             android:fontFamily="@font/pretendard_medium"
             android:layout_marginStart="15dp"
@@ -221,11 +223,13 @@
             app:layout_constraintStart_toEndOf="@id/view_fragment_service_proposal_mg6"
             app:layout_constraintEnd_toStartOf="@id/view_fragment_service_proposal_mg7"/>
 
+
         <TextView
             android:id="@+id/tv_fragment_service_proposal_sign2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
+            android:background="@color/assu_box"
             android:text="위와 같이 숭실대학교 총학생회와 \n제휴를 제안합니다."
             android:textColor="@color/assu_font_sub"
             android:fontFamily="@font/pretendard_medium"

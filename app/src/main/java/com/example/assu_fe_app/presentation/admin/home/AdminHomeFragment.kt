@@ -18,6 +18,10 @@ class AdminHomeFragment :
             Navigation.findNavController(view).navigate(R.id.action_admin_home_to_admin_view_partner_list)
         }
 
+        binding.tvContractPassiveRegister.setOnClickListener { view ->
+            Navigation.findNavController(view).navigate(R.id.action_admin_home_to_contract_passive_register)
+        }
+
         binding.adminHomeListItem1.setOnClickListener {
             val dialog = PartnershipContractDialogFragment(dummyItem)
             dialog.show(parentFragmentManager, "PartnershipContentDialog")

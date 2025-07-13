@@ -24,15 +24,16 @@ class ServiceProposalWritingFragment
     }
 
     override fun initView() {
-        binding.clFragmentServiceProposalItemSet.adapter = adapter
-        binding.clFragmentServiceProposalItemSet.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvFragmentServiceProposalItemSet.adapter = adapter
+        binding.rvFragmentServiceProposalItemSet.layoutManager = LinearLayoutManager(requireContext())
 
         if (adapter.getItems().isEmpty()) {
             adapter.addItem()
         }
 
-        binding.ivFragmentServiceProposalAddBtn.setOnClickListener {
+        binding.tvAddProposalItem.setOnClickListener {
             adapter.addItem()
+            checkAllFieldsFilled()
             Log.d("addItem", "writingFragment2")
         }
 
@@ -45,15 +46,16 @@ class ServiceProposalWritingFragment
 
         binding.ivFragmentServiceProposalBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
-
         }
+
+
 
         setUpFragmentEditTextWatchers()
         checkAllFieldsFilled()
     }
 
     private fun onItemOptionSelected() {
-        binding.ivFragmentServiceProposalAddBtn.visibility = View.VISIBLE
+        binding.tvAddProposalItem.visibility = View.VISIBLE
     }
 
     override fun initObserver() {}
@@ -72,11 +74,15 @@ class ServiceProposalWritingFragment
     private fun checkAllFieldsFilled() {
         val partnerFilled = binding.etFragmentServiceProposalPartner.text?.isNotBlank() == true
         val adminFilled = binding.etFragmentServiceProposalAdmin.text?.isNotBlank() == true
-        val itemFieldsFilled = adapter.getItems().all {
-            it.num.isNotBlank() && it.content.isNotBlank()
+        val itemFieldsFilled = adapter.getItems().all { item ->
+            item.contents.all{it.isNotBlank()}
         }
 
-        val colorRes = if (partnerFilled && adminFilled && itemFieldsFilled) R.color.assu_main else R.color.assu_sub
+        val allFilled = partnerFilled && adminFilled && itemFieldsFilled
+
+        val colorRes = if (allFilled) R.color.assu_main else R.color.assu_sub
         binding.btnCompleted.backgroundTintList = ContextCompat.getColorStateList(requireContext(), colorRes)
+
+        binding.btnCompleted.isEnabled = allFilled
     }
 }
