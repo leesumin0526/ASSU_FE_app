@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -35,9 +37,11 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
         }
 //        val targetList = resources.getStringArray(R.array.suggest_target).toList()
 
-        binding.btnServiceDropDown.setOnClickListener {
+        binding.clSuggest.setOnClickListener {
             showDropdownMenu(binding.spinnerTarget)
         }
+
+        activateCompleteButton()
 
 
         // 뒤로가기 버튼
@@ -60,6 +64,37 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
     private fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }
+
+    private fun activateCompleteButton() {
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val input1 = binding.etSuggestMarket.text.toString().trim()
+                val input2 = binding.etSuggestWantBenefit.text.toString().trim()
+
+                val isFilled = input1.isNotEmpty() && input2.isNotEmpty()
+
+                binding.btnSuggestComplete.isEnabled = isFilled
+
+                if (isFilled) {
+                    binding.btnSuggestComplete.setBackgroundResource(R.drawable.btn_basic_selected)
+                } else {
+                    binding.btnSuggestComplete.setBackgroundResource(R.drawable.btn_basic_unselected)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        binding.etSuggestMarket.addTextChangedListener(textWatcher)
+        binding.etSuggestWantBenefit.addTextChangedListener(textWatcher)
+
+        // 초기 상태
+        binding.btnSuggestComplete.isEnabled = false
+        binding.btnSuggestComplete.setBackgroundResource(R.drawable.btn_basic_unselected)
+    }
+
 
     private fun showDropdownMenu(anchor : View) {
 //        val popupBinding = FragmentServiceSuggestDropDownBinding.inflate(layoutInflater, null, false)

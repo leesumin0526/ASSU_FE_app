@@ -244,7 +244,7 @@
             android:id="@+id/btn_suggest_complete"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/btn_basic_selected"
+            android:background="@drawable/btn_basic_unselected"
             android:text="입력 완료"
             android:gravity="center"
             android:textSize="20sp"
