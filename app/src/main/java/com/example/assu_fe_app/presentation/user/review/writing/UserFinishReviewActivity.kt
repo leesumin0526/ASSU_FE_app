@@ -32,7 +32,6 @@ class UserFinishReviewActivity : BaseActivity<ActivityUserFinishReviewBinding>(R
         val seeMyReviewButton = binding.layoutFinishReviewSeeMyReview
         seeMyReviewButton.setOnClickListener {
             navigateToMyReview()
-
         }
 
 
@@ -62,7 +61,7 @@ class UserFinishReviewActivity : BaseActivity<ActivityUserFinishReviewBinding>(R
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         startActivity(intent)
-        finish() // FinishReviewActivity 종료
+//        finish() // FinishReviewActivity 종료
     }
 
 
