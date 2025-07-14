@@ -6,6 +6,7 @@ import com.example.assu_fe_app.databinding.FragmentUserPartnershipVerifyComplete
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
 import com.example.assu_fe_app.presentation.user.review.writing.UserPhotoReviewActivity
+import com.example.assu_fe_app.presentation.user.review.writing.UserStarReviewActivity
 
 class UserPartnershipVerifyCompleteFragment :
     BaseFragment<FragmentUserPartnershipVerifyCompleteBinding>(R.layout.fragment_user_partnership_verify_complete) {
@@ -19,9 +20,7 @@ class UserPartnershipVerifyCompleteFragment :
 
         // (선택적으로 리뷰 작성하기 버튼 처리 등)
         binding.btnCheckContract.setOnClickListener {
-            val intent = Intent(requireContext(), UserPhotoReviewActivity::class.java)
-            // 기존의 mainActivity를 삭제함
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            val intent = Intent(requireContext(), UserStarReviewActivity::class.java)
             startActivity(intent)
         }
     }
