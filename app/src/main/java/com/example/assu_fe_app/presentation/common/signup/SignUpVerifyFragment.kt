@@ -2,19 +2,20 @@ package com.example.assu_fe_app.presentation.common.signup
 
 import android.content.Context
 import android.os.CountDownTimer
+import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import android.widget.Toast
-import android.text.Editable
+import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class SignUpVerifyFragment :
     BaseFragment<FragmentSignUpVerifyBinding>(R.layout.fragment_sign_up_verify) {
@@ -34,6 +35,15 @@ class SignUpVerifyFragment :
     override fun initObserver() {}
 
     override fun initView() {
+
+        // 프로그레스 바 0 → 20% 애니메이션 적용
+        binding.ivSignupProgressBar.setProgressBarFillAnimated(
+            container = binding.flSignupProgressContainer,
+            fromPercent = 0.1f,
+            toPercent = 0.2f,
+            duration = 500L
+        )
+
         // 인증번호 받기
         binding.tvUserVerifyPhone.setOnClickListener {
             val inputPhone = binding.etUserVerifyPhone.text.toString()

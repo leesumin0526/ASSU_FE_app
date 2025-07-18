@@ -1,11 +1,12 @@
 package com.example.assu_fe_app.presentation.admin.signup
 
+import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentAdminSignUpInfoBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
+import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class AdminSignUpInfoFragment :
     BaseFragment<FragmentAdminSignUpInfoBinding>(R.layout.fragment_admin_sign_up_info) {
@@ -15,6 +16,11 @@ class AdminSignUpInfoFragment :
     override fun initObserver() {}
 
     override fun initView() {
+        binding.ivSignupProgressBar.setProgressBarFillAnimated(
+            container = binding.flSignupProgressContainer,
+            fromPercent = 0.50f,
+            toPercent = 0.75f
+        )
         // 상세주소 입력 비활성화
         binding.etAdminAddressDetail.isEnabled = false
 

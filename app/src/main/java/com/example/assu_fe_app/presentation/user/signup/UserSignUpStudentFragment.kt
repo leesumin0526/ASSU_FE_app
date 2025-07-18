@@ -2,13 +2,14 @@ package com.example.assu_fe_app.presentation.user.signup
 
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.text.buildSpannedString
+import androidx.core.text.color
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentUserSignUpStudentBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import androidx.core.text.buildSpannedString
-import androidx.core.text.color
+import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class UserSignUpStudentFragment :
     BaseFragment<FragmentUserSignUpStudentBinding>(R.layout.fragment_user_sign_up_student) {
@@ -16,6 +17,12 @@ class UserSignUpStudentFragment :
     override fun initObserver() {}
 
     override fun initView() {
+        binding.ivSignupProgressBar.setProgressBarFillAnimated(
+            container = binding.flSignupProgressContainer,
+            fromPercent = 0.75f,
+            toPercent = 0.90f
+        )
+
         val schoolName = "숭실대학교" // 이후 동적으로 변경 가능
         val baseText = getString(R.string.school_account_text, schoolName)
 

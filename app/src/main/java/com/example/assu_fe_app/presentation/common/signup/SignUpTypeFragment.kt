@@ -1,9 +1,10 @@
 package com.example.assu_fe_app.presentation.common.signup
 
+import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpTypeBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import androidx.navigation.fragment.findNavController
+import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class SignUpTypeFragment : BaseFragment<FragmentSignUpTypeBinding>(R.layout.fragment_sign_up_type){
 
@@ -13,6 +14,11 @@ class SignUpTypeFragment : BaseFragment<FragmentSignUpTypeBinding>(R.layout.frag
     override fun initObserver() {}
 
     override fun initView() {
+        binding.ivSignupProgressBar.setProgressBarFillAnimated(
+            container = binding.flSignupProgressContainer,
+            fromPercent = 0.35f,
+            toPercent = 0.50f
+        )
         // 완료 버튼 기본 비활성화
         binding.btnCompleted.isEnabled = false
 
