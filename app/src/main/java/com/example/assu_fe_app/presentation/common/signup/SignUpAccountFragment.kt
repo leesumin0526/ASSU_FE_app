@@ -1,17 +1,24 @@
 package com.example.assu_fe_app.presentation.common.signup
 
+import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpAccountBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
+import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class SignUpAccountFragment : BaseFragment<FragmentSignUpAccountBinding>(R.layout.fragment_sign_up_account) {
     override fun initObserver() {
     }
 
     override fun initView() {
+        binding.ivSignupProgressBar.setProgressBarFillAnimated(
+            container = binding.flSignupProgressContainer,
+            fromPercent = 0.2f,
+            toPercent = 0.35f
+        )
+
         setButtonEnabled(false) // 초기에는 비활성화
 
         // 텍스트 변경 감지 리스너 등록

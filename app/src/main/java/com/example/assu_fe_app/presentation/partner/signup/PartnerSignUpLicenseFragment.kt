@@ -1,10 +1,11 @@
 package com.example.assu_fe_app.presentation.partner.signup
 
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentPartnerSignUpLicenseBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import androidx.core.content.ContextCompat
+import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class PartnerSignUpLicenseFragment :
     BaseFragment<FragmentPartnerSignUpLicenseBinding>(R.layout.fragment_partner_sign_up_license) {
@@ -12,6 +13,11 @@ class PartnerSignUpLicenseFragment :
     override fun initObserver() {}
 
     override fun initView() {
+        binding.ivSignupProgressBar.setProgressBarFillAnimated(
+            container = binding.flSignupProgressContainer,
+            fromPercent = 0.75f,
+            toPercent = 0.90f
+        )
         // 처음엔 비활성화
         setButtonEnabled(false)
 

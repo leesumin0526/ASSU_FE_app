@@ -1,16 +1,23 @@
 package com.example.assu_fe_app.presentation.admin.signup
 
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentAdminSignUpSealBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import androidx.core.content.ContextCompat
+import com.example.assu_fe_app.util.setProgressBarFillAnimated
+
 class AdminSignUpSealFragment :
     BaseFragment<FragmentAdminSignUpSealBinding>(R.layout.fragment_admin_sign_up_seal) {
 
     override fun initObserver() {}
 
     override fun initView() {
+        binding.ivSignupProgressBar.setProgressBarFillAnimated(
+            container = binding.flSignupProgressContainer,
+            fromPercent = 0.75f,
+            toPercent = 0.90f
+        )
         // 처음엔 비활성화
         setButtonEnabled(false)
 
