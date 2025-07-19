@@ -11,35 +11,66 @@ import com.example.assu_fe_app.data.dto.servicerecord.ServiceRecord
 import com.example.assu_fe_app.presentation.user.dashboard.adapter.ServiceRecordAdapter
 import com.example.assu_fe_app.databinding.FragmentDashboardBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import java.time.LocalDate
 import java.time.LocalDateTime
-
+@RequiresApi(Build.VERSION_CODES.O)
 class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragment_dashboard) {
     lateinit var serviceRecordAdapter: ServiceRecordAdapter
+
+    private var today = LocalDate.now()
+
+    private var selectedMonth = today.monthValue
+    private var selectedYear = today.year
+    private var currentYear = today.year
+    private var currentMonth = today.monthValue
+
 
     override fun initObserver() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun initView(){
         Log.d("fragment initView", "initView")
         binding.btnSuggestService.setOnClickListener {
             val intent = Intent(requireContext(), UserServiceSuggestActivity::class.java)
             startActivity(intent)
         }
+
+        // 현재 월로 초기화
+        binding.tvDashMonth.text = currentMonth.toString()
+
+        // 리사이클러뷰 어댑터 조기화
         initAdapter()
-        // 이전 달로 넘어가는 화살표
+
+
+        // 이전달로 넘어가는 화살표
         binding.ivDashBackArrow.setOnClickListener {
-
+            if (selectedMonth == 1) {
+                selectedMonth = 12
+                selectedYear -= 1
+            } else {
+                selectedMonth -= 1
+            }
+            updateMonthUI()
         }
 
-        // 다음 달로 넘어가는 화살표
-        // 만약 현재 달과 다르다면 넘어가는 버튼을 활성화할 것
-        // 현재 달이라면 비활성화 화살표를 띄울 것.
+        // 다음달로 넘어가는 화살표
         binding.ivDashNextArrow.setOnClickListener {
-
+            val isMaxMonth = selectedYear == currentYear && selectedMonth == currentMonth
+            if (!isMaxMonth) {
+                if (selectedMonth == 12) {
+                    selectedMonth = 1
+                    selectedYear += 1
+                } else {
+                    selectedMonth += 1
+                }
+                updateMonthUI()
+            }
         }
 
+
+        // 제휴 내역 전체 보기
         binding.tvDashSeeAll.setOnClickListener {
             val intent = Intent(requireContext(), UserServiceRecordActivity::class.java)
             startActivity(intent)
@@ -69,6 +100,23 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragme
         }
     }
 
+    private fun updateMonthUI() {
+        // 화면 표시
+        binding.tvDashMonth.text = selectedMonth.toString()
+
+        // 다음 버튼 활성화 조건
+        val isMaxMonth = selectedYear == currentYear && selectedMonth == currentMonth
+        binding.ivDashNextArrow.isEnabled = !isMaxMonth
+
+        if (binding.ivDashNextArrow.isEnabled) {
+            binding.ivDashNextArrow.setImageResource(R.drawable.ic_small_arrow_right_able)
+        } else {
+            binding.ivDashNextArrow.setImageResource(R.drawable.ic_dash_small_next_disable)
+        }
+
+        // API 호출
+
+    }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createDummyData() : List<ServiceRecord>{
         return listOf(
