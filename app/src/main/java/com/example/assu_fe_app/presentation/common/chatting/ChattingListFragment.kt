@@ -3,10 +3,10 @@ package com.example.assu_fe_app.presentation.common.chatting
 import android.content.Intent
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.chatting.ChattingListItem
 import com.example.assu_fe_app.databinding.FragmentChattingListBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.adapter.ChattingChatListAdapter
-import com.example.assu_fe_app.data.dto.chatting.ChattingListItem
 
 
 class ChattingListFragment : BaseFragment<FragmentChattingListBinding> (R.layout.fragment_chatting_list){
@@ -21,7 +21,7 @@ class ChattingListFragment : BaseFragment<FragmentChattingListBinding> (R.layout
                 "12:00",
                 3,
                         R.drawable.ic_restaurant_ex,
-                "인쌩믹주 숭실대점",
+                "인쌩맥주 숭실대점",
             )
         }
 
