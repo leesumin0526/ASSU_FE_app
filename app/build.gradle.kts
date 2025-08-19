@@ -4,6 +4,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.dagger.hilt.android") version "2.57"
+    id("kotlin-kapt")
 }
 
 val properties = Properties().apply {
@@ -26,7 +28,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
+        }
         release {
+            buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"") // 운영 주소로 교체
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -84,4 +90,32 @@ dependencies {
 
     // Kakao
     implementation("com.kakao.maps.open:android:2.12.8")
+
+    // 네트워크
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation("com.squareup.moshi:moshi:1.15.1")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.1") // ← 중요 (Kotlin adapter)
+
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // 코루틴
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.57")
+    kapt("com.google.dagger:hilt-android-compiler:2.57")
+    implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
+
+
+    // DataStore (토큰 저장)
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
+
+    // Paging (목록 API면)
+    implementation("androidx.paging:paging-runtime:3.3.6")
+
+    // 테스트 (서버 목)
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.1.0")
 }

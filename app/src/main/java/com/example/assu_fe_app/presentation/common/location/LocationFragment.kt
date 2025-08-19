@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.example.assu_fe_app.databinding.FragmentLoactionBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -15,11 +17,15 @@ import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.presentation.common.location.adapter.AdminPartnerLocationAdapter
 import com.example.assu_fe_app.presentation.common.location.adapter.LocationSharedViewModel
 import com.example.assu_fe_app.presentation.user.review.store.UserReviewStoreActivity
+import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import dagger.hilt.android.AndroidEntryPoint
+import kotlin.getValue
 
+@AndroidEntryPoint
 class LocationFragment :
     BaseFragment<FragmentLoactionBinding>(R.layout.fragment_loaction) {
     private val sharedViewModel: LocationSharedViewModel by activityViewModels()
@@ -27,6 +33,8 @@ class LocationFragment :
     private var currentItem: LocationAdminPartnerSearchResultItem? = null
     private lateinit var mapView: MapView
     private lateinit var kakaoMap : KakaoMap
+    private val vm: ChattingViewModel by viewModels()
+    private var creating = false
 
     override fun initView() {
         val dummyList = listOf(
@@ -53,26 +61,39 @@ class LocationFragment :
         binding.fvLocationItem.setOnClickListener {
             val item = currentItem ?: return@setOnClickListener
             val context = it.context
-            val intent = Intent(context, ChattingActivity::class.java)
+            if (creating) return@setOnClickListener
+            creating = true
 
-            val message = if (item.isPartnered) {
+            // 여기서 id 불러오는 방법 바꾸기
+            val adminId =2L
+            val partnerId = 1L
+
+            val entryMessage = if (item.isPartnered) {
                 "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
             } else {
-                "'문의하기' 버튼을 통해 이동했습니다."
+                "'문의하기' 버튼을 통해 이동했습니다.이거야?"
             }
 
-            intent.putExtra("entryMessage", message)
-            context.startActivity(intent)
+            vm.createRoom(
+                CreateChatRoomRequestDto(
+                    adminId = adminId,
+                    partnerId = partnerId)
+            )
+        //            val intent = Intent(context, ChattingActivity::class.java)
+
+//            val message = if (item.isPartnered) {
+//                "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
+//            } else {
+//                "'문의하기' 버튼을 통해 이동했습니다.이거야?"
+//            }
+//
+//            intent.putExtra("entryMessage", message)
+//            context.startActivity(intent)
         }
-
 //        mapView = MapView(requireContext())
-
 //        val mapContainer = binding.root.findViewById<ViewGroup>(R.id.view_location_map)
 //        mapContainer.addView(mapView)
 //
-
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,6 +125,35 @@ class LocationFragment :
 
             val fragment = childFragmentManager.findFragmentById(R.id.fv_location_item) as? LocationItemFragment
             fragment?.showCapsuleInfo(item)
+        }
+
+        // 채팅방 생성 상태 관찰
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            vm.createRoomState.collect { state ->
+                when (state) {
+                    is ChattingViewModel.CreateRoomUiState.Idle -> Unit
+                    is ChattingViewModel.CreateRoomUiState.Loading -> {
+                        // 필요 시 로딩 표시
+                    }
+
+                    is ChattingViewModel.CreateRoomUiState.Success -> {
+                        creating = false
+                        val ctx = requireContext()
+                        val intent = Intent(ctx, ChattingActivity::class.java).apply {
+//                            putExtra("roomId", state.roomId)
+                        }
+                        startActivity(intent)
+                        vm.resetCreateState()
+                    }
+
+                    is ChattingViewModel.CreateRoomUiState.Error -> {
+                        creating = false
+                        Log.e("CreateRoom", state.message)
+                        // 필요 시 토스트/스낵바
+                        vm.resetCreateState()
+                    }
+                }
+            }
         }
     }
 
