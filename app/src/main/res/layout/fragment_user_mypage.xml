@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.common.mypage.MypageFragment">
+    tools:context=".presentation.user.mypage.UserMypageFragment">
 
     <View
         android:id="@+id/account_mg1"
@@ -37,7 +37,7 @@
             android:id="@+id/iv_account_profileImg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/img_location_beer"/>
+            android:src="@drawable/img_user"/>
     </androidx.cardview.widget.CardView>
 
     <View
@@ -60,8 +60,9 @@
             android:id="@+id/tv_account_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_semibold"
-            android:text="이서희"
+            android:text="이호근"
             android:textSize="22sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -151,6 +152,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="내가 작성한 리뷰"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -203,6 +205,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="프로필 수정"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -255,6 +258,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="로그아웃"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -326,6 +330,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="개인정보 처리방침 안내"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -378,6 +383,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="자주 묻는 질문"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -430,6 +436,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="고객센터"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
