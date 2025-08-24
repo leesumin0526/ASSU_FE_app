@@ -63,7 +63,7 @@ class UserInquiryDetailDialogFragment : DialogFragment() {
                 tvDetailContent.text = inquiry.content
                 
                 // 답변이 있는 경우에만 답변 섹션 표시
-                if (!inquiry.answer.isNullOrEmpty()) {
+                if (inquiry.answer != null) {
                     tvDetailAnswer.text = inquiry.answer
                     answerSectionContainer.visibility = View.VISIBLE
                 } else {
@@ -86,3 +86,4 @@ class UserInquiryDetailDialogFragment : DialogFragment() {
         }
     }
 }
+

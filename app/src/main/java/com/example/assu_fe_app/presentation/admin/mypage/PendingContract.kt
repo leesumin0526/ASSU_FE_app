@@ -4,3 +4,4 @@ data class PendingContract(
     val storeName: String,
     val proposalDate: String
 )
+

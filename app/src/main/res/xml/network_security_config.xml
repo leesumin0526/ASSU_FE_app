@@ -5,3 +5,4 @@
         <domain includeSubdomains="true">www.notion.so</domain>
     </domain-config>
 </network-security-config>
+
