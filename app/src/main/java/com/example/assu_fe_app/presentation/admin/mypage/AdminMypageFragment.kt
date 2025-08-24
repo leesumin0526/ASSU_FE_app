@@ -2,6 +2,7 @@ package com.example.assu_fe_app.presentation.admin.mypage
 
 
 import android.content.Intent
+import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentAdminMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -13,7 +14,13 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
     override fun initView(){
         // 알림 설정 탭
         binding.clAdmAccountComponent1.setOnClickListener {
+            findNavController().navigate(R.id.action_admin_mypage_to_alarm)
+        }
 
+        // 대기중인 제휴계약서 탭
+        binding.clAdmAccountComponent3.setOnClickListener {
+            val pendingDialogFragment = AdminMypagePendingPartnershipDialogFragment()
+            pendingDialogFragment.show(childFragmentManager, "PendingPartnershipDialog")
         }
 
         // 로그아웃 탭
