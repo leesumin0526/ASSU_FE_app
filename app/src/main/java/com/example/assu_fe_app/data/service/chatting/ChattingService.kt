@@ -11,7 +11,7 @@ interface ChattingService {
     @POST("chat/create/rooms")
     suspend fun createChatRoom(
         @Body request: CreateChatRoomRequestDto
-    ): Response<CreateChatRoomResponseDto>
+    ): CreateChatRoomResponseDto
 
     // 메시지 읽음 처리 api
 //    @PATCH("chat/rooms/{roomId}/read")

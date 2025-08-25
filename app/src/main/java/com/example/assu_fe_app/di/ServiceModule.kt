@@ -58,11 +58,11 @@ object ServiceModule {
             .build()
 
     @Provides @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit =
+    fun provideRetrofit(@Auth client: OkHttpClient, moshi: Moshi): Retrofit =
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(client)
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
 
     @Provides @Singleton
