@@ -65,7 +65,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         return when {
             id == "admin" && pw == "1234" -> UserRole.ADMIN
             id == "partner" && pw == "1234" -> UserRole.PARTNER
-            id == "20211438" && pw == "2lhg1030!!" -> UserRole.USER
+            id == "20211234" && pw == "1234" -> UserRole.USER
             else -> UserRole.INVALID
         }
     }
