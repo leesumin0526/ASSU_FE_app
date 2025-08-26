@@ -17,8 +17,8 @@ class PartnerDashboardFragment :
     override fun initView() {
         // 예시 적용
         setClientAnalysisText(
-            fullText = "제휴 이용자를 통해\n매출의 14%를 기록하고 있어요",
-            highlightText = "14%"
+            fullText = "이번 달에 숭실대학교 학생 \n 120명이 매장에서 제휴 서비스를 이용했어요",
+            highlightText = "120명"
         )
 
         binding.btnViewContract.setOnClickListener {
