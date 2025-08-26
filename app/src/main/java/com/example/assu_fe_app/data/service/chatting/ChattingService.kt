@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.data.service.chatting
 
+import com.example.assu_fe_app.data.dto.BaseResponse
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.chatting.response.CreateChatRoomResponseDto
 import retrofit2.Response
@@ -11,7 +12,7 @@ interface ChattingService {
     @POST("chat/create/rooms")
     suspend fun createChatRoom(
         @Body request: CreateChatRoomRequestDto
-    ): CreateChatRoomResponseDto
+    ): BaseResponse<CreateChatRoomResponseDto>
 
     // 메시지 읽음 처리 api
 //    @PATCH("chat/rooms/{roomId}/read")
