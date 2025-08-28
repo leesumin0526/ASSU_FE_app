@@ -120,7 +120,7 @@
                 android:id="@+id/tv_dashboard_client_analysis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="제휴 이용자를 통해\n매출의 14%를 기록하고 있어요"
+                android:text="이번 달에 숭실대학교 학생\n120명이 매장에서 제휴 서비스를 이용했어요"
                 android:textColor="@color/assu_font_main"
                 android:textSize="16sp"
                 android:gravity="center"

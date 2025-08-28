@@ -56,14 +56,23 @@
         android:label="My Page" >
         <action
             android:id="@+id/action_partnerMyPageFragment_to_partnerNotificationSettingFragment"
-            app:destination="@id/partnerNotificationSettingFragment"
-            />
+            app:destination="@id/partnerNotificationSettingFragment" />
+        <action
+            android:id="@+id/action_partner_mypage_to_alarm"
+            app:destination="@id/partnerMypageAlarmFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/partnerNotificationSettingFragment"
         android:name="com.example.assu_fe_app.presentation.partner.mypage.PartnerNotificationSettingFragment"
         android:label="Notification Setting" />
+
+    <!-- 제휴업체 알림설정 -->
+    <fragment
+        android:id="@+id/partnerMypageAlarmFragment"
+        android:name="com.example.assu_fe_app.presentation.partner.mypage.PartnerMypageAlarmFragment"
+        android:label="Alarm Settings" />
+
 
 
     <!--리뷰 모아보는 페이지-->

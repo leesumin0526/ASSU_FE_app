@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.addTextChangedListener
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityLoginBinding
 import com.example.assu_fe_app.presentation.admin.AdminMainActivity
@@ -13,7 +14,6 @@ import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.common.signup.SignUpActivity
 import com.example.assu_fe_app.presentation.partner.PartnerMainActivity
 import com.example.assu_fe_app.presentation.user.UserMainActivity
-import androidx.core.widget.addTextChangedListener
 
 class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login) {
     override fun initView() {
@@ -65,7 +65,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         return when {
             id == "admin" && pw == "1234" -> UserRole.ADMIN
             id == "partner" && pw == "1234" -> UserRole.PARTNER
-            id == "user" && pw == "1234" -> UserRole.USER
+            id == "20211234" && pw == "1234" -> UserRole.USER
             else -> UserRole.INVALID
         }
     }

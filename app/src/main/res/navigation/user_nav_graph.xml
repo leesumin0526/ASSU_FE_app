@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/mypageFragment"
-        android:name="com.example.assu_fe_app.presentation.common.mypage.MypageFragment"
+        android:name="com.example.assu_fe_app.presentation.user.mypage.UserMypageFragment"
         android:label="Mypage"/>
 
     <fragment

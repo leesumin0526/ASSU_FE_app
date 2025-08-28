@@ -1,15 +1,16 @@
-package com.example.assu_fe_app.presentation.common.mypage
+package com.example.assu_fe_app.presentation.user.mypage
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import com.example.assu_fe_app.presentation.user.review.mypage.UserMyReviewActivity
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.databinding.FragmentMypageBinding
+import com.example.assu_fe_app.databinding.FragmentUserMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
+import com.example.assu_fe_app.presentation.user.review.mypage.UserMyReviewActivity
+import com.example.assu_fe_app.presentation.user.mypage.UserCustomerServiceDialogFragment
 
-class MypageFragment : BaseFragment<FragmentMypageBinding>(R.layout.fragment_mypage) {
+class UserMypageFragment : BaseFragment<FragmentUserMypageBinding>(R.layout.fragment_user_mypage) {
 
     override fun initView(){
 
@@ -33,6 +34,24 @@ class MypageFragment : BaseFragment<FragmentMypageBinding>(R.layout.fragment_myp
         // 프로필 수정 페이지
         binding.clAccountComponent2.setOnClickListener {
 
+        }
+
+        // 개인정보 처리방침 안내
+        binding.clAccountComponent4.setOnClickListener {
+            val privacyDialogFragment = UserMypagePrivacyDialogFragment()
+            privacyDialogFragment.show(childFragmentManager, "PrivacyDialog")
+        }
+
+        // 자주 묻는 질문
+        binding.clAccountComponent5.setOnClickListener {
+            val faqDialogFragment = UserMypageFAQDialogFragment()
+            faqDialogFragment.show(childFragmentManager, "FAQDialog")
+        }
+
+        // 고객센터
+        binding.clAccountComponent6.setOnClickListener {
+            val customerServiceDialogFragment = UserCustomerServiceDialogFragment()
+            customerServiceDialogFragment.show(childFragmentManager, "CustomerServiceDialog")
         }
 
 

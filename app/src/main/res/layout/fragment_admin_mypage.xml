@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/img_location_beer"/>
+            android:src="@drawable/img_ssu"/>
     </androidx.cardview.widget.CardView>
 
     <View
@@ -64,7 +64,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/pretendard_semibold"
-            android:text="총학생회"
+            android:textColor="@color/assu_font_main"
+            android:text="숭실대학교 총학생회"
             android:textSize="22sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -154,6 +155,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="알림 설정"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -206,6 +208,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="로그아웃"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -214,12 +217,66 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
+        android:id="@+id/adm_account_mg10"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0189"
+        app:layout_constraintTop_toBottomOf="@id/cl_adm_account_component2"
+        app:layout_constraintStart_toStartOf="@id/cl_adm_account_component2"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_adm_account_component3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_percent="0.5012"
+        app:layout_constraintTop_toBottomOf="@id/adm_account_mg10"
+        app:layout_constraintStart_toStartOf="@id/cv_adm_account_profile">
+
+        <View
+            android:id="@+id/adm_account_mg11_1"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            app:layout_constraintWidth_percent="0.0507"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iv_adm_pending_contract"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_list"
+            app:layout_constraintStart_toEndOf="@id/adm_account_mg11_1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <View
+            android:id="@+id/adm_account_mg11_2"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            app:layout_constraintWidth_percent="0.0761"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_adm_pending_contract"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="대기중인 제휴계약서"
+            android:textColor="@color/assu_font_main"
+            android:fontFamily="@font/pretendard_medium"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/adm_account_mg11_2"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
         android:id="@+id/adm_account_mg12"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.0441"
-        app:layout_constraintTop_toBottomOf="@id/cl_adm_account_component2"
-        app:layout_constraintStart_toStartOf="@id/cl_adm_account_component2"/>
+        app:layout_constraintTop_toBottomOf="@id/cl_adm_account_component3"
+        app:layout_constraintStart_toStartOf="@id/cl_adm_account_component3"/>
 
     <TextView
         android:id="@+id/tv_adm_account_service_center"
@@ -277,6 +334,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="이용약관"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -330,6 +388,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:text="고객센터"
+            android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

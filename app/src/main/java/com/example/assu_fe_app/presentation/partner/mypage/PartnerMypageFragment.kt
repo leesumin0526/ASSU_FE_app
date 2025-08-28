@@ -12,10 +12,11 @@ class PartnerMypageFragment : BaseFragment<FragmentPartnerMypageBinding>(R.layou
     override fun initView(){
 
         // 알림 설정 창
+
         binding.clPartnerAccountComponent1.setOnClickListener { view ->
             Navigation.findNavController(view).navigate(R.id.action_partnerMyPageFragment_to_partnerNotificationSettingFragment)
-
-        }
+            val alarmDialogFragment = PartnerMypageAlarmDialogFragment()
+            alarmDialogFragment.show(childFragmentManager, "AlarmDialog")
 
         // 로그아웃 창
         binding.clPartnerAccountComponent2.setOnClickListener {
@@ -23,6 +24,7 @@ class PartnerMypageFragment : BaseFragment<FragmentPartnerMypageBinding>(R.layou
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
+    }
     }
 
     override fun initObserver(){}

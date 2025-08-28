@@ -65,6 +65,9 @@
         <action
             android:id="@+id/action_adminMyPageFragment_to_adminNotificationSettingFragment"
             app:destination="@id/adminNotificationSettingFragment" />
+        <action
+            android:id="@+id/action_admin_mypage_to_alarm"
+            app:destination="@id/adminMypageAlarmFragment" />
     </fragment>
 
     <fragment
@@ -72,6 +75,13 @@
         android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminNotificationSettingFragment">
 
     </fragment>
+
+    <!-- 관리자 알림설정 -->
+    <fragment
+        android:id="@+id/adminMypageAlarmFragment"
+        android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminMypageAlarmFragment"
+        android:label="Admin Alarm Settings" />
+
 
     <fragment
         android:id="@+id/adminContractPassiveRegisterFragment"
