@@ -15,10 +15,9 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
     override fun initView(){
         // 알림 설정 탭
 
-        binding.clAdmAccountComponent1.setOnClickListener {view ->
+        binding.clAdmAccountComponent1.setOnClickListener {
             val alarmDialogFragment = AdminMypageAlarmDialogFragment()
             alarmDialogFragment.show(childFragmentManager, "AlarmDialog")
-            Navigation.findNavController(view).navigate(R.id.action_adminMyPageFragment_to_adminNotificationSettingFragment)
 
 
         // 대기중인 제휴계약서 탭

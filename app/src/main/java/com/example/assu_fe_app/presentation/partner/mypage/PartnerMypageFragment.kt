@@ -13,8 +13,7 @@ class PartnerMypageFragment : BaseFragment<FragmentPartnerMypageBinding>(R.layou
 
         // 알림 설정 창
 
-        binding.clPartnerAccountComponent1.setOnClickListener { view ->
-            Navigation.findNavController(view).navigate(R.id.action_partnerMyPageFragment_to_partnerNotificationSettingFragment)
+        binding.clPartnerAccountComponent1.setOnClickListener {
             val alarmDialogFragment = PartnerMypageAlarmDialogFragment()
             alarmDialogFragment.show(childFragmentManager, "AlarmDialog")
 

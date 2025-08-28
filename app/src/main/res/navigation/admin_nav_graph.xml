@@ -63,18 +63,10 @@
         android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminMypageFragment"
         android:label="My Page">
         <action
-            android:id="@+id/action_adminMyPageFragment_to_adminNotificationSettingFragment"
-            app:destination="@id/adminNotificationSettingFragment" />
-        <action
             android:id="@+id/action_admin_mypage_to_alarm"
             app:destination="@id/adminMypageAlarmFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/adminNotificationSettingFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminNotificationSettingFragment">
-
-    </fragment>
 
     <!-- 관리자 알림설정 -->
     <fragment
