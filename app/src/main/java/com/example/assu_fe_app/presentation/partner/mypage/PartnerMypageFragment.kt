@@ -1,6 +1,7 @@
 package com.example.assu_fe_app.presentation.partner.mypage
 
 import android.content.Intent
+import androidx.navigation.Navigation
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentPartnerMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -11,7 +12,8 @@ class PartnerMypageFragment : BaseFragment<FragmentPartnerMypageBinding>(R.layou
     override fun initView(){
 
         // 알림 설정 창
-        binding.clPartnerAccountComponent1.setOnClickListener {
+        binding.clPartnerAccountComponent1.setOnClickListener { view ->
+            Navigation.findNavController(view).navigate(R.id.action_partnerMyPageFragment_to_partnerNotificationSettingFragment)
 
         }
 

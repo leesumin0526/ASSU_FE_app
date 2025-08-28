@@ -61,7 +61,17 @@
     <fragment
         android:id="@+id/adminMyPageFragment"
         android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminMypageFragment"
-        android:label="My Page" />
+        android:label="My Page">
+        <action
+            android:id="@+id/action_adminMyPageFragment_to_adminNotificationSettingFragment"
+            app:destination="@id/adminNotificationSettingFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/adminNotificationSettingFragment"
+        android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminNotificationSettingFragment">
+
+    </fragment>
 
     <fragment
         android:id="@+id/adminContractPassiveRegisterFragment"

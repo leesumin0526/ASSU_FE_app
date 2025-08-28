@@ -15,6 +15,23 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintHeight_percent="0.055" />
 
+        <View
+            android:id="@+id/view_partner_home_mg5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.0687"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iv_partner_home_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_bell_fill"
+            app:layout_constraintEnd_toStartOf="@id/view_partner_home_mg5"
+            app:layout_constraintTop_toTopOf="@id/partner_home_linear_layout_1"
+            app:layout_constraintBottom_toBottomOf="@id/partner_home_linear_layout_1"/>
+
         <!-- 로고 -->
         <LinearLayout
             android:id="@+id/partner_home_linear_layout_1"

@@ -2,6 +2,7 @@ package com.example.assu_fe_app.presentation.admin.mypage
 
 
 import android.content.Intent
+import androidx.navigation.Navigation
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentAdminMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -12,7 +13,8 @@ import kotlin.jvm.java
 class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fragment_admin_mypage) {
     override fun initView(){
         // 알림 설정 탭
-        binding.clAdmAccountComponent1.setOnClickListener {
+        binding.clAdmAccountComponent1.setOnClickListener {view ->
+            Navigation.findNavController(view).navigate(R.id.action_adminMyPageFragment_to_adminNotificationSettingFragment)
 
         }
 
