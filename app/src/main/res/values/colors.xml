@@ -14,6 +14,7 @@
     <color name="unselected_btn">#B2D2FE</color>
     <color name="not_selected_nav_btn">#B4B4B4</color>
     <color name="assu_error">#FF6562</color>
+    <color name="gray_light">#B2D2FE</color>
 
     <color name="review_box">#ACAAAA</color>
 
