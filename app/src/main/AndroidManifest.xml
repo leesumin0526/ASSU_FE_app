@@ -66,6 +66,9 @@
             android:name=".presentation.partner.PartnerMainActivity"
             android:exported="false"/>
         <activity android:name=".presentation.partner.home.PartnerHomeViewAdminListActivity" />
+        <activity
+            android:name=".presentation.common.login.LmsLoginActivity"
+            android:exported="false" />
     </application>
 
 
