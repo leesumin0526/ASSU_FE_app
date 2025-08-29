@@ -9,14 +9,20 @@ import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class SignUpAccountFragment : BaseFragment<FragmentSignUpAccountBinding>(R.layout.fragment_sign_up_account) {
+    
+    private var selectedUserType: String? = null
+    
     override fun initObserver() {
     }
 
     override fun initView() {
+        // 이전 프래그먼트에서 전달받은 사용자 타입 확인
+        selectedUserType = arguments?.getString("userType")
+        
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
-            fromPercent = 0.2f,
-            toPercent = 0.35f
+            fromPercent = 0.4f,
+            toPercent = 0.55f
         )
 
         setButtonEnabled(false) // 초기에는 비활성화
@@ -27,7 +33,18 @@ class SignUpAccountFragment : BaseFragment<FragmentSignUpAccountBinding>(R.layou
 
         binding.btnCompleted.setOnClickListener {
             if (binding.btnCompleted.isEnabled) {
-                findNavController().navigate(R.id.action_account_to_type)
+                when (selectedUserType) {
+                    "admin" -> {
+                        findNavController().navigate(R.id.action_account_to_admin_info)
+                    }
+                    "partner" -> {
+                        findNavController().navigate(R.id.action_account_to_partner_info)
+                    }
+                    else -> {
+                        // 기본값으로 partner로 이동
+                        findNavController().navigate(R.id.action_account_to_partner_info)
+                    }
+                }
             }
         }
     }
