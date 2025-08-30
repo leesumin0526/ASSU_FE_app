@@ -9,7 +9,9 @@ import androidx.navigation.ui.NavigationUI
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityAdminMainBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AdminMainActivity : BaseActivity<ActivityAdminMainBinding>(R.layout.activity_admin_main) {
 
     override fun initView() {
