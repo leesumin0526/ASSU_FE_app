@@ -4,7 +4,9 @@ import android.app.Application;
 
 import com.kakao.vectormap.KakaoMapSdk;
 
+import dagger.hilt.android.HiltAndroidApp;
 
+@HiltAndroidApp
 public class MyApplication extends Application {
     @Override
     public void onCreate() {
