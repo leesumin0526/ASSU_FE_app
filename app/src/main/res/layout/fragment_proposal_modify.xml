@@ -140,7 +140,7 @@
         android:id="@+id/partnership_content_mg8"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.03689"
+        app:layout_constraintHeight_percent="0.02689"
         app:layout_constraintTop_toBottomOf="@id/ll_proposal_modify_name"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -157,7 +157,7 @@
         android:id="@+id/partnership_content_mg15"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.03689"
+        app:layout_constraintHeight_percent="0.02689"
         app:layout_constraintTop_toBottomOf="@id/rv_partnership_content_list"/>
 
     <TextView
@@ -195,9 +195,9 @@
             android:id="@+id/tv_partnership_content_start_date"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="2025-05-05"
+            android:text="2025 - 05 - 05"
             android:fontFamily="@font/pretendard_regular"
-            android:textSize="13sp"
+            android:textSize="14sp"
             android:textColor="@color/assu_font_main"
             android:gravity="center"
             android:layout_weight="90"/>
@@ -229,9 +229,9 @@
             android:id="@+id/tv_partnership_content_end_date"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="2025-12-12"
+            android:text="2025 - 12 - 12"
             android:fontFamily="@font/pretendard_regular"
-            android:textSize="13sp"
+            android:textSize="14sp"
             android:textColor="@color/assu_font_main"
             android:gravity="center"
             android:layout_weight="90"/>
@@ -267,10 +267,11 @@
 
 
         <TextView
+            android:id="@+id/tv_partnership_content_sign"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             app:layout_constraintTop_toBottomOf="@id/partnership_content_mg21"
-            android:background="@drawable/bg_review_box"
+            android:background="@drawable/bg_review_box_radius_8"
             android:text="위와 같이 숭실대학교 총학생회 \n제휴를 제안합니다.\n\n2025 03월 29일\n대표 (인)"
             android:textColor="@color/assu_font_sub"
             android:fontFamily="@font/pretendard_medium"
@@ -291,44 +292,61 @@
         android:id="@+id/partnership_content_mg11"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.01976"
+        app:layout_constraintHeight_percent="0.02976"
         app:layout_constraintTop_toBottomOf="@id/layout_partnership_content_final"/>
 
-    <ImageButton
-        android:id="@+id/btn_modify"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:textColor="@android:color/white"
-        android:background="@drawable/bg_btn_modify"
-        android:fontFamily="@font/pretendard_semibold"
-        app:layout_constraintTop_toBottomOf="@id/partnership_content_mg11"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toTopOf="@id/btn_modify"
-        app:layout_constraintBottom_toBottomOf="@id/btn_modify"
-        app:layout_constraintStart_toStartOf="@id/btn_modify"
-        app:layout_constraintEnd_toEndOf="@id/btn_modify">
+        app:layout_constraintTop_toBottomOf="@id/partnership_content_mg11"
+        android:gravity="center">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_writing" />
+        <LinearLayout
+            android:id="@+id/ll_chatting_call"
+            android:layout_width="165.5dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_chatting_call_box"
+            android:gravity="center">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="수정하기"
-            android:textSize="20sp"
-            android:fontFamily="@font/pretendard_medium"
-            android:textColor="@color/assu_main"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="QR저장"
+                android:fontFamily="@font/pretendard_medium"
+                android:textSize="20sp"
+                android:textColor="@color/assu_font_main"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="165.5dp"
+            android:layout_height="56dp"
+            android:id="@+id/ll_chatting_sent"
+            android:background="@drawable/bg_chatting_proposal_box"
+            android:gravity="center"
+            android:layout_marginStart="25dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_modify"/>
+
+            <View
+                android:id="@+id/view_chatting_mg7"
+                android:layout_width="10.5dp"
+                android:layout_height="10dp"
+                app:layout_constraintBottom_toBottomOf="@id/view_chatting_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="수정하기"
+                android:fontFamily="@font/pretendard_medium"
+                android:textSize="20sp"
+                android:textColor="@color/white"/>
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
