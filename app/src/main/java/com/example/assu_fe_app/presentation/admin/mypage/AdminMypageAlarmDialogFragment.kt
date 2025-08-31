@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
+import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentAdminMypageAlarmBinding
 
 class AdminMypageAlarmDialogFragment : DialogFragment() {
@@ -43,6 +44,35 @@ class AdminMypageAlarmDialogFragment : DialogFragment() {
         // 뒤로가기 버튼 클릭
         binding.btnAdminAlarmBack.setOnClickListener {
             dismiss()
+        }
+
+        var isActivated = true
+        var isRequestActivated = false
+        var isProposalActivated = false
+
+        // 전체 알림 토글
+        binding.switchAdminAlarmPush.setOnClickListener {
+            isActivated = !isActivated
+
+            if (isActivated) {
+                binding.clAdminAlarmPartnershipProposal.visibility = View.VISIBLE
+                binding.clAdminAlarmPartnershipRequest.visibility = View.VISIBLE
+            } else {
+                binding.clAdminAlarmPartnershipProposal.visibility = View.GONE
+                binding.clAdminAlarmPartnershipRequest.visibility = View.GONE
+            }
+        }
+
+        // 제안 알림 토글
+        binding.switchAdminAlarmPartnershipRequest.setOnClickListener {
+            isRequestActivated = !isRequestActivated
+
+        }
+
+        // 제휴 알림 토글
+        binding.switchAdminAlarmPartnershipProposal.setOnClickListener {
+            isProposalActivated = !isProposalActivated
+
         }
     }
 
