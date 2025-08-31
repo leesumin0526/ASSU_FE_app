@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 val properties = Properties().apply {
@@ -24,12 +25,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "KAKAO_MAP_KEY", "${properties.getProperty("KAKAO_MAP_KEY")}")
-    }
+        buildConfigField("String", "KAKAO_MAP_KEY", "\"${properties.getProperty("KAKAO_MAP_KEY")}\"")    }
 
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
+            buildConfigField("String", "DEV_BEARER", "\"Bearer token\"") // 🔴 임시
+
         }
         release {
             buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"") // 운영 주소로 교체
@@ -41,11 +43,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
 
     buildFeatures {
@@ -91,6 +93,11 @@ dependencies {
 
     // Kakao
     implementation("com.kakao.maps.open:android:2.12.8")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+    implementation("com.google.firebase:firebase-messaging")
+
 
     // 네트워크
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

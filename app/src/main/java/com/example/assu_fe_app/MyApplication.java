@@ -23,6 +23,7 @@ public class MyApplication extends Application {
         super.onCreate();
         appContext = getApplicationContext();
         KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
+
     }
 
     public static boolean isOnline() {
