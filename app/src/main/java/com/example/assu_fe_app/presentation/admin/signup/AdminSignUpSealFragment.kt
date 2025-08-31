@@ -15,8 +15,8 @@ class AdminSignUpSealFragment :
     override fun initView() {
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
-            fromPercent = 0.75f,
-            toPercent = 0.90f
+            fromPercent = 0.7f,
+            toPercent = 0.85f
         )
         // 처음엔 비활성화
         setButtonEnabled(false)

@@ -20,8 +20,8 @@ class UserSignUpSchoolFragment : BaseFragment<FragmentUserSignUpSchoolBinding>(R
     override fun initView() {
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
-            fromPercent = 0.50f,
-            toPercent = 0.75f
+            fromPercent = 0.40f,
+            toPercent = 0.55f
         )
 
         // 드롭다운 트리거 클릭

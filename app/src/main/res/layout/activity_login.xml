@@ -4,7 +4,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_login">
+        android:background="@color/assu_background">
 
         <!-- 로고 -->
         <ImageView
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="45dp"
-            android:layout_marginTop="78dp"
+            android:layout_marginTop="73dp"
             android:text="Email"
             android:textColor="#999999"
             android:textSize="13sp"
@@ -79,7 +79,7 @@
             android:id="@+id/btn_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="40dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:textColor="@android:color/white"
@@ -93,7 +93,7 @@
             android:id="@+id/tv_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="82dp"
+            android:layout_marginTop="50dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:text="Login"
@@ -109,11 +109,41 @@
             android:id="@+id/view_line"
             android:layout_width="315dp"
             android:layout_height="1dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="35dp"
             android:background="#DDDDDD"
             app:layout_constraintTop_toBottomOf="@id/btn_login"
             app:layout_constraintStart_toStartOf="@id/btn_login"
             app:layout_constraintEnd_toEndOf="@id/btn_login" />
+
+        <!-- Login 버튼 -->
+        <ImageButton
+        android:id="@+id/btn_lms_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:textColor="@color/assu_main"
+        android:background="@drawable/btn_sub"
+        android:fontFamily="@font/pretendard_semibold"
+        app:layout_constraintTop_toBottomOf="@id/view_line"
+        app:layout_constraintStart_toStartOf="@id/view_line"
+        app:layout_constraintEnd_toEndOf="@id/view_line"/>
+
+    <TextView
+        android:id="@+id/tv_lms_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="LMS 학생 로그인"
+        android:textSize="13sp"
+        android:textColor="@color/assu_main"
+        android:fontFamily="@font/pretendard_semibold"
+        app:layout_constraintTop_toBottomOf="@id/view_line"
+        app:layout_constraintStart_toStartOf="@id/view_line"
+        app:layout_constraintEnd_toEndOf="@id/view_line"/>
 
         <!-- 회원가입 안내 텍스트 -->
         <TextView
@@ -122,27 +152,28 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:text="아직 계정이 없으신가요?"
-            android:textColor="#999999"
+            android:textColor="@color/assu_font_sub"
+            android:fontFamily="@font/pretendard_regular"
             android:textSize="13sp"
-            app:layout_constraintTop_toBottomOf="@id/view_line"
+            app:layout_constraintTop_toBottomOf="@id/btn_lms_login"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- 회원가입하기 텍스트 -->
-        <TextView
-            android:id="@+id/btn_signup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="회원가입하기"
-            android:textColor="#007AFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:clickable="true"
-            android:focusable="true"
-            app:layout_constraintTop_toBottomOf="@id/tv_signup_guide"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+         <TextView
+             android:id="@+id/btn_signup"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_marginTop="15dp"
+             android:text="회원가입하기"
+             android:textColor="@color/assu_main"
+             android:textSize="14sp"
+             android:clickable="true"
+             android:focusable="true"
+             android:fontFamily="@font/pretendard_semibold"
+             app:layout_constraintTop_toBottomOf="@id/tv_signup_guide"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

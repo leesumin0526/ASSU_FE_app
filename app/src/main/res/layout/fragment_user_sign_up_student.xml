@@ -31,138 +31,71 @@
                 android:src="@drawable/ic_signup_progress_bar" />
         </FrameLayout>
 
-        <!-- 대학 아이디 비밀번호 입력 텍스트 -->
-        <TextView
-            android:id="@+id/tv_school_account_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <!-- 컨텐츠 영역 FrameLayout -->
+        <FrameLayout
+            android:id="@+id/fl_content_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginTop="46dp"
-            android:fontFamily="@font/pretendard_bold"
-            android:text="숭실대학교 학생이시군요!\n학번과 비밀번호를\n입력해주세요!"
             android:layout_marginStart="24dp"
-            android:textColor="@color/assu_font_main"
-            android:textSize="25sp"
+            android:layout_marginEnd="24dp"
             app:layout_constraintTop_toBottomOf="@id/fl_signup_progress_container"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!-- 아이디 라벨 -->
-        <TextView
-            android:id="@+id/tv_school_id_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="29dp"
-            android:layout_marginTop="63dp"
-            android:text="학번"
-            android:textSize="13sp"
-            android:textColor="@color/assu_font_sub"
-            android:fontFamily="@font/pretendard_regular"
-            app:layout_constraintTop_toBottomOf="@id/tv_school_account_title"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!-- 아이디 입력 필드 받기 -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_school_id"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/bg_signup_input_bar"
-            app:layout_constraintTop_toBottomOf="@id/tv_school_id_label"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <EditText
-                android:id="@+id/et_school_id"
+            <!-- 기본 컨텐츠 (처음에 표시) -->
+            <LinearLayout
+                android:id="@+id/ll_default_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- 가이드 텍스트 -->
+                <TextView
+                    android:id="@+id/tv_school_account_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_bold"
+                    android:text="숭실대학교 학생이시군요!\n재학중이신 학교를\n인증해주세요!"
+                    android:textColor="@color/assu_font_main"
+                    android:textSize="25sp" />
+
+                <!-- LMS 인증하기 버튼 -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:layout_gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/btn_lms_auth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_lms_auth" />
+
+                    <TextView
+                        android:id="@+id/tv_lms_auth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="LMS 인증하기"
+                        android:textSize="20sp"
+                        android:textColor="@color/assu_main"
+                        android:fontFamily="@font/pretendard_medium" />
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+            <!-- LMS 인증 WebView (처음에는 숨김) -->
+            <WebView
+                android:id="@+id/webview_lms_auth"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:hint="학번 입력"
-                android:inputType="numberDecimal"
-                android:background="@android:color/transparent"
-                android:textSize="14sp"
-                android:textColor="@color/assu_font_main"
-                android:textColorHint="@color/assu_font_sub"
-                android:fontFamily="@font/pretendard_regular"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:visibility="gone" />
 
-        <!-- 비밀번호 라벨 -->
-        <TextView
-            android:id="@+id/tv_school_pw_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="29dp"
-            android:layout_marginTop="10dp"
-            android:text="비밀번호"
-            android:textSize="13sp"
-            android:textColor="@color/assu_font_sub"
-            android:fontFamily="@font/pretendard_regular"
-            app:layout_constraintTop_toBottomOf="@id/cl_school_id"
-            app:layout_constraintStart_toStartOf="parent" />
+        </FrameLayout>
 
-        <!-- 비밀번호 받기 -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_school_pw"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/bg_signup_input_bar"
-            app:layout_constraintTop_toBottomOf="@id/tv_school_pw_label"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <EditText
-                android:id="@+id/et_shool_pw"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:hint="비밀번호 입력"
-                android:inputType="textPassword"
-                android:background="@android:color/transparent"
-                android:textSize="14sp"
-                android:textColor="@color/assu_font_main"
-                android:textColorHint="@color/assu_font_sub"
-                android:fontFamily="@font/pretendard_regular"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- 인증 완료 버튼 (하단 고정) -->
-        <ImageButton
-            android:id="@+id/btn_completed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="46dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:textColor="@android:color/white"
-            android:background="@drawable/btn_basic_unselected"
-            android:fontFamily="@font/pretendard_semibold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <TextView
-            android:id="@+id/tv_completed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="57dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="완료"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="@font/pretendard_bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
