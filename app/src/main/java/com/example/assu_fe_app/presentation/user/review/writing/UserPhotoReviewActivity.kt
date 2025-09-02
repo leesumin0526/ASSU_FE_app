@@ -20,7 +20,7 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.review.request.ReviewWriteRequestDto
 import com.example.assu_fe_app.databinding.ActivityUserPhotoReviewBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
-import com.example.assu_fe_app.ui.review.ReviewViewModel
+import com.example.assu_fe_app.ui.review.WriteReviewViewModel
 import com.example.assu_fe_app.util.RetrofitResult
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -34,7 +34,7 @@ import kotlin.io.path.exists
 @AndroidEntryPoint
 class UserPhotoReviewActivity : BaseActivity<ActivityUserPhotoReviewBinding>(R.layout.activity_user_photo_review) {
 
-    private val reviewViewModel: ReviewViewModel by viewModels()
+    private val reviewViewModel: WriteReviewViewModel by viewModels()
     private lateinit var photoImageViews : List<ImageView>
 
     private val pickImageLauncher =
@@ -95,10 +95,10 @@ class UserPhotoReviewActivity : BaseActivity<ActivityUserPhotoReviewBinding>(R.l
                 val currentSelectedCount = reviewViewModel.selectedImageUris.value?.size ?: 0
                 // ViewModel에 현재 이미지 피커 인덱스 설정 요청
                 // 조건부 갤러리 오픈 로직 (ViewModel과 유사하게)
-                if (index > currentSelectedCount && currentSelectedCount < ReviewViewModel.MAX_PHOTO_COUNT) {
+                if (index > currentSelectedCount && currentSelectedCount < WriteReviewViewModel.MAX_PHOTO_COUNT) {
                     Toast.makeText(this, "이전 사진부터 순서대로 추가해주세요.", Toast.LENGTH_SHORT).show()
-                } else if (currentSelectedCount >= ReviewViewModel.MAX_PHOTO_COUNT && index >= currentSelectedCount) {
-                    Toast.makeText(this, "최대 ${ReviewViewModel.MAX_PHOTO_COUNT}개의 사진만 선택할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                } else if (currentSelectedCount >= WriteReviewViewModel.MAX_PHOTO_COUNT && index >= currentSelectedCount) {
+                    Toast.makeText(this, "최대 ${WriteReviewViewModel.MAX_PHOTO_COUNT}개의 사진만 선택할 수 있습니다.", Toast.LENGTH_SHORT).show()
                 } else {
                     reviewViewModel.setCurrentImagePickerIndex(index)
                     checkPermissionAndOpenGallery()

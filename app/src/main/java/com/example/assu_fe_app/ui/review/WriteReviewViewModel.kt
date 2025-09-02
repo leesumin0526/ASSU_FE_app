@@ -16,7 +16,7 @@ import okhttp3.MultipartBody
 import javax.inject.Inject
 
 @HiltViewModel
-class ReviewViewModel @Inject constructor(
+class WriteReviewViewModel @Inject constructor(
     private val writeReviewUseCase: WriteReviewUseCase
 ) : ViewModel(){
     private val _writeResult = MutableLiveData<RetrofitResult<ReviewWriteResponseDto>>()
