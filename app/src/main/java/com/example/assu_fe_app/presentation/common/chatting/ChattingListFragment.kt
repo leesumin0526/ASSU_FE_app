@@ -14,7 +14,7 @@ class ChattingListFragment : BaseFragment<FragmentChattingListBinding> (R.layout
     private lateinit var adapter: ChattingChatListAdapter
 
     override fun initObserver() {
-        val dummyList = List(15) {
+        val dummyList = List(1) {
             ChattingListItem(
                 "roomId1",
                 "제휴 가능할까요?",

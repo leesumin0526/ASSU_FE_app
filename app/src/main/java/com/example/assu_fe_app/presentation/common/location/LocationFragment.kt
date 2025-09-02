@@ -5,9 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.example.assu_fe_app.databinding.FragmentLoactionBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -15,11 +20,16 @@ import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.presentation.common.location.adapter.AdminPartnerLocationAdapter
 import com.example.assu_fe_app.presentation.common.location.adapter.LocationSharedViewModel
 import com.example.assu_fe_app.presentation.user.review.store.UserReviewStoreActivity
+import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import kotlin.getValue
 
+@AndroidEntryPoint
 class LocationFragment :
     BaseFragment<FragmentLoactionBinding>(R.layout.fragment_loaction) {
     private val sharedViewModel: LocationSharedViewModel by activityViewModels()
@@ -27,6 +37,9 @@ class LocationFragment :
     private var currentItem: LocationAdminPartnerSearchResultItem? = null
     private lateinit var mapView: MapView
     private lateinit var kakaoMap : KakaoMap
+
+    // 뷰모델 주입
+    private val vm: ChattingViewModel by viewModels()
 
     override fun initView() {
         val dummyList = listOf(
@@ -53,26 +66,38 @@ class LocationFragment :
         binding.fvLocationItem.setOnClickListener {
             val item = currentItem ?: return@setOnClickListener
             val context = it.context
-            val intent = Intent(context, ChattingActivity::class.java)
 
-            val message = if (item.isPartnered) {
+            // TODO: 여기서 id 불러오는 방법 바꾸기
+            val adminId =2L
+            val partnerId = 1L
+
+            val entryMessage = if (item.isPartnered) {
                 "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
             } else {
-                "'문의하기' 버튼을 통해 이동했습니다."
+                "'문의하기' 버튼을 통해 이동했습니다.이거야?"
             }
 
-            intent.putExtra("entryMessage", message)
-            context.startActivity(intent)
+            vm.createRoom(
+                CreateChatRoomRequestDto(
+                    adminId = adminId,
+                    partnerId = partnerId)
+            )
+            binding.root.tag = entryMessage
+        //            val intent = Intent(context, ChattingActivity::class.java)
+
+//            val message = if (item.isPartnered) {
+//                "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
+//            } else {
+//                "'문의하기' 버튼을 통해 이동했습니다.이거야?"
+//            }
+//
+//            intent.putExtra("entryMessage", message)
+//            context.startActivity(intent)
         }
-
 //        mapView = MapView(requireContext())
-
 //        val mapContainer = binding.root.findViewById<ViewGroup>(R.id.view_location_map)
 //        mapContainer.addView(mapView)
 //
-
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -95,6 +120,58 @@ class LocationFragment :
                 kakaoMap = map
             }
         })
+
+        // ViewModel 상태 수집
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.createRoomState.collect { state ->
+                    when (state) {
+                        is ChattingViewModel.CreateRoomUiState.Idle -> {
+                            setCreateLoading(false)
+                        }
+
+                        is ChattingViewModel.CreateRoomUiState.Loading -> {
+                            setCreateLoading(true)
+                        }
+
+                        is ChattingViewModel.CreateRoomUiState.Success -> {
+                            setCreateLoading(false)
+                            // 채팅방 화면으로 이동
+                            val intent =
+                                Intent(requireContext(), ChattingActivity::class.java).apply {
+                                    putExtra("roomId", state.data.roomId)
+                                    (binding.root.tag as? String)?.let {
+                                        putExtra(
+                                            "entryMessage",
+                                            it
+                                        )
+                                    }
+                                }
+                            startActivity(intent)
+                            vm.resetCreateState()
+                        }
+
+                        is ChattingViewModel.CreateRoomUiState.Fail -> {
+                            setCreateLoading(false)
+                            Toast.makeText(
+                                requireContext(),
+                                "채팅방 생성 실패(${state.code}) ${state.message ?: ""}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        is ChattingViewModel.CreateRoomUiState.Error -> {
+                            setCreateLoading(false)
+                            Toast.makeText(
+                                requireContext(),
+                                "오류: ${state.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun initObserver() {
@@ -110,6 +187,11 @@ class LocationFragment :
     private fun navigateToSearch() {
         val intent = Intent(requireContext(), LocationSearchActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun setCreateLoading(loading: Boolean) {
+        // 캡슐 뷰 클릭 방지
+        binding.fvLocationItem.isEnabled = !loading
     }
 
     override fun onDestroyView() {
