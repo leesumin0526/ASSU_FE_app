@@ -1,0 +1,11 @@
+package com.example.assu_fe_app.data.dto.review.request
+
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
+data class ReviewWriteRequestDto(
+    val content: String,
+    val partnerId: Long,
+    val rate: Int,
+    val storeId: Long
+)
