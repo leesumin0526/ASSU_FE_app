@@ -74,6 +74,7 @@ class UserPhotoReviewActivity : BaseActivity<ActivityUserPhotoReviewBinding>(R.l
         Log.d("넘어온 rate", rating.toString())
         val adminName = intent.getStringExtra("adminName")
         val content = intent.getStringExtra("content")
+        val partnershipUsageId = intent.getLongExtra("partnershipUsageId", 0)
 
         binding.tvPhotoReviewAdmin.text = adminName
 
@@ -123,42 +124,19 @@ class UserPhotoReviewActivity : BaseActivity<ActivityUserPhotoReviewBinding>(R.l
         val finishWritingActivatedButton = binding.layoutFinishReviewActivatedButton
         var review = binding.etWritePhotoReview
 
-//        review.addTextChangedListener {
-//            val text = it.toString()
-//            if(text.isNotBlank()) {
-//                finishWritingDeactivatedButton.visibility = View.GONE
-//                finishWritingActivatedButton.visibility = View.VISIBLE
-//            } else {
-//                finishWritingDeactivatedButton.visibility = View.VISIBLE
-//                finishWritingActivatedButton.visibility = View.GONE
-//            }
-//        }
         review.addTextChangedListener {
             val text = it.toString()
             reviewViewModel.setReviewText(text)
         }
 
-//        finishWritingActivatedButton.setOnClickListener {
-//            val intent = Intent(this, UserFinishReviewActivity::class.java)
-//            startActivity(intent)
-//        }
-//
-//        finishWritingActivatedButton.setOnClickListener {
-//            val request = ReviewWriteRequestDto(
-//                rate = rating,
-//                partnerId= ,
-//                storeId = ,
-//                content = review.text.toString()
-//            )
-//
-//            reviewViewModel.writeReview(request)
-//        }
         finishWritingActivatedButton.setOnClickListener {
             val request = ReviewWriteRequestDto(
                 rate = rating,
                 partnerId =9L, // TODO: 실제 파트너 ID로 교체
                 storeId = 2L, // TODO: 실제 스토어 ID로 교체
-                content = reviewViewModel.reviewText.value ?: ""
+                content = reviewViewModel.reviewText.value ?: "",
+                partnershipUsageId = 3L, // TODO: 실제 partnershipUsageID로 교체
+                adminName = "IT대학 학생회" // TODO: 실제 adminName 값으로 넣어주기
             )
 
             // 파일 URI를 MultipartBody.Part로 변환하여 ViewModel에 전달

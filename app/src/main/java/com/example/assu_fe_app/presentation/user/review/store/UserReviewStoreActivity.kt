@@ -54,7 +54,7 @@ class UserReviewStoreActivity :
                 }
             }
         )
-        userReviewAdapter.setData(createDummyData())
+//        userReviewAdapter.setData(createDummyData())
         binding.fcvReviewStoreRank.layoutManager = LinearLayoutManager(this)
         binding.fcvReviewStoreRank.adapter = userReviewAdapter
 
@@ -82,16 +82,16 @@ class UserReviewStoreActivity :
     private fun createDummyData(): List<Review> {
         return listOf(
             Review(
+                id=1,
                 marketName = "스시천국",
-                studentCategory = "경영대학 재학생",
                 rate = 5,
                 content = "진짜 맛있었어요! 또 가고 싶어요!",
                 date = LocalDateTime.now().minusDays(1),
                 reviewImage = listOf()
             ),
             Review(
+                id=1,
                 marketName = "돈까스집",
-                studentCategory = "인문대학 재학생",
                 rate = 4,
                 content = "튀김이 바삭해서 좋았어요. 양도 많아요.",
                 date = LocalDateTime.now().minusDays(3),

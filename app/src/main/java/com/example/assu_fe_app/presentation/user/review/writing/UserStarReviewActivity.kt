@@ -33,6 +33,7 @@ class   UserStarReviewActivity : BaseActivity<ActivityUserStarReviewBinding>(R.l
         var selectedRating = 0
         val adminName : String ?= intent.getStringExtra("adminName")
         val content : String ?= intent.getStringExtra("content")
+        val partnershipUsageId : Long?= intent.getLongExtra("partnershipUsageId", 0)
 
         binding.tvStarReviewPartnership.text = adminName
 
