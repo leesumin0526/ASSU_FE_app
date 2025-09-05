@@ -3,6 +3,7 @@ package com.example.assu_fe_app.data.service.review
 import com.example.assu_fe_app.data.dto.BaseResponse
 import com.example.assu_fe_app.data.dto.review.response.DeleteReviewResponseDto
 import com.example.assu_fe_app.data.dto.review.response.GetReviewResponseDto
+import com.example.assu_fe_app.data.dto.review.response.ReviewAverageResponseDto
 import com.example.assu_fe_app.data.dto.review.response.ReviewWriteResponseDto
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -44,4 +45,21 @@ interface ReviewService {
         @Path("reviewId") reviewId: Long
     ): BaseResponse<DeleteReviewResponseDto>
 
+
+    @GET("/reviews/store/{storeId}")
+    suspend fun getStoreReview(
+        @Path("storeId") storeId: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String
+    ) : BaseResponse<GetReviewResponseDto>
+
+    @GET("/reviews/average")
+    suspend fun getMyStoreAverageScore(): BaseResponse<ReviewAverageResponseDto>
+
+
+    @GET("/reviews/average/{storeId}")
+    suspend fun getUserStoreAverageScore(
+        @Path("storeId") storeId: Long
+    ): BaseResponse<ReviewAverageResponseDto>
 }

@@ -1,7 +1,7 @@
 package com.example.assu_fe_app.domain.usecase.review
 
 import android.util.Log
-import com.example.assu_fe_app.data.dto.review.PageReviewList
+import com.example.assu_fe_app.data.dto.review.response.PageReviewList
 import com.example.assu_fe_app.data.repository.review.ReviewRepository
 import com.example.assu_fe_app.util.RetrofitResult
 import javax.inject.Inject

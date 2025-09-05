@@ -21,19 +21,21 @@ class UserLocationSearchSuccessFragment :
 
     override fun initView() {
         val dummyList = listOf(
-            LocationUserSearchResultItem("역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem("역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem("역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem("역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem("역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem("역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem("역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem("역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem("역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공")
+            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
+            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
+            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
+            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
+            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
+            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
+            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
+            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
+            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공")
         )
         adapter = UserLocationSearchSuccessAdapter(dummyList)
         binding.rvLocationSearchSuccess.layoutManager = LinearLayoutManager(requireContext())
         binding.rvLocationSearchSuccess.adapter = adapter
+
+        // 여기서 store id intent 로 넘겨주는 것 구현.. 나중에...
     }
 
 }

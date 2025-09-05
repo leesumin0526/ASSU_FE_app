@@ -147,19 +147,19 @@
                 android:id="@+id/iv_review_store_star1"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/ic_location_item_star_selected"/>
+                android:background="@drawable/ic_location_item_star_unselected"/>
 
             <ImageView
                 android:id="@+id/iv_review_store_star2"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/ic_location_item_star_selected"/>
+                android:background="@drawable/ic_location_item_star_unselected"/>
 
             <ImageView
                 android:id="@+id/iv_review_store_star3"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/ic_location_item_star_selected"/>
+                android:background="@drawable/ic_location_item_star_unselected"/>
 
             <ImageView
                 android:id="@+id/iv_review_store_star4"

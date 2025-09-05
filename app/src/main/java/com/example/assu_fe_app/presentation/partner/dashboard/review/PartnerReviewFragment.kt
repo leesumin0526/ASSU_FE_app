@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentPartnerReviewBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.partner.PartnerMainActivity
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,8 +25,12 @@ class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layou
     override fun initView() {
 
         binding.btnCustomerReviewBack.setOnClickListener {
+            (requireActivity() as PartnerMainActivity).showBottomNavigation()
             requireActivity().onBackPressed()
         }
+        (requireActivity() as PartnerMainActivity).hideBottomNavigation()
+
+        getReviewViewModel.getAverage()
 
         initAdapter()
         initScrollListener()
@@ -39,8 +44,34 @@ class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layou
                 findNavController().navigate(R.id.action_partnerReviewFragment_to_partnerReviewNoneFragment)
             } else {
                 userReviewAdapter.submitList(reviews)
-                binding.tvReviewStoreReviewCount.text = reviews.size.toString()
+                val count =reviews.size.toString()
+                binding.tvReviewStoreReviewCount.text = "${count}개의 평가"
+
             }
+        }
+
+        getReviewViewModel.average.observe(viewLifecycleOwner) { average ->
+            val formatted = String.format("%.1f", average) // "3.1"
+            binding.tvCustomerReviewScore.text = formatted
+
+            val rating = average.toInt()
+            val stars = listOf(
+                binding.ivCustomerReviewStar1,
+                binding.ivCustomerReviewStar2,
+                binding.ivCustomerReviewStar3,
+                binding.ivCustomerReviewStar4,
+                binding.ivCustomerReviewStar5
+            )
+
+
+            fun setStars(rating: Int) {
+                for (i in stars.indices) {
+                    val drawableRes = if (i < rating) R.drawable.ic_activated_star
+                    else R.drawable.ic_deactivated_star
+                    stars[i].setImageResource(drawableRes)
+                }
+            }
+            setStars(rating)
         }
     }
 

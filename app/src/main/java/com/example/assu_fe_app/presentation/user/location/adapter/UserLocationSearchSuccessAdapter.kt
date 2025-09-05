@@ -30,7 +30,7 @@ class UserLocationSearchSuccessAdapter(
                 val context = it.context
                 val intent = Intent(context, UserReviewStoreActivity::class.java)
                 // shopName 등 데이터 전달이 필요하다면 아래 추가
-                // intent.putExtra("shopName", item.shopName)
+                intent.putExtra("storeId", item.storeId)
                 context.startActivity(intent)
             }
         }

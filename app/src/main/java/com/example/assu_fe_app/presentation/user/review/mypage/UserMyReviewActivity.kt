@@ -3,6 +3,7 @@ package com.example.assu_fe_app.presentation.user.review.mypage
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
@@ -58,12 +59,14 @@ class UserMyReviewActivity :
                 // 빈 리스트 처리
                 userReviewAdapter.submitList(emptyList())
                 binding.tvManageReviewReviewCount.text = "0"
-                // 빈 상태 UI 표시 (옵션)
-                // binding.emptyStateView.visibility = View.VISIBLE
+
+                binding.flManageReviewReviewNull.visibility = View.VISIBLE
+                binding.flManageReviewReviewExist.visibility = View.GONE
             } else {
                 userReviewAdapter.submitList(reviews)
                 binding.tvManageReviewReviewCount.text = reviews.size.toString()
-                // binding.emptyStateView.visibility = View.GONE
+                binding.flManageReviewReviewNull.visibility = View.GONE
+                binding.flManageReviewReviewExist.visibility = View.VISIBLE
             }
         }
     }

@@ -1,8 +1,9 @@
 package com.example.assu_fe_app.data.repository.review
 
-import com.example.assu_fe_app.data.dto.review.PageReviewList
+import com.example.assu_fe_app.data.dto.review.response.PageReviewList
 import com.example.assu_fe_app.data.dto.review.request.ReviewWriteRequestDto
 import com.example.assu_fe_app.data.dto.review.response.DeleteReviewResponseDto
+import com.example.assu_fe_app.data.dto.review.response.ReviewAverageResponseDto
 import com.example.assu_fe_app.data.dto.review.response.ReviewWriteResponseDto
 import com.example.assu_fe_app.util.RetrofitResult
 import okhttp3.MultipartBody
@@ -29,4 +30,14 @@ interface ReviewRepository {
     suspend fun deleteReview(
         reviewId: Long
     ): RetrofitResult<DeleteReviewResponseDto>
+
+    suspend fun getStoreReview(
+        storeId: Long,
+        page: Int,
+        size: Int,
+        sort: String
+    ): RetrofitResult<PageReviewList>
+
+    suspend fun getMyStoreAverage() : RetrofitResult<ReviewAverageResponseDto>
+    suspend fun getUserStoreAverage(storeId: Long) : RetrofitResult<ReviewAverageResponseDto>
 }
