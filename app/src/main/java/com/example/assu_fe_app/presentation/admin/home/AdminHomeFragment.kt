@@ -1,11 +1,13 @@
 package com.example.assu_fe_app.presentation.admin.home
 
+import android.content.Intent
 import androidx.navigation.Navigation
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
 import com.example.assu_fe_app.databinding.FragmentAdminHomeBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
+import com.example.assu_fe_app.presentation.common.notification.NotificationActivity
 
 class AdminHomeFragment :
     BaseFragment<FragmentAdminHomeBinding>(R.layout.fragment_admin_home) {
@@ -16,6 +18,11 @@ class AdminHomeFragment :
     override fun initView() {
         binding.btnAdminHomeViewAll.setOnClickListener { view ->
             Navigation.findNavController(view).navigate(R.id.action_admin_home_to_admin_view_partner_list)
+        }
+
+        binding.ivAdminHomeNotification.setOnClickListener { view ->
+            val intent = Intent(requireContext(), NotificationActivity::class.java)
+            startActivity(intent)
         }
 
         binding.tvContractPassiveRegister.setOnClickListener { view ->

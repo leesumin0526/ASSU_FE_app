@@ -174,7 +174,7 @@
                     android:id="@+id/ll_chatting_sent"
                     android:background="@drawable/bg_chatting_proposal_box"
                     android:gravity="center"
-                    android:layout_marginStart="4dp">
+                    android:layout_marginStart="34dp">
 
                     <ImageView
                         android:layout_width="wrap_content"

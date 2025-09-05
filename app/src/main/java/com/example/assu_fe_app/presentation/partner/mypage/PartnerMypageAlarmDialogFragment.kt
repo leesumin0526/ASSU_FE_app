@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
+import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentPartnerMypageAlarmBinding
 
 class PartnerMypageAlarmDialogFragment : DialogFragment() {
@@ -43,6 +44,16 @@ class PartnerMypageAlarmDialogFragment : DialogFragment() {
         // 뒤로가기 버튼 클릭
         binding.btnAlarmBack.setOnClickListener {
             dismiss()
+        }
+
+
+        //이전 설정 상태를 불러오는 과정
+        var isActivated = true
+
+
+        // 상태 반전
+        binding.clPartnerAlarmToggle.setOnClickListener {
+            isActivated = !isActivated
         }
     }
 

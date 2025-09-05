@@ -10,26 +10,19 @@
         android:name="com.example.assu_fe_app.presentation.common.signup.SignUpVerifyFragment"
         android:label="회원가입 인증">
         <action
-            android:id="@+id/action_verify_to_account"
-            app:destination="@id/signUpCommonAccountFragment" />
-    </fragment>
-
-    <!-- 2단계: 계정 입력 -->
-    <fragment
-        android:id="@+id/signUpCommonAccountFragment"
-        android:name="com.example.assu_fe_app.presentation.common.signup.SignUpAccountFragment"
-        android:label="계정 입력">
-        <action
-            android:id="@+id/action_account_to_type"
+            android:id="@+id/action_verify_to_type"
             app:destination="@id/signUpCommonTypeFragment" />
     </fragment>
 
-    <!-- 3단계: 사용자 유형 선택 -->
+    <!-- 2단계: 사용자 유형 선택 -->
     <fragment
         android:id="@+id/signUpCommonTypeFragment"
         android:name="com.example.assu_fe_app.presentation.common.signup.SignUpTypeFragment"
         android:label="회원 유형 선택">
         <!-- 분기 처리 -->
+        <action
+            android:id="@+id/action_type_to_account"
+            app:destination="@id/signUpCommonAccountFragment" />
         <action
             android:id="@+id/action_type_to_user_school"
             app:destination="@id/signUpUserSchoolFragment" />
@@ -38,6 +31,19 @@
             app:destination="@id/signUpAdminInfoFragment" />
         <action
             android:id="@+id/action_type_to_partner_info"
+            app:destination="@id/signUpPartnerInfoFragment" />
+    </fragment>
+
+    <!-- 3단계: 계정 입력 -->
+    <fragment
+        android:id="@+id/signUpCommonAccountFragment"
+        android:name="com.example.assu_fe_app.presentation.common.signup.SignUpAccountFragment"
+        android:label="계정 입력">
+        <action
+            android:id="@+id/action_account_to_admin_info"
+            app:destination="@id/signUpAdminInfoFragment" />
+        <action
+            android:id="@+id/action_account_to_partner_info"
             app:destination="@id/signUpPartnerInfoFragment" />
     </fragment>
 
@@ -56,7 +62,16 @@
         android:name="com.example.assu_fe_app.presentation.user.signup.UserSignUpStudentFragment"
         android:label="학생 인증">
         <action
-            android:id="@+id/action_user_student_to_complete"
+            android:id="@+id/action_user_student_to_student_check"
+            app:destination="@id/signUpUserStudentCheckFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpUserStudentCheckFragment"
+        android:name="com.example.assu_fe_app.presentation.user.signup.UserSignUpStudentCheckFragment"
+        android:label="학생 정보 확인">
+        <action
+            android:id="@+id/action_user_student_check_to_complete"
             app:destination="@id/signUpCommonCompleteFragment" />
     </fragment>
 

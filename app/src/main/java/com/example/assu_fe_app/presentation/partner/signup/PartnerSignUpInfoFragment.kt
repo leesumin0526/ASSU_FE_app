@@ -18,8 +18,8 @@ class PartnerSignUpInfoFragment :
     override fun initView() {
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
-            fromPercent = 0.50f,
-            toPercent = 0.75f
+            fromPercent = 0.55f,
+            toPercent = 0.7f
         )
         // 상세주소 입력 비활성화 초기화
         binding.etPartnerAddressDetail.isEnabled = false
