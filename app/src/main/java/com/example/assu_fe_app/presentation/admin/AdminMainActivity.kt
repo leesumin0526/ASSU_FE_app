@@ -3,6 +3,8 @@ package com.example.assu_fe_app.presentation.admin
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
@@ -19,13 +21,28 @@ class AdminMainActivity : BaseActivity<ActivityAdminMainBinding>(R.layout.activi
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val extraPaddingTop = 3 // 8dp 추가
+            val navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            val extraPaddingTop = 3
             v.setPadding(
                 systemBars.left,
                 systemBars.top + extraPaddingTop.dpToPx(v.context),
                 systemBars.right,
                 0
             )
+
+            // 바텀 네비게이션 높이 퍼센트 동적 계산
+            val screenHeight = resources.displayMetrics.heightPixels / resources.displayMetrics.density
+            val baseBottomNavHeight = 69f // 기본 높이
+            val systemNavHeightDp = navigationBars.bottom / resources.displayMetrics.density
+            val totalBottomNavHeight = baseBottomNavHeight + systemNavHeightDp
+            val newHeightPercent = totalBottomNavHeight / screenHeight
+
+            // 바텀 네비게이션 높이 퍼센트 적용
+            val layoutParams = binding.bottomNavigationView.layoutParams as ConstraintLayout.LayoutParams
+            layoutParams.matchConstraintPercentHeight = newHeightPercent
+            binding.bottomNavigationView.layoutParams = layoutParams
+
             insets
         }
 
@@ -87,5 +104,13 @@ class AdminMainActivity : BaseActivity<ActivityAdminMainBinding>(R.layout.activi
                 requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
             }
         }
+    }
+
+    fun hideBottomNavigation(){
+        binding.bottomNavigationView.visibility = View.GONE
+    }
+
+    fun showBottomNavigation(){
+        binding.bottomNavigationView.visibility = View.VISIBLE
     }
 }
