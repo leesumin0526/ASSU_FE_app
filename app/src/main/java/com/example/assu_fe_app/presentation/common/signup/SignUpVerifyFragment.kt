@@ -36,11 +36,11 @@ class SignUpVerifyFragment :
 
     override fun initView() {
 
-        // 프로그레스 바 0 → 20% 애니메이션 적용
+        // 프로그레스 바 10% → 25% 애니메이션 적용
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
             fromPercent = 0.1f,
-            toPercent = 0.2f,
+            toPercent = 0.25f,
             duration = 500L
         )
 
@@ -107,7 +107,7 @@ class SignUpVerifyFragment :
         // 인증 완료 버튼 클릭 → 다음 프래그먼트 이동
         binding.btnCompleted.setOnClickListener {
             if (isVerified) {
-                findNavController().navigate(R.id.action_verify_to_account)
+                findNavController().navigate(R.id.action_verify_to_type)
             }
         }
     }

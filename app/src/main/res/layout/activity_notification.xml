@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/assu_background"
+        tools:context=".presentation.common.notification.NotificationActivity">
+    
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <View
+            android:id="@+id/partner_noti_mg1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.0346"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    
+        <View
+            android:id="@+id/partner_noti_mg2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.0407"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    
+        <ImageView
+            android:id="@+id/ic_partner_noti_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_arrow"
+            app:layout_constraintTop_toBottomOf="@id/partner_noti_mg1"
+            app:layout_constraintStart_toEndOf="@id/partner_noti_mg2"/>
+    
+        <View
+            android:id="@+id/partner_noti_mg3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.0712"
+            app:layout_constraintStart_toEndOf="@id/ic_partner_noti_back"/>
+
+        <View
+            android:id="@+id/partner_noti_mg4"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.0195"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_partner_noti"/>
+        
+        <TextView
+            android:id="@+id/tv_partner_noti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="알림"
+            android:fontFamily="@font/pretendard_semibold"
+            android:textSize="20sp"
+            app:layout_constraintStart_toEndOf="@id/partner_noti_mg3"
+            app:layout_constraintTop_toTopOf="@id/ic_partner_noti_back"
+            app:layout_constraintBottom_toBottomOf="@id/ic_partner_noti_back"/>
+    
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tl_partner_noti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/assu_background"
+            app:tabIndicatorHeight="2dp"
+            app:tabIndicatorColor="@color/black"
+            app:tabIndicatorFullWidth="false"
+            app:tabTextColor="@color/tab_text_selector"
+            app:tabTextAppearance="@style/CustomTabTextStyle"
+            app:tabMode="fixed"
+            app:layout_constraintTop_toBottomOf="@id/partner_noti_mg4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp_partner_noti"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+
+            app:layout_constraintTop_toBottomOf="@id/tl_partner_noti"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    
+    
+    
+    
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</layout>

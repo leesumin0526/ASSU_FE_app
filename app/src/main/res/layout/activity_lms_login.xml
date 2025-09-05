@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#FEFFFE">
+
+        <!-- 상단 헤더 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="13dp"
+            android:gravity="center_vertical"
+            android:background="#FEFFFE">
+
+            <!-- 뒤로가기 버튼 -->
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_back_arrow"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="뒤로가기" />
+
+            <!-- 제목 -->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="유세인트 로그인"
+                android:textSize="20sp"
+                android:textColor="#040404"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginEnd="24dp"
+                android:fontFamily="@font/pretendard_semibold" />
+
+        </LinearLayout>
+
+        <!-- WebView -->
+        <WebView
+            android:id="@+id/webview_lms"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+</layout>

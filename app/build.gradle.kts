@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 val properties = Properties().apply {
@@ -14,7 +15,7 @@ val properties = Properties().apply {
 
 android {
     namespace = "com.example.assu_fe_app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.assu_fe_app"
@@ -24,19 +25,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "KAKAO_MAP_KEY", "\"${properties.getProperty("KAKAO_MAP_KEY")}\"")
-
-        ndk {
-            abiFilters.add("arm64-v8a")
-            abiFilters.add("armeabi-v7a")
-            abiFilters.add("x86")
-            abiFilters.add("x86_64")
-        }
-    }
+        buildConfigField("String", "KAKAO_MAP_KEY", "\"${properties.getProperty("KAKAO_MAP_KEY")}\"")    }
 
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
+            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiUEFSVE5FUiIsInVzZXJJZCI6MzAsInVzZXJuYW1lIjoicGFydG5lcjMyQGdtYWlsLmNvbSIsImp0aSI6IjdkMWFhZWRjLWQzYjctNDhkZS1hZmVhLTY2YWNhZjEzN2Y1OSIsImlhdCI6MTc1Njc3ODcwNCwiZXhwIjoxNzU2NzgyMzA0fQ.04DAYtdoyusmIR7uDbU2RgtyVs_CFltWF0T7g_ERNXU\"") // 🔴 임시
+
         }
         release {
             buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"") // 운영 주소로 교체
@@ -98,6 +93,11 @@ dependencies {
 
     // Kakao
     implementation("com.kakao.maps.open:android:2.12.8")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+    implementation("com.google.firebase:firebase-messaging")
+
 
     // 네트워크
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

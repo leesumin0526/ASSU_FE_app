@@ -9,7 +9,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
 
     <application
         android:name=".MyApplication"
@@ -26,6 +28,18 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
 
+        <!-- FCM 서비스 등록 -->
+        <service
+            android:name=".fcm.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".presentation.common.notification.NotificationActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.common.chatting.ChattingActivity"
             android:exported="false">
@@ -61,13 +75,16 @@
         <activity android:name=".presentation.user.home.UserPartnershipVerifyActivity" />
         <activity
             android:name=".presentation.admin.AdminMainActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity android:name=".presentation.admin.home.AdminHomeViewPartnerListActivity" />
         <activity android:name=".presentation.admin.dashboard.AdminDashboardSuggestionsActivity" />
         <activity
             android:name=".presentation.partner.PartnerMainActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity android:name=".presentation.partner.home.PartnerHomeViewAdminListActivity" />
+        <activity
+            android:name=".presentation.common.login.LmsLoginActivity"
+            android:exported="false" />
     </application>
 
 

@@ -1,7 +1,7 @@
 package com.example.assu_fe_app.presentation.partner.mypage
 
 import android.content.Intent
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.Navigation
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentPartnerMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -12,10 +12,10 @@ class PartnerMypageFragment : BaseFragment<FragmentPartnerMypageBinding>(R.layou
     override fun initView(){
 
         // 알림 설정 창
+
         binding.clPartnerAccountComponent1.setOnClickListener {
             val alarmDialogFragment = PartnerMypageAlarmDialogFragment()
             alarmDialogFragment.show(childFragmentManager, "AlarmDialog")
-        }
 
         // 로그아웃 창
         binding.clPartnerAccountComponent2.setOnClickListener {
@@ -23,6 +23,7 @@ class PartnerMypageFragment : BaseFragment<FragmentPartnerMypageBinding>(R.layou
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
+    }
     }
 
     override fun initObserver(){}

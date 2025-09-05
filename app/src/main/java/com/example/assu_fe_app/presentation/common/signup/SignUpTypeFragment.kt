@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.common.signup
 
+import android.os.Bundle
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpTypeBinding
@@ -16,8 +17,8 @@ class SignUpTypeFragment : BaseFragment<FragmentSignUpTypeBinding>(R.layout.frag
     override fun initView() {
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
-            fromPercent = 0.35f,
-            toPercent = 0.50f
+            fromPercent = 0.25f,
+            toPercent = 0.4f
         )
         // 완료 버튼 기본 비활성화
         binding.btnCompleted.isEnabled = false
@@ -39,10 +40,16 @@ class SignUpTypeFragment : BaseFragment<FragmentSignUpTypeBinding>(R.layout.frag
         binding.btnCompleted.setOnClickListener {
             when (selectedType) {
                 "admin" -> {
-                    findNavController().navigate(R.id.action_type_to_admin_info)
+                    val bundle = Bundle().apply {
+                        putString("userType", "admin")
+                    }
+                    findNavController().navigate(R.id.action_type_to_account, bundle)
                 }
                 "partner" -> {
-                    findNavController().navigate(R.id.action_type_to_partner_info)
+                    val bundle = Bundle().apply {
+                        putString("userType", "partner")
+                    }
+                    findNavController().navigate(R.id.action_type_to_account, bundle)
                 }
                 "user" -> {
                     findNavController().navigate(R.id.action_type_to_user_school)

@@ -1,7 +1,9 @@
 package com.example.assu_fe_app.di
 
 import com.example.assu_fe_app.BuildConfig
+import com.example.assu_fe_app.data.DevBearerInterceptor
 import com.example.assu_fe_app.data.service.chatting.ChattingService
+import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -44,6 +46,7 @@ object ServiceModule {
     @Provides @Singleton @Auth
     fun provideOkHttp(): OkHttpClient =
         OkHttpClient.Builder()
+            .addInterceptor(DevBearerInterceptor()) // 🔴 임시
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY // 개발에서만
             })
@@ -68,4 +71,10 @@ object ServiceModule {
     @Provides @Singleton
     fun provideChattingService(retrofit: Retrofit): ChattingService =
         retrofit.create(ChattingService::class.java)
+
+    // 🔴 임시
+    @Provides
+    @Singleton
+    fun provideDeviceTokenService(retrofit: Retrofit): DeviceTokenService =
+        retrofit.create(DeviceTokenService::class.java)
 }
