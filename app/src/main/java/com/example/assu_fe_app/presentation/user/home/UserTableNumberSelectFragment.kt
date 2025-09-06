@@ -1,9 +1,12 @@
 package com.example.assu_fe_app.presentation.user.home
 
+import android.os.Bundle
+import android.provider.Settings.Global.putString
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import com.example.assu_fe_app.R
@@ -13,9 +16,17 @@ import com.example.assu_fe_app.presentation.base.BaseFragment
 class UserTableNumberSelectFragment :
     BaseFragment<FragmentUserTableNumberSelectBinding>(R.layout.fragment_user_table_number_select) {
 
+    private var storeId: Long = 0L
     override fun initObserver() {}
 
     override fun initView() {
+        arguments?.let {
+            storeId = it.getLong("storeId")
+            if (storeId != null) {
+                // storeId를 성공적으로 받았는지 로그로 확인
+                Log.d("전달된 데이터!!!!!!!", "프래그먼트에서 받은 storeId: $storeId")
+            }
+        }
         initializeUI()
         setupTableInput()
         setupCompleteButton()
@@ -81,8 +92,19 @@ class UserTableNumberSelectFragment :
 
     private fun setupCompleteButton() {
         binding.btnTableNumberSelectComplete.setOnClickListener {
+
+            val tableNumber = binding.hiddenInputEditText.text.toString()
+
+            val args = Bundle().apply {
+                putLong("storeId", storeId)
+                putString("tableNumber", tableNumber)
+            }
+
+            val nextFragment = UserPartnershipSelectFragment()
+            nextFragment.arguments = args
+
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container_view, UserPartnershipSelectFragment())
+                .replace(R.id.fragment_container_view, nextFragment)
                 .addToBackStack(null)
                 .commit()
         }

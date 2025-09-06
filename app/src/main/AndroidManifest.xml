@@ -7,6 +7,9 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="true" />
     <uses-permission android:name="android.permission.INTERNET" />
 <!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -65,7 +68,7 @@
         <activity
             android:name=".presentation.user.UserMainActivity"
             android:exported="false" />
-        <activity android:name=".presentation.user.dashboard.UserServiceRecordActivity" />
+
         <activity android:name=".presentation.user.home.UserQRVerifyActivity" />
         <activity android:name=".presentation.user.dashboard.UserSuggestCompleteActivity" />
         <activity android:name=".presentation.user.dashboard.UserServiceSuggestActivity" />

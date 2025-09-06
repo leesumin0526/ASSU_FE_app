@@ -30,7 +30,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
-            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6ImFmMDg3ZDAwLWNkZWEtNDQwNi1hZGE5LTc1N2IxY2Y1ZTU1NCIsImlhdCI6MTc1NjY5MjIxMSwiZXhwIjoxNzU2Njk1ODExfQ.GvTTMEZLZHwzDAUBIdugzthl3P8xEH4APo_vW60IRb0\"") // 🔴 임시
+            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjExNzEyY2I0LTQwNzQtNDc3YS1iNWViLWEzMzhlYWQ4Njk3ZiIsImlhdCI6MTc1NzEzODgyNCwiZXhwIjoxNzU3MTQyNDI0fQ.wpaAV9pyabOuPl2BhOAGfo8Be40mq4h1Jzb2bL0mTvU\"") // 🔴 임시
 
         }
         release {
@@ -128,4 +128,8 @@ dependencies {
 
     //Gson
     implementation("com.google.code.gson:gson:2.10.1")
+
+    //QR 파싱 라이브러리
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }

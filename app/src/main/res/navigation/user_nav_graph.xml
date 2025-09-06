@@ -76,7 +76,7 @@
 <!--        android:id="@+id/userPartnershipSelectFragment"-->
 <!--        android:name="com.example.assu_fe_app.presentation.user.home.UserPartnershipSelectFragment"-->
 <!--        android:label="UserPartnershipSelectFragment">-->
-
+<!--    </fragment>-->
 <!--        &lt;!&ndash; → 인증 완료 &ndash;&gt;-->
 <!--        <action-->
 <!--            android:id="@+id/action_userPartnershipSelectFragment_to_userPartnershipVerifyCompleteFragment"-->
