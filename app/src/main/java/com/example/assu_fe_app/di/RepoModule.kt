@@ -4,8 +4,12 @@ import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
 import com.example.assu_fe_app.data.repositoryImpl.chatting.ChattingRepositoryImpl
 import com.example.assu_fe_app.data.repository.deviceToken.DeviceTokenRepository
 import com.example.assu_fe_app.data.repository.review.ReviewRepository
+import com.example.assu_fe_app.data.repository.store.StoreRepository
+import com.example.assu_fe_app.data.repository.usage.UsageRepository
 import com.example.assu_fe_app.data.repositoryImpl.review.ReviewRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.store.StoreRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.usage.UsageRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -29,4 +33,15 @@ abstract class RepoModule {
     abstract fun bindReviewRepository(
         impl: ReviewRepositoryImpl
     ): ReviewRepository
+
+    @Binds @Singleton
+    abstract fun bindStoreRepository(
+        impl: StoreRepositoryImpl
+    ): StoreRepository
+
+    @Binds @Singleton
+    abstract fun bindUsageRepository(
+        impl: UsageRepositoryImpl
+    ): UsageRepository
+
 }

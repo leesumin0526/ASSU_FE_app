@@ -35,11 +35,7 @@ class ReviewRepositoryImpl @Inject constructor(
             // DTO → JSON → RequestBody 변환
             val json = Gson().toJson(request)
             val requestBody = json.toRequestBody("application/json".toMediaTypeOrNull())
-//            val requestPart = MultipartBody.Part.createFormData(
-//                "request",
-//                null, // 파일이 아니므로 파일명은 null
-//                json.toRequestBody("application/json".toMediaTypeOrNull())
-//            )
+
             apiHandler(
                 { api.writeReview(requestBody, images) },
                 { dto -> dto }

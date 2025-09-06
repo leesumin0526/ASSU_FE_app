@@ -31,12 +31,15 @@ class   UserStarReviewActivity : BaseActivity<ActivityUserStarReviewBinding>(R.l
         // 여기서 이전 화면에서 넘어온 데이터 쓰기
 
         var selectedRating = 0
-        val adminName : String ?= intent.getStringExtra("adminName")
+        val adminName= intent.getStringExtra("adminName")
         val content : String ?= intent.getStringExtra("content")
         val partnershipUsageId : Long?= intent.getLongExtra("partnershipUsageId", 0)
+        val storeId: Long?= intent.getLongExtra("storeId", 0)
+        val partnerId: Long?= intent.getLongExtra("partnerId", 0)
+        val storeName: String?= intent.getStringExtra("storeName")
 
         binding.tvStarReviewPartnership.text = adminName
-
+        binding.tvStarReviewPlaceName.text= storeName
         // 별 정의
         val stars = listOf(
             binding.ivStarReviewStar1,
@@ -66,8 +69,7 @@ class   UserStarReviewActivity : BaseActivity<ActivityUserStarReviewBinding>(R.l
                 activatedButton.visibility=View.VISIBLE
             }
         }
-        // 리뷰 가게 이름 넣어주기..
-        binding.tvStarReviewPlaceName.text = intent.getStringExtra("marketName")
+
 
         // 뒤로 가기 버튼 (activity -> fragment 전환. 그저 백스텝이어서 finish로 activity 끝냄)
         val backButton = binding.ivStarReviewBackArrow
@@ -83,6 +85,10 @@ class   UserStarReviewActivity : BaseActivity<ActivityUserStarReviewBinding>(R.l
                 putExtra("rating", selectedRating)
                 putExtra("adminName",adminName )
                 putExtra("content", content)
+                putExtra("partnershipUsageId", partnershipUsageId)
+                putExtra("storeId", storeId)
+                putExtra("partnerId", partnerId)
+                putExtra("storeName", storeName)
             }
             startActivity(intent)
         }
@@ -95,6 +101,7 @@ class   UserStarReviewActivity : BaseActivity<ActivityUserStarReviewBinding>(R.l
         super.onCreate(savedInstanceState, persistentState)
 
         val marketName = intent.getStringExtra("marketName")
+        binding.tvStarReviewPlaceName.text = marketName
     }
 
     private fun Int.dpToPx(context: Context): Int {

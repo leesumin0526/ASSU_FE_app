@@ -71,12 +71,15 @@ class UserPhotoReviewActivity : BaseActivity<ActivityUserPhotoReviewBinding>(R.l
         )
 
         val rating = intent.getIntExtra("rating", 0)
-        Log.d("넘어온 rate", rating.toString())
         val adminName = intent.getStringExtra("adminName")
         val content = intent.getStringExtra("content")
         val partnershipUsageId = intent.getLongExtra("partnershipUsageId", 0)
+        val storeId = intent.getLongExtra("storeId", 0)
+        val partnerId = intent.getLongExtra("partnerId", 0)
+        val storeName = intent.getStringExtra("storeName")
 
-        binding.tvPhotoReviewAdmin.text = adminName
+        binding.tvPhotoReviewAdmin.text = storeName
+        binding.tvPhotoReviewContent.text = content
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -120,7 +123,6 @@ class UserPhotoReviewActivity : BaseActivity<ActivityUserPhotoReviewBinding>(R.l
             finish() // StarReviewActivity로 돌아감
         }
 
-        val finishWritingDeactivatedButton = binding.layoutFinishReviewDeactivatedButton
         val finishWritingActivatedButton = binding.layoutFinishReviewActivatedButton
         var review = binding.etWritePhotoReview
 
@@ -132,11 +134,11 @@ class UserPhotoReviewActivity : BaseActivity<ActivityUserPhotoReviewBinding>(R.l
         finishWritingActivatedButton.setOnClickListener {
             val request = ReviewWriteRequestDto(
                 rate = rating,
-                partnerId =9L, // TODO: 실제 파트너 ID로 교체
-                storeId = 2L, // TODO: 실제 스토어 ID로 교체
+                partnerId =partnerId,
+                storeId = storeId,
                 content = reviewViewModel.reviewText.value ?: "",
-                partnershipUsageId = 3L, // TODO: 실제 partnershipUsageID로 교체
-                adminName = "IT대학 학생회" // TODO: 실제 adminName 값으로 넣어주기
+                partnershipUsageId = partnershipUsageId,
+                adminName = adminName ?: "알 수 없는 학생회"
             )
 
             // 파일 URI를 MultipartBody.Part로 변환하여 ViewModel에 전달

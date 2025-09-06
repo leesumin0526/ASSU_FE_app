@@ -5,6 +5,8 @@ import com.example.assu_fe_app.data.DevBearerInterceptor
 import com.example.assu_fe_app.data.service.chatting.ChattingService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
 import com.example.assu_fe_app.data.service.review.ReviewService
+import com.example.assu_fe_app.data.service.store.StoreService
+import com.example.assu_fe_app.data.service.usage.UsageService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -82,4 +84,12 @@ object ServiceModule {
     @Provides @Singleton
     fun provideReviewService(retrofit: Retrofit): ReviewService =
         retrofit.create(ReviewService::class.java)
+
+    @Provides @Singleton
+    fun provideStoreService(retrofit: Retrofit): StoreService =
+        retrofit.create(StoreService::class.java)
+
+    @Provides @Singleton
+    fun provideUsageService(retrofit: Retrofit): UsageService =
+        retrofit.create(UsageService::class.java)
 }
