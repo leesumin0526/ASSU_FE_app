@@ -21,7 +21,16 @@
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.example.assu_fe_app.presentation.user.dashboard.DashboardFragment"
-        android:label="Dashboard"/>
+        android:label="Dashboard">
+        <action
+            android:id="@+id/action_dashboardFragment_to_userServiceRecordFragment"
+            app:destination="@id/userServiceRecordFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/userServiceRecordFragment"
+        android:name="com.example.assu_fe_app.presentation.user.dashboard.UserServiceRecordFragment"
+        android:label="UserServiceRecord"/>
 
     <fragment
         android:id="@+id/mypageFragment"
