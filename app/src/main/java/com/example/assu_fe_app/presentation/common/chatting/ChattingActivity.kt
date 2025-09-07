@@ -3,21 +3,15 @@ package com.example.assu_fe_app.presentation.common.chatting
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.ImageView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityChattingBinding
 import com.example.assu_fe_app.presentation.admin.AdminMainActivity
 import com.example.assu_fe_app.presentation.base.BaseActivity
-import com.example.assu_fe_app.presentation.common.chatting.adapter.ChattingChatListAdapter
 import com.example.assu_fe_app.presentation.common.chatting.adapter.ChattingMessageAdapter
 import com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalWritingFragment
-import com.example.assu_fe_app.presentation.user.UserMainActivity
 
 
 class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity_chatting) {

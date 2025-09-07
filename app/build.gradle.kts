@@ -25,15 +25,16 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "KAKAO_MAP_KEY", "\"${properties.getProperty("KAKAO_MAP_KEY")}\"")    }
+        buildConfigField("String", "KAKAO_MAP_KEY", "${properties.getProperty("KAKAO_MAP_KEY")}")    }
 
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
-            buildConfigField("String", "DEV_BEARER", "\"Bearer token\"") // 🔴 임시
+            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjYsInVzZXJuYW1lIjoiYWRtaW42QGV4YW1wbGUuY29tIiwianRpIjoiMjI2NzQzODAtNDMwOS00NTIwLWFhMDgtMWQ0YTQ0YmRjM2JlIiwiaWF0IjoxNzU3MjI4MDgyLCJleHAiOjE3NTcyMzE2ODJ9.N8FD16GJ-sVKh5sd2ui-V96YFL1HRrzC9Ank8oW4kbI\"") // 🔴 임시
 
         }
         release {
+//            buildConfigField("String", "DEV_BEARER", "\"\"") // 빈값으로 두기
             buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"") // 운영 주소로 교체
             isMinifyEnabled = false
             proguardFiles(
@@ -104,6 +105,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.moshi:moshi:1.15.1")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1") // ← 중요 (Kotlin adapter)
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -125,4 +127,7 @@ dependencies {
 
     // 테스트 (서버 목)
     testImplementation("com.squareup.okhttp3:mockwebserver:5.1.0")
+
+    // 프로필 사진 처리
+    implementation("io.coil-kt:coil:2.4.0")
 }

@@ -3,8 +3,11 @@ package com.example.assu_fe_app.data.service.chatting
 import com.example.assu_fe_app.data.dto.BaseResponse
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.chatting.response.CreateChatRoomResponseDto
+import com.example.assu_fe_app.data.dto.chatting.response.GetChattingRoomListResponseDto
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface ChattingService {
@@ -14,17 +17,16 @@ interface ChattingService {
         @Body request: CreateChatRoomRequestDto
     ): BaseResponse<CreateChatRoomResponseDto>
 
+    // 채팅방 목록 조회 api
+    @GET("chat/rooms")
+    suspend fun getChattingRoomList(
+    ): BaseResponse<List<GetChattingRoomListResponseDto>>
+
     // 메시지 읽음 처리 api
 //    @PATCH("chat/rooms/{roomId}/read")
 //    suspend fun readChatMessage(
 //        @Path("roomId") roomId: Long
 //    ): ReadChatMessageResponseDto
-
-    // 채팅방 목록 조회 api
-//    @GET("chat/rooms")
-//    suspend fun getChatRoomList(
-//        @Header("Authorization") token: String
-//    ): List<ChatRoomListResponseDto>
 
     // 채팅방 상세 조회 api
 //    @GET("chat/rooms/{roomId}/messages")

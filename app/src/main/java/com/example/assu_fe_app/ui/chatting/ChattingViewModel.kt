@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.domain.model.chatting.CreateChatRoomModel
+import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
 import com.example.assu_fe_app.domain.usecase.chatting.CreateChatRoomUseCase
+import com.example.assu_fe_app.domain.usecase.chatting.GetChattingRoomListUseCase
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.onError
 import com.example.assu_fe_app.util.onFail
@@ -18,9 +20,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChattingViewModel @Inject constructor(
-    private val createChatRoomUseCase: CreateChatRoomUseCase
+    private val createChatRoomUseCase: CreateChatRoomUseCase,
+    private val getChattingRoomListUseCase: GetChattingRoomListUseCase
 ) : ViewModel() {
 
+    // 채팅방 생성
     sealed interface CreateRoomUiState {
         data object Idle : CreateRoomUiState
         data object Loading : CreateRoomUiState
@@ -28,7 +32,6 @@ class ChattingViewModel @Inject constructor(
         data class Fail(val code: Int, val message: String?) : CreateRoomUiState
         data class Error(val message: String) : CreateRoomUiState
     }
-
     private val _createRoomState = MutableStateFlow<CreateRoomUiState>(CreateRoomUiState.Idle)
     val createRoomState: StateFlow<CreateRoomUiState> = _createRoomState
 
@@ -43,4 +46,27 @@ class ChattingViewModel @Inject constructor(
     }
 
     fun resetCreateState() { _createRoomState.value = CreateRoomUiState.Idle }
+
+
+    // 채팅방 리스트 조회
+    sealed interface GetChattingRoomListUiState {
+        data object Idle : GetChattingRoomListUiState
+        data object Loading : GetChattingRoomListUiState
+        data class Success(val data: List<GetChattingRoomListModel>) : GetChattingRoomListUiState
+        data class Fail(val code: Int, val message: String?) : GetChattingRoomListUiState
+        data class Error(val message: String) : GetChattingRoomListUiState
+    }
+
+    private val _getChattingRoomListState = MutableStateFlow<GetChattingRoomListUiState>(GetChattingRoomListUiState.Idle)
+    val getChattingRoomListState: StateFlow<GetChattingRoomListUiState> = _getChattingRoomListState
+
+    fun getChattingRoomList() {
+        viewModelScope.launch {
+            _getChattingRoomListState.value = GetChattingRoomListUiState.Loading
+            getChattingRoomListUseCase()
+                .onSuccess { _getChattingRoomListState.value = GetChattingRoomListUiState.Success(it) }
+                .onFail    { code -> _getChattingRoomListState.value = GetChattingRoomListUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e -> _getChattingRoomListState.value = GetChattingRoomListUiState.Error(e.message ?: "Unknown Error") }
+        }
+    }
 }
