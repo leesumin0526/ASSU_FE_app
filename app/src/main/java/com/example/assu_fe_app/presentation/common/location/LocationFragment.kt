@@ -68,8 +68,8 @@ class LocationFragment :
             val context = it.context
 
             // TODO: 여기서 id 불러오는 방법 바꾸기
-            val adminId =2L
-            val partnerId = 1L
+            val storeId =1L
+            val partnerId = 5L
 
             val entryMessage = if (item.isPartnered) {
                 "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
@@ -79,7 +79,7 @@ class LocationFragment :
 
             vm.createRoom(
                 CreateChatRoomRequestDto(
-                    adminId = adminId,
+                    storeId = storeId,
                     partnerId = partnerId)
             )
             binding.root.tag = entryMessage

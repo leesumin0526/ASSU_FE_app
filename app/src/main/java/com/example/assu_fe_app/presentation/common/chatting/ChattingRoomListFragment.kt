@@ -2,13 +2,14 @@ package com.example.assu_fe_app.presentation.common.chatting
 
 import android.util.Log
 import android.widget.Toast
-import androidx.core.view.isInvisible
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentChattingListBinding
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
@@ -35,6 +36,17 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
             adapter = this@ChattingRoomListFragment.adapter
             setHasFixedSize(true)
         }
+
+        // ✅ 어댑터에 데이터 들어오는지 로그 찍기
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                Log.d("recyclerView", "inserted: start=$positionStart, count=$itemCount, total=${adapter.itemCount}")
+            }
+
+            override fun onChanged() {
+                Log.d("recyclerView", "changed total=${adapter.itemCount}")
+            }
+        })
         viewModel.getChattingRoomList()
     }
 
@@ -52,8 +64,9 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
                         is ChattingViewModel.GetChattingRoomListUiState.Success -> {
                             val isEmpty = uiState.data.isEmpty()
                             adapter.submitList(uiState.data)
-                            binding.layoutAdminChattingNoHistoryInfo.isVisible = isEmpty
-                            binding.rvChattingRoomList.isVisible = !isEmpty
+
+                            binding.layoutAdminChattingNoHistoryInfo.isGone = !isEmpty
+                            binding.rvChattingRoomList.isVisible = true
                             Toast.makeText(requireContext(), "채팅방 리스트 불러오기 성공", Toast.LENGTH_SHORT).show()
                             Log.i("ChattingRoomListFragment", "채팅방 리스트 불러오기 성공")
                         }

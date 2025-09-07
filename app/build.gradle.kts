@@ -30,7 +30,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
-            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjYsInVzZXJuYW1lIjoiYWRtaW42QGV4YW1wbGUuY29tIiwianRpIjoiMjI2NzQzODAtNDMwOS00NTIwLWFhMDgtMWQ0YTQ0YmRjM2JlIiwiaWF0IjoxNzU3MjI4MDgyLCJleHAiOjE3NTcyMzE2ODJ9.N8FD16GJ-sVKh5sd2ui-V96YFL1HRrzC9Ank8oW4kbI\"") // 🔴 임시
+            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjYsInVzZXJuYW1lIjoiYWRtaW42QGV4YW1wbGUuY29tIiwianRpIjoiZmZjYmM5YjItMTFiYi00MzY5LThjMmUtMmE1ODE4ZGZkZGQ5IiwiaWF0IjoxNzU3MjMyMTcxLCJleHAiOjE3NTcyMzU3NzF9.BoYj4Of2qy-u2bshZZj-hryQ0onayerDvVfja-wvWqc\"") // 🔴 임시
 
         }
         release {

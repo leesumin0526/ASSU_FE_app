@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.common.chatting.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,8 +39,9 @@ class ChattingRoomListAdapter (
                 ivItemChattingListRestaurantProfile.load(item.opponentProfileImage) {
                     crossfade(true)
                     placeholder(R.drawable.ic_restaurant_ex)
-                    error(R.drawable.ic_emoji)
+                    error(R.drawable.ic_restaurant_ex)
                 }
+                Log.d("BIND", "id=${item.roomId}, name=${item.opponentName}")
                 tvChattingCounterpart.text = item.opponentName
                 tvChattingLastChat.text = item.lastMessage ?: ""
 

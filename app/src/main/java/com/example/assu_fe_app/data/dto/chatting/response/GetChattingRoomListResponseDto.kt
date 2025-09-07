@@ -7,20 +7,20 @@ import java.time.LocalDateTime
 @JsonClass(generateAdapter = true)
 data class GetChattingRoomListResponseDto(
     val roomId: Long,
-    val lastMessage: String,
-    val lastMessageTime: String,
-    val unreadMessageCount: Long,
+    val lastMessage: String? = null,
+    val lastMessageTime: String? = null,
+    val unreadMessageCount: Long ?= 0,
     val opponentId: Long,
     val opponentName: String,
-    val opponentProfileImage: String
+    val opponentProfileImage: String? = null
 ) {
     fun toModel() = GetChattingRoomListModel(
         roomId = this.roomId,
-        lastMessage = this.lastMessage,
-        lastMessageTime = lastMessageTime,
-        unreadMessageCount = this.unreadMessageCount,
+        lastMessage = this.lastMessage ?: "",
+        lastMessageTime = lastMessageTime ?: "",
+        unreadMessageCount = this.unreadMessageCount ?: 0,
         opponentId = this.opponentId,
         opponentName = this.opponentName,
-        opponentProfileImage = this.opponentProfileImage
+        opponentProfileImage = this.opponentProfileImage ?: ""
     )
 }

@@ -4,6 +4,6 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class CreateChatRoomRequestDto(
-    val adminId: Long,
+    val storeId: Long,
     val partnerId: Long
 )
