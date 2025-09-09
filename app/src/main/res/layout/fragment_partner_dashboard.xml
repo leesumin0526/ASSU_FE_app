@@ -2,375 +2,384 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/assu_background"
-        android:padding="24dp">
+        android:fillViewport="true">
 
-        <!-- 상단 타이틀 -->
-        <TextView
-            android:id="@+id/tv_dashboard_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="41dp"
-            android:fontFamily="@font/pretendard_semibold"
-            android:text="역전할머니맥주 숭실대점"
-            android:textColor="@color/assu_font_main"
-            android:textSize="22sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_dashboard_question"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="@font/pretendard_semibold"
-            android:text="제휴 사용자가 얼마나 많을까요?"
-            android:textColor="@color/assu_font_main"
-            android:textSize="22sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_dashboard_title" />
-
-        <!-- 메뉴별 분석 그래프 제목 -->
-        <TextView
-            android:id="@+id/tv_dashboard_menu_graph_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
-            android:layout_marginTop="18dp"
-            android:fontFamily="@font/pretendard_semibold"
-            android:text="제휴 이용현황"
-            android:textColor="@color/assu_font_main"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_dashboard_question" />
-
-        <!-- 그래프 여백 -->
-        <View
-            android:id="@+id/view_menu_graph_placeholder"
-            android:layout_width="310dp"
-            android:layout_height="138dp"
-            android:layout_marginTop="25dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_dashboard_menu_graph_title" />
-
-
-        <View
-            android:id="@+id/view_home_mg7"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.02857142857"
-            app:layout_constraintTop_toBottomOf="@id/view_menu_graph_placeholder" />
-
-        <TextView
-            android:id="@+id/tv_today_popular_place"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
-            android:fontFamily="@font/pretendard_medium"
-            android:text="🔥Today 제휴 인기 매장"
-            android:textColor="@color/assu_font_main"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@id/view_menu_graph_placeholder"
-            app:layout_constraintTop_toBottomOf="@id/view_home_mg7" />
-
-        <TextView
-            android:id="@+id/tv_today_update_date_and_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/pretendard_regular"
-            android:text="2024년 04월 20일 12:00 기준"
-            android:textColor="@color/assu_font_sub"
-            android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@id/tv_today_popular_place"
-            app:layout_constraintTop_toBottomOf="@id/tv_today_popular_place" />
-
-        <LinearLayout
-            android:id="@+id/layout_ranking_box"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_empty_line_box"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_today_update_date_and_time"
-            app:layout_constraintWidth_percent="0.8779">
-
-            <!-- 2) GridLayout 설정 -->
-            <androidx.gridlayout.widget.GridLayout
-                android:id="@+id/grid_ranking"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:alignmentMode="alignMargins"
-                app:columnCount="2"
-                app:useDefaultMargins="false">
-
-                <!-- 3) 각 아이템: width=0dp + columnWeight=1 으로 동일 너비 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_columnWeight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1"
-                        android:textColor="@color/assu_main"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="역전할머니맥주"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <!-- item2 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_columnWeight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="5"
-                        android:textColor="@color/assu_font_main"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="취향"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <!-- item3 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_columnWeight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2"
-                        android:textColor="@color/assu_main"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Bread * co"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <!-- item4 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_columnWeight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="6"
-                        android:textColor="@color/assu_font_main"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="인생맥주"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <!-- item5 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_columnWeight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3"
-                        android:textColor="@color/assu_main"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="역전할머니맥주"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <!-- item6 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_columnWeight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="7"
-                        android:textColor="@color/assu_font_main"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="취향"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <!-- item7 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_columnWeight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="4"
-                        android:textColor="@color/assu_font_main"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Bread * co"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <!-- item8 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_columnWeight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="8"
-                        android:textColor="@color/assu_font_main"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="인생맥주"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-            </androidx.gridlayout.widget.GridLayout>
-        </LinearLayout>
-        <!-- 확인 버튼 -->
-        <TextView
-            android:id="@+id/btn_view_contract"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/btn_basic_selected"
-            android:clickable="true"
-            android:fontFamily="@font/pretendard_semibold"
-            android:gravity="center"
-            android:text="리뷰 확인하기"
-            android:textColor="@android:color/white"
-            android:textSize="11sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_ranking_box" />
-
-        <!-- 고객 추이 그래프 제목 -->
-        <TextView
-            android:id="@+id/tv_dashboard_client_graph_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
-            android:layout_marginTop="28dp"
-            android:fontFamily="@font/pretendard_semibold"
-            android:text="고객 추이"
-            android:textColor="@color/assu_font_main"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_view_contract" />
-
-        <!-- 그래프 여백 -->
-        <View
-            android:id="@+id/view_client_graph_placeholder"
-            android:layout_width="310dp"
-            android:layout_height="138dp"
-            android:layout_marginTop="25dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_dashboard_client_graph_title" />
-
-        <!-- 분석 + 예측 문구 영역 -->
-        <LinearLayout
-            android:id="@+id/ll_client_dashboard_prediction"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:background="@color/assu_box"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_client_graph_placeholder">
+            android:background="@color/assu_background"
+            android:padding="24dp">
 
-            <!-- 분석 문구 -->
+            <!-- 상단 타이틀 -->
             <TextView
-                android:id="@+id/tv_dashboard_client_analysis"
+                android:id="@+id/tv_dashboard_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/pretendard_medium"
-                android:gravity="center"
-                android:text="이번 달에 숭실대학교 학생\n120명이 매장에서 제휴 서비스를 이용했어요"
+                android:layout_marginTop="41dp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:text="역전할머니맥주 숭실대점"
                 android:textColor="@color/assu_font_main"
-                android:textSize="16sp" />
-        </LinearLayout>
+                android:textSize="22sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tv_dashboard_question"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:text="제휴 사용자가 얼마나 많을까요?"
+                android:textColor="@color/assu_font_main"
+                android:textSize="22sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_dashboard_title" />
+
+            <!-- 메뉴별 분석 그래프 제목 -->
+            <TextView
+                android:id="@+id/tv_dashboard_menu_graph_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:text="제휴 이용현황"
+                android:textColor="@color/assu_font_main"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_dashboard_question" />
+
+            <!-- 제휴 이용현황 라인 차트 -->
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart_partnership"
+                android:layout_width="310dp"
+                android:layout_height="138dp"
+                android:layout_marginTop="25dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_dashboard_menu_graph_title" />
+
+            <View
+                android:id="@+id/view_home_mg7"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                app:layout_constraintTop_toBottomOf="@id/lineChart_partnership" />
+
+            <TextView
+                android:id="@+id/tv_today_popular_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:fontFamily="@font/pretendard_medium"
+                android:text="🔥Today 제휴 인기 매장"
+                android:textColor="@color/assu_font_main"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@id/lineChart_partnership"
+                app:layout_constraintTop_toBottomOf="@id/view_home_mg7" />
+
+            <TextView
+                android:id="@+id/tv_today_update_date_and_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/pretendard_regular"
+                android:text="2024년 04월 20일 12:00 기준"
+                android:textColor="@color/assu_font_sub"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/tv_today_popular_place"
+                app:layout_constraintTop_toBottomOf="@id/tv_today_popular_place" />
+
+            <LinearLayout
+                android:id="@+id/layout_ranking_box"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_empty_line_box"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_today_update_date_and_time"
+                app:layout_constraintWidth_percent="0.8779">
+
+                <!-- GridLayout 설정 -->
+                <androidx.gridlayout.widget.GridLayout
+                    android:id="@+id/grid_ranking"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:alignmentMode="alignMargins"
+                    app:columnCount="2"
+                    app:useDefaultMargins="false">
+
+                    <!-- 각 아이템: width=0dp + columnWeight=1 으로 동일 너비 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_columnWeight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1"
+                            android:textColor="@color/assu_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="역전할머니맥주"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- item2 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_columnWeight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5"
+                            android:textColor="@color/assu_font_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="취향"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- item3 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_columnWeight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2"
+                            android:textColor="@color/assu_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Bread * co"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- item4 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_columnWeight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="6"
+                            android:textColor="@color/assu_font_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="인생맥주"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- item5 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_columnWeight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="3"
+                            android:textColor="@color/assu_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="역전할머니맥주"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- item6 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_columnWeight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="7"
+                            android:textColor="@color/assu_font_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="취향"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- item7 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_columnWeight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4"
+                            android:textColor="@color/assu_font_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Bread * co"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- item8 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_columnWeight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="8"
+                            android:textColor="@color/assu_font_main"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="인생맥주"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                </androidx.gridlayout.widget.GridLayout>
+            </LinearLayout>
+
+            <!-- 확인 버튼 -->
+            <TextView
+                android:id="@+id/btn_view_contract"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/btn_basic_selected"
+                android:clickable="true"
+                android:fontFamily="@font/pretendard_semibold"
+                android:gravity="center"
+                android:text="리뷰 확인하기"
+                android:textColor="@android:color/white"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_ranking_box" />
+
+            <!-- 고객 추이 그래프 제목 -->
+            <TextView
+                android:id="@+id/tv_dashboard_client_graph_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="28dp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:text="고객 추이"
+                android:textColor="@color/assu_font_main"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_view_contract" />
+
+            <!-- 고객 추이 바 차트 -->
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/barChart_clients"
+                android:layout_width="310dp"
+                android:layout_height="138dp"
+                android:layout_marginTop="25dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_dashboard_client_graph_title" />
+
+            <!-- 분석 + 예측 문구 영역 -->
+            <LinearLayout
+                android:id="@+id/ll_client_dashboard_prediction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="24dp"
+                android:background="@color/assu_box"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barChart_clients"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <!-- 분석 문구 -->
+                <TextView
+                    android:id="@+id/tv_dashboard_client_analysis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:gravity="center"
+                    android:text="이번 달에 숭실대학교 학생\n120명이 매장에서 제휴 서비스를 이용했어요"
+                    android:textColor="@color/assu_font_main"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </layout>

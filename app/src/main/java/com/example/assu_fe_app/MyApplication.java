@@ -22,7 +22,10 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
-        KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
+//        KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
+        if (isArmDevice()) {
+            KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
+        }
 
     }
 
@@ -48,5 +51,10 @@ public class MyApplication extends Application {
             return cm.getActiveNetworkInfo() != null
                     && cm.getActiveNetworkInfo().isConnectedOrConnecting();
         }
+    }
+    private boolean isArmDevice() {
+        String abi = Build.SUPPORTED_ABIS != null && Build.SUPPORTED_ABIS.length > 0
+                ? Build.SUPPORTED_ABIS[0] : "";
+        return abi.contains("arm");
     }
 }

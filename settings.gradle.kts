@@ -11,6 +11,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://devrepo.kakao.com/nexus/repository/kakaomap-releases/") }
+        maven { url =uri("https://jitpack.io") }
     }
 }
 rootProject.name = "ASSU_FE_app"
