@@ -30,7 +30,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
-            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjYsInVzZXJuYW1lIjoiYWRtaW42QGV4YW1wbGUuY29tIiwianRpIjoiZmZjYmM5YjItMTFiYi00MzY5LThjMmUtMmE1ODE4ZGZkZGQ5IiwiaWF0IjoxNzU3MjMyMTcxLCJleHAiOjE3NTcyMzU3NzF9.BoYj4Of2qy-u2bshZZj-hryQ0onayerDvVfja-wvWqc\"") // 🔴 임시
+            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjYsInVzZXJuYW1lIjoiYWRtaW42QGV4YW1wbGUuY29tIiwianRpIjoiZTFhZDFlZTgtMzEyZC00NjJhLWE0YzgtNWI2MjhhYzdjZDVlIiwiaWF0IjoxNzU3NDI3OTAwLCJleHAiOjE3NTc0MzE1MDB9.eAea2R-fY3QXq-ILKZU0fZjUdKeYesFZo425Gm3Wrl4\"") // 🔴 임시
 
         }
         release {
@@ -130,4 +130,14 @@ dependencies {
 
     // 프로필 사진 처리
     implementation("io.coil-kt:coil:2.4.0")
+
+    // 채팅
+//    implementation("io.github.hannesa2:stomp-android:2.0.5") // 유지보수 포크
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+    // RxJava 2 (+ RxAndroid 2)  ← 꼭 추가
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+
+    // 시간 포맷
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
 }

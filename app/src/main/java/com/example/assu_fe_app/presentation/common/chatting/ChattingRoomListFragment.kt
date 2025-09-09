@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.common.chatting
 
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.core.view.isGone
@@ -91,6 +92,14 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
     }
 
     private fun onRoomClick(item: GetChattingRoomListModel) {
+        binding.rvChattingRoomList.isEnabled = false
+        binding.rvChattingRoomList.postDelayed({binding.rvChattingRoomList.isEnabled = true}, 500)
 
+        val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
+            putExtra("roomId", item.roomId)
+            putExtra("opponentName", item.opponentName)
+            putExtra("opponentProfileImage", item.opponentProfileImage)
+        }
+        startActivity(intent)
     }
 }

@@ -3,16 +3,16 @@ package com.example.assu_fe_app.data.service.chatting
 import com.example.assu_fe_app.data.dto.BaseResponse
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.chatting.response.CreateChatRoomResponseDto
+import com.example.assu_fe_app.data.dto.chatting.response.GetChatHistoryResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.GetChattingRoomListResponseDto
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ChattingService {
     // 채팅방 생성 api
-    @POST("chat/create/rooms")
+    @POST("chat/rooms")
     suspend fun createChatRoom(
         @Body request: CreateChatRoomRequestDto
     ): BaseResponse<CreateChatRoomResponseDto>
@@ -22,17 +22,17 @@ interface ChattingService {
     suspend fun getChattingRoomList(
     ): BaseResponse<List<GetChattingRoomListResponseDto>>
 
+    // 채팅방 상세 조회 api
+    @GET("chat/rooms/{roomId}/messages")
+    suspend fun getChatHistory(
+        @Path("roomId") roomId: Long
+    ): BaseResponse<GetChatHistoryResponseDto>
+
     // 메시지 읽음 처리 api
 //    @PATCH("chat/rooms/{roomId}/read")
 //    suspend fun readChatMessage(
 //        @Path("roomId") roomId: Long
 //    ): ReadChatMessageResponseDto
-
-    // 채팅방 상세 조회 api
-//    @GET("chat/rooms/{roomId}/messages")
-//    suspend fun getChatDetails(
-//        @Path("roomId") roomId: Long
-//    ): List<ChatDetailsResponseDto>
 
     // 채팅방 나가기 api
 //    @DELETE("chat/rooms/{roomId}/leave")

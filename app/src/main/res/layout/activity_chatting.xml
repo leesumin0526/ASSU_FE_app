@@ -51,7 +51,7 @@
             app:layout_constraintBottom_toBottomOf="@id/view_chatting_title"/>
 
         <TextView
-            android:id="@+id/tv_chatting_name"
+            android:id="@+id/tv_chatting_opponent_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/pretendard_semibold"

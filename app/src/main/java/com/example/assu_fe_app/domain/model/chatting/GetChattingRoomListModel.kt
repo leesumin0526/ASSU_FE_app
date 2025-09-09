@@ -1,7 +1,5 @@
 package com.example.assu_fe_app.domain.model.chatting
 
-import java.time.LocalDateTime
-
 data class GetChattingRoomListModel(
     val roomId: Long,
     val lastMessage: String,

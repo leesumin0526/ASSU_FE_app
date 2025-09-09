@@ -1,10 +1,16 @@
 package com.example.assu_fe_app.presentation.common.chatting
 
+import ChattingMessageItem
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityChattingBinding
@@ -12,11 +18,20 @@ import com.example.assu_fe_app.presentation.admin.AdminMainActivity
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.common.chatting.adapter.ChattingMessageAdapter
 import com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalWritingFragment
+import com.example.assu_fe_app.ui.chatting.ChattingViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import kotlin.getValue
 
-
+@AndroidEntryPoint
 class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity_chatting) {
 
-    private lateinit var adapter: ChattingMessageAdapter
+    private val viewModel: ChattingViewModel by viewModels()
+
+    // ✅ 변경: 어댑터를 필드로 보관(한 번만 생성)
+    private lateinit var messageAdapter: ChattingMessageAdapter
+    private var currentItems: MutableList<ChattingMessageItem> = mutableListOf() // ✅ 변경: 누적 리스트
+
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -31,39 +46,35 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             insets
         }
 
-        // 지도에서 어느 버튼을 통해 왔는지 알려주는 메시지를 받는 코드입니다.
-        // 문의하기: 채팅방 생성되고 해당 방으로 들어가지게
-        // 제휴 계약서 보기: 채팅 창으로 이동해서 제휴 계약서 모달 띄우기
-        val entryMessage = intent.getStringExtra("entryMessage")
-        Log.d("ChattingActivity", "도착 메시지: $entryMessage")
+        val roomId = intent.getLongExtra("roomId", -1L)
+        val opponentName = intent.getStringExtra("opponentName") ?: ""
+        val opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
 
-        val messages = listOf(
-            ChattingMessageItem.OtherMessage(
-                profileImageUrl = "https://example.com/profile.jpg",
-                message = "안녕하세요, 제휴 문의 드리고 싶어요!",
-                sentAt = "오후 3:50"
-            ),
-            ChattingMessageItem.MyMessage(
-                message = "네! 어떤 내용이신가요?",
-                sentAt = "오후 3:52",
-                isRead = true
-            ),
-            ChattingMessageItem.OtherMessage(
-                profileImageUrl = "https://example.com/profile.jpg",
-                message = "특정 조건에 대한 혜택을 드리고 싶습니다.",
-                sentAt = "오후 3:55"
-            )
-        )
+        Log.d("ChattingActivity", "roomId=$roomId, name=$opponentName")
+        binding.tvChattingOpponentName?.text = opponentName
 
-        adapter = ChattingMessageAdapter(messages)
-        binding.rvChattingMessageList.adapter = adapter
-        binding.rvChattingMessageList.layoutManager = LinearLayoutManager(this)
-
-
-        binding.ivChattingBack.setOnClickListener {
-            navigateToChatting()
+        // 채팅방 리스트 적용
+        messageAdapter = ChattingMessageAdapter(currentItems)
+        binding.rvChattingMessageList.apply {
+            layoutManager = LinearLayoutManager(this@ChattingActivity).apply {
+                stackFromEnd = true
+            }
+            adapter = messageAdapter
+            setHasFixedSize(true)
         }
 
+        // 메시지 전송
+        binding.btnChattingSend.setOnClickListener {
+            val text = binding.etChattingInput.text.toString()
+            viewModel.sendMessage(text)
+            binding.etChattingInput.setText("")
+        }
+
+        // 뒤로가기 클릭
+        binding.ivChattingBack.setOnClickListener { navigateToChatting() }
+
+
+        // 제안서 작성 클릭하기
         binding.llChattingSent.setOnClickListener {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatting_fragment_container, ServiceProposalWritingFragment())
@@ -81,6 +92,76 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     }
 
     override fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.socketConnected.collect { connected ->
+                        binding.btnChattingSend.isEnabled = connected
+                        binding.btnChattingSend.alpha = if (connected) 1.0f else 0.4f
+                    }
+                }
+
+                // ✅ 유지: 히스토리 API 상태 수집 (최초 진입 시 한 번 내려옴)
+                launch {
+
+                    viewModel.getChatHistoryState.collect { state ->
+                        when (state) {
+                            is ChattingViewModel.GetChatHistoryUiState.Loading -> { /* 필요시 로딩 */ }
+                            is ChattingViewModel.GetChatHistoryUiState.Success -> { }
+                            is ChattingViewModel.GetChatHistoryUiState.Fail -> {
+                                Toast.makeText(
+                                    this@ChattingActivity,
+                                    "조회 실패(${state.code})",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            is ChattingViewModel.GetChatHistoryUiState.Error -> {
+                                Toast.makeText(
+                                    this@ChattingActivity,
+                                    "오류: ${state.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            else -> Unit
+                        }
+                    }
+                }
+
+                // ✅ 추가: 실시간 소켓 메시지 스트림 수집
+                // (ViewModel에서 _messages(StateFlow<List<ChatMessageModel>>) 노출한다고 가정)
+                launch {
+                    viewModel.messages.collect { list ->
+                        // Domain → UI 변환(증분 반영을 위해 간단히 전체 다시 맵핑)
+                        val uiItems = list.map { m ->
+                            if (m.isMyMessage) {
+                                ChattingMessageItem.MyMessage(
+                                    messageId = m.messageId,
+                                    message = m.message ?: "",
+                                    sentAt = formatTime(m.sendTime),
+                                    isRead = m.isRead
+                                )
+                            } else {
+                                ChattingMessageItem.OtherMessage(
+                                    messageId = m.messageId,
+                                    profileImageUrl = m.profileImageUrl,
+                                    message = m.message ?: "",
+                                    sentAt = formatTime(m.sendTime),
+                                    isRead = m.isRead
+                                )
+                            }
+                        }
+                        currentItems.clear()
+                        currentItems.addAll(uiItems)
+                        messageAdapter.notifyDataSetChanged()
+                        if (currentItems.isNotEmpty()) {
+                            binding.rvChattingMessageList.post {
+                                binding.rvChattingMessageList.smoothScrollToPosition(currentItems.size - 1)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -97,5 +178,54 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         }
         startActivity(intent)
         finish() // FinishReviewActivity 종료
+    }
+
+    private fun formatTime(raw: String): String {
+        // 서버/과거 데이터 양쪽 포맷 대응
+        val inputPatterns = arrayOf(
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd HH:mm",
+            "yyyy-MM-dd'T'HH:mm"
+        )
+
+        for (pattern in inputPatterns) {
+            try {
+                val inFmt = java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).apply {
+                    isLenient = false
+                }
+                val date = inFmt.parse(raw)
+                if (date != null) {
+                    val outFmt = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+                    return outFmt.format(date)
+                }
+            } catch (_: Exception) { /* 다음 패턴 시도 */ }
+        }
+
+        // 마지막 폴백: 기존 substring 로직 유지(깨지지 않도록 방어)
+        return if (raw.length >= 16) raw.substring(11, 16) else raw
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        val roomId = intent.getLongExtra("roomId", -1L)
+        val myId = 6L // TODO: 로그인 유저 id로 교체
+        val opponentId = 5L
+//        val opponentId = intent.getLongExtra("opponentId", -1L)
+
+        if (roomId <= 0L) {
+            Toast.makeText(this, "유효하지 않은 채팅방입니다", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        // ✅ 변경: 입장 시 히스토리 + 소켓 연결(뷰모델 내부에서 처리)
+        viewModel.enterRoom(roomId, myId, opponentId)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.disconnectSocket()
     }
 }

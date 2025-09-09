@@ -4,6 +4,7 @@ import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDt
 import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
 import com.example.assu_fe_app.data.service.chatting.ChattingService
 import com.example.assu_fe_app.domain.model.chatting.CreateChatRoomModel
+import com.example.assu_fe_app.domain.model.chatting.GetChatHistoryModel
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.apiHandler
@@ -28,6 +29,15 @@ class ChattingRepositoryImpl @Inject constructor(
         return apiHandler(
             {api.getChattingRoomList()},
             {dtoList -> dtoList.map { it.toModel() }}
+        )
+    }
+
+    override suspend fun getChatHistory(
+        roomId: Long
+    ): RetrofitResult<GetChatHistoryModel> {
+        return apiHandler(
+            {api.getChatHistory(roomId)},
+            {dto -> dto.toModel()}
         )
     }
 }
