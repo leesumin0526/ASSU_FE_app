@@ -5,8 +5,11 @@ import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDt
 import com.example.assu_fe_app.data.dto.chatting.response.CreateChatRoomResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.GetChatHistoryResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.GetChattingRoomListResponseDto
+import com.example.assu_fe_app.data.dto.chatting.response.LeaveChattingRoomResponseDto
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -32,11 +35,11 @@ interface ChattingService {
 //    @PATCH("chat/rooms/{roomId}/read")
 //    suspend fun readChatMessage(
 //        @Path("roomId") roomId: Long
-//    ): ReadChatMessageResponseDto
+//    ): BaseResponse<Read>
 
     // 채팅방 나가기 api
-//    @DELETE("chat/rooms/{roomId}/leave")
-//    suspend fun leaveChatRoom(
-//        @Path("roomId") roomId: Long
-//    ): LeaveChatRoomResponseDto
+    @DELETE("chat/rooms/{roomId}/leave")
+    suspend fun leaveChatRoom(
+        @Path("roomId") roomId: Long
+    ): BaseResponse<LeaveChattingRoomResponseDto>
 }

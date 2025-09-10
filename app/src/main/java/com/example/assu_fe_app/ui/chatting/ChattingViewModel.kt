@@ -22,6 +22,8 @@ import javax.inject.Inject
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.example.assu_fe_app.data.dto.chatting.WsMessageDto
+import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
+import com.example.assu_fe_app.domain.usecase.chatting.LeaveChattingRoomUseCase
 
 
 @HiltViewModel
@@ -29,10 +31,11 @@ class ChattingViewModel @Inject constructor(
     private val createChatRoomUseCase: CreateChatRoomUseCase,
     private val getChattingRoomListUseCase: GetChattingRoomListUseCase,
     private val getChatHistoryUseCase: GetChatHistoryUseCase,
+    private val leaveChattingRoomUseCase: LeaveChattingRoomUseCase,
     private val chatSocket: ChatSocketClient,
 
 
-) : ViewModel() {
+    ) : ViewModel() {
 
     // ------------------------- 채팅방 생성-------------------------
     sealed interface CreateRoomUiState {
@@ -101,6 +104,28 @@ class ChattingViewModel @Inject constructor(
                     _messages.value = it.messages}
                 .onFail    { code -> _getChatHistoryState.value = GetChatHistoryUiState.Fail(code, "서버 처리 실패") }
                 .onError   { e -> _getChatHistoryState.value = GetChatHistoryUiState.Error(e.message ?: "Unknown Error") }
+        }
+    }
+
+    // ------------------------- 채팅방 나가기-------------------------
+    sealed interface LeaveChattingRoomUiState {
+        data object Idle : LeaveChattingRoomUiState
+        data object Loading : LeaveChattingRoomUiState
+        data class Success(val data: LeaveChattingRoomModel) : LeaveChattingRoomUiState
+        data class Fail(val code: Int, val message: String?) : LeaveChattingRoomUiState
+        data class Error(val message: String) : LeaveChattingRoomUiState
+    }
+
+    private val _leaveChattingRoomState = MutableStateFlow<LeaveChattingRoomUiState>(LeaveChattingRoomUiState.Idle)
+    val leaveChattingRoomState: StateFlow<LeaveChattingRoomUiState> = _leaveChattingRoomState
+
+    fun leaveChattingRoom(roomId: Long) {
+        viewModelScope.launch {
+            _leaveChattingRoomState.value = LeaveChattingRoomUiState.Loading
+            leaveChattingRoomUseCase(roomId)
+                .onSuccess { _leaveChattingRoomState.value = LeaveChattingRoomUiState.Success(it) }
+                .onFail    { code -> _leaveChattingRoomState.value = LeaveChattingRoomUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e -> _leaveChattingRoomState.value = LeaveChattingRoomUiState.Error(e.message ?: "Unknown Error") }
         }
     }
 
