@@ -1,9 +1,12 @@
 package com.example.assu_fe_app.presentation.common.chatting
 
-import ChattingMessageItem
+
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
@@ -13,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.chatting.ChattingMessageItem
 import com.example.assu_fe_app.databinding.ActivityChattingBinding
 import com.example.assu_fe_app.presentation.admin.AdminMainActivity
 import com.example.assu_fe_app.presentation.base.BaseActivity
@@ -22,6 +26,7 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.getValue
+import androidx.core.view.isVisible
 
 @AndroidEntryPoint
 class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity_chatting) {
@@ -30,7 +35,6 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
     // ✅ 변경: 어댑터를 필드로 보관(한 번만 생성)
     private lateinit var messageAdapter: ChattingMessageAdapter
-    private var currentItems: MutableList<ChattingMessageItem> = mutableListOf() // ✅ 변경: 누적 리스트
 
 
     override fun initView() {
@@ -54,13 +58,16 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         binding.tvChattingOpponentName?.text = opponentName
 
         // 채팅방 리스트 적용
-        messageAdapter = ChattingMessageAdapter(currentItems)
+        messageAdapter = ChattingMessageAdapter()
         binding.rvChattingMessageList.apply {
             layoutManager = LinearLayoutManager(this@ChattingActivity).apply {
                 stackFromEnd = true
             }
             adapter = messageAdapter
             setHasFixedSize(true)
+            // ✨ 깜빡임 방지(부분 갱신 payload 시에도 안정적)
+            (itemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)
+                ?.supportsChangeAnimations = false
         }
 
         // 메시지 전송
@@ -89,6 +96,18 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                 // reason 값: "ivCross", "btnText", "bgImage" 등
             }
         }
+
+
+        binding.ivChattingPlus.setOnClickListener {
+            binding.flChattingOverlay.visibility = View.VISIBLE
+            binding.layoutChattingLocationBoxAdmin.visibility = View.VISIBLE
+        }
+
+        binding.flChattingOverlay.setOnClickListener {
+            binding.flChattingOverlay.visibility = View.GONE
+            binding.layoutChattingLocationBoxAdmin.visibility = View.GONE
+        }
+
     }
 
     override fun initObserver() {
@@ -103,11 +122,35 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
                 // ✅ 유지: 히스토리 API 상태 수집 (최초 진입 시 한 번 내려옴)
                 launch {
-
                     viewModel.getChatHistoryState.collect { state ->
                         when (state) {
                             is ChattingViewModel.GetChatHistoryUiState.Loading -> { /* 필요시 로딩 */ }
-                            is ChattingViewModel.GetChatHistoryUiState.Success -> { }
+                            is ChattingViewModel.GetChatHistoryUiState.Success -> {
+                                val uiItems = state.data.messages.map { m ->
+                                    if (m.isMyMessage) {
+                                        ChattingMessageItem.MyMessage(
+                                            messageId = m.messageId,
+                                            message = m.message ?: "",
+                                            sentAt = formatTime(m.sendTime),
+                                            isRead = m.isRead
+                                        )
+                                    } else {
+                                        ChattingMessageItem.OtherMessage(
+                                            messageId = m.messageId,
+                                            profileImageUrl = m.profileImageUrl,
+                                            message = m.message ?: "",
+                                            sentAt = formatTime(m.sendTime),
+                                            isRead = m.isRead
+                                        )
+                                    }
+                                }
+                                messageAdapter.submitList(uiItems)
+                                if (uiItems.isNotEmpty()) {
+                                    binding.rvChattingMessageList.post {
+                                        binding.rvChattingMessageList.scrollToPosition(uiItems.size - 1)
+                                    }
+                                }
+                            }
                             is ChattingViewModel.GetChatHistoryUiState.Fail -> {
                                 Toast.makeText(
                                     this@ChattingActivity,
@@ -150,12 +193,10 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                                 )
                             }
                         }
-                        currentItems.clear()
-                        currentItems.addAll(uiItems)
-                        messageAdapter.notifyDataSetChanged()
-                        if (currentItems.isNotEmpty()) {
-                            binding.rvChattingMessageList.post {
-                                binding.rvChattingMessageList.smoothScrollToPosition(currentItems.size - 1)
+                        // ✅ DiffUtil + Payload 반영: 실시간 업데이트
+                        messageAdapter.submitList(uiItems) {
+                            if (uiItems.isNotEmpty()) {
+                                binding.rvChattingMessageList.smoothScrollToPosition(uiItems.size - 1)
                             }
                         }
                     }

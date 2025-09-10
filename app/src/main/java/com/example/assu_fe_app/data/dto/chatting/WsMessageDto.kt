@@ -1,6 +1,5 @@
 package com.example.assu_fe_app.data.dto.chatting
 
-import ChattingMessageItem
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)

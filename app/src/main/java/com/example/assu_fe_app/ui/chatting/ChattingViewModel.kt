@@ -189,7 +189,7 @@ class ChattingViewModel @Inject constructor(
             // 필요 시: return 하거나 "전송 보류" UI 처리
         }
 
-        chatSocket.sendMessage(roomId, myId, opponentId, trimmed)
+        chatSocket.sendMessage(roomId, myId, opponentId, trimmed, "TEXT")
 
 
         // 낙관적 반영(서버 echo를 따로 받고 싶으면 이 부분 제거)
@@ -197,7 +197,7 @@ class ChattingViewModel @Inject constructor(
             messageId = System.nanoTime(),
             message = text,
             sendTime = nowHHmm(),
-            isRead = true,
+            isRead = false,
             isMyMessage = true,
             profileImageUrl = ""
         )

@@ -1,8 +1,9 @@
 package com.example.assu_fe_app.data.socket
 
 import com.example.assu_fe_app.data.local.TokenProvider
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import io.reactivex.disposables.CompositeDisposable
-import okhttp3.OkHttpClient
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient
 import ua.naiksoftware.stomp.dto.LifecycleEvent
@@ -28,8 +29,11 @@ class ChatSocketClient(
         val roomId: Long,
         val senderId: Long,
         val receiverId: Long,
-        val message: String
+        val message: String,
+        @Json(name = "send_time")val sendTime: String,
+        @Json(name = "type")val type: String
     )
+
 
     fun connect(
         roomId: Long,
@@ -93,8 +97,21 @@ class ChatSocketClient(
 
 
     // 기존 sendMessage 교체
-    fun sendMessage(roomId: Long, senderId: Long, receiverId: Long, message: String) {
-        val json = sendAdapter.toJson(SendPayload(roomId, senderId, receiverId, message))
+    fun sendMessage(
+        roomId: Long,
+        senderId: Long,
+        receiverId: Long,
+        message: String,
+        type: String = "TEXT") {
+
+        val formatted = java.text.SimpleDateFormat(
+            "yyyy-MM-dd HH:mm:ss",
+            java.util.Locale.getDefault()
+        ).format(java.util.Date())
+
+        val json = sendAdapter.toJson(
+            SendPayload(
+                roomId, senderId, receiverId, message, formatted, type))
 
         if (!connected || !this::stomp.isInitialized || !stomp.isConnected) {
             pendingQueue.addLast(json)
@@ -149,4 +166,5 @@ class ChatSocketClient(
         }, delayMs)
         if (retry < 4) retry++
     }
+
 }
