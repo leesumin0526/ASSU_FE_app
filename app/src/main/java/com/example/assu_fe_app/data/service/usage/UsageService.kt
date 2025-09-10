@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 interface UsageService {
 
-    @GET("/user/partnership/{year}/{month}")
+    @GET("/students/partnerships/{year}/{month}")
     suspend fun getMonthUsage(
         @Path("year") year: Int,
         @Path("month") month: Int

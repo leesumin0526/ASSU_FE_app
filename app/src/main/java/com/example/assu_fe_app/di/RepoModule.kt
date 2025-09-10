@@ -1,11 +1,13 @@
 package com.example.assu_fe_app.di
 
+import com.example.assu_fe_app.data.repository.certification.CertificationRepository
 import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
 import com.example.assu_fe_app.data.repositoryImpl.chatting.ChattingRepositoryImpl
 import com.example.assu_fe_app.data.repository.deviceToken.DeviceTokenRepository
 import com.example.assu_fe_app.data.repository.review.ReviewRepository
 import com.example.assu_fe_app.data.repository.store.StoreRepository
 import com.example.assu_fe_app.data.repository.usage.UsageRepository
+import com.example.assu_fe_app.data.repositoryImpl.certification.CertificationRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.review.ReviewRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.store.StoreRepositoryImpl
@@ -43,5 +45,10 @@ abstract class RepoModule {
     abstract fun bindUsageRepository(
         impl: UsageRepositoryImpl
     ): UsageRepository
+
+    @Binds @Singleton
+    abstract fun bindCertificationRepository(
+        impl: CertificationRepositoryImpl
+    ): CertificationRepository
 
 }

@@ -2,6 +2,7 @@ package com.example.assu_fe_app.di
 
 import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.DevBearerInterceptor
+import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
 import com.example.assu_fe_app.data.service.review.ReviewService
@@ -92,4 +93,8 @@ object ServiceModule {
     @Provides @Singleton
     fun provideUsageService(retrofit: Retrofit): UsageService =
         retrofit.create(UsageService::class.java)
+
+    @Provides @Singleton
+    fun provideCertificationService(retrofit: Retrofit): CertificationService =
+        retrofit.create(CertificationService::class.java)
 }
