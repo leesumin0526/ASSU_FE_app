@@ -20,7 +20,7 @@ class GetReviewViewModel @Inject constructor(
     private val deleteReviewUseCase: DeleteReviewUseCase
 ): ViewModel(){
 
-private val _reviewList = MutableLiveData<List<Review>>() // 🚨 리뷰 목록을 담을 LiveData
+    private val _reviewList = MutableLiveData<List<Review>>() // 🚨 리뷰 목록을 담을 LiveData
     val reviewList: LiveData<List<Review>> = _reviewList
 
     // 삭제 결과를 위한 LiveData 추가
