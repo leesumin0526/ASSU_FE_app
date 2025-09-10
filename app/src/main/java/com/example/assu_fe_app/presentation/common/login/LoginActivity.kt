@@ -82,17 +82,14 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
                             Log.d("FCM", "디바이스 토큰 등록 중…")
                         }
                         is DeviceTokenViewModel.UiState.Success -> {
-                            Toast.makeText(this@LoginActivity, "푸시 등록 완료", Toast.LENGTH_SHORT).show()
-                            Log.i("FCM", "등록 성공: ${state.msg}")
-                            finish() // 🔚 이제 종료 (다음 화면으로 이미 이동했을 것)
+                            val tokenId = state.tokenId
+                            Log.i("FCM", "등록 성공: ${tokenId}")
                         }
                         is DeviceTokenViewModel.UiState.Fail -> {
-                            Toast.makeText(this@LoginActivity, "푸시 등록 실패(${state.code})", Toast.LENGTH_SHORT).show()
                             Log.e("FCM", "등록 실패: ${state.code} ${state.msg}")
                             finish() // 실패해도 로그인은 진행했으니 종료할지, 남을지는 정책대로
                         }
                         is DeviceTokenViewModel.UiState.Error -> {
-                            Toast.makeText(this@LoginActivity, "네트워크 오류: ${state.msg}", Toast.LENGTH_SHORT).show()
                             Log.e("FCM", "등록 오류: ${state.msg}")
                             finish()
                         }

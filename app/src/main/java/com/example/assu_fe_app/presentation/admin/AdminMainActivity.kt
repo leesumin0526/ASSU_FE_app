@@ -12,6 +12,7 @@ import com.example.assu_fe_app.databinding.ActivityAdminMainBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.HiltAndroidApp
 
 @AndroidEntryPoint
 class AdminMainActivity : BaseActivity<ActivityAdminMainBinding>(R.layout.activity_admin_main) {

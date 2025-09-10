@@ -9,7 +9,9 @@ import androidx.navigation.ui.NavigationUI
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityUserMainBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class UserMainActivity : BaseActivity<ActivityUserMainBinding>(R.layout.activity_user_main) {
 
     override fun initView() {
