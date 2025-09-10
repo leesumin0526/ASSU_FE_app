@@ -128,7 +128,7 @@ class AdminHomeFragment :
         binding.btnRecommendInquiry.setOnClickListener {
             val req = CreateChatRoomRequestDto(
                 //TODO : 유저 정보 받아오기
-                storeId = 1L,
+                adminId = 1L,
                 partnerId = 5L
             )
             chattingViewModel.createRoom(req)
