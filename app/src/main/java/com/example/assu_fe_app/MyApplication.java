@@ -11,8 +11,6 @@ import com.kakao.vectormap.KakaoMapSdk;
 
 import dagger.hilt.android.HiltAndroidApp;
 
-
-
 @HiltAndroidApp
 public class MyApplication extends Application {
 

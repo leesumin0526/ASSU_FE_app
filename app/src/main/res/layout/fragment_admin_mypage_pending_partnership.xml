@@ -49,7 +49,7 @@
         app:layout_constraintBottom_toBottomOf="@id/btn_pending_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="자주 묻는 질문"
+        android:text="대기 중인 제휴 계약서"
         android:fontFamily="@font/pretendard_semibold"
         android:textColor="@color/assu_font_main"
         android:textSize="20sp"/>

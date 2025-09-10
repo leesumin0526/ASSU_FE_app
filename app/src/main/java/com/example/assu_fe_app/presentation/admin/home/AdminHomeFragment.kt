@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class AdminHomeFragment :
     BaseFragment<FragmentAdminHomeBinding>(R.layout.fragment_admin_home) {
+    private val vm: HomeViewModel by viewModels()
 
     private val chattingViewModel: ChattingViewModel by viewModels()
 
@@ -85,6 +86,11 @@ class AdminHomeFragment :
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.refreshBell()
+    }
+
     override fun initView() {
         binding.btnAdminHomeViewAll.setOnClickListener { view ->
             Navigation.findNavController(view).navigate(R.id.action_admin_home_to_admin_view_partner_list)
@@ -93,6 +99,17 @@ class AdminHomeFragment :
         binding.ivAdminHomeNotification.setOnClickListener { view ->
             val intent = Intent(requireContext(), NotificationActivity::class.java)
             startActivity(intent)
+        }
+
+        // 벨 아이콘 상태 구독
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.bellFilled.collect { exists ->
+                    binding.ivAdminHomeNotification.setImageResource(
+                        if (exists) R.drawable.ic_bell_fill else R.drawable.ic_bell_unfill
+                    )
+                }
+            }
         }
 
         binding.tvContractPassiveRegister.setOnClickListener { view ->

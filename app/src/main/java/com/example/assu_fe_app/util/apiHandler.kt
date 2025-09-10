@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.util
 
+import android.util.Log
 import com.example.assu_fe_app.MyApplication
 import com.example.assu_fe_app.data.dto.BaseResponse
 import retrofit2.Response
@@ -44,6 +45,7 @@ suspend fun <T : Any, R : Any> apiHandler(
     } catch (e: Exception) {
         RetrofitResult.Error(e)
     }
+
 }
 
 
