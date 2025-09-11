@@ -181,7 +181,7 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
     private fun getAuthToken(): String {
 //        val sharedPref = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
 //        return sharedPref.getString("token", "") ?: ""
-        return "Bearer "
+        return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjA3ODgzZTNiLTkyNzQtNDY5Yy1hMjhmLTI1NTI1MGRlN2QzNiIsImlhdCI6MTc1NzQ3MjcyNywiZXhwIjoxNzU3NDc2MzI3fQ.ZAFzKax3ID31a1mQtJmE9ED4QFMk_isgte2Yxh3NSOU"
     }
 
     private fun generateQrCode(sessionId: Long, adminId: Long) {

@@ -1,7 +1,8 @@
 package com.example.assu_fe_app.data.repositoryImpl.certification
 
-import com.example.assu_fe_app.data.dto.certification.UserSessionRequestDto
-import com.example.assu_fe_app.data.dto.certification.UserSessionResponseDto
+import com.example.assu_fe_app.data.dto.certification.request.PersonalCertificationRequestDto
+import com.example.assu_fe_app.data.dto.certification.request.UserSessionRequestDto
+import com.example.assu_fe_app.data.dto.certification.response.UserSessionResponseDto
 import com.example.assu_fe_app.data.repository.certification.CertificationRepository
 import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.util.RetrofitResult
@@ -20,6 +21,19 @@ class CertificationRepositoryImpl @Inject constructor(
                 {dto -> dto})
         }
         catch(e: Exception) {
+            RetrofitResult.Error(e)
+        }
+    }
+
+    override suspend fun postPersonalData(
+        request: PersonalCertificationRequestDto)
+    : RetrofitResult<Void> {
+        return try{
+            apiHandler(
+                {api.postPersonalData(request)},
+                {dto -> dto}
+            )
+        } catch(e: Exception){
             RetrofitResult.Error(e)
         }
     }

@@ -1,6 +1,6 @@
 package com.example.assu_fe_app.util
 
-import com.example.assu_fe_app.data.dto.certification.CertificationRequestDto
+import com.example.assu_fe_app.data.dto.certification.request.CertificationRequestDto
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request

@@ -5,11 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.assu_fe_app.data.dto.certification.UserSessionRequestDto
+import com.example.assu_fe_app.data.dto.certification.request.PersonalCertificationRequestDto
+import com.example.assu_fe_app.data.dto.certification.request.UserSessionRequestDto
 import com.example.assu_fe_app.data.dto.store.PaperContent
 import com.example.assu_fe_app.data.dto.store.StorePartnershipResponseDto
+import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
 import com.example.assu_fe_app.domain.usecase.certification.GetSessionIdUseCase
+import com.example.assu_fe_app.domain.usecase.certification.PostPersonalDataUseCase
 import com.example.assu_fe_app.domain.usecase.store.GetStorePartnershipUseCase
+import com.example.assu_fe_app.domain.usecase.usage.SaveUsageUseCase
 import com.example.assu_fe_app.util.RetrofitResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class UserVerifyViewModel @Inject constructor(
     private val useCase : GetStorePartnershipUseCase,
-    private val certificationUseCase: GetSessionIdUseCase
+    private val certificationUseCase: GetSessionIdUseCase,
+    private val saveUsageUseCase: SaveUsageUseCase,
+    private val personalCerifyUseCase: PostPersonalDataUseCase
 ): ViewModel(){
 
     // 기본 정보
@@ -29,9 +35,14 @@ class UserVerifyViewModel @Inject constructor(
     private val _storeName = MutableLiveData<String>()
     val storeName : LiveData<String> = _storeName
 
+    var partnershipUsageId : Long = 0
     var isPeopleType : Boolean = false
+
     var isGoodsList : Boolean = false
     var isPriceType : Boolean = false
+
+    private val _selectedService = MutableLiveData<String>()
+    val selectedService: LiveData<String> = _selectedService
 
     private val _contentList = MutableLiveData<List<PaperContent>>()
     val contentList: LiveData<List<PaperContent>> = _contentList
@@ -96,6 +107,37 @@ class UserVerifyViewModel @Inject constructor(
                 isPriceType = true
             } // 추후에 로직 수정
         }
+    }
+
+    fun postPersonalUsageData(
+        request : SaveUsageRequestDto
+    ){
+        viewModelScope.launch {
+            when (val result = saveUsageUseCase(request)) {
+                is RetrofitResult.Success -> {
+                    Log.d("데이터 저장 성공", "데이터를 성공적으로 저장하였습니다.")
+                }
+                is RetrofitResult.Error -> {
+
+                }
+                is RetrofitResult.Fail -> {
+                    // 실패 처리
+                }
+            }
+        }
+    }
+
+    fun postPersonalCertification(
+        request: PersonalCertificationRequestDto
+    ){
+        viewModelScope.launch{
+            postPersonalCertification(request)
+        }
+
+    }
+
+    fun selectService(service: String) {
+        _selectedService.value = service
     }
 
     // selectedContent에서 필요한 정보를 가져오는 편의 함수들

@@ -5,10 +5,12 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.dto.certification.UserSessionRequestDto
+import com.example.assu_fe_app.data.dto.certification.request.PersonalCertificationRequestDto
+import com.example.assu_fe_app.data.dto.certification.request.UserSessionRequestDto
 import com.example.assu_fe_app.databinding.FragmentUserPartnershipSelectBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.data.dto.store.PaperContent
+import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,6 +41,28 @@ class UserPartnershipSelectFragment :
                     // 선택된 제휴사 정보를 ViewModel에 저장
                     viewModel.selectPartnership(contentList[index])
                     navigateToComplete()
+
+                    if(!viewModel.isPeopleType) {
+                        viewModel.postPersonalCertification(
+                            PersonalCertificationRequestDto(
+                                viewModel.selectedAdminId,
+                                viewModel.storeId,
+                                viewModel.tableNumber.toInt()
+                            )
+                        )
+
+                        viewModel.postPersonalUsageData(
+                            SaveUsageRequestDto(
+                                viewModel.selectedAdminName,
+                                viewModel.selectedContentId,
+                                0,
+                                viewModel.selectedPaperContent,
+                                viewModel.storeName.toString(),
+                                emptyList()
+
+                            )
+                        )
+                    }
                 }
             }
         }

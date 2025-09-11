@@ -16,17 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class UserMainActivity : BaseActivity<ActivityUserMainBinding>(R.layout.activity_user_main) {
 
     override fun initView() {
-//        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            val extraPaddingTop = 3 // 8dp 추가
-//            v.setPadding(
-//                systemBars.left,
-//                systemBars.top + extraPaddingTop.dpToPx(v.context),
-//                systemBars.right,
-//                0
-//            )
-//            insets
-//        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
