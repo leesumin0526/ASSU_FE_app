@@ -1,8 +1,7 @@
-package com.example.assu_fe_app.data.dto.usage
+package com.example.assu_fe_app.data.dto.usage.response
 
 import com.example.assu_fe_app.data.dto.common.Pageable
 import com.example.assu_fe_app.data.dto.common.SortX
-import com.example.assu_fe_app.data.dto.usage.response.Detail
 
 data class GetUnreviewedUsageDto(
     val content: List<Detail>,

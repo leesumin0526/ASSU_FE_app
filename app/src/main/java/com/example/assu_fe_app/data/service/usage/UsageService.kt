@@ -1,9 +1,12 @@
 package com.example.assu_fe_app.data.service.usage
 
 import com.example.assu_fe_app.data.dto.BaseResponse
-import com.example.assu_fe_app.data.dto.usage.GetUnreviewedUsageDto
+import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
+import com.example.assu_fe_app.data.dto.usage.response.GetUnreviewedUsageDto
+import com.example.assu_fe_app.data.dto.usage.response.SaveUsageResponseDto
 import com.example.assu_fe_app.data.dto.usage.response.UserMonthUsageResponseDto
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -21,4 +24,9 @@ interface UsageService {
         @Query("size") size: Int,
         @Query("sort") sort: String
     ) : BaseResponse<GetUnreviewedUsageDto>
+
+    @POST("/partnerships/usage")
+    suspend fun postUsage(
+        request: SaveUsageRequestDto
+    ) : BaseResponse<SaveUsageResponseDto>
 }

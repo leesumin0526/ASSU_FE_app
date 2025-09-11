@@ -34,10 +34,6 @@ class WriteReviewViewModel @Inject constructor(
     // 외부(Activity)에서는 LiveData로 관찰만 가능하도록 노출
     val selectedImageUris: LiveData<MutableList<Uri>> = _selectedImageUris
 
-    // 현재 이미지 선택/변경 작업을 할 ImageView의 인덱스
-    // 이 상태는 UI 상호작용과 밀접하므로 ViewModel에 둘 수도 있고,
-    // Activity가 임시로 관리하다가 이미지 선택 시 ViewModel 함수에 파라미터로 넘길 수도 있습니다.
-    // 여기서는 ViewModel에 두는 예시를 보여드립니다.
     private val _currentImagePickerIndex = MutableLiveData<Int>()
     val currentImagePickerIndex: LiveData<Int> = _currentImagePickerIndex
 

@@ -1,7 +1,7 @@
 package com.example.assu_fe_app.domain.usecase.certification
 
-import com.example.assu_fe_app.data.dto.certification.UserSessionRequestDto
-import com.example.assu_fe_app.data.dto.certification.UserSessionResponseDto
+import com.example.assu_fe_app.data.dto.certification.request.UserSessionRequestDto
+import com.example.assu_fe_app.data.dto.certification.response.UserSessionResponseDto
 import com.example.assu_fe_app.data.dto.review.response.ReviewAverageResponseDto
 import com.example.assu_fe_app.data.repository.certification.CertificationRepository
 import com.example.assu_fe_app.util.RetrofitResult
