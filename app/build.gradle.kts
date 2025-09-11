@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     id("kotlin-kapt")
+    id("kotlin-parcelize")
     id("com.google.gms.google-services")
 }
 
@@ -30,7 +31,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
-            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjExNzEyY2I0LTQwNzQtNDc3YS1iNWViLWEzMzhlYWQ4Njk3ZiIsImlhdCI6MTc1NzEzODgyNCwiZXhwIjoxNzU3MTQyNDI0fQ.wpaAV9pyabOuPl2BhOAGfo8Be40mq4h1Jzb2bL0mTvU\"") // 🔴 임시
+            buildConfigField("String", "DEV_BEARER", "\"Bearer token\"") // 🔴 임시
 
         }
         release {
