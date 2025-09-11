@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.data.repository.usage
 
+import com.example.assu_fe_app.data.dto.certification.response.NoneDataResponseDto
 import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
 import com.example.assu_fe_app.data.dto.usage.response.GetUnreviewedUsageDto
 import com.example.assu_fe_app.data.dto.usage.ServiceRecord
@@ -24,7 +25,7 @@ interface UsageRepository {
 
     suspend fun postUsage(
         request : SaveUsageRequestDto
-    ) : RetrofitResult<SaveUsageResponseDto>
+    ) : RetrofitResult<NoneDataResponseDto>
 
 
 }

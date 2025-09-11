@@ -9,8 +9,10 @@ import com.example.assu_fe_app.presentation.common.login.LoginActivity
 import com.example.assu_fe_app.presentation.user.UserMainActivity
 import com.example.assu_fe_app.presentation.user.review.writing.UserPhotoReviewActivity
 import com.example.assu_fe_app.presentation.user.review.writing.UserStarReviewActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.jvm.java
 
+@AndroidEntryPoint
 class UserPartnershipVerifyCompleteFragment :
     BaseFragment<FragmentUserPartnershipVerifyCompleteBinding>(R.layout.fragment_user_partnership_verify_complete) {
 

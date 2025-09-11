@@ -60,9 +60,11 @@ class UserMainActivity : BaseActivity<ActivityUserMainBinding>(R.layout.activity
     private fun handleNavIntent(intent: Intent) {
         val destId = intent.getIntExtra("nav_dest_id", -1)
         if (destId != -1) {
-            // BottomNavigationView 에서 해당 메뉴 아이템을 선택하면
-            // NavigationUI 가 알아서 navController.navigate(destId) 해 줍니다.
-            binding.bottomNavigationView.selectedItemId = destId
+            val navHostFragment = supportFragmentManager
+                .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            val navController = navHostFragment.navController
+
+            navController.navigate(destId)
         }
     }
 

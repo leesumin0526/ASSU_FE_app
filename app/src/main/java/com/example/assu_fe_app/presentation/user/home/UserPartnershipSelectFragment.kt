@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.user.home
 
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -42,27 +43,7 @@ class UserPartnershipSelectFragment :
                     viewModel.selectPartnership(contentList[index])
                     navigateToComplete()
 
-                    if(!viewModel.isPeopleType) {
-                        viewModel.postPersonalCertification(
-                            PersonalCertificationRequestDto(
-                                viewModel.selectedAdminId,
-                                viewModel.storeId,
-                                viewModel.tableNumber.toInt()
-                            )
-                        )
 
-                        viewModel.postPersonalUsageData(
-                            SaveUsageRequestDto(
-                                viewModel.selectedAdminName,
-                                viewModel.selectedContentId,
-                                0,
-                                viewModel.selectedPaperContent,
-                                viewModel.storeName.toString(),
-                                emptyList()
-
-                            )
-                        )
-                    }
                 }
             }
         }
@@ -183,6 +164,29 @@ class UserPartnershipSelectFragment :
                 .commit()
             return
         } else{
+            Log.d("제휴 통계 데이터 전송", "인원 수 인증이 아니므로 통계 데이터 및 사용내역을 db에 전송합니다. ")
+            // 통계 데이터 용 개인 인증 데이터를 db에 post함.
+            viewModel.postPersonalCertification(
+                PersonalCertificationRequestDto(
+                    viewModel.selectedAdminId,
+                    viewModel.storeId,
+                    viewModel.tableNumber.toInt()
+                )
+            )
+
+            // 사용 내역 데이터도 post
+            viewModel.postPersonalUsageData(
+                SaveUsageRequestDto(
+                    viewModel.selectedAdminName,
+                    viewModel.selectedContentId,
+                    0,
+                    viewModel.selectedPaperContent,
+                    viewModel.storeName.value.toString(),
+                    emptyList()
+
+                )
+            )
+
             if(viewModel.isGoodsList){
                 requireActivity().supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container_view, UserSelectServiceFragment())

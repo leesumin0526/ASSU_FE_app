@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.DevBearerInterceptor
+import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
 import com.example.assu_fe_app.databinding.FragmentUserGroupVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.ui.certification.CertifyViewModel
@@ -22,6 +23,8 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
     private val viewModel: UserVerifyViewModel by activityViewModels()
     private val certificationViewModel: CertifyViewModel by activityViewModels()
     private var qrCodeImageBitmap: Bitmap? = null
+
+    private var userIds : List<Long>? = null
     private val buttons = listOf(
         binding.groupVerify1,
         binding.groupVerify2,
@@ -47,6 +50,10 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
                     showConnectionStatus("연결 끊김")
                 }
             }
+        }
+
+        certificationViewModel.userIds.observe(this){ ids ->
+            userIds = ids
         }
 
         // 현재 인증 인원 수 관찰
@@ -150,6 +157,17 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
         buttons.forEach {
             it.background = resources.getDrawable(R.drawable.btn_basic_selected, null)
         }
+
+        certificationViewModel.saveGroupUsage(
+            SaveUsageRequestDto(
+                viewModel.selectedAdminName,
+                viewModel.selectedContentId,
+                0 ,
+                viewModel.selectedPaperContent,
+                viewModel.storeName.toString(),
+                userIds?: emptyList()
+            )
+        )
 
         enableCompleteButton()
 

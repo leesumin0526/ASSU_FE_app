@@ -2,6 +2,7 @@ package com.example.assu_fe_app.data.repositoryImpl.usage
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.assu_fe_app.data.dto.certification.response.NoneDataResponseDto
 import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
 import com.example.assu_fe_app.data.dto.usage.response.GetUnreviewedUsageDto
 import com.example.assu_fe_app.data.dto.usage.ServiceRecord
@@ -53,7 +54,7 @@ class UsageRepositoryImpl @Inject constructor(
 
     override suspend fun postUsage(
         request: SaveUsageRequestDto)
-    : RetrofitResult<SaveUsageResponseDto> {
+    : RetrofitResult<NoneDataResponseDto> {
         return apiHandler(
             {api.postUsage(request)},
             {dto -> dto}

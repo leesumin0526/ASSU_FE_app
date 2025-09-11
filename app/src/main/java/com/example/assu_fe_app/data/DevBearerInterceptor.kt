@@ -7,7 +7,7 @@ import okhttp3.Response
 // 🔴 임시
 class DevBearerInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6ImQ3MGFiZDUyLTA0MjEtNDk4NC05YzdjLTEwOTBhMzkxZDRlOSIsImlhdCI6MTc1NzUxNjU4OCwiZXhwIjoxNzU3NTIwMTg4fQ.BiDMZj0qq-i1sHtXVKCbAxoghYMb6A5e_-OXThBkDt8"
+        val token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6ImY2MjkyMmI1LWM5YzUtNDFiMS1iYTU0LTllMzFiZGVlZjcxMyIsImlhdCI6MTc1NzU5MjExMiwiZXhwIjoxNzU3NTk1NzEyfQ.MVQ-ocFTFKJ8yzjxjImrUo2SE8NRtHzmAx6qnc0p5XE"
         val req = if (token.isNotBlank()) {
             chain.request().newBuilder()
                 .header("Authorization", token)

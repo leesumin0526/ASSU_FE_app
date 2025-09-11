@@ -9,11 +9,19 @@ import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.data.dto.certification.response.CertificationProgressDto
 import com.example.assu_fe_app.data.dto.certification.request.CertificationRequestDto
 import com.example.assu_fe_app.data.dto.certification.request.PersonalCertificationRequestDto
+import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
+import com.example.assu_fe_app.domain.usecase.usage.SaveUsageUseCase
+import com.example.assu_fe_app.util.RetrofitResult
 import com.google.gson.Gson
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-class CertifyViewModel : ViewModel() {
+@HiltViewModel
+class CertifyViewModel @Inject constructor(
+    private val saveUseCase : SaveUsageUseCase
+) : ViewModel() {
     private val _connectionStatus = MutableLiveData<ConnectionStatus>()
     val connectionStatus: LiveData<ConnectionStatus> = _connectionStatus
 
@@ -26,6 +34,8 @@ class CertifyViewModel : ViewModel() {
     private val _isCompleted = MutableLiveData<Boolean>()
     val isCompleted: LiveData<Boolean> = _isCompleted
 
+    private val _userIds = MutableLiveData<List<Long>>()
+    val userIds : LiveData<List<Long>> = _userIds
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
@@ -56,12 +66,30 @@ class CertifyViewModel : ViewModel() {
                 "completed" -> {
                     Log.d("JSON_PARSE🍭", "Completed update received: $jsonBody")
                     // 완료 상태 처리
-                    _isCompleted.postValue(true)
-                    _completionMessage.postValue(progress.message ?: "인증이 완료되었습니다.")
+                    _isCompleted.value = true
+                    _completionMessage.value = progress.message ?: "메세지가 비어있습니다. "
+                    _userIds.value = progress.userIds ?: emptyList()
                 }
             }
         } catch (e: Exception) {
             Log.e("JSON_PARSE", "Failed to parse progress update", e)
+        }
+    }
+
+    fun saveGroupUsage(
+        request : SaveUsageRequestDto
+    ){
+        viewModelScope.launch {
+            when ( val result = saveUseCase(request) ){
+                is RetrofitResult.Success -> {
+                    Log.d("데이터 저장 성공", "그룹 제휴 사용 데이터를 성공적으로 저장하였습니다.")
+                }
+
+                is RetrofitResult.Error -> {
+
+                }
+                is RetrofitResult.Fail ->{}
+            }
         }
     }
 

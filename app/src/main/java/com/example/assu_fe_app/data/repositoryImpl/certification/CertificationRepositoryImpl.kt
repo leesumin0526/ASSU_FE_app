@@ -2,11 +2,13 @@ package com.example.assu_fe_app.data.repositoryImpl.certification
 
 import com.example.assu_fe_app.data.dto.certification.request.PersonalCertificationRequestDto
 import com.example.assu_fe_app.data.dto.certification.request.UserSessionRequestDto
+import com.example.assu_fe_app.data.dto.certification.response.NoneDataResponseDto
 import com.example.assu_fe_app.data.dto.certification.response.UserSessionResponseDto
 import com.example.assu_fe_app.data.repository.certification.CertificationRepository
 import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.apiHandler
+import okhttp3.ResponseBody
 import javax.inject.Inject
 
 class CertificationRepositoryImpl @Inject constructor(
@@ -27,7 +29,7 @@ class CertificationRepositoryImpl @Inject constructor(
 
     override suspend fun postPersonalData(
         request: PersonalCertificationRequestDto)
-    : RetrofitResult<Void> {
+    : RetrofitResult<NoneDataResponseDto> {
         return try{
             apiHandler(
                 {api.postPersonalData(request)},

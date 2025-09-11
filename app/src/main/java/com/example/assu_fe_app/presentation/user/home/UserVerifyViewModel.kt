@@ -24,7 +24,7 @@ class UserVerifyViewModel @Inject constructor(
     private val useCase : GetStorePartnershipUseCase,
     private val certificationUseCase: GetSessionIdUseCase,
     private val saveUsageUseCase: SaveUsageUseCase,
-    private val personalCerifyUseCase: PostPersonalDataUseCase
+    private val personalCertifyUseCase: PostPersonalDataUseCase
 ): ViewModel(){
 
     // 기본 정보
@@ -35,7 +35,7 @@ class UserVerifyViewModel @Inject constructor(
     private val _storeName = MutableLiveData<String>()
     val storeName : LiveData<String> = _storeName
 
-    var partnershipUsageId : Long = 0
+
     var isPeopleType : Boolean = false
 
     var isGoodsList : Boolean = false
@@ -94,6 +94,7 @@ class UserVerifyViewModel @Inject constructor(
 
     // 선택된 제휴사 정보를 저장하는 함수
     fun selectPartnership(content: PaperContent) {
+        Log.d("선택된 제휴 ", "$content")
         _selectedContent.value = content
 
         if(!content.goods.isNullOrEmpty() && content.goods.size > 1){
@@ -101,10 +102,12 @@ class UserVerifyViewModel @Inject constructor(
         }
         if(content.people != null && content.people > 1){
             isPeopleType = true
+            Log.d("제휴 타입", "인원 수 제휴 인증이므로 곧 세션 요청이 날라갑니다. ")
         }
         content.cost?.let {
             if(it > 0){
                 isPriceType = true
+                Log.d("제휴 타입", "가격 기준 제휴 이므로 개인 인증으로 넘어갑니다. ")
             } // 추후에 로직 수정
         }
     }
@@ -118,10 +121,10 @@ class UserVerifyViewModel @Inject constructor(
                     Log.d("데이터 저장 성공", "데이터를 성공적으로 저장하였습니다.")
                 }
                 is RetrofitResult.Error -> {
-
+                    Log.d("사용내역 데이터 저장 실패", "${result.exception.message}")
                 }
                 is RetrofitResult.Fail -> {
-                    // 실패 처리
+                    Log.d("사용내역 데이터 저장 실패", "${result.message}")
                 }
             }
         }
@@ -131,7 +134,17 @@ class UserVerifyViewModel @Inject constructor(
         request: PersonalCertificationRequestDto
     ){
         viewModelScope.launch{
-            postPersonalCertification(request)
+            when (val result = personalCertifyUseCase(request)) {
+                is RetrofitResult.Success -> {
+                    Log.d("API 호출 성공", "개인 인증 데이터 전송 성공")
+                }
+                is RetrofitResult.Error -> {
+                    Log.d("개인 인증 데이터 저장 실패", "${result.exception.message}")
+                }
+                is RetrofitResult.Fail -> {
+                    Log.d("개인 인증 데이터 저장 실패", "${result.message}")
+                }
+            }
         }
 
     }

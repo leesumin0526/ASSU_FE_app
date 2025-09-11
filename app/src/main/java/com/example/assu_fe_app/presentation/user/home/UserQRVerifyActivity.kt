@@ -32,7 +32,7 @@ import kotlin.getValue
 class UserQRVerifyActivity :
     BaseActivity<ActivityUserQrVerifyBinding>(R.layout.activity_user_qr_verify) {
 
-    private lateinit var cameraExecutor: ExecutorService
+//    private lateinit var cameraExecutor: ExecutorService
     private var qrCodeScannedSuccessfully = true // QR 인식 성공 여부 플래그 ( 에뮬레이터에는 임시로 true 로 두기)
     private val CAMERA_PERMISSION_CODE = 100
     private var qrCodeData: String? = null
@@ -88,77 +88,76 @@ class UserQRVerifyActivity :
 
 
     private fun onEmulatorScanSuccess() {
-        qrCodeData = "https://assu.com/verify?sessionId=10&adminId=2"
+        qrCodeData = "https://assu.com/verify?storeId=2"
         Log.d("QR 인식 성공", "에뮬레이터 테스트용 데이터 사용: $qrCodeData")
         binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
         setConfirmButtonState(true)
         qrCodeScannedSuccessfully = true
-        // ViewModel 상태 관찰 시작 (테스트를 위해)
-        observeCertificationStates(10) // 예시 sessionId
+
     }
 
-    // 이 함수는 Activity에서만 필요한 로직이므로, BaseActivity가 아닌 이 클래스 내부에 두는 것이 좋습니다.
-    private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_CODE
-            )
-        } else {
-            startCamera()
-        }
-    }
-
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
-        cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
-
-            val preview = Preview.Builder().build().also {
-                it.setSurfaceProvider(binding.previewView.surfaceProvider)
-            }
-
-
-
-            val imageAnalyzer = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-                .also {
-                    it.setAnalyzer(cameraExecutor, QrCodeAnalyzer { qrCode ->
-                        if (!qrCodeScannedSuccessfully) {
-                            runOnUiThread {
-                                Toast.makeText(this, "QR 코드 인식 성공!", Toast.LENGTH_SHORT).show()
-//                                qrCodeData = qrCode
-                                qrCodeData = "https://assu.com/verify?sessionId=7&adminId=2"
-                                Log.d("QR 인식  성공!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "성공햇다네요? $qrCode")
-                                binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
-                                setConfirmButtonState(true) // '확인' 버튼 활성화
-                                qrCodeScannedSuccessfully = true // 플래그 설정
-                                cameraProvider.unbindAll()
-                            }
-                        }
-
-                    }
-                    )
-
-
-                }
-
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalyzer
-                )
-            } catch (e: Exception) {
-                Log.e("CameraX", "카메라 바인딩 실패", e)
-            }
-        }, ContextCompat.getMainExecutor(this))
-    }
+    // 에뮬레이터 테스트 시 임의로 ..
+//    private fun checkCameraPermission() {
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+//            != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(Manifest.permission.CAMERA),
+//                CAMERA_PERMISSION_CODE
+//            )
+//        } else {
+//            startCamera()
+//        }
+//    }
+//
+//    private fun startCamera() {
+//        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+//
+//        cameraProviderFuture.addListener({
+//            val cameraProvider = cameraProviderFuture.get()
+//
+//            val preview = Preview.Builder().build().also {
+//                it.setSurfaceProvider(binding.previewView.surfaceProvider)
+//            }
+//
+//
+//
+//            val imageAnalyzer = ImageAnalysis.Builder()
+//                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+//                .build()
+//                .also {
+//                    it.setAnalyzer(cameraExecutor, QrCodeAnalyzer { qrCode ->
+//                        if (!qrCodeScannedSuccessfully) {
+//                            runOnUiThread {
+//                                Toast.makeText(this, "QR 코드 인식 성공!", Toast.LENGTH_SHORT).show()
+////                                qrCodeData = qrCode
+//                                qrCodeData = "https://assu.com/verify?sessionId=7&adminId=2"
+//                                Log.d("QR 인식  성공!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "성공햇다네요? $qrCode")
+//                                binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
+//                                setConfirmButtonState(true) // '확인' 버튼 활성화
+//                                qrCodeScannedSuccessfully = true // 플래그 설정
+//                                cameraProvider.unbindAll()
+//                            }
+//                        }
+//
+//                    }
+//                    )
+//
+//
+//                }
+//
+//            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+//
+//            try {
+//                cameraProvider.unbindAll()
+//                cameraProvider.bindToLifecycle(
+//                    this, cameraSelector, preview, imageAnalyzer
+//                )
+//            } catch (e: Exception) {
+//                Log.e("CameraX", "카메라 바인딩 실패", e)
+//            }
+//        }, ContextCompat.getMainExecutor(this))
+//    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
@@ -166,7 +165,7 @@ class UserQRVerifyActivity :
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_CODE && grantResults.isNotEmpty()
             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startCamera()
+//            startCamera()  TODO 나중에 주석 해제
         } else {
             Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             finish()
@@ -239,6 +238,7 @@ class UserQRVerifyActivity :
                 val (sessionId, adminId) = idValue as Pair<Long?, Long?>
                 if (sessionId != null && adminId != null) {
                     handleCertificationRequesterFlow(sessionId, adminId)
+                    observeCertificationStates(sessionId)
                 } else {
                     showInvalidQrError()
                 }
@@ -437,13 +437,13 @@ class UserQRVerifyActivity :
     private fun getAuthToken(): String {
 //        val sharedPref = getSharedPreferences("auth", Context.MODE_PRIVATE)
 //        return sharedPref.getString("token", "") ?: ""
-        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6ImQ3MGFiZDUyLTA0MjEtNDk4NC05YzdjLTEwOTBhMzkxZDRlOSIsImlhdCI6MTc1NzUxNjU4OCwiZXhwIjoxNzU3NTIwMTg4fQ.BiDMZj0qq-i1sHtXVKCbAxoghYMb6A5e_-OXThBkDt8"
+        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6ImI0Y2QyYmRiLWFmNTktNGZkYS05YjUwLThmZjE0OTkzOWMzYSIsImlhdCI6MTc1NzU4ODI0NCwiZXhwIjoxNzU3NTkxODQ0fQ.Xs5tVm-f8WoeQMEYPkta_itLSDOt9pg5awdcRbbH9Ds"
     }
 
     // Activity 종료 시 WebSocket 연결 해제
     override fun onDestroy() {
         super.onDestroy()
-        cameraExecutor.shutdown()
+//        cameraExecutor.shutdown() // TODO 나중에 주석 해제
 
         // WebSocket 연결 해제
         certifyViewModel.disconnect()

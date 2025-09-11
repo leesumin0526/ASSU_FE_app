@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.domain.usecase.usage
 
+import com.example.assu_fe_app.data.dto.certification.response.NoneDataResponseDto
 import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
 import com.example.assu_fe_app.data.dto.usage.response.SaveUsageResponseDto
 import com.example.assu_fe_app.data.repository.usage.UsageRepository
@@ -12,7 +13,7 @@ class SaveUsageUseCase @Inject constructor(
     suspend operator fun invoke(
         request: SaveUsageRequestDto
     ) :
-            RetrofitResult<SaveUsageResponseDto> {
+            RetrofitResult<NoneDataResponseDto> {
         return repo.postUsage(request)
     }
 }
