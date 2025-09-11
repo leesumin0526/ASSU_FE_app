@@ -32,7 +32,7 @@ import kotlin.getValue
 class UserQRVerifyActivity :
     BaseActivity<ActivityUserQrVerifyBinding>(R.layout.activity_user_qr_verify) {
 
-//    private lateinit var cameraExecutor: ExecutorService
+//    private lateinit var cameraExecutor: ExecutorService  TODO 나중에 주석해제
     private var qrCodeScannedSuccessfully = true // QR 인식 성공 여부 플래그 ( 에뮬레이터에는 임시로 true 로 두기)
     private val CAMERA_PERMISSION_CODE = 100
     private var qrCodeData: String? = null
@@ -75,7 +75,7 @@ class UserQRVerifyActivity :
 
         binding.tvUniversity.text = "숭실대학교 학생"
         binding.tvDepartment.text = "IT대학"
-
+// TODO 나중에 주석해제
 //        cameraExecutor = Executors.newSingleThreadExecutor()
 //        checkCameraPermission()
         onEmulatorScanSuccess()
@@ -88,7 +88,7 @@ class UserQRVerifyActivity :
 
 
     private fun onEmulatorScanSuccess() {
-        qrCodeData = "https://assu.com/verify?storeId=2"
+        qrCodeData = "https://assu.com/verify?storeId=2" // TODO 여기 ...
         Log.d("QR 인식 성공", "에뮬레이터 테스트용 데이터 사용: $qrCodeData")
         binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
         setConfirmButtonState(true)
@@ -96,7 +96,7 @@ class UserQRVerifyActivity :
 
     }
 
-    // 에뮬레이터 테스트 시 임의로 ..
+    // 에뮬레이터 테스트 시 임의로 주석처리 TODO 나중에 주석해제
 //    private fun checkCameraPermission() {
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
 //            != PackageManager.PERMISSION_GRANTED) {
