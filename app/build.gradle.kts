@@ -117,7 +117,7 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.57")
     implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
 
-    // DataStore (토큰 저장)
+    // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.7")
 
     // Paging (목록 API면)

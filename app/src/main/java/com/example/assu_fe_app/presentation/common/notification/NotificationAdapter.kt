@@ -3,44 +3,43 @@ package com.example.assu_fe_app.presentation.common.notification
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.databinding.ItemNotificationBinding
+import com.example.assu_fe_app.domain.model.notification.NotificationModel
 
 class NotificationAdapter(
-    private val items: List<NotificationItem>
-) : RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
+    private val onClick: (NotificationModel) -> Unit
+) : ListAdapter<NotificationModel, NotificationAdapter.VH>(diff) {
 
-    inner class NotificationViewHolder(val binding: ItemNotificationBinding)
-        : RecyclerView.ViewHolder(binding.root)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        VH(ItemNotificationBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
-        val binding = ItemNotificationBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return NotificationViewHolder(binding)
-    }
+    override fun onBindViewHolder(holder: VH, position: Int) =
+        holder.bind(getItem(position), onClick)
 
-    override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
-        val item = items[position]
-        with(holder.binding) {
-            tvItemNotiType.text = item.type
-            tvItemNotiContent.text = item.message
-            tvItemNotiTime.text = item.time
+    class VH(private val b: ItemNotificationBinding) : RecyclerView.ViewHolder(b.root) {
+        fun bind(item: NotificationModel, onClick: (NotificationModel) -> Unit) {
+            b.tvItemNotiType.text   = item.title ?: when (item.type) {
+                "ORDER" -> "주문 알림"
+                "CHAT"  -> "채팅 알림"
+                else    -> "알림"
+            }
+            b.tvItemNotiContent.text = item.preview ?: ""
+            b.tvItemNotiTime.text    = item.timeAgo ?: ""
 
-            // 읽음/안읽음 배경 처리
-            root.setBackgroundColor(
+            b.root.setBackgroundColor(
                 if (item.isRead) Color.WHITE else Color.parseColor("#F0F8FF")
             )
+            b.root.setOnClickListener { onClick(item) }
         }
     }
 
-    override fun getItemCount(): Int = items.size
+    companion object {
+        private val diff = object : DiffUtil.ItemCallback<NotificationModel>() {
+            override fun areItemsTheSame(a: NotificationModel, b: NotificationModel) = a.id == b.id
+            override fun areContentsTheSame(a: NotificationModel, b: NotificationModel) = a == b
+        }
+    }
 }
-data class NotificationItem(
-    val type: String, // 제휴 제안인지(admin), 주문 안내인지(partner)
-    val message: String,
-    val time: String,
-    val isRead: Boolean
-)

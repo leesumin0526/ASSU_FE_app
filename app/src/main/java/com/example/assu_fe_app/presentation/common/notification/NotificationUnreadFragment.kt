@@ -1,43 +1,90 @@
 package com.example.assu_fe_app.presentation.common.notification
 
+import android.os.Bundle
+import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentNotificationUnreadBinding
-import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.domain.model.notification.NotificationModel
+import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-class NotificationUnreadFragment : BaseFragment<FragmentNotificationUnreadBinding>(R.layout.fragment_notification_unread) {
-    override fun initView() {
-        initRecyclerView()
+@AndroidEntryPoint
+class NotificationUnreadFragment : Fragment(R.layout.fragment_notification_unread) {
 
+    private var _binding: FragmentNotificationUnreadBinding? = null
+    private val binding get() = _binding!!
+    private val vm: NotificationsViewModel by activityViewModels()
+    private lateinit var adapter: NotificationAdapter
+    private lateinit var role: NotificationActivity.Role
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentNotificationUnreadBinding.bind(view)
+
+        role = (arguments?.getSerializable(ARG_ROLE) as? NotificationActivity.Role)
+            ?: NotificationActivity.Role.PARTNER
+
+        adapter = NotificationAdapter(onClick = ::handleClick)
+        binding.rvNotificationUnread.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvNotificationUnread.adapter = adapter
+
+        vm.refresh(status = "unread")
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            vm.unreadState.collectLatest { st ->
+                adapter.submitList(st.items)
+            }
+        }
+
+        // 아이템 클릭시 연관 화면으로 이동
+        viewLifecycleOwner.lifecycleScope.launch {
+            vm.navEvents.collectLatest { ev ->
+                when (ev) {
+                    is NotificationsViewModel.NavEvent.ToChatRoom -> {
+                        // findNavController().navigate(
+                        //     R.id.action_notifications_to_chatRoom,
+                        //     bundleOf("roomId" to ev.roomId, "role" to role.name)
+                        // )
+                    }
+                    is NotificationsViewModel.NavEvent.ToPartnerSuggestionDetail -> {
+                        // findNavController().navigate(
+                        //     R.id.action_notifications_to_partnerSuggestionDetail,
+                        //     bundleOf("suggestionId" to ev.suggestionId, "role" to role.name)
+                        // )
+                    }
+                    is NotificationsViewModel.NavEvent.ToPartnerProposalDetail -> {
+                        // findNavController().navigate(
+                        //     R.id.action_notifications_to_partnerProposalDetail,
+                        //     bundleOf("proposalId" to ev.proposalId, "role" to role.name)
+                        // )
+                    }
+                }
+            }
+        }
+
+        binding.rvNotificationUnread.addOnScrollListener(object : EndlessScrollListener() {
+            override fun onLoadMore() = vm.loadMore("unread")
+        })
     }
 
-    override fun initObserver() {
-
+    private fun handleClick(item: NotificationModel) {
+        vm.emitNavEvent(item)
     }
 
-    private fun initRecyclerView() {
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
 
-        // dummy data
-        val dummyData = listOf(
-            NotificationItem(
-                "주문 안내",
-                "9번 테이블에서 제로콜라 혜택을 선택하셨어요",
-                "10분전",
-                false
-            ),
-            NotificationItem(
-                "주문 안내",
-                "19번 테이블에서 제로콜라 혜택을 선택하셨어요",
-                "10분전",
-                false
-            )
-        )
-        val adapter = NotificationAdapter(dummyData)
-        binding.rvNotificationUnread.apply {
-            layoutManager = LinearLayoutManager(requireContext()) // 세로 스크롤
-            this.adapter = adapter
-            setHasFixedSize(true) // 아이템 크기 고정 시 성능 최적화
+    companion object {
+        private const val ARG_ROLE = "arg_role"
+        fun newInstance(role: NotificationActivity.Role) = NotificationUnreadFragment().apply {
+            arguments = Bundle().apply { putSerializable(ARG_ROLE, role) }
         }
     }
-
 }

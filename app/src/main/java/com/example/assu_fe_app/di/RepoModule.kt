@@ -3,7 +3,9 @@ package com.example.assu_fe_app.di
 import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
 import com.example.assu_fe_app.data.repositoryImpl.chatting.ChattingRepositoryImpl
 import com.example.assu_fe_app.data.repository.deviceToken.DeviceTokenRepository
+import com.example.assu_fe_app.data.repository.notification.NotificationRepository
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.notification.NotificationRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -22,4 +24,9 @@ abstract class RepoModule {
     abstract fun bindDeviceTokenRepository(
         impl: DeviceTokenRepositoryImpl
     ): DeviceTokenRepository
+
+    @Binds @Singleton
+    abstract fun bindNotificationRepository(
+        impl: NotificationRepositoryImpl
+    ): NotificationRepository
 }
