@@ -7,7 +7,7 @@ import retrofit2.http.POST
 
 
 interface DeviceTokenService {
-    @POST("deviceTokens/register")
+    @POST("device-tokens")
     suspend fun registerToken(
         @Body body: DeviceTokenRequestDto
     ): BaseResponse<String> // 서버 응답: BaseResponse<String>

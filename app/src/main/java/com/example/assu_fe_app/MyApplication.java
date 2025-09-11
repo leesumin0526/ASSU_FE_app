@@ -25,6 +25,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        appContext = getApplicationContext();
 
         if (isArmDevice()) {
             KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
