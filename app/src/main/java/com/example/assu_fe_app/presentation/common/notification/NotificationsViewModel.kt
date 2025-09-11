@@ -17,12 +17,11 @@ class NotificationsViewModel @Inject constructor(
     private val markNotificationRead: MarkNotificationReadUseCase
 ) : ViewModel() {
 
-    // ===== 새로 추가: 네비게이션 이벤트 =====
+    // ===== 네비게이션 이벤트 =====
     sealed interface NavEvent {
         data class ToChatRoom(val roomId: Long) : NavEvent
         data class ToPartnerSuggestionDetail(val suggestionId: Long) : NavEvent
         data class ToPartnerProposalDetail(val proposalId: Long) : NavEvent
-        // 필요 시 더 추가
     }
     private val _navEvents = MutableSharedFlow<NavEvent>(extraBufferCapacity = 1)
     val navEvents: SharedFlow<NavEvent> = _navEvents
@@ -72,7 +71,8 @@ class NotificationsViewModel @Inject constructor(
             is RetrofitResult.Success -> {
                 val p = res.data
                 val merged = if (reset || page == 1) p.items else cur.items + p.items
-                val nextPage = if (p.page < p.totalPages) p.page + 1 else p.page + 1
+                // BUGFIX: 마지막 페이지면 더 증가하지 않도록
+                val nextPage = if (p.page < p.totalPages) p.page + 1 else p.page
                 tgt.value = cur.copy(
                     items = merged,
                     page = nextPage,
@@ -98,44 +98,29 @@ class NotificationsViewModel @Inject constructor(
 
     private fun state(status: String) = if (status == "unread") _unread else _all
 
-    /**
-     * 아이템 클릭: 읽음 처리 + (ORDER 제외) 네비게이션 이벤트 emit
-     */
-    fun onItemClickAndReload(item: NotificationModel, activeTab: String) = viewModelScope.launch {
+    fun onItemClickSmart(item: NotificationModel, activeTab: String) = viewModelScope.launch {
         val id = item.id
+        val needMark = !item.isRead
 
-        // 스냅샷
+        // 스냅샷 (롤백 대비)
         val beforeAll = _all.value
         val beforeUnread = _unread.value
 
-        // 1) 낙관적 적용
-        when (activeTab) {
-            "all" -> _all.value = beforeAll.copy(
-                items = beforeAll.items.map { if (it.id == id) it.copy(isRead = true) else it }
-            )
-            "unread" -> _unread.value = beforeUnread.copy(
-                items = beforeUnread.items.filterNot { it.id == id }
-            )
-        }
-
-        // 2) 서버 반영
-        val markResult = markNotificationRead(id)
-
-        // 3) 반대 탭 조용히 동기화
-        if (markResult is RetrofitResult.Success) {
-            if (activeTab == "all") refresh("unread", silent = true) else refresh("all", silent = true)
-        } else {
-            // 실패 시 롤백
-            _all.value = beforeAll
-            _unread.value = beforeUnread
-            return@launch
-        }
-
-        // 4) 네비게이션 이벤트 (ORDER 제외)
-        when (item.type) {
-            "ORDER" -> {
-                // 주문 알림은 네비게이션 없음 (TTS/알림만)
+        // 1) 낙관적 반영 (미읽음일 때만)
+        if (needMark) {
+            when (activeTab) {
+                "all" -> _all.value = beforeAll.copy(
+                    items = beforeAll.items.map { if (it.id == id) it.copy(isRead = true) else it }
+                )
+                "unread" -> _unread.value = beforeUnread.copy(
+                    items = beforeUnread.items.filterNot { it.id == id }
+                )
             }
+        }
+
+        // 2) 네비게이션 이벤트 (읽음 여부와 무관하게 emit)
+        when (item.type) {
+            "ORDER" -> { /* 이동 없음 */ }
             "CHAT" -> {
                 val roomId = item.refId ?: return@launch
                 _navEvents.tryEmit(NavEvent.ToChatRoom(roomId))
@@ -148,17 +133,29 @@ class NotificationsViewModel @Inject constructor(
                 val proposalId = item.refId ?: return@launch
                 _navEvents.tryEmit(NavEvent.ToPartnerProposalDetail(proposalId))
             }
+            else -> { /* 확장 포인트 */ }
+        }
+
+        // 3) 서버 반영 (미읽음이었던 경우에만)
+        if (!needMark) return@launch
+
+        when (markNotificationRead(id)) {
+            is RetrofitResult.Success -> {
+                // 반대 탭만 조용히 동기화
+                if (activeTab == "all") refresh("unread", silent = true) else refresh("all", silent = true)
+            }
             else -> {
-                // 미정 타입: 아직 없음
+                // 실패 시 롤백
+                _all.value = beforeAll
+                _unread.value = beforeUnread
             }
         }
     }
 
+    // (참고) 기존 메서드는 더 이상 필요 없으면 삭제해도 됨
     fun emitNavEvent(item: NotificationModel) {
         when (item.type) {
-            "ORDER" -> {
-                // 주문은 네비게이션 없음
-            }
+            "ORDER" -> { /* 이동 없음 */ }
             "CHAT" -> {
                 val roomId = item.refId ?: return
                 _navEvents.tryEmit(NavEvent.ToChatRoom(roomId))

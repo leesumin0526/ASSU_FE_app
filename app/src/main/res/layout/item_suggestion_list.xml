@@ -7,31 +7,40 @@
         android:padding="15dp"
         android:layout_marginBottom="8dp">
 
+        <TextView
+            android:id="@+id/tv_store_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="인쌩맥주"
+            android:layout_marginBottom="8dp"
+            android:textSize="17sp"
+            android:fontFamily="@font/pretendard_medium"
+            android:textColor="@color/assu_font_main" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/tv_department"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="소프트웨어학부 20214545"
-                android:textStyle="bold"
-                android:textSize="17sp"
-                android:fontFamily="@font/pretendard_medium"
+                android:text="글로벌미디어학부"
+                android:paddingRight="7dp"
+                android:textSize="13sp"
+                android:fontFamily="@font/pretendard_regular"
                 android:textColor="@color/assu_font_main" />
 
             <TextView
                 android:id="@+id/tv_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_home_list_label"
+                android:background="@drawable/bg_suggestion_enrollment_status"
                 android:text="재학중"
-                android:textColor="@color/white"
+                android:textColor="@color/assu_font_main"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="4dp"
                 android:textSize="11sp" />
@@ -45,7 +54,7 @@
             android:textSize="13sp"
             android:fontFamily="@font/pretendard_regular"
             android:textColor="#333333"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="10dp" />
 
         <TextView
             android:id="@+id/tv_date"
@@ -54,6 +63,6 @@
             android:text="작성일 | 2025-03-15 18:36"
             android:textSize="13sp"
             android:fontFamily="@font/pretendard_regular"
-            android:textColor="@color/assu_font_sub" />
+            android:textColor="@color/assu_main" />
     </LinearLayout>
 </layout>

@@ -1,6 +1,8 @@
 package com.example.assu_fe_app.presentation.common.notification
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -9,8 +11,11 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentNotificationAllBinding
 import com.example.assu_fe_app.domain.model.notification.NotificationModel
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.core.os.bundleOf
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
+import com.example.assu_fe_app.presentation.admin.dashboard.AdminDashboardSuggestionsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -27,9 +32,9 @@ class NotificationAllFragment : Fragment(R.layout.fragment_notification_all) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentNotificationAllBinding.bind(view)
+        role = readRoleArg()
 
-        role = (arguments?.getSerializable(ARG_ROLE) as? NotificationActivity.Role)
-            ?: NotificationActivity.Role.PARTNER
+        Log.d("RoleCheck", "ARG_ROLE raw=${arguments?.get(ARG_ROLE)}")
 
         adapter = NotificationAdapter(onClick = ::handleClick)
         binding.rvNotificationAll.layoutManager = LinearLayoutManager(requireContext())
@@ -40,33 +45,38 @@ class NotificationAllFragment : Fragment(R.layout.fragment_notification_all) {
 
         // 목록 상태 구독
         viewLifecycleOwner.lifecycleScope.launch {
-            vm.allState.collectLatest { st ->
-                android.util.Log.d("NOTI_UI", "collect allState: items=${st.items.size}, loading=${st.loading}")
-                adapter.submitList(st.items)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.allState.collectLatest { st ->
+                    Log.d("NOTI_UI", "collect allState: items=${st.items.size}, loading=${st.loading}")
+                    adapter.submitList(st.items)
+                }
             }
         }
 
-        // 아이템 클릭시 읽음 처리 + 연관 화면으로 이동
+        // 네비게이션 이벤트 구독
         viewLifecycleOwner.lifecycleScope.launch {
-            vm.navEvents.collectLatest { ev ->
-                when (ev) {
-                    is NotificationsViewModel.NavEvent.ToChatRoom -> {
-                        // findNavController().navigate(
-                        //     R.id.action_notifications_to_chatRoom,
-                        //     bundleOf("roomId" to ev.roomId, "role" to role.name)
-                        // )
-                    }
-                    is NotificationsViewModel.NavEvent.ToPartnerSuggestionDetail -> {
-                        // findNavController().navigate(
-                        //     R.id.action_notifications_to_partnerSuggestionDetail,
-                        //     bundleOf("suggestionId" to ev.suggestionId, "role" to role.name)
-                        // )
-                    }
-                    is NotificationsViewModel.NavEvent.ToPartnerProposalDetail -> {
-                        // findNavController().navigate(
-                        //     R.id.action_notifications_to_partnerProposalDetail,
-                        //     bundleOf("proposalId" to ev.proposalId, "role" to role.name)
-                        // )
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.navEvents.collectLatest { ev ->
+                    when (ev) {
+                        is NotificationsViewModel.NavEvent.ToChatRoom -> {
+                            // findNavController().navigate(
+                            //     R.id.action_notifications_to_chatRoom,
+                            //     bundleOf("roomId" to ev.roomId, "role" to role.name)
+                            // )
+                        }
+                        is NotificationsViewModel.NavEvent.ToPartnerSuggestionDetail -> {
+                            Log.d("NavCheck", "ToPartnerSuggestionDetail event received!")
+                            if (role == NotificationActivity.Role.ADMIN) {
+                                val intent = Intent(requireContext(), AdminDashboardSuggestionsActivity::class.java)
+                                startActivity(intent)
+                            }
+                        }
+                        is NotificationsViewModel.NavEvent.ToPartnerProposalDetail -> {
+                            // findNavController().navigate(
+                            //     R.id.action_notifications_to_partnerProposalDetail,
+                            //     bundleOf("proposalId" to ev.proposalId, "role" to role.name)
+                            // )
+                        }
                     }
                 }
             }
@@ -79,7 +89,7 @@ class NotificationAllFragment : Fragment(R.layout.fragment_notification_all) {
     }
 
     private fun handleClick(item: NotificationModel) {
-        vm.onItemClickAndReload(item, activeTab = "all")
+        vm.onItemClickSmart(item, activeTab = "all")
     }
 
     override fun onDestroyView() {
@@ -91,6 +101,18 @@ class NotificationAllFragment : Fragment(R.layout.fragment_notification_all) {
         private const val ARG_ROLE = "arg_role"
         fun newInstance(role: NotificationActivity.Role) = NotificationAllFragment().apply {
             arguments = Bundle().apply { putSerializable(ARG_ROLE, role) }
+        }
+    }
+
+    private fun readRoleArg(): NotificationActivity.Role {
+        val k = "arg_role"
+        return if (android.os.Build.VERSION.SDK_INT >= 33) {
+            arguments?.getSerializable(k, NotificationActivity.Role::class.java)
+                ?: NotificationActivity.Role.PARTNER
+        } else {
+            @Suppress("DEPRECATION")
+            (arguments?.getSerializable(k) as? NotificationActivity.Role)
+                ?: NotificationActivity.Role.PARTNER
         }
     }
 }
