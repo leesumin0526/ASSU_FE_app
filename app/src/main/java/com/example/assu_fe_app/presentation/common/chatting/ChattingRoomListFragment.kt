@@ -102,4 +102,10 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
         }
         startActivity(intent)
     }
+
+    override fun onResume() {
+        super.onResume()
+        // ✅ 프래그먼트가 사용자에게 보일 때마다 목록 새로고침
+        viewModel.getChattingRoomList()
+    }
 }

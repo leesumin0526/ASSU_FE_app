@@ -23,7 +23,9 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.example.assu_fe_app.data.dto.chatting.WsMessageDto
 import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
+import com.example.assu_fe_app.domain.model.chatting.ReadChattingModel
 import com.example.assu_fe_app.domain.usecase.chatting.LeaveChattingRoomUseCase
+import com.example.assu_fe_app.domain.usecase.chatting.ReadChattingUseCase
 
 
 @HiltViewModel
@@ -32,9 +34,8 @@ class ChattingViewModel @Inject constructor(
     private val getChattingRoomListUseCase: GetChattingRoomListUseCase,
     private val getChatHistoryUseCase: GetChatHistoryUseCase,
     private val leaveChattingRoomUseCase: LeaveChattingRoomUseCase,
+    private val readChattingUseCase: ReadChattingUseCase,
     private val chatSocket: ChatSocketClient,
-
-
     ) : ViewModel() {
 
     // ------------------------- 채팅방 생성-------------------------
@@ -126,6 +127,41 @@ class ChattingViewModel @Inject constructor(
                 .onSuccess { _leaveChattingRoomState.value = LeaveChattingRoomUiState.Success(it) }
                 .onFail    { code -> _leaveChattingRoomState.value = LeaveChattingRoomUiState.Fail(code, "서버 처리 실패") }
                 .onError   { e -> _leaveChattingRoomState.value = LeaveChattingRoomUiState.Error(e.message ?: "Unknown Error") }
+        }
+    }
+
+    // ------------------------- 메시지 읽음처리-------------------------
+    sealed interface ReadChattingUiState {
+        data object Idle : ReadChattingUiState
+        data object Loading : ReadChattingUiState
+        data class Success(val data: ReadChattingModel) : ReadChattingUiState
+        data class Fail(val code: Int, val message: String?) : ReadChattingUiState
+        data class Error(val message: String) : ReadChattingUiState
+    }
+
+    private val _readChattingState = MutableStateFlow<ReadChattingUiState>(ReadChattingUiState.Idle)
+    val readChattingState: StateFlow<ReadChattingUiState> = _readChattingState
+
+
+    fun readChatting(roomId: Long) {
+        viewModelScope.launch {
+            _readChattingState.value = ReadChattingUiState.Loading
+            readChattingUseCase(roomId)
+                .onSuccess { result ->
+                    _readChattingState.value = ReadChattingUiState.Success(result)
+
+                    // ✅ 메시지 리스트에 읽음 반영
+                    val updated = _messages.value.map { msg ->
+                        if (result.readMessagesId.contains(msg.messageId)) {
+                            msg.copy(isRead = true)
+                        } else {
+                            msg
+                        }
+                    }
+                    _messages.value = updated
+                }
+                .onFail    { code -> _readChattingState.value = ReadChattingUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e -> _readChattingState.value = ReadChattingUiState.Error(e.message ?: "Unknown Error") }
         }
     }
 

@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -170,6 +171,36 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                     }
                 }
 
+                // ✅ 읽음 처리 상태 수집
+                launch {
+                    viewModel.readChattingState.collect { state ->
+                        when (state) {
+                            is ChattingViewModel.ReadChattingUiState.Success -> {
+                                // 읽음 이벤트가 성공했을 때 UI에 로그/토스트 표시
+                                Log.d("ChattingActivity", "읽음 처리 완료: ${state.data.readMessagesId}")
+
+                                // UI 반영은 ViewModel에서 _messages 갱신으로 이미 처리됨
+                                // 필요하다면 여기서 badge나 별도 indicator를 갱신해도 됨
+                            }
+                            is ChattingViewModel.ReadChattingUiState.Fail -> {
+                                Toast.makeText(
+                                    this@ChattingActivity,
+                                    "읽음 처리 실패(${state.code})",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            is ChattingViewModel.ReadChattingUiState.Error -> {
+                                Toast.makeText(
+                                    this@ChattingActivity,
+                                    "읽음 오류: ${state.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            else -> Unit
+                        }
+                    }
+                }
+
                 // ✅ 추가: 실시간 소켓 메시지 스트림 수집
                 // (ViewModel에서 _messages(StateFlow<List<ChatMessageModel>>) 노출한다고 가정)
                 launch {
@@ -263,6 +294,9 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
         // ✅ 변경: 입장 시 히스토리 + 소켓 연결(뷰모델 내부에서 처리)
         viewModel.enterRoom(roomId, myId, opponentId)
+
+        // ✅ 방에 들어오면 바로 읽음 처리 요청
+        viewModel.readChatting(roomId)
     }
 
     override fun onStop() {

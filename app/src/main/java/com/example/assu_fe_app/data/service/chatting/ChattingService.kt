@@ -6,6 +6,7 @@ import com.example.assu_fe_app.data.dto.chatting.response.CreateChatRoomResponse
 import com.example.assu_fe_app.data.dto.chatting.response.GetChatHistoryResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.GetChattingRoomListResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.LeaveChattingRoomResponseDto
+import com.example.assu_fe_app.data.dto.chatting.response.ReadChattingResponseDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -32,10 +33,10 @@ interface ChattingService {
     ): BaseResponse<GetChatHistoryResponseDto>
 
     // 메시지 읽음 처리 api
-//    @PATCH("chat/rooms/{roomId}/read")
-//    suspend fun readChatMessage(
-//        @Path("roomId") roomId: Long
-//    ): BaseResponse<Read>
+    @PATCH("chat/rooms/{roomId}/read")
+    suspend fun readChatMessage(
+        @Path("roomId") roomId: Long
+    ): BaseResponse<ReadChattingResponseDto>
 
     // 채팅방 나가기 api
     @DELETE("chat/rooms/{roomId}/leave")
