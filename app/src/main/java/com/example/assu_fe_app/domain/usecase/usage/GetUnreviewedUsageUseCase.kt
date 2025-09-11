@@ -1,6 +1,6 @@
 package com.example.assu_fe_app.domain.usecase.usage
 
-import com.example.assu_fe_app.data.dto.usage.GetUnreviewedUsageDto
+import com.example.assu_fe_app.data.dto.usage.response.GetUnreviewedUsageDto
 import com.example.assu_fe_app.data.repository.usage.UsageRepository
 import com.example.assu_fe_app.domain.model.usage.UnreviewedModel
 import com.example.assu_fe_app.util.RetrofitResult
