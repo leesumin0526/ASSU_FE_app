@@ -1,6 +1,8 @@
 package com.example.assu_fe_app.presentation.partner.dashboard
 
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.RectF
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -9,14 +11,19 @@ import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentPartnerDashboardBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.data.LineDataSet.Mode.LINEAR
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import androidx.core.graphics.toColorInt
+import com.github.mikephil.charting.animation.ChartAnimator
+import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.renderer.BarChartRenderer
+import com.github.mikephil.charting.utils.ViewPortHandler
 
 class PartnerDashboardFragment :
     BaseFragment<FragmentPartnerDashboardBinding>(R.layout.fragment_partner_dashboard) {
@@ -24,14 +31,12 @@ class PartnerDashboardFragment :
     override fun initObserver() {}
 
     override fun initView() {
-        // 차트 초기화
         setupPartnershipLineChart()
         setupClientBarChart()
 
-        // 예시 적용
         setClientAnalysisText(
-            fullText = "이번 달에 숭실대학교 학생 \n 120명이 매장에서 제휴 서비스를 이용했어요",
-            highlightText = "120명"
+            fullText = "이번 달에 숭실대학교 학생 \n 110명이 매장에서 제휴 서비스를 이용했어요",
+            highlightText = "110명"
         )
 
         binding.btnViewContract.setOnClickListener {
@@ -42,34 +47,68 @@ class PartnerDashboardFragment :
     private fun setupPartnershipLineChart() {
         val lineChart = binding.lineChartPartnership
 
-        // 주간 제휴 이용현황 데이터
+        // 순위 데이터 (낮은 숫자가 더 좋은 순위)
         val entries = ArrayList<Entry>()
-        entries.add(Entry(0f, 78f))
-        entries.add(Entry(1f, 85f))
-        entries.add(Entry(2f, 90f))
-        entries.add(Entry(3f, 95f))
-        entries.add(Entry(4f, 105f))
-        entries.add(Entry(5f, 118f))
-        entries.add(Entry(6f, 111f))
+        entries.add(Entry(0f, 5f))   // 1주차 - 5위
+        entries.add(Entry(1f, 8f))   // 2주차 - 8위
+        entries.add(Entry(2f, 3f))   // 3주차 - 3위
+        entries.add(Entry(3f, 12f))  // 4주차 - 12위
+        entries.add(Entry(4f, 2f))   // 5주차 - 2위
+        entries.add(Entry(5f, 15f))  // 6주차 - 15위 (하락 - 빨간색으로 표시)
 
-        val dataSet = LineDataSet(entries, "제휴 이용현황")
+        val dataSet = LineDataSet(entries, "우리가게 순위")
 
         // 라인 스타일 설정
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.assu_main)
-        dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.assu_main))
         dataSet.lineWidth = 3f
         dataSet.circleRadius = 5f
-
+        dataSet.setDrawFilled(false)
+        dataSet.fillColor = ContextCompat.getColor(requireContext(), R.color.assu_main)
+        dataSet.fillAlpha = 30
         dataSet.setDrawValues(true)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.assu_main)
         dataSet.valueTextSize = 10f
-        dataSet.setDrawCircleHole(false)
+        dataSet.setDrawCircleHole(true)
+        dataSet.circleHoleColor = Color.WHITE
 
-        // 꺾은선 스타일 (직선으로 연결)
-        dataSet.mode = LineDataSet.Mode.LINEAR
+        // 값 표시를 정수로 설정
+        dataSet.valueFormatter = object : ValueFormatter() {
+            override fun getPointLabel(entry: Entry?): String {
+                return "${entry?.y?.toInt()}위"
+            }
+        }
 
-        val lineData = LineData(dataSet)
+        // 모든 원의 색상을 메인 색상으로 설정하되, 마지막 점만 빨간색으로 설정
+        val circleColors = ArrayList<Int>()
+        for (i in 0 until chartEntries.size) {
+            if (i == chartEntries.size - 1) {
+                circleColors.add(Color.RED) // 마지막 점은 빨간색 (순위 하락)
+            } else {
+                circleColors.add(ContextCompat.getColor(requireContext(), R.color.assu_main))
+            }
+        }
+        dataSet.circleColors = circleColors
+
+        // 마지막 세그먼트(edge)를 빨간색으로 표시하기 위해 별도 데이터셋 생성
+        val lastSegmentEntries = ArrayList<Entry>()
+        lastSegmentEntries.add(Entry(4f, 2f))  // 5주차 - 2위
+        lastSegmentEntries.add(Entry(5f, 15f)) // 6주차 - 15위
+
+        val lastSegmentDataSet = LineDataSet(lastSegmentEntries, "")
+        lastSegmentDataSet.color = Color.RED
+        lastSegmentDataSet.lineWidth = 3f
+        lastSegmentDataSet.setDrawCircles(false)
+        lastSegmentDataSet.setDrawValues(false)
+
+        dataSet.mode = LINEAR
+        dataSet.cubicIntensity = 0.2f
+
+        val lineData = LineData(dataSet, lastSegmentDataSet)
         lineChart.data = lineData
+
+        // 커스텀 렌더러 적용 (빨간 텍스트를 위해)
+        val customRenderer = CustomLineChartRenderer(lineChart, lineChart.animator, lineChart.viewPortHandler)
+        lineChart.renderer = customRenderer
 
         // 차트 기본 설정
         lineChart.description.isEnabled = false
@@ -79,45 +118,25 @@ class PartnerDashboardFragment :
         lineChart.setPinchZoom(false)
         lineChart.setDrawGridBackground(false)
         lineChart.legend.isEnabled = false
-        lineChart.setViewPortOffsets(20f, 20f, 20f, 40f)
+        lineChart.setViewPortOffsets(30f, 30f, 30f, 30f)  // 패딩을 줄여서 차트가 box에 맞게
 
-        // X축 설정 (요일)
+        // X축 설정 (라벨 없이)
         val xAxis = lineChart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.setDrawAxisLine(false)
-        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.assu_font_sub)
-        xAxis.textSize = 10f
-        xAxis.labelCount = 7
-        xAxis.valueFormatter = object : ValueFormatter() {
-            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                return when (value.toInt()) {
-                    0 -> "월"
-                    1 -> "화"
-                    2 -> "수"
-                    3 -> "목"
-                    4 -> "금"
-                    5 -> "토"
-                    6 -> "일"
-                    else -> ""
-                }
-            }
-        }
+        xAxis.setDrawLabels(false)  // X축 라벨 완전히 숨기기
 
-        // Y축 설정 (순위는 뒤집어서 표시 - 1위가 위쪽)
-        lineChart.axisLeft.isEnabled = true
-        lineChart.axisLeft.setDrawGridLines(false)
-        lineChart.axisLeft.setDrawAxisLine(false)
-        lineChart.axisLeft.textColor = ContextCompat.getColor(requireContext(), R.color.assu_font_sub)
-        lineChart.axisLeft.textSize = 10f
-        lineChart.axisLeft.setInverted(true) // Y축 뒤집기
-        lineChart.axisLeft.axisMinimum = 1f
-        lineChart.axisLeft.axisMaximum = 8f
-        lineChart.axisLeft.valueFormatter = object : ValueFormatter() {
-            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                return "${value.toInt()}위"
-            }
-        }
+        // Y축 설정 (라벨 숨김으로 잘림 방지)
+        val leftAxis = lineChart.axisLeft
+        leftAxis.isInverted = true  // Y축 역순 (1위가 위쪽)
+        leftAxis.setDrawGridLines(true)
+        leftAxis.gridColor = Color.LTGRAY
+        leftAxis.setDrawAxisLine(false)
+        leftAxis.setDrawLabels(false)  // Y축 라벨 숨김
+        leftAxis.granularity = 1f  // 1위 단위로 격자선 표시
+        leftAxis.setLabelCount(20, false)  // 더 많은 격자선 표시
+
         lineChart.axisRight.isEnabled = false
 
         // 애니메이션
@@ -131,26 +150,26 @@ class PartnerDashboardFragment :
         // 월별 제휴 사용 수 데이터
         val entries = ArrayList<BarEntry>()
         entries.add(BarEntry(0f, 45f))   // 1월
-        entries.add(BarEntry(1f, 120f))  // 2월 (선택된 바)
-        entries.add(BarEntry(2f, 78f))   // 3월
-        entries.add(BarEntry(3f, 92f))   // 4월
-        entries.add(BarEntry(4f, 65f))   // 5월
-        entries.add(BarEntry(5f, 110f))  // 6월
+        entries.add(BarEntry(1f, 78f))   // 2월
+        entries.add(BarEntry(2f, 92f))   // 3월
+        entries.add(BarEntry(3f, 65f))   // 4월
+        entries.add(BarEntry(4f, 87f))   // 5월
+        entries.add(BarEntry(5f, 110f))  // 6월 (가장 최근)
 
         val dataSet = BarDataSet(entries, "제휴 사용 수")
 
-        // 바 색상 설정 (2월만 메인 색상, 나머지는 회색)
+        // 바 색상 설정 (6월만 메인 색상, 나머지는 회색) - 초기 선택: 가장 최근
         val colors = arrayListOf<Int>()
-        colors.add(Color.parseColor("#E8E8E8")) // 1월 - 회색
-        colors.add(ContextCompat.getColor(requireContext(), R.color.assu_main)) // 2월 - 메인 색상
-        colors.add(Color.parseColor("#E8E8E8")) // 3월 - 회색
-        colors.add(Color.parseColor("#E8E8E8")) // 4월 - 회색
-        colors.add(Color.parseColor("#E8E8E8")) // 5월 - 회색
-        colors.add(Color.parseColor("#E8E8E8")) // 6월 - 회색
+        colors.add("#E8E8E8".toColorInt()) // 1월 - 회색
+        colors.add("#E8E8E8".toColorInt()) // 2월 - 회색
+        colors.add("#E8E8E8".toColorInt()) // 3월 - 회색
+        colors.add("#E8E8E8".toColorInt()) // 4월 - 회색
+        colors.add("#E8E8E8".toColorInt()) // 5월 - 회색
+        colors.add(ContextCompat.getColor(requireContext(), R.color.assu_main)) // 6월 - 메인 색상 (초기 선택)
 
         dataSet.colors = colors
         dataSet.setDrawValues(true)
-        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.assu_font_sub)
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.assu_main) // 초기 선택된 바의 텍스트는 파란색
         dataSet.valueTextSize = 10f
         dataSet.valueFormatter = object : ValueFormatter() {
             override fun getBarLabel(barEntry: BarEntry?): String {
@@ -162,41 +181,31 @@ class PartnerDashboardFragment :
         barData.barWidth = 0.6f
         barChart.data = barData
 
+        // 커스텀 렌더러로 둥근 모서리 적용 (radius만)
+        val renderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
+        renderer.setRadius(12f)  // radius만 적용
+        barChart.renderer = renderer
+
         // 차트 기본 설정
         barChart.description.isEnabled = false
         barChart.setTouchEnabled(true)
         barChart.setDrawGridBackground(false)
         barChart.legend.isEnabled = false
         barChart.setFitBars(true)
-        barChart.setViewPortOffsets(40f, 20f, 40f, 40f)
+        barChart.setViewPortOffsets(30f, 30f, 30f, 30f)  // 패딩 조정
 
-        // X축 설정 (월)
+        // X축 설정 (라벨 숨김)
         val xAxis = barChart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.setDrawAxisLine(false)
-        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.assu_font_sub)
-        xAxis.textSize = 10f
-        xAxis.labelCount = 6
-        xAxis.valueFormatter = object : ValueFormatter() {
-            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                return when (value.toInt()) {
-                    0 -> "1월"
-                    1 -> "2월"
-                    2 -> "3월"
-                    3 -> "4월"
-                    4 -> "5월"
-                    5 -> "6월"
-                    else -> ""
-                }
-            }
-        }
+        xAxis.setDrawLabels(false)  // X축 라벨 완전히 숨기기
 
         // Y축 숨기기
         barChart.axisLeft.isEnabled = false
         barChart.axisRight.isEnabled = false
 
-        // 바 클릭 이벤트
+        // 바 클릭 이벤트 - 클릭 시 선택된 바만 업데이트
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 if (e is BarEntry) {
@@ -206,6 +215,9 @@ class PartnerDashboardFragment :
 
             override fun onNothingSelected() {}
         })
+
+        // 초기 분석 텍스트는 가장 최근 월(6월)로 설정
+        updateAnalysisText(5) // 6월 인덱스
 
         // 애니메이션
         barChart.animateY(1000)
@@ -222,11 +234,15 @@ class PartnerDashboardFragment :
             if (i == selectedIndex) {
                 colors.add(ContextCompat.getColor(requireContext(), R.color.assu_main)) // 선택된 바는 메인 색상
             } else {
-                colors.add(ContextCompat.getColor(requireContext(), R.color.not_selected_nav_btn)) // 나머지는 not_selected_nav_btn 색상
+                colors.add("#E8E8E8".toColorInt()) // 나머지는 회색
             }
         }
 
         dataSet.colors = colors
+
+        // 선택된 바의 텍스트 색상도 파란색으로 변경
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.assu_main)
+
         barChart.invalidate()
 
         // 선택된 월에 따라 분석 텍스트 업데이트
@@ -235,11 +251,11 @@ class PartnerDashboardFragment :
 
     // 분석 텍스트 업데이트
     private fun updateAnalysisText(selectedMonth: Int) {
+        val studentCounts = arrayOf(45, 78, 92, 65, 87, 110)
         val monthNames = arrayOf("1월", "2월", "3월", "4월", "5월", "6월")
-        val studentCounts = arrayOf(45, 120, 78, 92, 65, 110)
 
-        if (selectedMonth < monthNames.size && selectedMonth < studentCounts.size) {
-            val fullText = "${monthNames[selectedMonth]}에 숭실대학교 학생 \n ${studentCounts[selectedMonth]}명이 매장에서 제휴 서비스를 이용했어요"
+        if (selectedMonth < studentCounts.size) {
+            val fullText = "${monthNames[selectedMonth]}에 ASSU와 함께 ${studentCounts[selectedMonth]}명이\n매장에서 제휴 서비스를 이용했어요"
             val highlightText = "${studentCounts[selectedMonth]}명"
 
             setClientAnalysisText(fullText, highlightText)
@@ -261,5 +277,123 @@ class PartnerDashboardFragment :
             )
         }
         binding.tvDashboardClientAnalysis.text = spannable
+    }
+}
+
+// 빨간 텍스트 표시를 위한 커스텀 LineChart 렌더러
+class CustomLineChartRenderer(
+    chart: LineDataProvider,
+    animator: ChartAnimator,
+    viewPortHandler: ViewPortHandler
+) : LineChartRenderer(chart, animator, viewPortHandler) {
+
+    override fun drawValues(c: Canvas) {
+        if (isDrawingValuesAllowed(mChart)) {
+            val dataSets = mChart.lineData.dataSets
+
+            for (i in dataSets.indices) {
+                val dataSet = dataSets[i]
+                if (!shouldDrawValues(dataSet) || dataSet.entryCount < 1) continue
+
+                // 첫 번째 데이터셋만 값을 그림 (두 번째는 빨간 라인만)
+                if (i != 0) continue
+
+                applyValueTextStyle(dataSet)
+
+                val trans = mChart.getTransformer(dataSet.axisDependency)
+                val entries = dataSet.values
+                val positions = trans.generateTransformedValuesLine(
+                    dataSet, mAnimator.phaseX, mAnimator.phaseY, mXBounds.min, mXBounds.max
+                )
+
+                val formatter = dataSet.valueFormatter
+
+                for (j in 0 until positions.size step 2) {
+                    val x = positions[j]
+                    val y = positions[j + 1]
+
+                    if (!mViewPortHandler.isInBoundsRight(x)) break
+                    if (!mViewPortHandler.isInBoundsLeft(x) || !mViewPortHandler.isInBoundsY(y)) continue
+
+                    val entry = entries[j / 2]
+                    val entryIndex = j / 2
+
+                    // 마지막 항목만 빨간색으로 설정
+                    if (entryIndex == entries.size - 1) {
+                        mValuePaint.color = Color.RED
+                    } else {
+                        mValuePaint.color = dataSet.valueTextColor
+                    }
+
+                    val label = formatter.getPointLabel(entry)
+                    c.drawText(label, x, y - 10f, mValuePaint)
+                }
+            }
+        }
+    }
+}
+
+// 막대그래프 radius 주기
+class RoundedBarChartRenderer(
+    chart: BarDataProvider,
+    animator: ChartAnimator,
+    viewPortHandler: ViewPortHandler
+) : BarChartRenderer(chart, animator, viewPortHandler) {
+
+    private var radius = 0f
+
+    fun setRadius(radius: Float) {
+        this.radius = radius
+    }
+
+    override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
+        val trans = mChart.getTransformer(dataSet.axisDependency)
+        mBarBorderPaint.color = dataSet.barBorderColor
+        mBarBorderPaint.strokeWidth = dataSet.barBorderWidth
+        val drawBorder = dataSet.barBorderWidth > 0f
+
+        val phaseX = mAnimator.phaseX
+        val phaseY = mAnimator.phaseY
+
+        val buffer = mBarBuffers[index]
+        buffer.setPhases(phaseX, phaseY)
+        buffer.setDataSet(index)
+        buffer.setInverted(mChart.isInverted(dataSet.axisDependency))
+        buffer.feed(dataSet)
+
+        trans.pointValuesToPixel(buffer.buffer)
+
+        val isSingleColor = dataSet.colors.size == 1
+
+        if (isSingleColor) {
+            mRenderPaint.color = dataSet.color
+        }
+
+        var j = 0
+        while (j < buffer.size()) {
+            if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) {
+                j += 4
+                continue
+            }
+            if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break
+
+            if (!isSingleColor) {
+                mRenderPaint.color = dataSet.getColor(j / 4)
+            }
+
+            // 둥근 모서리 적용
+            val rect = RectF(
+                buffer.buffer[j], buffer.buffer[j + 1],
+                buffer.buffer[j + 2], buffer.buffer[j + 3]
+            )
+
+            c.drawRoundRect(rect, radius, radius, mRenderPaint)
+
+            if (drawBorder) {
+                c.drawRoundRect(rect, radius, radius, mBarBorderPaint)
+            }
+
+            j += 4
+        }
     }
 }

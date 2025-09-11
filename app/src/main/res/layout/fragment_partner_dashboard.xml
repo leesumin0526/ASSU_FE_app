@@ -46,12 +46,23 @@
                 android:layout_marginStart="7dp"
                 android:layout_marginTop="18dp"
                 android:fontFamily="@font/pretendard_semibold"
-                android:text="제휴 이용현황"
+                android:text="✨ 우리가게 순위"
                 android:textColor="@color/assu_font_main"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_dashboard_question" />
 
+            <TextView
+                android:id="@+id/tv_graph_update_date_and_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/pretendard_regular"
+                android:text="2024년 04월 20일 12:00 기준"
+                android:textColor="@color/assu_font_sub"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/tv_dashboard_menu_graph_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_dashboard_menu_graph_title" />
             <!-- 제휴 이용현황 라인 차트 -->
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart_partnership"
@@ -77,7 +88,7 @@
                 android:text="🔥Today 제휴 인기 매장"
                 android:textColor="@color/assu_font_main"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@id/lineChart_partnership"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/view_home_mg7" />
 
             <TextView
@@ -333,7 +344,7 @@
                 android:layout_marginStart="7dp"
                 android:layout_marginTop="28dp"
                 android:fontFamily="@font/pretendard_semibold"
-                android:text="고객 추이"
+                android:text="제휴 이용 현황"
                 android:textColor="@color/assu_font_main"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
