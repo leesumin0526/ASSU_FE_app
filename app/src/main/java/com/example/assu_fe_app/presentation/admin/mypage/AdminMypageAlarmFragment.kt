@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.admin.mypage
 
+import android.view.View
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentAdminMypageAlarmBinding

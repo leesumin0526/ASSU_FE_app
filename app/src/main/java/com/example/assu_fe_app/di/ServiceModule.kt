@@ -4,6 +4,7 @@ import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.DevBearerInterceptor
 import com.example.assu_fe_app.data.service.chatting.ChattingService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
+import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.example.assu_fe_app.data.service.suggestion.SuggestionService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -78,6 +79,11 @@ object ServiceModule {
     @Singleton
     fun provideDeviceTokenService(retrofit: Retrofit): DeviceTokenService =
         retrofit.create(DeviceTokenService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideNotificationService(retrofit: Retrofit): NotificationService =
+        retrofit.create(NotificationService::class.java)
 
     @Provides
     @Singleton

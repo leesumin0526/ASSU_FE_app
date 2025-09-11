@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/admin_nav_graph"
     app:startDestination="@id/adminHomeFragment">
 
@@ -65,15 +66,35 @@
         <action
             android:id="@+id/action_admin_mypage_to_alarm"
             app:destination="@id/adminMypageAlarmFragment" />
+        <action
+            android:id="@+id/action_admin_mypage_to_mypage_account"
+            app:destination="@id/mypageAccountFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/mypageAccountFragment"
+        android:name="com.example.assu_fe_app.presentation.common.mypage.MypageAccountFragment"
+        tools:layout="@layout/fragment_mypage_account" />
 
 
     <!-- 관리자 알림설정 -->
     <fragment
         android:id="@+id/adminMypageAlarmFragment"
         android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminMypageAlarmFragment"
-        android:label="Admin Alarm Settings" />
+        android:label="Admin Alarm Settings" >
 
+    </fragment>
+
+    <!-- 관리자 알림 확인 -->
+    <fragment
+        android:id="@+id/notificationAllFragment"
+        android:name="com.example.assu_fe_app.presentation.common.notification.NotificationAllFragment"
+        tools:layout="@layout/fragment_notification_all" />
+
+    <fragment
+        android:id="@+id/notificationUnreadFragment"
+        android:name="com.example.assu_fe_app.presentation.common.notification.NotificationUnreadFragment"
+        tools:layout="@layout/fragment_notification_unread" />
 
     <fragment
         android:id="@+id/adminContractPassiveRegisterFragment"

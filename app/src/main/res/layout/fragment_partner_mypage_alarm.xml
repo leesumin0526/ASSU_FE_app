@@ -120,5 +120,135 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- PUSH 알림과 제휴건의 알림 사이 간격 -->
+    <View
+        android:id="@+id/partner_alarm_mg5"
+        android:layout_width="0dp"
+        android:layout_height="13dp"
+        app:layout_constraintTop_toBottomOf="@id/cl_partner_alarm_push"
+        app:layout_constraintStart_toStartOf="@id/cl_partner_alarm_push"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_partner_alarm_partnership_order"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="9dp"
+        app:layout_constraintWidth_percent="0.8778"
+        app:layout_constraintTop_toBottomOf="@id/partner_alarm_mg5"
+        app:layout_constraintStart_toStartOf="@id/cl_partner_alarm_push">
+
+        <!-- 텍스트 영역 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_partner_alarm_text_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/tv_partner_alarm_partnership_order"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="주문 안내 알림"
+                android:textSize="15sp"
+                android:textColor="@color/assu_font_main"
+                android:fontFamily="@font/pretendard_medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- 토글 스위치 영역 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_partner_alarm_toggle_order"
+            android:layout_width="68dp"
+            android:layout_height="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <Switch
+                android:id="@+id/switch_partner_alarm_partnership_order"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:checked="true"
+                android:thumb="@drawable/switch_thumb"
+                android:track="@drawable/switch_track_selector"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 제휴건의 알림 설정 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_partner_alarm_partnership_chatting"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="9dp"
+        app:layout_constraintWidth_percent="0.8778"
+        app:layout_constraintTop_toBottomOf="@id/cl_partner_alarm_partnership_order"
+        app:layout_constraintStart_toStartOf="@id/cl_partner_alarm_partnership_order">
+
+        <!-- 텍스트 영역 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_partner_alarm_text_chatting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/tv_partner_alarm_partnership_chatting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="채팅 알림"
+                android:textSize="15sp"
+                android:textColor="@color/assu_font_main"
+                android:fontFamily="@font/pretendard_medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- 토글 스위치 영역 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_partner_alarm_toggle_chatting"
+            android:layout_width="68dp"
+            android:layout_height="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <Switch
+                android:id="@+id/switch_partner_alarm_partnership_chatting"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:checked="true"
+                android:thumb="@drawable/switch_thumb"
+                android:track="@drawable/switch_track_selector"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
