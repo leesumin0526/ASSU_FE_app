@@ -11,6 +11,8 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentNotificationUnreadBinding
 import com.example.assu_fe_app.domain.model.notification.NotificationModel
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.presentation.admin.dashboard.AdminDashboardSuggestionsActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,32 +42,36 @@ class NotificationUnreadFragment : Fragment(R.layout.fragment_notification_unrea
         vm.refresh(status = "unread")
 
         viewLifecycleOwner.lifecycleScope.launch {
-            vm.unreadState.collectLatest { st ->
-                adapter.submitList(st.items)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.unreadState.collectLatest { st ->
+                    adapter.submitList(st.items)
+                }
             }
         }
 
-        // 아이템 클릭시 연관 화면으로 이동
+        // 네비게이션 이벤트 구독
         viewLifecycleOwner.lifecycleScope.launch {
-            vm.navEvents.collectLatest { ev ->
-                when (ev) {
-                    is NotificationsViewModel.NavEvent.ToChatRoom -> {
-                        // findNavController().navigate(
-                        //     R.id.action_notifications_to_chatRoom,
-                        //     bundleOf("roomId" to ev.roomId, "role" to role.name)
-                        // )
-                    }
-                    is NotificationsViewModel.NavEvent.ToPartnerSuggestionDetail -> {
-                        if (role == NotificationActivity.Role.ADMIN) {
-                            val intent = Intent(requireContext(), AdminDashboardSuggestionsActivity::class.java)
-                            startActivity(intent)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.navEvents.collectLatest { ev ->
+                    when (ev) {
+                        is NotificationsViewModel.NavEvent.ToChatRoom -> {
+                            // findNavController().navigate(
+                            //     R.id.action_notifications_to_chatRoom,
+                            //     bundleOf("roomId" to ev.roomId, "role" to role.name)
+                            // )
                         }
-                    }
-                    is NotificationsViewModel.NavEvent.ToPartnerProposalDetail -> {
-                        // findNavController().navigate(
-                        //     R.id.action_notifications_to_partnerProposalDetail,
-                        //     bundleOf("proposalId" to ev.proposalId, "role" to role.name)
-                        // )
+                        is NotificationsViewModel.NavEvent.ToPartnerSuggestionDetail -> {
+                            if (role == NotificationActivity.Role.ADMIN) {
+                                val intent = Intent(requireContext(), AdminDashboardSuggestionsActivity::class.java)
+                                startActivity(intent)
+                            }
+                        }
+                        is NotificationsViewModel.NavEvent.ToPartnerProposalDetail -> {
+                            // findNavController().navigate(
+                            //     R.id.action_notifications_to_partnerProposalDetail,
+                            //     bundleOf("proposalId" to ev.proposalId, "role" to role.name)
+                            // )
+                        }
                     }
                 }
             }
@@ -77,7 +83,8 @@ class NotificationUnreadFragment : Fragment(R.layout.fragment_notification_unrea
     }
 
     private fun handleClick(item: NotificationModel) {
-        vm.emitNavEvent(item)
+        //  미읽음이면 mark + navigate, 읽음이면 navigate만 (뷰모델 내부에서 처리)
+        vm.onItemClickSmart(item, activeTab = "unread")
     }
 
     override fun onDestroyView() {

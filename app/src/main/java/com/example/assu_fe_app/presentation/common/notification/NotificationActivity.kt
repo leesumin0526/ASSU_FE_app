@@ -3,13 +3,13 @@ package com.example.assu_fe_app.presentation.common.notification
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.assu_fe_app.databinding.ActivityNotificationBinding
+import com.example.assu_fe_app.presentation.partner.home.PartnerHomeFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -50,7 +50,7 @@ class NotificationActivity : AppCompatActivity() {
         private const val EXTRA_ROLE = "extra_role"
         fun start(context: Context, role: Role) {
             context.startActivity(Intent(context, NotificationActivity::class.java).apply {
-                putExtra(EXTRA_ROLE, role)
+                putExtra(EXTRA_ROLE, role) // ✅ 여기서 반드시 실어 보냄
             })
         }
     }
