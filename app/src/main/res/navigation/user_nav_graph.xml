@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/user_nav_graph"
     app:startDestination="@id/homeFragment">
 
@@ -35,7 +36,16 @@
     <fragment
         android:id="@+id/mypageFragment"
         android:name="com.example.assu_fe_app.presentation.user.mypage.UserMypageFragment"
-        android:label="Mypage"/>
+        android:label="Mypage">
+        <action
+            android:id="@+id/action_user_mypage_to_mypage_account"
+            app:destination="@id/mypageAccountFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mypageAccountFragment"
+        android:name="com.example.assu_fe_app.presentation.common.mypage.MypageAccountFragment"
+        tools:layout="@layout/fragment_mypage_account" />
 
     <fragment
         android:id="@+id/myPartnershipDetailsFragment"

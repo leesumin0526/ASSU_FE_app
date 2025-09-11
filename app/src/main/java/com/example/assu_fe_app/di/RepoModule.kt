@@ -9,9 +9,11 @@ import com.example.assu_fe_app.data.repository.store.StoreRepository
 import com.example.assu_fe_app.data.repository.usage.UsageRepository
 import com.example.assu_fe_app.data.repositoryImpl.certification.CertificationRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.review.ReviewRepositoryImpl
+import com.example.assu_fe_app.data.repository.notification.NotificationRepository
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.store.StoreRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.usage.UsageRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.notification.NotificationRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -51,4 +53,9 @@ abstract class RepoModule {
         impl: CertificationRepositoryImpl
     ): CertificationRepository
 
+
+    @Binds @Singleton
+    abstract fun bindNotificationRepository(
+        impl: NotificationRepositoryImpl
+    ): NotificationRepository
 }

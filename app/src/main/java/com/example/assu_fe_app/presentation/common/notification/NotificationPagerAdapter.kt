@@ -2,18 +2,18 @@ package com.example.assu_fe_app.presentation.common.notification
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.assu_fe_app.presentation.common.notification.NotificationUnreadFragment
 
-class NotificationPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(
-    activity) {
-    override fun getItemCount(): Int = 2
+class NotificationPagerAdapter(
+    fa: FragmentActivity,
+    private val role: NotificationActivity.Role
+) : FragmentStateAdapter(fa) {
 
-    override fun createFragment(position: Int): Fragment {
-        return (if (position == 0) {
-            NotificationAllFragment()
-        } else {
-            NotificationUnreadFragment()
-        }) as Fragment
-    }
+    override fun getItemCount() = 2
+
+    override fun createFragment(position: Int): Fragment =
+        if (position == 0) NotificationAllFragment.newInstance(role)
+        else NotificationUnreadFragment.newInstance(role)
 }
