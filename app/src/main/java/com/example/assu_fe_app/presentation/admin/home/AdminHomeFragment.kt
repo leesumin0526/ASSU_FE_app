@@ -19,6 +19,9 @@ import com.example.assu_fe_app.presentation.common.notification.NotificationActi
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import com.example.assu_fe_app.data.manager.TokenManager
+
+
 
 @AndroidEntryPoint
 class AdminHomeFragment :
@@ -26,6 +29,8 @@ class AdminHomeFragment :
     private val vm: HomeViewModel by viewModels()
 
     private val chattingViewModel: ChattingViewModel by viewModels()
+
+    lateinit var tokenManager: TokenManager
 
     override fun initObserver() {
         // 채팅방 생성 상태 수집
@@ -92,6 +97,16 @@ class AdminHomeFragment :
     }
 
     override fun initView() {
+
+        tokenManager = TokenManager(requireContext())
+        val userName = tokenManager.getUserName() ?: "사용자"
+
+        binding.tvAdminHomeName.text = if (userName.isNotEmpty()) {
+            "안녕하세요, ${userName}님!"
+        } else {
+            "안녕하세요, 사용자님!"
+        }
+
         binding.btnAdminHomeViewAll.setOnClickListener { view ->
             Navigation.findNavController(view).navigate(R.id.action_admin_home_to_admin_view_partner_list)
         }

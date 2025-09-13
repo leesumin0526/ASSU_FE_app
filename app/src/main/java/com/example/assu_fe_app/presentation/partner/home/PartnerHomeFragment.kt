@@ -12,6 +12,7 @@ import com.example.assu_fe_app.presentation.common.contract.PartnershipContractD
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
+import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentPartnerHomeBinding
 import com.example.assu_fe_app.presentation.admin.home.HomeViewModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -27,8 +28,9 @@ import kotlin.jvm.java
 class PartnerHomeFragment :
     BaseFragment<FragmentPartnerHomeBinding>(R.layout.fragment_partner_home) {
 
-        private val vm: HomeViewModel by viewModels()
+    private val vm: HomeViewModel by viewModels()
     private val chattingViewModel: ChattingViewModel by viewModels()
+    lateinit var tokenManager: TokenManager
 
     override fun initObserver() {
         // 채팅방 생성 상태 수집
@@ -100,6 +102,16 @@ class PartnerHomeFragment :
     }
 
     override fun initView() {
+
+        tokenManager = TokenManager(requireContext())
+        val userName = tokenManager.getUserName() ?: "사용자"
+
+        binding.tvPartnerHomeName.text = if (userName.isNotEmpty()) {
+            "안녕하세요, ${userName}님!"
+        } else {
+            "안녕하세요, 사용자님!"
+        }
+
         binding.btnPartnerHomeViewAll.setOnClickListener { view ->
             Navigation.findNavController(view).navigate(R.id.action_partner_home_to_partner_view_admin_list)
         }
