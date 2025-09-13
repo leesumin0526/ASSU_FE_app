@@ -96,9 +96,8 @@ class AdminHomeFragment :
             Navigation.findNavController(view).navigate(R.id.action_admin_home_to_admin_view_partner_list)
         }
 
-        binding.ivAdminHomeNotification.setOnClickListener { view ->
-            val intent = Intent(requireContext(), NotificationActivity::class.java)
-            startActivity(intent)
+        binding.ivAdminHomeNotification.setOnClickListener {
+            NotificationActivity.start(requireContext(), NotificationActivity.Role.ADMIN)
         }
 
         // 벨 아이콘 상태 구독

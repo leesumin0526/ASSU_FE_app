@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/assu_background">
+
+        <View
+            android:id="@+id/qr_save_mg1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.0403"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <View
+            android:id="@+id/qr_save_mg2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.0407"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/qr_save_mg1"/>
+
+
+        <ImageView
+            android:id="@+id/btn_save_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_suggest_x"
+            app:layout_constraintTop_toBottomOf="@id/qr_save_mg1"
+            app:layout_constraintStart_toEndOf="@id/qr_save_mg2"/>
+
+        <View
+            android:id="@+id/qr_save_mg3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.1261"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_save_cancel"/>
+
+        <TextView
+            android:id="@+id/tv_partnership_qr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="제휴 QR"
+            android:textColor="@color/assu_font_main"
+            android:textSize="30sp"
+            android:includeFontPadding="false"
+            android:fontFamily="@font/pretendard_semibold"
+            app:layout_constraintTop_toBottomOf="@id/qr_save_mg3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <View
+            android:id="@+id/qr_save_mg4"
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            app:layout_constraintHeight_percent="0.0189"
+            app:layout_constraintStart_toStartOf="@id/tv_partnership_qr"
+            app:layout_constraintTop_toBottomOf="@id/tv_partnership_qr"/>
+
+        <TextView
+            android:id="@+id/tv_qr_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="아래의 QR을 다운받아 포스터를 제작해 주세요!"
+            android:textColor="@color/assu_font_sub"
+            android:textSize="15sp"
+            android:includeFontPadding="false"
+            android:fontFamily="@font/pretendard_regular"
+            app:layout_constraintTop_toBottomOf="@id/qr_save_mg4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <View
+            android:id="@+id/qr_save_mg5"
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            app:layout_constraintHeight_percent="0.0189"
+            app:layout_constraintStart_toStartOf="@id/tv_qr_download"
+            app:layout_constraintTop_toBottomOf="@id/tv_qr_download"/>
+
+        <ImageView
+            android:id="@+id/iv_qr_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintWidth_percent="0.5190"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/qr_save_mg5"/>
+
+        <View
+            android:id="@+id/qr_save_mg6"
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            app:layout_constraintHeight_percent="0.0189"
+            app:layout_constraintStart_toStartOf="@id/iv_qr_image"
+            app:layout_constraintTop_toBottomOf="@id/iv_qr_image"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_save_qr_image"
+            android:layout_width="84dp"
+            android:layout_height="41dp"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/qr_save_mg6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/bg_image"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/ic_home_basic_box"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/btn_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="QR 저장하기"
+                android:textSize="13sp"
+                android:fontFamily="@font/pretendard_regular"
+                android:textColor="@color/assu_font_sub"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

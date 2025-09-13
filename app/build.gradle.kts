@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     id("kotlin-kapt")
+    id("kotlin-parcelize")
     id("com.google.gms.google-services")
 }
 
@@ -15,7 +16,7 @@ val properties = Properties().apply {
 
 android {
     namespace = "com.example.assu_fe_app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.assu_fe_app"
@@ -30,11 +31,10 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
-            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjYsInVzZXJuYW1lIjoiYWRtaW42QGV4YW1wbGUuY29tIiwianRpIjoiMGY3YjFkNTctZjdlNS00NWU4LWFkYTAtY2Y5NTdiZWIwNWNkIiwiaWF0IjoxNzU3NTg5OTU5LCJleHAiOjE3NTc1OTM1NTl9.K6RleVdISjlWekS-dWIkd5Ls8blzsg0G-iP870obu-0\"") // 🔴 임시
+            buildConfigField("String", "DEV_BEARER", "\"Bearer token\"") // 🔴 임시
 
         }
         release {
-//            buildConfigField("String", "DEV_BEARER", "\"\"") // 빈값으로 두기
             buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"") // 운영 주소로 교체
             isMinifyEnabled = false
             proguardFiles(
@@ -44,11 +44,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -127,6 +127,10 @@ dependencies {
 
     // 테스트 (서버 목)
     testImplementation("com.squareup.okhttp3:mockwebserver:5.1.0")
+
+    // QR 생성
+    implementation("com.google.zxing:core:3.5.3")
+
 
     // 프로필 사진 처리
     implementation("io.coil-kt:coil:2.4.0")
