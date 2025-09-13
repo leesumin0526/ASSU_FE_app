@@ -19,6 +19,8 @@ import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.common.signup.SignUpActivity
 import com.example.assu_fe_app.presentation.partner.PartnerMainActivity
 import com.example.assu_fe_app.presentation.user.UserMainActivity
+import com.example.assu_fe_app.ui.auth.LoginState
+import com.example.assu_fe_app.ui.auth.LoginViewModel
 import com.example.assu_fe_app.ui.deviceToken.DeviceTokenViewModel
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint

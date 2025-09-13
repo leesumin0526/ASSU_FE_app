@@ -10,7 +10,7 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentPartnerMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
-import com.example.assu_fe_app.presentation.common.login.LoginViewModel
+import com.example.assu_fe_app.ui.auth.LoginViewModel
 import com.example.assu_fe_app.data.manager.TokenManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

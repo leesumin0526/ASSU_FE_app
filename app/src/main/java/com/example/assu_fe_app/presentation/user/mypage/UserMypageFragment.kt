@@ -11,7 +11,7 @@ import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentUserMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
-import com.example.assu_fe_app.presentation.common.login.LoginViewModel
+import com.example.assu_fe_app.ui.auth.LoginViewModel
 import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
 import com.example.assu_fe_app.presentation.user.review.mypage.UserMyReviewActivity
 import dagger.hilt.android.AndroidEntryPoint

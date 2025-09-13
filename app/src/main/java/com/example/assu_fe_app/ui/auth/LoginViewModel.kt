@@ -1,16 +1,17 @@
-package com.example.assu_fe_app.presentation.common.login
+package com.example.assu_fe_app.ui.auth
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.domain.model.auth.LoginModel
-import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.domain.usecase.auth.CommonLoginUseCase
 import com.example.assu_fe_app.domain.usecase.auth.LogoutUseCase
 import com.example.assu_fe_app.domain.usecase.auth.StudentLoginUseCase
 import com.example.assu_fe_app.domain.usecase.deviceToken.UnregisterDeviceTokenUseCase
+import com.example.assu_fe_app.util.RetrofitResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -83,7 +84,7 @@ class LoginViewModel @Inject constructor(
                 logoutUseCase()
             } catch (e: Exception) {
                 // API 호출 실패해도 클라이언트 토큰은 삭제
-                android.util.Log.e("LoginViewModel", "로그아웃/푸시토큰 해제 API 호출 실패: ${e.message}")
+                Log.e("LoginViewModel", "로그아웃/푸시토큰 해제 API 호출 실패: ${e.message}")
             } finally {
                 // 클라이언트 토큰 삭제
                 tokenManager.clearTokens()
