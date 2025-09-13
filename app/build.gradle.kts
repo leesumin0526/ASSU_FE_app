@@ -128,10 +128,6 @@ dependencies {
     // 테스트 (서버 목)
     testImplementation("com.squareup.okhttp3:mockwebserver:5.1.0")
 
-    // QR 생성
-    implementation("com.google.zxing:core:3.5.3")
-
-
     // 프로필 사진 처리
     implementation("io.coil-kt:coil:2.4.0")
 
@@ -144,4 +140,7 @@ dependencies {
 
     // 시간 포맷
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
+    // QR 생성
+    implementation("com.google.zxing:core:3.5.3")
+
 }
