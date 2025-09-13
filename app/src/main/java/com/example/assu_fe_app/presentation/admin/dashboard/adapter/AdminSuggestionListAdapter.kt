@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.databinding.ItemSuggestionListBinding
+import com.example.assu_fe_app.domain.model.suggestion.SuggestionModel
+import com.example.assu_fe_app.util.toDepartmentName
+import com.example.assu_fe_app.util.toEnrollmentStatus
 
 data class AdminSuggestionItem(
     val departmentInfo: String,
@@ -13,19 +16,25 @@ data class AdminSuggestionItem(
     val date: String
 )
 
-class AdminSuggestionListAdapter(
-    private val items: List<AdminSuggestionItem>
-) : RecyclerView.Adapter<AdminSuggestionListAdapter.ViewHolder>() {
+class AdminSuggestionListAdapter : RecyclerView.Adapter<AdminSuggestionListAdapter.ViewHolder>() {
+
+    private var items: List<SuggestionModel> = emptyList()
 
     inner class ViewHolder(private val binding: ItemSuggestionListBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: AdminSuggestionItem) {
-            binding.tvDepartment.text = item.departmentInfo
-            binding.tvStatus.text = item.status
+        fun bind(item: SuggestionModel) {
+            binding.tvStoreName.text = item.storeName
+            binding.tvDepartment.text = item.departmentInfo.toDepartmentName()
+            binding.tvStatus.text = item.status.toEnrollmentStatus()
             binding.tvContent.text = item.content
             binding.tvDate.text = "작성일 | ${item.date}"
         }
+    }
+
+    fun submitList(newItems: List<SuggestionModel>) {
+        this.items = newItems
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

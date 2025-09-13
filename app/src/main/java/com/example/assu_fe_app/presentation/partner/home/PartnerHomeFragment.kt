@@ -21,7 +21,6 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.getValue
-import kotlin.jvm.java
 
 @AndroidEntryPoint
 class PartnerHomeFragment :
@@ -104,9 +103,8 @@ class PartnerHomeFragment :
             Navigation.findNavController(view).navigate(R.id.action_partner_home_to_partner_view_admin_list)
         }
 
-        binding.ivPartnerHomeNotification.setOnClickListener { view ->
-            val intent = Intent(requireContext(), NotificationActivity::class.java)
-            startActivity(intent)
+        binding.ivPartnerHomeNotification.setOnClickListener {
+            NotificationActivity.start(requireContext(), NotificationActivity.Role.ADMIN)
         }
 
         // 벨 아이콘 상태 구독

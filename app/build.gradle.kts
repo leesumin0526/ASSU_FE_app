@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     id("kotlin-kapt")
+    id("kotlin-parcelize")
     id("com.google.gms.google-services")
 }
 
@@ -15,7 +16,7 @@ val properties = Properties().apply {
 
 android {
     namespace = "com.example.assu_fe_app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.assu_fe_app"
@@ -30,7 +31,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
-            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjYsInVzZXJuYW1lIjoiYWRtaW42QGV4YW1wbGUuY29tIiwianRpIjoiMGY3YjFkNTctZjdlNS00NWU4LWFkYTAtY2Y5NTdiZWIwNWNkIiwiaWF0IjoxNzU3NTg5OTU5LCJleHAiOjE3NTc1OTM1NTl9.K6RleVdISjlWekS-dWIkd5Ls8blzsg0G-iP870obu-0\"") // 🔴 임시
+            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiUEFSVE5FUiIsInVzZXJJZCI6MzAsInVzZXJuYW1lIjoicGFydG5lcjMyQGdtYWlsLmNvbSIsImp0aSI6IjdkMWFhZWRjLWQzYjctNDhkZS1hZmVhLTY2YWNhZjEzN2Y1OSIsImlhdCI6MTc1Njc3ODcwNCwiZXhwIjoxNzU2NzgyMzA0fQ.04DAYtdoyusmIR7uDbU2RgtyVs_CFltWF0T7g_ERNXU\"") // 🔴 임시
 
         }
         release {
@@ -44,11 +45,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -140,4 +141,7 @@ dependencies {
 
     // 시간 포맷
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
+    // QR 생성
+    implementation("com.google.zxing:core:3.5.3")
+
 }

@@ -6,6 +6,12 @@
     android:background="@color/assu_background"
     tools:context=".presentation.user.dashboard.UserServiceSuggestActivity">
 
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.assu_fe_app.ui.suggestion.SuggestionViewModel" />
+    </data>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -100,7 +106,7 @@
 
         <TextView
             android:id="@+id/tv_service_select_target"
-            android:text="건의대상 선택"
+            android:text="@{viewModel.selectedTarget == null ? `건의대상 선택` : viewModel.selectedTarget.name}"
             android:fontFamily="@font/pretendard_medium"
             android:textColor="@color/assu_font_sub"
             android:textSize="17sp"
@@ -177,7 +183,8 @@
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toBottomOf="@id/tv_service_want_market"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@={viewModel.storeName}"/>
 
         <TextView
             android:id="@+id/tv_suggest_benefit"
@@ -207,7 +214,8 @@
             android:padding="15dp"
             app:layout_constraintTop_toBottomOf="@id/tv_suggest_benefit"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@={viewModel.benefit}"/>
 
         <LinearLayout
             android:layout_width="wrap_content"

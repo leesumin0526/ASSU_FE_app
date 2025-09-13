@@ -7,23 +7,42 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.AdapterView
 import android.widget.PopupWindow
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityUserServiceSuggestBinding
 import com.example.assu_fe_app.databinding.FragmentServiceSuggestDropDownBinding
+import com.example.assu_fe_app.domain.model.suggestion.SuggestionTargetModel
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalDropDownFragment
 import com.example.assu_fe_app.presentation.user.dashboard.adapter.SuggestTargetAdapter
+import com.example.assu_fe_app.ui.suggestion.SuggestionViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBinding>(R.layout.activity_user_service_suggest){
 
+    private val viewModel: SuggestionViewModel by viewModels()
+    private var suggestionTargets: List<SuggestionTargetModel> = emptyList()
+
+    private var dropdownWindow: PopupWindow? = null
+
     override fun initView() {
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val extraPaddingTop = 3
@@ -37,12 +56,15 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
         }
 //        val targetList = resources.getStringArray(R.array.suggest_target).toList()
 
-        binding.clSuggest.setOnClickListener {
-            showDropdownMenu(binding.spinnerTarget)
-        }
-
         activateCompleteButton()
 
+        binding.spinnerTarget.setOnClickListener {
+            if (dropdownWindow?.isShowing == true) {
+                dropdownWindow?.dismiss()
+            } else {
+                showDropdownMenu(it, suggestionTargets)
+            }
+        }
 
         // 뒤로가기 버튼
         binding.btnSuggestBack.setOnClickListener {
@@ -51,6 +73,7 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
 
         // 그냥 애초에 이 액티비티를 닫아서 UserSugesstCompleteActivity의 backStack을 UserMainActivity로 만듦.
         binding.btnSuggestComplete.setOnClickListener {
+            viewModel.writeSuggestion()
             val intent = Intent(this, UserSuggestCompleteActivity::class.java)
             startActivity(intent)
             finish()
@@ -58,7 +81,28 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
     }
 
     override fun initObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.getAdminsState.collect { state ->
+                        Log.d("SuggestActivity", "getAdminsState changed: $state")
 
+                        when (state) {
+                            is SuggestionViewModel.GetAdminsUiState.Success -> {
+                                suggestionTargets = state.data
+                            }
+                            is SuggestionViewModel.GetAdminsUiState.Fail -> {
+                                Toast.makeText(this@UserServiceSuggestActivity, state.message, Toast.LENGTH_SHORT).show()
+                            }
+                            is SuggestionViewModel.GetAdminsUiState.Error -> {
+                                Toast.makeText(this@UserServiceSuggestActivity, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun Int.dpToPx(context: Context): Int {
@@ -96,46 +140,51 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
     }
 
 
-    private fun showDropdownMenu(anchor : View) {
-//        val popupBinding = FragmentServiceSuggestDropDownBinding.inflate(layoutInflater, null, false)
-//
-//        val popupWidth = anchor.width
-//
-//        val popupWindow = PopupWindow(
-//            popupBinding.root,
-//            popupWidth,
-//            ViewGroup.LayoutParams.WRAP_CONTENT,
-//            true
-//        ).apply {
-//            elevation = 8f
-//            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//            isOutsideTouchable = true
-//        }
+    private fun showDropdownMenu(anchor : View, targets: List<SuggestionTargetModel>) {
 
         val popupBinding = FragmentServiceSuggestDropDownBinding.inflate(layoutInflater)
-        val popupWindow = PopupWindow(popupBinding.root, WRAP_CONTENT, WRAP_CONTENT, true)
-
-        // 그림자 및 radius 배경 처리
-        popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        popupWindow.elevation = 10f
-
-        // 드롭다운 항목 클릭 이벤트 처리
-        popupBinding.tvSuggestDropTarget1.setOnClickListener {
-            binding.tvServiceSelectTarget.text = popupBinding.tvSuggestDropTarget1.text
-            popupWindow.dismiss()
+        val popupWindow = PopupWindow(
+            popupBinding.root,
+            anchor.width,
+            WRAP_CONTENT,
+            true
+        ).apply {
+            elevation = 10f
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
 
-        popupBinding.tvSuggestDropTarget2.setOnClickListener {
-            binding.tvServiceSelectTarget.text = popupBinding.tvSuggestDropTarget2.text
-            popupWindow.dismiss()
+        popupWindow.setOnDismissListener {
+            dropdownWindow = null
         }
 
-        popupBinding.tvSuggestDropTarget3.setOnClickListener {
-            binding.tvServiceSelectTarget.text = popupBinding.tvSuggestDropTarget3.text
-            popupWindow.dismiss()
+        val textViews = listOf(
+            popupBinding.tvSuggestDropTarget1,
+            popupBinding.tvSuggestDropTarget2,
+            popupBinding.tvSuggestDropTarget3
+        )
+        val dividers = listOf(popupBinding.lineDivide1, popupBinding.lineDivide2)
+
+        textViews.forEach { it.visibility = View.GONE }
+        dividers.forEach { it.visibility = View.GONE }
+
+        targets.forEachIndexed { index, target ->
+            if (index < textViews.size) {
+                val textView = textViews[index]
+                textView.visibility = View.VISIBLE
+                textView.text = target.name
+
+                textView.setOnClickListener {
+                    viewModel.selectTarget(target)
+                    popupWindow.dismiss()
+                }
+                if (index < targets.size - 1 && index < dividers.size) {
+                    dividers[index].visibility = View.VISIBLE
+                }
+            }
         }
 
-        // 버튼 바로 아래에 띄우기
-        popupWindow.showAsDropDown(anchor, -5,-155)
+        popupWindow.showAsDropDown(anchor, -5, -155)
+
+        this.dropdownWindow = popupWindow
     }
 }
