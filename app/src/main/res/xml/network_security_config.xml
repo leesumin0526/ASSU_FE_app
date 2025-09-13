@@ -14,4 +14,9 @@
         <domain includeSubdomains="true">notion.so</domain>
         <domain includeSubdomains="true">www.notion.so</domain>
     </domain-config>
+
+    <!-- ASSU 서버 도메인 -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">assu.shop</domain>
+    </domain-config>
 </network-security-config>

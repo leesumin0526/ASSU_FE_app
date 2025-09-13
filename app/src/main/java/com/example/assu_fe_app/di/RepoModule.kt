@@ -1,10 +1,12 @@
 package com.example.assu_fe_app.di
 
+import com.example.assu_fe_app.data.repository.auth.AuthRepository
 import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
-import com.example.assu_fe_app.data.repositoryImpl.chatting.ChattingRepositoryImpl
 import com.example.assu_fe_app.data.repository.deviceToken.DeviceTokenRepository
 import com.example.assu_fe_app.data.repository.notification.NotificationRepository
 import com.example.assu_fe_app.data.repository.suggestion.SuggestionRepository
+import com.example.assu_fe_app.data.repositoryImpl.AuthRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.chatting.ChattingRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.notification.NotificationRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.suggestion.SuggestionRepositoryImpl
@@ -17,6 +19,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepoModule {
+
+    @Binds @Singleton
+    abstract fun bindAuthRepository(
+        impl: AuthRepositoryImpl
+    ): AuthRepository
+
     @Binds @Singleton
     abstract fun bindChattingRepository(
         impl: ChattingRepositoryImpl

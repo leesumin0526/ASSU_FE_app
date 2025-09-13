@@ -15,7 +15,7 @@ class DeviceTokenRepositoryImpl @Inject constructor(
             mapper = { it }
         )
 
-    override suspend fun unregisterToken(tokenId: Long) =
+    override suspend fun unregister(tokenId: Long) =
         apiHandler(
             execute = { api.unregisterToken(tokenId) },
             mapper = { it }
