@@ -247,7 +247,7 @@
 
                     <!-- 매장 이름 -->
                     <TextView
-                        android:id="@+id/tv_market_name2"
+                        android:id="@+id/tv_partner_name2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="숭실대학교 IT대학 학생회"
@@ -271,7 +271,7 @@
                         android:textSize="13sp"
                         android:fontFamily="@font/pretendard_medium"
                         android:includeFontPadding="false"
-                        app:layout_constraintTop_toBottomOf="@id/tv_market_name2"
+                        app:layout_constraintTop_toBottomOf="@id/tv_partner_name2"
                         app:layout_constraintStart_toStartOf="parent" />
 
                     <!-- 제휴내용 설명 -->

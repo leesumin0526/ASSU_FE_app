@@ -139,6 +139,14 @@
                         android:textSize="13sp" />
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/tv_no_partner_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="아직 제휴 업체가 없습니다. 제휴를 시작해 보세요"
+                    android:visibility="gone"/>
+
+
                 <!-- 제휴업체 항목 2개 (item_partner_list.xml 포함) -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/admin_home_list_item1"
@@ -258,7 +266,7 @@
 
                         <!-- 매장 이름 -->
                         <TextView
-                            android:id="@+id/tv_market_name2"
+                            android:id="@+id/tv_partner_name2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="역전할머니맥주 숭실대점"
@@ -282,7 +290,7 @@
                             android:textSize="13sp"
                             android:fontFamily="@font/pretendard_medium"
                             android:includeFontPadding="false"
-                            app:layout_constraintTop_toBottomOf="@id/tv_market_name2"
+                            app:layout_constraintTop_toBottomOf="@id/tv_partner_name2"
                             app:layout_constraintStart_toStartOf="parent" />
 
                         <!-- 제휴내용 설명 -->

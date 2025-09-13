@@ -2,6 +2,7 @@ package com.example.assu_fe_app.presentation.admin.home
 
 import android.content.Intent
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -20,7 +21,7 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.assu_fe_app.data.manager.TokenManager
-
+import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 
 
 @AndroidEntryPoint
@@ -29,6 +30,8 @@ class AdminHomeFragment :
     private val vm: HomeViewModel by viewModels()
 
     private val chattingViewModel: ChattingViewModel by viewModels()
+
+    private val partnershipViewModel: PartnershipViewModel by viewModels()
 
     lateinit var tokenManager: TokenManager
 
@@ -89,11 +92,91 @@ class AdminHomeFragment :
                 }
             }
         }
+
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                partnershipViewModel.uiState.collect { state ->
+                    when (state) {
+                        is PartnershipViewModel.PartnershipUiState.Success -> {
+                            val list = state.data
+
+                            if(list.isEmpty()) {
+                                binding.btnAdminHomeViewAll.visibility = View.INVISIBLE
+                                binding.tvNoPartnerList.visibility = View.VISIBLE
+                            } else {
+                                binding.tvNoPartnerList.visibility = View.GONE
+                            }
+
+                            // 1번째 카드
+                            if (list.isNotEmpty()) {
+                                val item1 = list[0]
+                                binding.tvPartnerName1.text = item1.shopName
+                                binding.tvBenefitDescription1.text =
+                                    item1.content.firstOrNull()?.type ?: "제휴 혜택 없음"
+                                binding.tvBenefitPeriod1.text =
+                                    "${item1.startDate} ~ ${item1.endDate}"
+                                binding.adminHomeListItem1.visibility = View.VISIBLE
+
+                                binding.adminHomeListItem1.setOnClickListener {
+                                    val dialog = PartnershipContractDialogFragment(
+                                        item1.content.map { c ->
+                                            PartnershipContractItem.Service.ByPeople(
+                                                c.people.toInt(), // UI 모델이 Int면 toInt(), Long으로 바꾸면 그대로 사용
+                                                c.type
+                                            )
+                                        }
+                                    )
+                                    dialog.show(parentFragmentManager, "PartnershipContentDialog")
+                                }
+                            } else {
+                                binding.adminHomeListItem1.visibility = View.GONE
+                            }
+
+                            // 2번째 카드
+                            if (list.size > 1) {
+                                val item2 = list[1]
+                                binding.tvPartnerName2.text = item2.shopName
+                                binding.tvBenefitDescription2.text =
+                                    item2.content.firstOrNull()?.type ?: "제휴 혜택 없음"
+                                binding.tvBenefitPeriod2.text =
+                                    "${item2.startDate} ~ ${item2.endDate}"
+                                binding.adminHomeListItem2.visibility = View.VISIBLE
+
+                                binding.adminHomeListItem2.setOnClickListener {
+                                    val dialog = PartnershipContractDialogFragment(
+                                        item2.content.map { c ->
+                                            PartnershipContractItem.Service.ByPeople(
+                                                c.people.toInt(),
+                                                c.type
+                                            )
+                                        }
+                                    )
+                                    dialog.show(parentFragmentManager, "PartnershipContentDialog")
+                                }
+                            } else {
+                                binding.adminHomeListItem2.visibility = View.GONE
+                            }
+                        }
+
+                        // ✅ 나머지 모든 상태에선 가려두기
+                        is PartnershipViewModel.PartnershipUiState.Loading,
+                        is PartnershipViewModel.PartnershipUiState.Idle,
+                        is PartnershipViewModel.PartnershipUiState.Fail,
+                        is PartnershipViewModel.PartnershipUiState.Error -> {
+                            binding.adminHomeListItem1.visibility = View.GONE
+                            binding.adminHomeListItem2.visibility = View.GONE
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         vm.refreshBell()
+        partnershipViewModel.getProposalPartnerList(isAll = false) // true면 전체
     }
 
     override fun initView() {
@@ -107,8 +190,10 @@ class AdminHomeFragment :
             "안녕하세요, 사용자님!"
         }
 
-        binding.btnAdminHomeViewAll.setOnClickListener { view ->
-            Navigation.findNavController(view).navigate(R.id.action_admin_home_to_admin_view_partner_list)
+        // 🔽 전체 조회 버튼
+        binding.btnAdminHomeViewAll.setOnClickListener {
+            // ✅ 전체 조회 API 호출
+            partnershipViewModel.getProposalPartnerList(isAll = true)
         }
 
         binding.ivAdminHomeNotification.setOnClickListener {
@@ -130,15 +215,6 @@ class AdminHomeFragment :
             Navigation.findNavController(view).navigate(R.id.action_admin_home_to_contract_passive_register)
         }
 
-        binding.adminHomeListItem1.setOnClickListener {
-            val dialog = PartnershipContractDialogFragment(dummyItem)
-            dialog.show(parentFragmentManager, "PartnershipContentDialog")
-        }
-        binding.adminHomeListItem2.setOnClickListener {
-            val dialog = PartnershipContractDialogFragment(dummyItem)
-            dialog.show(parentFragmentManager, "PartnershipContentDialog")
-        }
-
         binding.btnRecommendInquiry.setOnClickListener {
             val req = CreateChatRoomRequestDto(
                 //TODO : 유저 정보 받아오기
@@ -149,12 +225,4 @@ class AdminHomeFragment :
 
         }
     }
-
-
-    val dummyItem = listOf(
-        PartnershipContractItem.Service.ByPeople(4, "캔음료"),
-        PartnershipContractItem.Discount.ByPeople(4, 10),
-        PartnershipContractItem.Service.ByAmount(10000, "사이다"),
-        PartnershipContractItem.Discount.ByAmount(15000, 15)
-    )
 }
