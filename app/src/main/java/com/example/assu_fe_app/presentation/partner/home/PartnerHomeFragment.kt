@@ -105,7 +105,7 @@ class PartnerHomeFragment :
         }
 
         binding.ivPartnerHomeNotification.setOnClickListener {
-            NotificationActivity.start(requireContext(), NotificationActivity.Role.ADMIN)
+            NotificationActivity.start(requireContext(), NotificationActivity.Role.PARTNER)
         }
 
         // 벨 아이콘 상태 구독
