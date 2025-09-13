@@ -24,13 +24,8 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
     private val certificationViewModel: CertifyViewModel by activityViewModels()
     private var qrCodeImageBitmap: Bitmap? = null
 
+    private lateinit var buttons: List<View>
     private var userIds : List<Long>? = null
-    private val buttons = listOf(
-        binding.groupVerify1,
-        binding.groupVerify2,
-        binding.groupVerify3,
-        binding.groupVerify4
-    )
 
     override fun initObserver() {
         // 연결 상태 관찰
@@ -84,6 +79,14 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
     }
 
     override fun initView() {
+
+        buttons = listOf(
+            binding.groupVerify1,
+            binding.groupVerify2,
+            binding.groupVerify3,
+            binding.groupVerify4
+        )
+
         binding.tvGroupMarketName.text = viewModel.storeName.value
         binding.tvGroupPartnershipContent.text = viewModel.selectedPaperContent
 
@@ -113,11 +116,33 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
         }
 
         binding.btnGroupVerifyComplete.setOnClickListener {
-            val fragment = UserSelectServiceFragment()
-            val transaction = requireActivity().supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.user_verify_fragment_container, fragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
+            if(viewModel.isGoodsList){
+                val fragment = UserSelectServiceFragment()
+                val transaction = requireActivity().supportFragmentManager.beginTransaction()
+                transaction.replace(R.id.fragment_container_view, fragment)
+                transaction.addToBackStack(null)
+                transaction.commit()
+            } else{
+
+                certificationViewModel.saveGroupUsage(
+                    SaveUsageRequestDto(
+                        viewModel.storeId,
+                        viewModel.tableNumber,
+                        viewModel.selectedAdminName,
+                        viewModel.selectedContentId,
+                        0 ,
+                        viewModel.selectedPaperContent,
+                        viewModel.storeName.toString(),
+                        userIds?: emptyList()
+                    )
+                )
+                val fragment = UserPartnershipVerifyCompleteFragment()
+                val transaction = requireActivity().supportFragmentManager.beginTransaction()
+                transaction.replace(R.id.fragment_container_view, fragment)
+                transaction.addToBackStack(null)
+                transaction.commit()
+            }
+
         }
 
         binding.btnGroupBack.setOnClickListener {
@@ -128,7 +153,7 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
     private fun connectToWebSocket() {
         val authToken = getAuthToken()
         if (authToken.isEmpty()) {
-            Log.d("토큰 없음❌", "토큰이 들어오지 않았습니다")
+            Log.d("UserGroupVerifyFragment", "토큰이 들어오지 않았습니다")
             return
         }
 
@@ -158,16 +183,6 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
             it.background = resources.getDrawable(R.drawable.btn_basic_selected, null)
         }
 
-        certificationViewModel.saveGroupUsage(
-            SaveUsageRequestDto(
-                viewModel.selectedAdminName,
-                viewModel.selectedContentId,
-                0 ,
-                viewModel.selectedPaperContent,
-                viewModel.storeName.toString(),
-                userIds?: emptyList()
-            )
-        )
 
         enableCompleteButton()
 
@@ -197,14 +212,12 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
     }
 
     private fun getAuthToken(): String {
-//        val sharedPref = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
-//        return sharedPref.getString("token", "") ?: ""
-        return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjA3ODgzZTNiLTkyNzQtNDY5Yy1hMjhmLTI1NTI1MGRlN2QzNiIsImlhdCI6MTc1NzQ3MjcyNywiZXhwIjoxNzU3NDc2MzI3fQ.ZAFzKax3ID31a1mQtJmE9ED4QFMk_isgte2Yxh3NSOU"
+        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjFlYzM4YmViLTNkNjMtNDBmYi05MGYzLTliOTM2MDI5N2I2NCIsImlhdCI6MTc1NzU5ODU5OCwiZXhwIjoxNzU3NjAyMTk4fQ.WMsFOqLnhvJ2Up_SeP2cqjJl6-ZOF0vFcXGJDxYZOCI"
     }
 
     private fun generateQrCode(sessionId: Long, adminId: Long) {
         val qrData = "https://assu.com/verify?sessionId=$sessionId&adminId=$adminId"
-        Log.d("QR 생성", "생성될 QR 데이터: $qrData")
+        Log.d("QR 생성", "생성된 QR 데이터: $qrData")
 
         try {
             val multiFormatWriter = MultiFormatWriter()
@@ -224,7 +237,7 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
             }
 
         } catch (e: WriterException) {
-            Log.e("QR 생성 오류", "QR 코드 생성 실패", e)
+            Log.e("UserGroupVerifyFragment", "QR 코드 생성 실패", e)
             requireActivity().runOnUiThread {
                 Toast.makeText(requireContext(), "QR 코드 생성에 실패했습니다.", Toast.LENGTH_SHORT).show()
             }

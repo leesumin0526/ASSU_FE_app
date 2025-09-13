@@ -16,7 +16,6 @@ import kotlin.jvm.java
 class UserPartnershipVerifyCompleteFragment :
     BaseFragment<FragmentUserPartnershipVerifyCompleteBinding>(R.layout.fragment_user_partnership_verify_complete) {
 
-        private val viewModel : UserVerifyViewModel by activityViewModels()
 
         override fun initView() {
             // X 버튼 클릭 시 홈으로 이동
@@ -24,6 +23,8 @@ class UserPartnershipVerifyCompleteFragment :
                 // Activity 종료 후 HomeFragment가 있는 이전 화면으로 돌아감
                 requireActivity().finish()
             }
+
+            binding
 
             binding
 

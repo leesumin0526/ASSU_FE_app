@@ -146,6 +146,7 @@ class UserPartnershipSelectFragment :
     }
 
     private fun navigateToComplete() {
+        Log.d("navigateToComplete 실행", "다음 프래그먼트가 무엇인지 판단 중입니다.")
         if(viewModel.isPeopleType){
             val request = UserSessionRequestDto(
                 viewModel.selectedAdminId,
@@ -174,18 +175,6 @@ class UserPartnershipSelectFragment :
                 )
             )
 
-            // 사용 내역 데이터도 post
-            viewModel.postPersonalUsageData(
-                SaveUsageRequestDto(
-                    viewModel.selectedAdminName,
-                    viewModel.selectedContentId,
-                    0,
-                    viewModel.selectedPaperContent,
-                    viewModel.storeName.value.toString(),
-                    emptyList()
-
-                )
-            )
 
             if(viewModel.isGoodsList){
                 requireActivity().supportFragmentManager.beginTransaction()

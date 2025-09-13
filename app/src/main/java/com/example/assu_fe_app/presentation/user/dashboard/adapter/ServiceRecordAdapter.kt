@@ -51,13 +51,13 @@ class ServiceRecordAdapter : RecyclerView.Adapter<ServiceRecordAdapter.ServiceRe
             if (serviceRecord.isReviewd) {
                 // 리뷰를 작성한 경우 (true)
                 binding.btnServiceWriteReview.isEnabled = false // 버튼 비활성화
-                binding.btnServiceWriteReview.setBackgroundResource(R.color.assu_box) // 비활성화 색상 적용
+                binding.btnServiceWriteReview.setBackgroundResource(R.drawable.btn_review_write) // 비활성화 색상 적용
                 binding.btnServiceWriteReview.setTextColor(ContextCompat.getColor(itemView.context, R.color.assu_font_sub))  // 텍스트 색상 변경
             } else {
                 // 리뷰를 작성하지 않은 경우 (false)
                 binding.btnServiceWriteReview.isEnabled = true // 버튼 활성화
-                binding.btnServiceWriteReview.setBackgroundResource(R.color.assu_sub3) // 활성화 색상 적용
-                binding.btnServiceWriteReview.setTextColor(ContextCompat.getColor(itemView.context, R.color.assu_font_main))  // 텍스트 색상 변경
+                binding.btnServiceWriteReview.setBackgroundResource(R.drawable.btn_write_review) // 활성화 색상 적용
+                binding.btnServiceWriteReview.setTextColor(ContextCompat.getColor(itemView.context, R.color.assu_main))  // 텍스트 색상 변경
 
                 // 클릭 리스너 설정 (false일 때만)
                 binding.btnServiceWriteReview.setOnClickListener {

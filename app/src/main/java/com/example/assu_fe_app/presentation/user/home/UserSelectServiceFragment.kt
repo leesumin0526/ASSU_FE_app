@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
 import com.example.assu_fe_app.databinding.FragmentUserSelectServiceBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 
@@ -75,11 +76,32 @@ class UserSelectServiceFragment : BaseFragment<FragmentUserSelectServiceBinding>
     }
 
     private fun navigateToNextFragment() {
-        val nextFragment = UserPartnershipVerifyCompleteFragment()
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.user_verify_fragment_container, nextFragment)
-            .addToBackStack(null)
-            .commit()
+
+        if(viewModel.isPriceType){
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_view, UserPriceConfirmFragment())
+                .addToBackStack(null)
+                .commit()
+        } else{
+            viewModel.postPersonalUsageData(
+                SaveUsageRequestDto(
+                    viewModel.storeId,
+                    viewModel.tableNumber,
+                    viewModel.selectedAdminName,
+                    viewModel.selectedContentId,
+                    0,
+                    viewModel.selectedPaperContent,
+                    viewModel.storeName.value.toString(),
+                    emptyList()
+
+                )
+            )
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_view, UserPartnershipVerifyCompleteFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
 

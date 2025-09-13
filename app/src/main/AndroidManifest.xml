@@ -24,6 +24,7 @@
     <application
         android:name=".MyApplication"
         android:usesCleartextTraffic="true"
+        android:enableOnBackInvokedCallback="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -80,7 +81,6 @@
         <activity android:name=".presentation.user.review.store.UserReviewStoreActivity" />
         <activity android:name=".presentation.user.home.CertifyActivity" />
         <activity android:name=".presentation.user.location.UserLocationSearchActivity" />
-        <activity android:name=".presentation.user.home.UserPartnershipVerifyActivity" />
         <activity
             android:name=".presentation.admin.AdminMainActivity"
             android:exported="false" />

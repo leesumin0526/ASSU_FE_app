@@ -32,12 +32,12 @@ import kotlin.getValue
 class UserQRVerifyActivity :
     BaseActivity<ActivityUserQrVerifyBinding>(R.layout.activity_user_qr_verify) {
 
-//    private lateinit var cameraExecutor: ExecutorService  TODO 나중에 주석해제
-    private var qrCodeScannedSuccessfully = true // QR 인식 성공 여부 플래그 ( 에뮬레이터에는 임시로 true 로 두기)
+    private lateinit var cameraExecutor: ExecutorService
+    private var qrCodeScannedSuccessfully = false // TODO QR 인식 성공 여부 플래그 ( 에뮬레이터에는 임시로 true 로 두기)
+    private var isAnalyzing = true // 분석 상태를 제어하는 플래그
     private val CAMERA_PERMISSION_CODE = 100
     private var qrCodeData: String? = null
     private val certifyViewModel: CertifyViewModel by viewModels()
-
 
     override fun initView() {
         applyWindowInsetPadding()
@@ -67,7 +67,6 @@ class UserQRVerifyActivity :
             if (qrCodeScannedSuccessfully) {
                 Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
 
-
                 // 다음 프래그먼트로 전환
                 showNextFragment()
             }
@@ -76,16 +75,14 @@ class UserQRVerifyActivity :
         binding.tvUniversity.text = "숭실대학교 학생"
         binding.tvDepartment.text = "IT대학"
 // TODO 나중에 주석해제
-//        cameraExecutor = Executors.newSingleThreadExecutor()
-//        checkCameraPermission()
-        onEmulatorScanSuccess()
-
+        cameraExecutor = Executors.newSingleThreadExecutor()
+        checkCameraPermission()
+//        onEmulatorScanSuccess() // 에뮬레이터 용
     }
 
     override fun initObserver() {
-        // 이 액티비티에서는 따로 LiveData를 관찰하지 않으므로 비워둡니다.
-    }
 
+    }
 
     private fun onEmulatorScanSuccess() {
         qrCodeData = "https://assu.com/verify?storeId=2" // TODO 여기 ...
@@ -93,71 +90,67 @@ class UserQRVerifyActivity :
         binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
         setConfirmButtonState(true)
         qrCodeScannedSuccessfully = true
-
     }
 
     // 에뮬레이터 테스트 시 임의로 주석처리 TODO 나중에 주석해제
-//    private fun checkCameraPermission() {
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-//            != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(Manifest.permission.CAMERA),
-//                CAMERA_PERMISSION_CODE
-//            )
-//        } else {
-//            startCamera()
-//        }
-//    }
-//
-//    private fun startCamera() {
-//        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-//
-//        cameraProviderFuture.addListener({
-//            val cameraProvider = cameraProviderFuture.get()
-//
-//            val preview = Preview.Builder().build().also {
-//                it.setSurfaceProvider(binding.previewView.surfaceProvider)
-//            }
-//
-//
-//
-//            val imageAnalyzer = ImageAnalysis.Builder()
-//                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-//                .build()
-//                .also {
-//                    it.setAnalyzer(cameraExecutor, QrCodeAnalyzer { qrCode ->
-//                        if (!qrCodeScannedSuccessfully) {
-//                            runOnUiThread {
-//                                Toast.makeText(this, "QR 코드 인식 성공!", Toast.LENGTH_SHORT).show()
-////                                qrCodeData = qrCode
+    private fun checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_PERMISSION_CODE
+            )
+        } else {
+            startCamera()
+        }
+    }
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(binding.previewView.surfaceProvider)
+            }
+
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+                .also {
+                    it.setAnalyzer(cameraExecutor, QrCodeAnalyzer { qrCode ->
+                        if (!qrCodeScannedSuccessfully && isAnalyzing) { // isAnalyzing 플래그 추가
+                            runOnUiThread {
+                                isAnalyzing = false // 분석 중단
+                                Toast.makeText(this, "QR 코드 인식 성공!", Toast.LENGTH_SHORT).show()
+                                qrCodeData = qrCode
 //                                qrCodeData = "https://assu.com/verify?sessionId=7&adminId=2"
-//                                Log.d("QR 인식  성공!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "성공햇다네요? $qrCode")
-//                                binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
-//                                setConfirmButtonState(true) // '확인' 버튼 활성화
-//                                qrCodeScannedSuccessfully = true // 플래그 설정
-//                                cameraProvider.unbindAll()
-//                            }
-//                        }
-//
-//                    }
-//                    )
-//
-//
-//                }
-//
-//            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-//
-//            try {
-//                cameraProvider.unbindAll()
-//                cameraProvider.bindToLifecycle(
-//                    this, cameraSelector, preview, imageAnalyzer
-//                )
-//            } catch (e: Exception) {
-//                Log.e("CameraX", "카메라 바인딩 실패", e)
-//            }
-//        }, ContextCompat.getMainExecutor(this))
-//    }
+                                Log.d("QR 인식 성공", "성공했다네요? $qrCode")
+                                binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
+                                setConfirmButtonState(true) // '확인' 버튼 활성화
+                                qrCodeScannedSuccessfully = true // 플래그 설정
+
+                                // 카메라 즉시 해제
+                                cameraProvider.unbindAll()
+                            }
+                        }
+                    })
+                }
+
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    this, cameraSelector, preview, imageAnalyzer
+                )
+            } catch (e: Exception) {
+                Log.e("CameraX", "카메라 바인딩 실패", e)
+            }
+        }, ContextCompat.getMainExecutor(this))
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
@@ -165,13 +158,12 @@ class UserQRVerifyActivity :
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_CODE && grantResults.isNotEmpty()
             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            startCamera()  TODO 나중에 주석 해제
+            startCamera()
         } else {
             Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
-
 
     // '확인' 버튼의 활성화 상태를 제어하는 함수
     private fun setConfirmButtonState(isEnabled: Boolean) {
@@ -219,7 +211,6 @@ class UserQRVerifyActivity :
                     val sessionId = extractParameterFromUrl(data, "sessionId")
                     val adminId = extractParameterFromUrl(data, "adminId")
                     "sessionIdAndAdminId" to Pair(sessionId, adminId)
-
                 }
                 else -> null
             }
@@ -234,6 +225,7 @@ class UserQRVerifyActivity :
                 handleStoreOwnerFlow(idValue as Long)
             }
             "sessionIdAndAdminId" -> {
+                Log.d("UserQRVerifyActivity", "그룹인증인 것을 확인하였습니다.")
                 // 인증 요청자 역할: 그룹 인증 시작
                 val (sessionId, adminId) = idValue as Pair<Long?, Long?>
                 if (sessionId != null && adminId != null) {
@@ -289,10 +281,9 @@ class UserQRVerifyActivity :
         }
 
         // TODO : WebSocket 연결 및 인증 요청 - 임시 주석 처리
-        certifyViewModel.subscribeToProgress(sessionId, authToken) // TODO 이거는 인증자 과정에서 필요없는데 테스트 용임
+//        certifyViewModel.subscribeToProgress(sessionId, authToken) // TODO 이거는 인증자 과정에서 필요없는데 테스트 용임
         certifyViewModel.connectAndCertify(sessionId, adminId, authToken)
-        // ViewModel 상태 관찰 시작
-        observeCertificationStates(9)
+
     }
 
     private fun observeCertificationStates(sessionId: Long) {
@@ -437,20 +428,25 @@ class UserQRVerifyActivity :
     private fun getAuthToken(): String {
 //        val sharedPref = getSharedPreferences("auth", Context.MODE_PRIVATE)
 //        return sharedPref.getString("token", "") ?: ""
-        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6ImI0Y2QyYmRiLWFmNTktNGZkYS05YjUwLThmZjE0OTkzOWMzYSIsImlhdCI6MTc1NzU4ODI0NCwiZXhwIjoxNzU3NTkxODQ0fQ.Xs5tVm-f8WoeQMEYPkta_itLSDOt9pg5awdcRbbH9Ds"
+        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjM5OTc3NGYwLTk4YjMtNDM3MC1hYmNjLWU5M2JkNDYyNjdiMyIsImlhdCI6MTc1NzcwMTY0MCwiZXhwIjoxNzU3NzA1MjQwfQ.XySMVj-obJAG4BU9R7XRJGqm8JOl-HgdgnhE1W-n0LU"
     }
 
     // Activity 종료 시 WebSocket 연결 해제
     override fun onDestroy() {
         super.onDestroy()
-//        cameraExecutor.shutdown() // TODO 나중에 주석 해제
+        isAnalyzing = false // 분석 중단
+
+        // cameraExecutor가 초기화된 경우에만 종료
+        if (::cameraExecutor.isInitialized) {
+            cameraExecutor.shutdown()
+        }
 
         // WebSocket 연결 해제
         certifyViewModel.disconnect()
     }
 
     // 이미지 프레임 분석을 위한 클래스
-    private class QrCodeAnalyzer(private val onQrCodeScanned: (String) -> Unit) : ImageAnalysis.Analyzer {
+    private inner class QrCodeAnalyzer(private val onQrCodeScanned: (String) -> Unit) : ImageAnalysis.Analyzer {
         private val reader = MultiFormatReader().apply {
             setHints(mapOf(
                 DecodeHintType.POSSIBLE_FORMATS to arrayListOf(BarcodeFormat.QR_CODE)
@@ -458,6 +454,12 @@ class UserQRVerifyActivity :
         }
 
         override fun analyze(image: ImageProxy) {
+            // 분석 중단 플래그 체크
+            if (!isAnalyzing) {
+                image.close()
+                return
+            }
+
             val rotationDegrees = image.imageInfo.rotationDegrees
             val buffer = image.planes[0].buffer
             val bytes = buffer.toByteArray()
@@ -477,7 +479,10 @@ class UserQRVerifyActivity :
                 val result = reader.decodeWithState(bitmap)
                 onQrCodeScanned(result.text)
             } catch (e: Exception) {
-                Log.d("QR_SCANNER", "QR 코드 인식 실패", e)
+                // 분석 중인 경우에만 로그 출력
+                if (isAnalyzing) {
+                    Log.d("QR_SCANNER", "QR 코드 인식 실패", e)
+                }
             } finally {
                 image.close()
                 reader.reset()
