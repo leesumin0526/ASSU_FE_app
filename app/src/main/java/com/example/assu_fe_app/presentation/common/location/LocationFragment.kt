@@ -42,11 +42,12 @@ class LocationFragment :
 
     override fun initView() {
         val dummyList = listOf(
-            LocationAdminPartnerSearchResultItem("역전할머니맥주 숭실대점1", "서울 동작구 사당로 36-1 서정캐슬", true, "2025.02.24 ~ 2025.06.15"),
-            LocationAdminPartnerSearchResultItem("역전할머니맥주 숭실대점2", "서울 동작구 사당로 36-1 서정캐슬", false, "")
+            LocationAdminPartnerSearchResultItem(2,"IT대 학생회", "서울 동작구 사당로 36-1 서정캐슬", true, 1,"2025.02.24 ~ 2025.06.15"),
+            LocationAdminPartnerSearchResultItem(2,"역전할머니맥주 숭실대점2", "서울 동작구 사당로 36-1 서정캐슬", false, null,"")
         )
         sharedViewModel.locationList.value = dummyList
-        adapter = AdminPartnerLocationAdapter(dummyList)
+        adapter = AdminPartnerLocationAdapter()
+        adapter.submitList(dummyList)
 
         binding.viewLocationSearchBar.setOnClickListener {
             navigateToSearch()
@@ -101,76 +102,76 @@ class LocationFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mapView = binding.viewLocationMap
-        mapView.start(object : MapLifeCycleCallback() {
-            override fun onMapDestroy() {
-                // 지도 API가 정상적으로 종료될 때 호출
-                Log.d("KakaoMap", "onMapDestroy: ")
-            }
-
-            override fun onMapError(error: Exception) {
-                // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출
-                Log.e("KakaoMap", "onMapError: ", error)
-            }
-        }, object : KakaoMapReadyCallback() {
-            override fun onMapReady(map: KakaoMap) {
-                // 정상적으로 인증이 완료되었을 때 호출
-                // KakaoMap 객체를 얻어 옵니다.
-                kakaoMap = map
-            }
-        })
-
-        // ViewModel 상태 수집
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.createRoomState.collect { state ->
-                    when (state) {
-                        is ChattingViewModel.CreateRoomUiState.Idle -> {
-                            setCreateLoading(false)
-                        }
-
-                        is ChattingViewModel.CreateRoomUiState.Loading -> {
-                            setCreateLoading(true)
-                        }
-
-                        is ChattingViewModel.CreateRoomUiState.Success -> {
-                            setCreateLoading(false)
-                            // 채팅방 화면으로 이동
-                            val intent =
-                                Intent(requireContext(), ChattingActivity::class.java).apply {
-                                    putExtra("roomId", state.data.roomId)
-                                    (binding.root.tag as? String)?.let {
-                                        putExtra(
-                                            "entryMessage",
-                                            it
-                                        )
-                                    }
-                                }
-                            startActivity(intent)
-                            vm.resetCreateState()
-                        }
-
-                        is ChattingViewModel.CreateRoomUiState.Fail -> {
-                            setCreateLoading(false)
-                            Toast.makeText(
-                                requireContext(),
-                                "채팅방 생성 실패(${state.code}) ${state.message ?: ""}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        is ChattingViewModel.CreateRoomUiState.Error -> {
-                            setCreateLoading(false)
-                            Toast.makeText(
-                                requireContext(),
-                                "오류: ${state.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                }
-            }
-        }
+//        mapView = binding.viewLocationMap
+//        mapView.start(object : MapLifeCycleCallback() {
+//            override fun onMapDestroy() {
+//                // 지도 API가 정상적으로 종료될 때 호출
+//                Log.d("KakaoMap", "onMapDestroy: ")
+//            }
+//
+//            override fun onMapError(error: Exception) {
+//                // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출
+//                Log.e("KakaoMap", "onMapError: ", error)
+//            }
+//        }, object : KakaoMapReadyCallback() {
+//            override fun onMapReady(map: KakaoMap) {
+//                // 정상적으로 인증이 완료되었을 때 호출
+//                // KakaoMap 객체를 얻어 옵니다.
+//                kakaoMap = map
+//            }
+//        })
+//
+//        // ViewModel 상태 수집
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                vm.createRoomState.collect { state ->
+//                    when (state) {
+//                        is ChattingViewModel.CreateRoomUiState.Idle -> {
+//                            setCreateLoading(false)
+//                        }
+//
+//                        is ChattingViewModel.CreateRoomUiState.Loading -> {
+//                            setCreateLoading(true)
+//                        }
+//
+//                        is ChattingViewModel.CreateRoomUiState.Success -> {
+//                            setCreateLoading(false)
+//                            // 채팅방 화면으로 이동
+//                            val intent =
+//                                Intent(requireContext(), ChattingActivity::class.java).apply {
+//                                    putExtra("roomId", state.data.roomId)
+//                                    (binding.root.tag as? String)?.let {
+//                                        putExtra(
+//                                            "entryMessage",
+//                                            it
+//                                        )
+//                                    }
+//                                }
+//                            startActivity(intent)
+//                            vm.resetCreateState()
+//                        }
+//
+//                        is ChattingViewModel.CreateRoomUiState.Fail -> {
+//                            setCreateLoading(false)
+//                            Toast.makeText(
+//                                requireContext(),
+//                                "채팅방 생성 실패(${state.code}) ${state.message ?: ""}",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+//                        }
+//
+//                        is ChattingViewModel.CreateRoomUiState.Error -> {
+//                            setCreateLoading(false)
+//                            Toast.makeText(
+//                                requireContext(),
+//                                "오류: ${state.message}",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     override fun initObserver() {
@@ -193,41 +194,41 @@ class LocationFragment :
         binding.fvLocationItem.isEnabled = !loading
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-//        mapView.removeAllViews()
-        if (::mapView.isInitialized) {
-            mapView.removeAllViews()
-        }
-    }
-
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("KakaoMapLifecycle", "onStop: Fragment stopped")
-        // onPause에서 이미 mapView.pause()를 호출하고 있으므로,
-        // Kakao SDK에서 명시적으로 onStop에서 호출해야 하는 API가 없다면 추가 작업은 필요 없을 수 있습니다.
-        // SDK 문서 확인 필요.
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Fragment가 화면에 다시 나타날 때 MapView를 다시 시작합니다.
-        // MapView가 초기화된 후에만 start()를 호출해야 합니다.
-        if (::mapView.isInitialized) {
-            Log.d("KakaoMapLifecycle", "onResume: Starting MapView")
-            mapView.resume() // Kakao SDK에 resume()이 있다면 사용, 없다면 start()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        // Fragment가 화면에서 사라질 때 MapView를 일시 중지합니다.
-        // MapView가 초기화된 후에만 pause()를 호출해야 합니다.
-        if (::mapView.isInitialized) {
-            Log.d("KakaoMapLifecycle", "onPause: Pausing MapView")
-            mapView.pause() // Kakao SDK에 pause()가 있다면 사용, 없다면 stop() 또는 API 문서 참고
-        }
-    }
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+////        mapView.removeAllViews()
+//        if (::mapView.isInitialized) {
+//            mapView.removeAllViews()
+//        }
+//    }
+//
+//
+//    override fun onStop() {
+//        super.onStop()
+//        Log.d("KakaoMapLifecycle", "onStop: Fragment stopped")
+//        // onPause에서 이미 mapView.pause()를 호출하고 있으므로,
+//        // Kakao SDK에서 명시적으로 onStop에서 호출해야 하는 API가 없다면 추가 작업은 필요 없을 수 있습니다.
+//        // SDK 문서 확인 필요.
+//    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//        // Fragment가 화면에 다시 나타날 때 MapView를 다시 시작합니다.
+//        // MapView가 초기화된 후에만 start()를 호출해야 합니다.
+//        if (::mapView.isInitialized) {
+//            Log.d("KakaoMapLifecycle", "onResume: Starting MapView")
+//            mapView.resume() // Kakao SDK에 resume()이 있다면 사용, 없다면 start()
+//        }
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//        // Fragment가 화면에서 사라질 때 MapView를 일시 중지합니다.
+//        // MapView가 초기화된 후에만 pause()를 호출해야 합니다.
+//        if (::mapView.isInitialized) {
+//            Log.d("KakaoMapLifecycle", "onPause: Pausing MapView")
+//            mapView.pause() // Kakao SDK에 pause()가 있다면 사용, 없다면 stop() 또는 API 문서 참고
+//        }
+//    }
 
 }

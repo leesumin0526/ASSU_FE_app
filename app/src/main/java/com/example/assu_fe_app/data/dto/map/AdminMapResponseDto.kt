@@ -6,7 +6,7 @@ data class AdminMapResponseDto (
     val adminId: Long,
     val name: String,
     val address: String,
-    val isPartnered: Boolean,
+    val partnered: Boolean,
     val partnershipId: Long?, // 제휴 상태가 아닐 경우 null일 수 있음
     val partnershipStartDate: LocalDate?, // 제휴 상태가 아닐 경우 null일 수 있음
     val partnershipEndDate: LocalDate?, // 제휴 상태가 아닐 경우 null일 수 있음

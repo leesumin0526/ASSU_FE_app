@@ -13,7 +13,7 @@ class LocationItemFragment :
     override fun initView() {}
 
     fun showCapsuleInfo(item: LocationAdminPartnerSearchResultItem) {
-        binding.tvAdminPartnerLocationAddressDate.text = item.shopName
+        binding.tvAdminPartnerLocationAddressDate.text = item.name
 
         if (item.isPartnered) {
             binding.ivAdminPartnerLocationCapsule.visibility = View.VISIBLE
