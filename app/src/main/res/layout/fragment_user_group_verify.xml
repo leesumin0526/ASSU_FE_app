@@ -208,7 +208,8 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.0276"
         app:layout_constraintStart_toEndOf="@id/group_w2_left"
         app:layout_constraintEnd_toStartOf="@id/group_w2_right"
         app:layout_constraintTop_toBottomOf="@id/group_h7">
@@ -217,21 +218,25 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@null"
             android:src="@drawable/ic_group_unverified"/>
         <ImageView
             android:id="@+id/group_verify2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@null"
             android:src="@drawable/ic_group_unverified"/>
         <ImageView
             android:id="@+id/group_verify3"
+            android:visibility="visible"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_group_unverified"/>
         <ImageView
             android:id="@+id/group_verify4"
+            android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

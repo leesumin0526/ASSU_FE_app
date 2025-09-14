@@ -32,6 +32,7 @@ android {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
             buildConfigField("String", "DEV_BEARER", "\"Bearer token\"") // 🔴 임시
+            buildConfigField("String", "CERTIFICATION_URL", "\"ws://10.21.32.174:8080/ws\"")
 
         }
         release {

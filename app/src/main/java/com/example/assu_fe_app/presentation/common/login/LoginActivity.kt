@@ -103,7 +103,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
     private fun getUserRole(id: String, pw: String): UserRole = when {
         id == "admin" && pw == "1234" -> UserRole.ADMIN
         id == "partner" && pw == "1234" -> UserRole.PARTNER
-        id == "20211234" && pw == "1234" -> UserRole.USER
+        id == "1" && pw == "1" -> UserRole.USER
         else -> UserRole.INVALID
     }
 
