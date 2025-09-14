@@ -15,6 +15,7 @@ import androidx.navigation.Navigation
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
+import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.databinding.FragmentAdminHomeBinding
@@ -26,7 +27,6 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.assu_fe_app.data.manager.TokenManager
-import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 
@@ -109,9 +109,9 @@ class AdminHomeFragment :
 
                             if(data.isEmpty()) {
                                 binding.btnAdminHomeViewAll.visibility = View.INVISIBLE
-//                                binding.tvNoPartnerList.visibility = View.VISIBLE
+                                binding.tvNoPartnerList.visibility = View.VISIBLE
                             } else {
-//                                binding.tvNoPartnerList.visibility = View.GONE
+                                binding.tvNoPartnerList.visibility = View.GONE
                             }
 
                             val firstItem = data.getOrNull(0)
@@ -255,13 +255,42 @@ class AdminHomeFragment :
 
         bindingItem.visibility = View.VISIBLE
         bindingItem.setOnClickListener {
-            val dialog = PartnershipContractDialogFragment(
-                item.options.map { opt ->
-                    // 여기서도 OptionType/ CriterionType에 따라 적절한 PartnershipContractItem 변환 가능
-                    PartnershipContractItem.Service.ByPeople(opt.people, opt.category)
-                }
+            val contractData = PartnershipContractData(
+//                partnerName = item.partnerName ?: item.partnerId.toString(),
+                partnerName = item.partnerId.toString(),
+                adminName = tokenManager.getUserName() ?: "관리자",
+                options = item.options.map { opt ->
+                    when (opt.optionType) {
+                        OptionType.SERVICE -> when (opt.criterionType) {
+                            CriterionType.HEADCOUNT -> PartnershipContractItem.Service.ByPeople(
+                                opt.people,
+                                opt.goods.firstOrNull()?.goodsName ?:"상품"
+                            )
+
+                            CriterionType.PRICE -> PartnershipContractItem.Service.ByAmount(
+                                (opt.cost ?: 0L).toInt(),
+                                opt.goods.firstOrNull()?.goodsName ?:"상품"
+                            )
+                        }
+
+                        OptionType.DISCOUNT -> when (opt.criterionType) {
+                            CriterionType.HEADCOUNT -> PartnershipContractItem.Discount.ByPeople(
+                                opt.people,
+                                (opt.discountRate ?: 0L).toInt()
+                            )
+
+                            CriterionType.PRICE -> PartnershipContractItem.Discount.ByAmount(
+                                (opt.cost ?: 0L).toInt(),
+                                (opt.discountRate ?: 0L).toInt()
+                            )
+                        }
+                    }
+                },
+                periodStart = item.partnershipPeriodStart.toString(),
+                periodEnd = item.partnershipPeriodEnd.toString()
             )
-            dialog.show(parentFragmentManager, "PartnershipContentDialog")
+            val dialog = PartnershipContractDialogFragment.newInstance(contractData)
+            dialog.show(parentFragmentManager, "PartnershipContractDialog")
         }
     }
 }

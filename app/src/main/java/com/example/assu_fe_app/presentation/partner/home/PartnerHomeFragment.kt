@@ -254,10 +254,10 @@ class PartnerHomeFragment :
         bindingItem.visibility = View.VISIBLE
         bindingItem.setOnClickListener {
             val dialog = PartnershipContractDialogFragment(
-                item.options.map { opt ->
-                    // 여기서도 OptionType/ CriterionType에 따라 적절한 PartnershipContractItem 변환 가능
-                    PartnershipContractItem.Service.ByPeople(opt.people, opt.category)
-                }
+//                item.options.map { opt ->
+//                    // 여기서도 OptionType/ CriterionType에 따라 적절한 PartnershipContractItem 변환 가능
+//                    PartnershipContractItem.Service.ByPeople(opt.people, opt.category)
+//                }
             )
             dialog.show(parentFragmentManager, "PartnershipContentDialog")
         }
