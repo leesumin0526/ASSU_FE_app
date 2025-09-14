@@ -257,8 +257,9 @@ class AdminHomeFragment :
         bindingItem.setOnClickListener {
             val contractData = PartnershipContractData(
 //                partnerName = item.partnerName ?: item.partnerId.toString(),
+                //TODO: 이름 바꾸기
                 partnerName = item.partnerId.toString(),
-                adminName = tokenManager.getUserName() ?: "관리자",
+                adminName = item.adminId.toString() ?: "관리자",
                 options = item.options.map { opt ->
                     when (opt.optionType) {
                         OptionType.SERVICE -> when (opt.criterionType) {
