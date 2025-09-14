@@ -42,7 +42,7 @@
     <!-- 일단 채팅은 주석 처리 -->
     <fragment
         android:id="@+id/partnerChattingFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingListFragment"
+        android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingRoomListFragment"
         android:label="Chatting" >
         <action
             android:id="@+id/action_partnerChattingFragment_to_serviceProposalTermWritingFragment"
@@ -75,6 +75,16 @@
         android:name="com.example.assu_fe_app.presentation.partner.mypage.PartnerMypageAlarmFragment"
         android:label="Alarm Settings" />
 
+    <!-- 제휴업체 알림확인 -->
+    <fragment
+        android:id="@+id/notificationAllFragment"
+        android:name="com.example.assu_fe_app.presentation.common.notification.NotificationAllFragment"
+        tools:layout="@layout/fragment_notification_all" />
+
+    <fragment
+        android:id="@+id/notificationUnreadFragment"
+        android:name="com.example.assu_fe_app.presentation.common.notification.NotificationUnreadFragment"
+        tools:layout="@layout/fragment_notification_unread" />
 
 
     <!--리뷰 모아보는 페이지-->

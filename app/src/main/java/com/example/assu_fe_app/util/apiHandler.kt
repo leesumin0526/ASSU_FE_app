@@ -1,9 +1,7 @@
 package com.example.assu_fe_app.util
 
-import android.util.Log
 import com.example.assu_fe_app.MyApplication
 import com.example.assu_fe_app.data.dto.BaseResponse
-import retrofit2.Response
 import com.example.assu_fe_app.di.ServiceModule
 import retrofit2.HttpException
 import java.io.IOException
@@ -48,9 +46,3 @@ suspend fun <T : Any, R : Any> apiHandler(
 
 }
 
-
-private fun <T : Any> getFailRetrofitResult(body: T?, response: Response<T>) = body?.let {
-    RetrofitResult.Fail(statusCode = response.code(), message = it.toString())
-} ?: run {
-    RetrofitResult.Fail(statusCode = response.code(), message = response.message())
-}

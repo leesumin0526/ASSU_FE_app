@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.admin.mypage
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -7,21 +8,31 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentAdminMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
+import com.example.assu_fe_app.presentation.common.login.LoginViewModel
 import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+
 
 @AndroidEntryPoint
-class AdminMypageFragment
-    : BaseFragment<FragmentAdminMypageBinding>(R.layout.fragment_admin_mypage) {
+class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fragment_admin_mypage) {
+
+    @Inject
+    lateinit var tokenManager: TokenManager
+
+    private val loginViewModel: LoginViewModel by viewModels()
 
     private val viewModel: MypageViewModel by viewModels()
 
-    override fun initView() { /* no-op */ }
+    override fun initView(){
+        // UI 초기화만 수행
+    }
 
     override fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -54,6 +65,8 @@ class AdminMypageFragment
 
         // 로그아웃: 서버에서 unregister 성공 시에만 화면 이동 (observer에서 처리)
         binding.clAdmAccountComponent2.setOnClickListener {
+            // 서버에 로그아웃 API 호출 후 토큰 삭제 및 로그인 화면으로 이동
+            loginViewModel.logout()
             findNavController().navigate(
                 R.id.action_admin_mypage_to_mypage_account
             )
@@ -67,3 +80,4 @@ class AdminMypageFragment
         startActivity(intent)
     }
 }
+

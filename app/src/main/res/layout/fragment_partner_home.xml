@@ -384,6 +384,7 @@
                             android:fontFamily="@font/pretendard_regular" />
 
                         <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/cl_recommend_inquiry1"
                             android:layout_marginTop="10dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content">
@@ -453,6 +454,7 @@
                             android:fontFamily="@font/pretendard_regular" />
 
                         <FrameLayout
+                            android:id="@+id/fl_recommend_inquiry2"
                             android:layout_width="match_parent"
                             android:layout_height="32dp"
                             android:layout_marginTop="10dp"
@@ -460,6 +462,7 @@
                             android:clickable="true">
 
                             <TextView
+                                android:id="@+id/tv_recommend_inquiry2"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:gravity="center"

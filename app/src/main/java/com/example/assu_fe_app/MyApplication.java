@@ -16,43 +16,59 @@ public class MyApplication extends Application {
 
     private static Context appContext;
 
+    //    @Override
+//    public void onCreate() {
+//        super.onCreate();
+//        appContext = getApplicaitonContext();
+//        KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
+//    }
     @Override
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
-//        KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
+
         if (isArmDevice()) {
             KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
         }
-
     }
 
-    public static boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (cm == null) return false;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network network = cm.getActiveNetwork();
-            if (network == null) return false;
-            NetworkCapabilities caps = cm.getNetworkCapabilities(network);
-            if (caps == null) return false;
-
-            return caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                    || caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-                    || caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
-                    || caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
-        } else {
-            // deprecated이지만 하위 호환용
-            //noinspection deprecation
-            return cm.getActiveNetworkInfo() != null
-                    && cm.getActiveNetworkInfo().isConnectedOrConnecting();
-        }
-    }
     private boolean isArmDevice() {
         String abi = Build.SUPPORTED_ABIS != null && Build.SUPPORTED_ABIS.length > 0
                 ? Build.SUPPORTED_ABIS[0] : "";
         return abi.contains("arm");
+    }
+
+    public static boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (cm == null) {
+            return false;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network network = cm.getActiveNetwork();
+            if (network == null) {
+                return false;
+            }
+            NetworkCapabilities caps = cm.getNetworkCapabilities(network);
+            if (caps == null) {
+                return false;
+            }
+
+            boolean hasWifi = caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+            boolean hasCellular = caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
+            boolean hasEthernet = caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
+            boolean hasVpn = caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
+
+            boolean isOnline = hasWifi || hasCellular || hasEthernet || hasVpn;
+
+            return isOnline;
+        } else {
+            // deprecated이지만 하위 호환용
+            // noinspection deprecation
+            boolean isConnected = cm.getActiveNetworkInfo() != null
+                    && cm.getActiveNetworkInfo().isConnectedOrConnecting();
+            return isConnected;
+        }
     }
 }

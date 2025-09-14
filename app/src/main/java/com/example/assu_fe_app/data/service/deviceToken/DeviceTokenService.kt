@@ -17,5 +17,4 @@ interface DeviceTokenService {
     suspend fun unregisterToken(
         @Path("token-id") tokenId: Long
     ): BaseResponse<String>
-
 }

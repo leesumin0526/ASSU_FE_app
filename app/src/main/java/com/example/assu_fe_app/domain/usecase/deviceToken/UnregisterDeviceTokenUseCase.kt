@@ -8,5 +8,5 @@ class UnregisterDeviceTokenUseCase @Inject constructor(
     private val repo: DeviceTokenRepository
 ) {
     suspend operator fun invoke(tokenId: Long): RetrofitResult<String> =
-        repo.unregisterToken(tokenId)
+        repo.unregister(tokenId)
 }
