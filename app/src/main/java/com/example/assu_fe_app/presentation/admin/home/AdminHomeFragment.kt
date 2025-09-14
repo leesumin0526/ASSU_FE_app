@@ -192,8 +192,8 @@ class AdminHomeFragment :
 
         // 🔽 전체 조회 버튼
         binding.btnAdminHomeViewAll.setOnClickListener {
-            // ✅ 전체 조회 API 호출
-            partnershipViewModel.getProposalPartnerList(isAll = true)
+            val intent = Intent(requireContext(), AdminHomeViewPartnerListActivity::class.java)
+            startActivity(intent)
         }
 
         binding.ivAdminHomeNotification.setOnClickListener {
@@ -219,10 +219,10 @@ class AdminHomeFragment :
             val req = CreateChatRoomRequestDto(
                 //TODO : 유저 정보 받아오기
                 adminId = 1L,
-                partnerId = 5L
+                //TODO: 성주 api 연결 후 수정하기
+                partnerId = 1L
             )
             chattingViewModel.createRoom(req)
-
         }
     }
 
