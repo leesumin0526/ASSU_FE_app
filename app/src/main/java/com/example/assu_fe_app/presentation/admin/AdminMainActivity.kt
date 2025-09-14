@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
@@ -12,12 +13,15 @@ import androidx.navigation.ui.NavigationUI
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityAdminMainBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
+import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.HiltAndroidApp
 
 @AndroidEntryPoint
 class AdminMainActivity : BaseActivity<ActivityAdminMainBinding>(R.layout.activity_admin_main) {
+
+    private val chatViewModel: ChattingViewModel by viewModels()
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -70,6 +74,14 @@ class AdminMainActivity : BaseActivity<ActivityAdminMainBinding>(R.layout.activi
             // BottomNavigationView 에서 해당 메뉴 아이템을 선택하면
             // NavigationUI 가 알아서 navController.navigate(destId) 해 줍니다.
             binding.bottomNavigationView.selectedItemId = destId
+        }
+
+        val refresh = intent.getBooleanExtra("refresh_chat_list", false)
+
+        if (refresh) {
+            // ✅ 채팅방 목록 새로고침
+            Log.d("AdminMainActivity", "채팅방 목록 새로고침 요청")
+            chatViewModel.getChattingRoomList()
         }
     }
 
