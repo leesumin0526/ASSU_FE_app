@@ -18,6 +18,9 @@ class UserLocationSearchViewModel @Inject constructor(
     private val searchUseCase: UserSearchStoreByKeywordUseCase
 ) : ViewModel(){
 
+    private val _isEmptyList = MutableLiveData<Boolean>()
+    val isEmptyList: LiveData<Boolean> = _isEmptyList
+
     private val _storeList = MutableLiveData<List<LocationUserSearchResultItem>>()
     val storeList: LiveData<List<LocationUserSearchResultItem>> = _storeList
 
@@ -29,6 +32,11 @@ class UserLocationSearchViewModel @Inject constructor(
             when (val result = searchUseCase(keyword)) {
                 is RetrofitResult.Success -> {
                     _storeList.value = result.data
+                    if(result.data.isEmpty()){
+                        _isEmptyList.value = true
+                    }else{
+                        _isEmptyList.value = false
+                    }
                     Log.d("UserLocationSearchViewModel", "검색 결과: ${result.data}")
                 }
                 is RetrofitResult.Error -> {

@@ -27,6 +27,21 @@ class UserLocationSearchSuccessFragment :
             Log.d("UserLocationSearchSuccessFragment", "관찰된 데이터: $storeList")
             binding.tvLocationSearchSuccessTitle.text = storeList.size.toString()
         }
+
+        searchViewModel.isEmptyList.observe(viewLifecycleOwner){ isEmpty ->
+            if(isEmpty){
+                binding.tvLocationSearchSuccessTitle.visibility = View.GONE
+                binding.tvLocationSearchSccessTitle.visibility= View.GONE
+                binding.rvLocationSearchSuccess.visibility = View.GONE
+                binding.llLocationItemEmpty.visibility=  View.VISIBLE
+            }
+            else {
+                binding.tvLocationSearchSuccessTitle.visibility = View.VISIBLE
+                binding.tvLocationSearchSccessTitle.visibility= View.VISIBLE
+                binding.rvLocationSearchSuccess.visibility = View.VISIBLE
+                binding.llLocationItemEmpty.visibility=  View.GONE
+            }
+        }
     }
 
     override fun initView() {

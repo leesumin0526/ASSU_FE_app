@@ -9,6 +9,42 @@
         android:orientation="vertical"
         tools:context=".presentation.common.location.LocationSearchRankFragment">
 
+        <View
+            android:id="@+id/view_location_success_mg1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.3525"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+        
+        <LinearLayout
+            android:id="@+id/ll_location_item_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/view_location_success_mg1"
+            app:layout_constraintStart_toStartOf="parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="검색 결과를 찾지 못했어요"
+                android:textSize="16sp"
+                android:fontFamily="@font/pretendard_medium"
+                android:textColor="@color/assu_font_main"
+                />
+            <TextView
+                android:layout_marginTop="7dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/assu_font_sub"
+                android:textSize="14sp"
+                android:textAlignment="center"
+                android:text="매장을 찾지 못해 페이지를 표시할 수 없어요\n이용에 불편을 드려 죄송합니다."
+                android:fontFamily="@font/pretendard_regular"/>
+
+                
+        </LinearLayout>
         <TextView
             android:id="@+id/tv_location_search_success_title"
             android:layout_width="wrap_content"
@@ -42,7 +78,7 @@
             android:layout_height="wrap_content"
             app:layout_constrainedHeight="true"
             app:layout_constraintTop_toBottomOf="@id/tv_location_search_success_title"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_marginTop="10dp"
             android:layout_marginStart="13dp"
             android:layout_marginEnd="24dp"
