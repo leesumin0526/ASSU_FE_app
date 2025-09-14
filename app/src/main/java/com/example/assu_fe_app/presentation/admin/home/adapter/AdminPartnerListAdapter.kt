@@ -23,6 +23,7 @@ class AdminPartnerListAdapter(
         : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: GetProposalPartnerListModel) {
+            //TODO: 이름 바꾸기
             binding.tvAssociationName.text = item.partnerId.toString()
             val option = item.options.firstOrNull()
             binding.tvBenefitDescription.text = if (option != null) {
