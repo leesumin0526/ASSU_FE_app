@@ -36,6 +36,13 @@ class AuthRepositoryImpl @Inject constructor(
         )
     }
     
+    override suspend fun withdraw(): RetrofitResult<Unit> {
+        return apiHandler(
+            execute = { authService.withdraw() },
+            mapper = { Unit }
+        )
+    }
+    
     override suspend fun sendPhoneVerification(request: PhoneVerificationSendRequestDto): RetrofitResult<Unit> {
         return apiHandler(
             execute = { authService.sendPhoneVerification(request) },

@@ -8,6 +8,7 @@ import com.example.assu_fe_app.data.dto.auth.PhoneVerificationVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentLoginRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentLoginResponseDto
 import retrofit2.http.Body
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 interface AuthService {
@@ -34,4 +35,7 @@ interface AuthService {
     suspend fun verifyPhoneVerification(
         @Body request: PhoneVerificationVerifyRequestDto
     ): BaseResponse<Unit>
+    
+    @PATCH("auth/withdraw")
+    suspend fun withdraw(): BaseResponse<Unit>
 }
