@@ -30,7 +30,7 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
+            buildConfigField("String", "BASE_URL", "\"http:/10.0.2.2:8080/\"") // 에뮬레이터 → PC 로컬
             buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiUEFSVE5FUiIsInVzZXJJZCI6MzAsInVzZXJuYW1lIjoicGFydG5lcjMyQGdtYWlsLmNvbSIsImp0aSI6IjdkMWFhZWRjLWQzYjctNDhkZS1hZmVhLTY2YWNhZjEzN2Y1OSIsImlhdCI6MTc1Njc3ODcwNCwiZXhwIjoxNzU2NzgyMzA0fQ.04DAYtdoyusmIR7uDbU2RgtyVs_CFltWF0T7g_ERNXU\"") // 🔴 임시
 
         }
