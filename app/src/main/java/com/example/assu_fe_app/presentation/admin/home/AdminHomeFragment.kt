@@ -35,11 +35,8 @@ import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 class AdminHomeFragment :
     BaseFragment<FragmentAdminHomeBinding>(R.layout.fragment_admin_home) {
     private val vm: HomeViewModel by viewModels()
-
     private val chattingViewModel: ChattingViewModel by viewModels()
-
     private val partnershipViewModel: PartnershipViewModel by viewModels()
-
     lateinit var tokenManager: TokenManager
 
     override fun initObserver() {

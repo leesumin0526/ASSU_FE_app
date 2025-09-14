@@ -16,11 +16,13 @@ import com.example.assu_fe_app.presentation.common.contract.PartnershipContractD
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
+import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentPartnerHomeBinding
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
+import com.example.assu_fe_app.presentation.admin.home.AdminHomeViewPartnerListActivity
 import com.example.assu_fe_app.presentation.admin.home.HomeViewModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
@@ -180,6 +182,7 @@ class PartnerHomeFragment :
     override fun onResume() {
         super.onResume()
         vm.refreshBell()
+        partnershipViewModel.getProposalAdminList(isAll = false)
     }
 
     override fun initView() {
@@ -196,7 +199,8 @@ class PartnerHomeFragment :
         }
 
         binding.btnPartnerHomeViewAll.setOnClickListener { view ->
-            Navigation.findNavController(view).navigate(R.id.action_partner_home_to_partner_view_admin_list)
+            val intent = Intent(requireContext(), PartnerHomeViewAdminListActivity::class.java)
+            startActivity(intent)
         }
 
         binding.ivPartnerHomeNotification.setOnClickListener {
@@ -231,7 +235,7 @@ class PartnerHomeFragment :
         periodView: TextView,
         item: GetProposalAdminListModel
     ) {
-        titleView.text = item.adminId.toString() // TODO: 실제 가맹점명 필드 있으면 교체
+        titleView.text = item.adminId.toString() // TODO: 실제 어드민명 필드 있으면 교체
         periodView.text = "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
 
         // 옵션 설명 만들기
@@ -253,13 +257,43 @@ class PartnerHomeFragment :
 
         bindingItem.visibility = View.VISIBLE
         bindingItem.setOnClickListener {
-            val dialog = PartnershipContractDialogFragment(
-//                item.options.map { opt ->
-//                    // 여기서도 OptionType/ CriterionType에 따라 적절한 PartnershipContractItem 변환 가능
-//                    PartnershipContractItem.Service.ByPeople(opt.people, opt.category)
-//                }
+            val contractData = PartnershipContractData(
+//                partnerName = item.partnerName ?: item.partnerId.toString(),
+                //TODO: 이름 바꾸기
+                partnerName = item.partnerId.toString(),
+                adminName = item.adminId.toString() ?: "관리자",
+                options = item.options.map { opt ->
+                    when (opt.optionType) {
+                        OptionType.SERVICE -> when (opt.criterionType) {
+                            CriterionType.HEADCOUNT -> PartnershipContractItem.Service.ByPeople(
+                                opt.people,
+                                opt.goods.firstOrNull()?.goodsName ?: "상품"
+                            )
+
+                            CriterionType.PRICE -> PartnershipContractItem.Service.ByAmount(
+                                (opt.cost ?: 0L).toInt(),
+                                opt.goods.firstOrNull()?.goodsName ?: "상품"
+                            )
+                        }
+
+                        OptionType.DISCOUNT -> when (opt.criterionType) {
+                            CriterionType.HEADCOUNT -> PartnershipContractItem.Discount.ByPeople(
+                                opt.people,
+                                (opt.discountRate ?: 0L).toInt()
+                            )
+
+                            CriterionType.PRICE -> PartnershipContractItem.Discount.ByAmount(
+                                (opt.cost ?: 0L).toInt(),
+                                (opt.discountRate ?: 0L).toInt()
+                            )
+                        }
+                    }
+                },
+                periodStart = item.partnershipPeriodStart.toString(),
+                periodEnd = item.partnershipPeriodEnd.toString()
             )
-            dialog.show(parentFragmentManager, "PartnershipContentDialog")
+            val dialog = PartnershipContractDialogFragment.newInstance(contractData)
+            dialog.show(parentFragmentManager, "PartnershipContractDialog")
         }
     }
 }
