@@ -5,7 +5,6 @@ import com.example.assu_fe_app.data.dto.certification.request.UserSessionRequest
 import com.example.assu_fe_app.data.dto.certification.response.NoneDataResponseDto
 import com.example.assu_fe_app.data.dto.certification.response.UserSessionResponseDto
 import com.example.assu_fe_app.util.RetrofitResult
-import okhttp3.ResponseBody
 
 interface CertificationRepository {
 

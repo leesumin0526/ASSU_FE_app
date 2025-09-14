@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.DevBearerInterceptor
 import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
 import com.example.assu_fe_app.databinding.FragmentUserGroupVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment

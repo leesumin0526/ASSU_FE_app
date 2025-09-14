@@ -241,7 +241,7 @@
             android:id="@+id/iv_logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_user"
+            android:src="@drawable/ic_account_logout"
             app:layout_constraintStart_toEndOf="@id/account_mg11_1"
             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -258,7 +258,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:text="계정관리"
+            android:text="로그아웃"
             android:textColor="@color/assu_font_main"
             android:fontFamily="@font/pretendard_medium"
             app:layout_constraintTop_toTopOf="parent"
