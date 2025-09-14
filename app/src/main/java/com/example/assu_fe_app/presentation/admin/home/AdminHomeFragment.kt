@@ -3,7 +3,10 @@ package com.example.assu_fe_app.presentation.admin.home
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +15,8 @@ import androidx.navigation.Navigation
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
+import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
+import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.databinding.FragmentAdminHomeBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
@@ -21,6 +26,8 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
+import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 
 
@@ -93,6 +100,77 @@ class AdminHomeFragment :
             }
         }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                partnershipViewModel.getPartnershipPartnerListUiState.collect { state ->
+                    when (state) {
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Success -> {
+                            val data = state.data
+
+                            if(data.isEmpty()) {
+                                binding.btnAdminHomeViewAll.visibility = View.INVISIBLE
+//                                binding.tvNoPartnerList.visibility = View.VISIBLE
+                            } else {
+//                                binding.tvNoPartnerList.visibility = View.GONE
+                            }
+
+                            val firstItem = data.getOrNull(0)
+                            if (firstItem != null) {
+                                bindAdminItem(
+                                    binding.adminHomeListItem1,
+                                    binding.tvPartnerName1,
+                                    binding.tvBenefitDescription1,
+                                    binding.tvBenefitPeriod1,
+                                    firstItem
+                                )
+                            } else {
+                                binding.adminHomeListItem1.isVisible = false
+                            }
+
+                            val secondItem = data.getOrNull(1)
+                            if (secondItem != null) {
+                                bindAdminItem(
+                                    binding.adminHomeListItem2,
+                                    binding.tvAdminName2,
+                                    binding.tvBenefitDescription2,
+                                    binding.tvBenefitPeriod2,
+                                    secondItem
+                                )
+                            } else {
+                                binding.adminHomeListItem2.isVisible = false
+                            }
+
+                            // 전체보기 버튼은 데이터가 1건 이상일 때만 활성화
+                            binding.btnAdminHomeViewAll.isEnabled = data.isNotEmpty()
+                        }
+
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Loading -> {
+                            binding.adminHomeListItem1.isVisible = false
+                            binding.adminHomeListItem2.isVisible = false
+                            binding.btnAdminHomeViewAll.isEnabled = false
+                        }
+
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Fail -> {
+                            Toast.makeText(requireContext(), "서버 실패: ${state.message}", Toast.LENGTH_SHORT).show()
+                            Log.e("PartnerHomeFragment", "Fail code=${state.code}, message=${state.message}")
+                            binding.adminHomeListItem1.isVisible = false
+                            binding.adminHomeListItem2.isVisible = false
+                            binding.btnAdminHomeViewAll.isEnabled = false
+                        }
+
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Error -> {
+                            Toast.makeText(requireContext(), "에러: ${state.message}", Toast.LENGTH_SHORT).show()
+                            Log.e("PartnerHomeFragment", "Error message=${state.message}")
+                            binding.adminHomeListItem1.isVisible = false
+                            binding.adminHomeListItem2.isVisible = false
+                            binding.btnAdminHomeViewAll.isEnabled = false
+                        }
+
+                        PartnershipViewModel.PartnershipPartnerListUiState.Idle -> Unit
+                    }
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -145,6 +223,45 @@ class AdminHomeFragment :
             )
             chattingViewModel.createRoom(req)
 
+        }
+    }
+
+    private fun bindAdminItem(
+        bindingItem: ViewGroup,
+        titleView: TextView,
+        descView: TextView,
+        periodView: TextView,
+        item: GetProposalPartnerListModel
+    ) {
+        titleView.text = item.partnerId.toString() // TODO: 실제 가맹점명 필드 있으면 교체
+        periodView.text = "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
+
+        // 옵션 설명 만들기
+        val option = item.options.firstOrNull()
+        descView.text = if (option != null) {
+            when (option.optionType) {
+                OptionType.SERVICE -> when (option.criterionType) {
+                    CriterionType.HEADCOUNT -> "${option.people}명당 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
+                    CriterionType.PRICE -> "${option.cost}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
+                }
+                OptionType.DISCOUNT -> when (option.criterionType) {
+                    CriterionType.HEADCOUNT -> "${option.people}명 이상 ${option.discountRate}% 할인"
+                    CriterionType.PRICE -> "${option.cost}원 이상 주문 시 ${option.discountRate}% 할인"
+                }
+            }
+        } else {
+            "제휴 혜택 없음"
+        }
+
+        bindingItem.visibility = View.VISIBLE
+        bindingItem.setOnClickListener {
+            val dialog = PartnershipContractDialogFragment(
+                item.options.map { opt ->
+                    // 여기서도 OptionType/ CriterionType에 따라 적절한 PartnershipContractItem 변환 가능
+                    PartnershipContractItem.Service.ByPeople(opt.people, opt.category)
+                }
+            )
+            dialog.show(parentFragmentManager, "PartnershipContentDialog")
         }
     }
 }

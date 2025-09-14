@@ -33,7 +33,7 @@ android {
 //            buildConfigField("String", "BASE_URL", "\"https://assu.shop/\"") // 에뮬레이터 → PC 로컬
             // PC 로컬 서버 (예: localhost:8080)
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"")
-            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiUEFSVE5FUiIsInVzZXJJZCI6OCwidXNlcm5hbWUiOiJqd3BhcnRuZXJ0ZXN0QGV4YW1wbGUuY29tIiwianRpIjoiZjNhMzA4MGMtYzg4ZC00OWM3LWIwNTUtYTg1NzMyMGY4NjI2IiwiaWF0IjoxNzU3ODM2MjkzLCJleHAiOjE3NTc4Mzk4OTN9.fVx82PALLlRy1bRBaE0iCi7IEgKuaMNr_UKZ_PWH4Zw\"") // 🔴 임시
+            buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjksInVzZXJuYW1lIjoiandhZG1pbnRlc3RAZXhhbXBsZS5jb20iLCJqdGkiOiJkMzFiMzQ2My04MThhLTQ0NjEtYTA3ZC1mMDRmM2ZhNjFlNDgiLCJpYXQiOjE3NTc4NDIzMjcsImV4cCI6MTc1Nzg0NTkyN30.pjLCxE52qkrMxtofNj_e6Hhe85McSWvoU0HBpE-FvcA\"") // 🔴 임시
 
         }
         release {
