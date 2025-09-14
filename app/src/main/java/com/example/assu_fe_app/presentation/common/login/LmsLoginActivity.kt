@@ -17,7 +17,7 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityLmsLoginBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.user.UserMainActivity
-import com.example.assu_fe_app.ui.auth.LoginState
+import com.example.assu_fe_app.ui.auth.LoginViewModel.LoginState
 import com.example.assu_fe_app.ui.auth.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

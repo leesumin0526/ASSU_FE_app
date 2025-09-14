@@ -11,7 +11,6 @@ import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentUserMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
-import com.example.assu_fe_app.ui.auth.LoginViewModel
 import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
 import com.example.assu_fe_app.presentation.user.review.mypage.UserMyReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,8 +24,6 @@ class UserMypageFragment
 
     @Inject
     lateinit var tokenManager: TokenManager
-
-    private val loginViewModel: LoginViewModel by viewModels()
 
     private val viewModel: MypageViewModel by viewModels()
 
@@ -58,6 +55,13 @@ class UserMypageFragment
             // TODO: 구현 예정
         }
 
+        // 계정관리 페이지 이동
+        binding.clAccountComponent3.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_user_mypage_to_mypage_account
+            )
+        }
+
         // 개인정보 처리방침
         binding.clAccountComponent4.setOnClickListener {
             UserMypagePrivacyDialogFragment()
@@ -74,16 +78,6 @@ class UserMypageFragment
         binding.clAccountComponent6.setOnClickListener {
             UserCustomerServiceDialogFragment()
                 .show(childFragmentManager, "CustomerServiceDialog")
-        }
-
-
-        //로그아웃 페이지
-        binding.clAccountComponent3.setOnClickListener {
-            // 서버에 로그아웃 API 호출 후 토큰 삭제 및 로그인 화면으로 이동
-            loginViewModel.logout()
-            findNavController().navigate(
-                R.id.action_user_mypage_to_mypage_account
-            )
         }
     }
 
