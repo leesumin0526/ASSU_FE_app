@@ -30,7 +30,7 @@ class PartnerAdminListAdapter(
             binding.tvBenefitPeriod.text = item.benefitPeriod
 
             itemView.setOnClickListener {
-                val dialog = PartnershipContractDialogFragment(dummyItem)
+                val dialog = PartnershipContractDialogFragment()
                 dialog.show(fragmentManager, "PartnershipContentFragment")
             }
         }
@@ -48,11 +48,4 @@ class PartnerAdminListAdapter(
     }
 
     override fun getItemCount(): Int = items.size
-
-    val dummyItem = listOf(
-        PartnershipContractItem.Service.ByPeople(4,"캔음료"),
-        PartnershipContractItem.Discount.ByPeople(4, 10),
-        PartnershipContractItem.Service.ByAmount(10000, "캔음료"),
-        PartnershipContractItem.Discount.ByAmount(10000, 10)
-    )
 }
