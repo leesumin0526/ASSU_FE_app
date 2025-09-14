@@ -5,6 +5,7 @@ import com.example.assu_fe_app.data.DevBearerInterceptor
 import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
+import com.example.assu_fe_app.data.service.map.MapService
 import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.example.assu_fe_app.data.service.review.ReviewService
 import com.example.assu_fe_app.data.service.store.StoreService
@@ -109,4 +110,9 @@ object ServiceModule {
     @Provides @Singleton
     fun provideCertificationService(retrofit: Retrofit): CertificationService =
         retrofit.create(CertificationService::class.java)
+
+
+    @Provides @Singleton
+    fun provideMapService(retrofit: Retrofit): MapService =
+        retrofit.create(MapService::class.java)
 }

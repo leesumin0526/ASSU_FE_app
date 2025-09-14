@@ -28,6 +28,7 @@ class UserReviewStoreDetailFragment :
     override fun initView() {
 
 
+        binding.tvReviewStoreName.text = getReviewViewModel.storeName
         binding.ivReviewStoreBack.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }

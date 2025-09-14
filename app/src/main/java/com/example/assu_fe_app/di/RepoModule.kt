@@ -4,6 +4,7 @@ import com.example.assu_fe_app.data.repository.certification.CertificationReposi
 import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
 import com.example.assu_fe_app.data.repositoryImpl.chatting.ChattingRepositoryImpl
 import com.example.assu_fe_app.data.repository.deviceToken.DeviceTokenRepository
+import com.example.assu_fe_app.data.repository.map.MapRepository
 import com.example.assu_fe_app.data.repository.review.ReviewRepository
 import com.example.assu_fe_app.data.repository.store.StoreRepository
 import com.example.assu_fe_app.data.repository.usage.UsageRepository
@@ -12,6 +13,7 @@ import com.example.assu_fe_app.data.repositoryImpl.review.ReviewRepositoryImpl
 import com.example.assu_fe_app.data.repository.notification.NotificationRepository
 import com.example.assu_fe_app.data.repository.suggestion.SuggestionRepository
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.map.MapRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.store.StoreRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.usage.UsageRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.notification.NotificationRepositoryImpl
@@ -65,4 +67,9 @@ abstract class RepoModule {
     abstract fun bindSuggestionRepository(
         impl: SuggestionRepositoryImpl
     ): SuggestionRepository
+
+    @Binds @Singleton
+    abstract fun bindMapRepository(
+        impl: MapRepositoryImpl
+    ): MapRepository
 }

@@ -1,7 +1,9 @@
 package com.example.assu_fe_app.presentation.user.location
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
@@ -9,33 +11,34 @@ import com.example.assu_fe_app.data.dto.location.LocationUserSearchResultItem
 import com.example.assu_fe_app.databinding.FragmentLocationSearchSuccessBinding
 import com.example.assu_fe_app.databinding.FragmentUserLocationSearchSuccessBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.example.assu_fe_app.presentation.common.location.adapter.AdminPartnerLocationAdapter
 import com.example.assu_fe_app.presentation.user.location.adapter.UserLocationSearchSuccessAdapter
+import com.example.assu_fe_app.ui.map.UserLocationSearchViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class UserLocationSearchSuccessFragment :
     BaseFragment<FragmentUserLocationSearchSuccessBinding>(R.layout.fragment_user_location_search_success) {
-
+    private val searchViewModel: UserLocationSearchViewModel by activityViewModels()
     private lateinit var adapter: UserLocationSearchSuccessAdapter
 
-    override fun initObserver() {}
-
-    override fun initView() {
-        val dummyList = listOf(
-            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공"),
-            LocationUserSearchResultItem(2L,"역전할머니맥주 숭실대점", "IT대학", "4인이상 식사시, 음료제공")
-        )
-        adapter = UserLocationSearchSuccessAdapter(dummyList)
-        binding.rvLocationSearchSuccess.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvLocationSearchSuccess.adapter = adapter
-
-        // 여기서 store id intent 로 넘겨주는 것 구현.. 나중에...
+    override fun initObserver() {
+        searchViewModel.storeList.observe(viewLifecycleOwner) { storeList ->
+            adapter.submitList(storeList)
+            Log.d("UserLocationSearchSuccessFragment", "관찰된 데이터: $storeList")
+            binding.tvLocationSearchSuccessTitle.text = storeList.size.toString()
+        }
     }
 
+    override fun initView() {
+        // 1. 어댑터 초기화 (생성자에 리스트를 넣지 않음)
+        adapter = UserLocationSearchSuccessAdapter()
+
+        // 2. RecyclerView에 LayoutManager와 Adapter 설정
+        binding.rvLocationSearchSuccess.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            this.adapter = this@UserLocationSearchSuccessFragment.adapter
+        }
+
+
+    }
 }
