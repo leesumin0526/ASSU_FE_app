@@ -1,5 +1,7 @@
 package com.example.assu_fe_app.di
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.DevBearerInterceptor
 import com.example.assu_fe_app.data.service.certification.CertificationService
@@ -11,6 +13,8 @@ import com.example.assu_fe_app.data.service.review.ReviewService
 import com.example.assu_fe_app.data.service.store.StoreService
 import com.example.assu_fe_app.data.service.suggestion.SuggestionService
 import com.example.assu_fe_app.data.service.usage.UsageService
+import com.example.assu_fe_app.util.LocalDateMoshiAdapter
+import com.google.gson.GsonBuilder
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -21,6 +25,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -62,11 +67,12 @@ object ServiceModule {
             .build()
 
     @Provides @Singleton
+    @RequiresApi(Build.VERSION_CODES.O)
     fun provideMoshi(): Moshi =
         Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())  // ← 추가
+            .add(KotlinJsonAdapterFactory())
+            .add(LocalDate::class.java, LocalDateMoshiAdapter()) // LocalDate Adapter 추가
             .build()
-
     @Provides @Singleton
     fun provideRetrofit(@Auth client: OkHttpClient, moshi: Moshi): Retrofit =
         Retrofit.Builder()
