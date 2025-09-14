@@ -1,7 +1,5 @@
 package com.example.assu_fe_app.util
 
-import com.example.assu_fe_app.data.dto.certification.request.CertificationRequestDto
-import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -37,7 +35,7 @@ class CertificationWebSocketClient(
                     appendLine("CONNECT")
                     appendLine("accept-version:1.1,1.0")
                     appendLine("heart-beat:10000,10000")
-                    appendLine("Authorization: Bearer $authToken")
+                    appendLine("Authorization:$authToken")
                     appendLine()
                     append("\u0000") // null terminator
                 }

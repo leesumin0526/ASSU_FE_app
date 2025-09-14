@@ -78,13 +78,13 @@ class UserVerifyViewModel @Inject constructor(
             when (val result = certificationUseCase(request)) {
                 is RetrofitResult.Success -> {
                     sessionId = result.data.sessionId
-                    Log.d("조회된 sessionId, adminId", "${sessionId}")
-                    // 여기서 주소 구독 로직 실행
+                    Log.d("UserVerifyViewModel : requestSessionId()", "업데이트 된 sessionId : ${sessionId}")
                 }
                 is RetrofitResult.Error -> {
-                    // 에러 처리
+                    Log.d("UserVerifyViewModel : requestSessionId()", "${result.exception.message}")
                 }
                 is RetrofitResult.Fail -> {
+                    Log.d("UserVerifyViewModel : requestSessionId()", "RetrofitResult.Fail : ${result.message}")
                 }
             }
 

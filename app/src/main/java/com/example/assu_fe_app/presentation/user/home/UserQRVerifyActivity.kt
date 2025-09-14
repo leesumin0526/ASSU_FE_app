@@ -428,7 +428,7 @@ class UserQRVerifyActivity :
     private fun getAuthToken(): String {
 //        val sharedPref = getSharedPreferences("auth", Context.MODE_PRIVATE)
 //        return sharedPref.getString("token", "") ?: ""
-        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjM5OTc3NGYwLTk4YjMtNDM3MC1hYmNjLWU5M2JkNDYyNjdiMyIsImlhdCI6MTc1NzcwMTY0MCwiZXhwIjoxNzU3NzA1MjQwfQ.XySMVj-obJAG4BU9R7XRJGqm8JOl-HgdgnhE1W-n0LU"
+        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjdmNTNlYmJjLWI0Y2EtNDIwMi1hODFjLWMwYzFjYWFjNjg5YiIsImlhdCI6MTc1Nzc2Nzg5NiwiZXhwIjoxNzU3NzcxNDk2fQ.K-0x5tuz1EXqaqrP79V8RgD6ZQYr7aTuOHb5ymOX0i8"
     }
 
     // Activity 종료 시 WebSocket 연결 해제

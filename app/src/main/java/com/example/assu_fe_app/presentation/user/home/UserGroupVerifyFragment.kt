@@ -212,7 +212,7 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
     }
 
     private fun getAuthToken(): String {
-        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjFlYzM4YmViLTNkNjMtNDBmYi05MGYzLTliOTM2MDI5N2I2NCIsImlhdCI6MTc1NzU5ODU5OCwiZXhwIjoxNzU3NjAyMTk4fQ.WMsFOqLnhvJ2Up_SeP2cqjJl6-ZOF0vFcXGJDxYZOCI"
+        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6ImIxYTQ5NDkwLWQ5ZTgtNGE5Ny05MmMwLWZmYzhiMmI4YjM4OCIsImlhdCI6MTc1Nzc2Mzk2NCwiZXhwIjoxNzU3NzY3NTY0fQ.La3nlDTcppMvaRecoVOwVO4AtLLy9zeiKMCOMN-DuaM"
     }
 
     private fun generateQrCode(sessionId: Long, adminId: Long) {

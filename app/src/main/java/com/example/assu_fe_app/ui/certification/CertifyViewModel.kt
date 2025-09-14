@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import com.example.assu_fe_app.util.CertificationWebSocketClient
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.dto.certification.response.CertificationProgressDto
-import com.example.assu_fe_app.data.dto.certification.request.CertificationRequestDto
-import com.example.assu_fe_app.data.dto.certification.request.PersonalCertificationRequestDto
+import com.example.assu_fe_app.data.dto.certification.request.GroupSessionRequest
 import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
 import com.example.assu_fe_app.domain.usecase.usage.SaveUsageUseCase
 import com.example.assu_fe_app.util.RetrofitResult
@@ -69,6 +69,7 @@ class CertifyViewModel @Inject constructor(
                     _isCompleted.value = true
                     _completionMessage.value = progress.message ?: "메세지가 비어있습니다. "
                     _userIds.value = progress.userIds ?: emptyList()
+                    Log.d("userIds 값 update", _userIds.value.toString())
                 }
             }
         } catch (e: Exception) {
@@ -103,13 +104,14 @@ class CertifyViewModel @Inject constructor(
         _sessionId.value = sessionId
 
         stompClient = CertificationWebSocketClient(
-            serverUrl = "ws://10.0.2.2:8080/ws",
+            serverUrl = BuildConfig.CERTIFICATION_URL,
             authToken = authToken,
             listener = object : CertificationWebSocketClient.StompListener {
                 override fun onConnected() {
                     _connectionStatus.postValue(ConnectionStatus.CONNECTED)
-                    // 세션별 진행 상황 구독만 함 (인증 요청은 하지 않음)
+                    // TODO 아래 2줄 주석 필요 : 세션별 진행 상황 구독만 함 (인증 요청은 하지 않음)
                     stompClient?.subscribe("/certification/progress/$sessionId")
+                    Log.d("CertifyViewModel", "대표자가 진행 상황을 구독합니다. ")
                 }
 
                 override fun onMessage(destination: String, body: String) {
@@ -131,6 +133,8 @@ class CertifyViewModel @Inject constructor(
     }
 
     fun connectAndCertify(sessionId: Long, adminId: Long, authToken: String) {
+
+        Log.d("CertifyViewModel", "connectAndCertify -> ")
         if (authToken.isEmpty()) {
             _errorMessage.value = "인증 토큰이 없습니다."
             return
@@ -138,30 +142,37 @@ class CertifyViewModel @Inject constructor(
 
         _connectionStatus.value = ConnectionStatus.CONNECTING
         _sessionId.value = sessionId
+        Log.d("CertifyViewModel", "sessionId: $sessionId")
 
         // 이전 연결이 있다면 정리
         stompClient?.disconnect()
 
         stompClient = CertificationWebSocketClient(
-            serverUrl = "ws://10.0.2.2:8080/ws",
+            serverUrl = BuildConfig.CERTIFICATION_URL,
             authToken = authToken,
             listener = object : CertificationWebSocketClient.StompListener {
                 override fun onConnected() {
                     _connectionStatus.postValue(ConnectionStatus.CONNECTED)
 
+                    // 임시 테스트 용
+                    stompClient?.subscribe("/certification/progress/$sessionId")
+                    Log.d("CertifyViewModel", "대표자가 진행 상황을 구독합니다. ")
                     // 인증 요청만 전송 (구독은 하지 않음)
-                    val request = CertificationRequestDto(
+                    val request = GroupSessionRequest(
                         adminId = adminId,
                         sessionId = sessionId
                     )
+
                     stompClient?.send(
-                        destination = "/certification/certify",
+                        destination = "/app/certify",
                         body = gson.toJson(request)
                     )
+
+                    Log.d("CertifyViewModel", "인증자가 인증 요청을 보냈습니다. ")
                 }
 
                 override fun onMessage(destination: String, body: String) {
-                    // 메시지는 받지 않으므로 빈 구현
+                    handleProgressUpdate(body)
                 }
 
                 override fun onError(error: String) {
