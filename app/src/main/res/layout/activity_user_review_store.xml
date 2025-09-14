@@ -106,7 +106,7 @@
                 android:textColor="@color/assu_font_main"/>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rc_review_store"
+                android:id="@+id/rc_review_store_partnership"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constrainedHeight="true"

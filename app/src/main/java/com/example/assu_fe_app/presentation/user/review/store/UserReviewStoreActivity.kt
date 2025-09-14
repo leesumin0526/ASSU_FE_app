@@ -26,6 +26,7 @@ class UserReviewStoreActivity :
     BaseActivity<ActivityUserReviewStoreBinding>(R.layout.activity_user_review_store) {
 
     private lateinit var userReviewAdapter: UserReviewAdapter
+    private lateinit var userPartnershipAdapter : UserReviewStoreAdapter
     private val getStoreReviewViewModel: UserStoreGetReviewViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -45,23 +46,23 @@ class UserReviewStoreActivity :
 
         initStoreReviewAdapter()
 
-        val storeId : Long = intent.getLongExtra("storeId", 2L)
-        // TODO : 나중에 구현되면 UserLocationSearchSuccessFragment 에서 클릭한 item storeId 넘겨주는 로직 추가
+        val storeName : String? = intent.getStringExtra("storeName")
+        val storeId : Long = intent.getLongExtra("storeId", 0L)
+
+        binding.tvReviewStoreName.text = storeName
+        getStoreReviewViewModel.storeName = storeName.toString()
         getStoreReviewViewModel.initStoreId(storeId)
         getStoreReviewViewModel.getAverage()
 
         getStoreReviewViewModel.getReviews()
+        getStoreReviewViewModel.getPartnershipForMe()
 
 
         // 제휴 혜택 리스트
-        val reviewStoreList = listOf(
-            ReviewStoreItem("총학생회", "4인 이상 식사시, 음료 제공"),
-            ReviewStoreItem("IT대 학생회", "10% 할인"),
-            ReviewStoreItem("IT대 학생회", "10% 할인")
-        )
-        val adapter = UserReviewStoreAdapter(reviewStoreList)
-        binding.rcReviewStore.layoutManager = LinearLayoutManager(this)
-        binding.rcReviewStore.adapter = adapter
+        userPartnershipAdapter = UserReviewStoreAdapter()
+        binding.rcReviewStorePartnership.layoutManager = LinearLayoutManager(this)
+        binding.rcReviewStorePartnership.adapter = userPartnershipAdapter
+
 
 
         // 전체보기 클릭 시 상세 Fragment로 전환
@@ -87,6 +88,7 @@ class UserReviewStoreActivity :
             binding.tvReviewStoreReviewCount.text= "${count}개의 평가"
         }
 
+
         getStoreReviewViewModel.average.observe(this) { average ->
             val formatted = String.format("%.1f", average) // "3.1"
             Log.d("평점", formatted)
@@ -110,6 +112,12 @@ class UserReviewStoreActivity :
             }
             setStars(average.toInt())
         }
+
+        getStoreReviewViewModel.partnershipContentList.observe(this)
+        { partnershipContentList ->
+            userPartnershipAdapter.submitList(partnershipContentList)
+        }
+
     }
 
     private fun Int.dpToPx(context: Context): Int {

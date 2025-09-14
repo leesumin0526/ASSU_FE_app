@@ -1,13 +1,19 @@
 package com.example.assu_fe_app.ui.review
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.data.dto.review.Review
+import com.example.assu_fe_app.data.dto.review.ReviewStoreItem
+import com.example.assu_fe_app.data.dto.store.PaperContent
+import com.example.assu_fe_app.data.dto.store.StorePartnershipResponseDto
 import com.example.assu_fe_app.domain.usecase.review.GetUserStoreReviewAverageUseCase
 import com.example.assu_fe_app.domain.usecase.review.GetUserStoreReviewUseCase
+import com.example.assu_fe_app.domain.usecase.store.GetStorePartnershipUseCase
 import com.example.assu_fe_app.util.RetrofitResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,11 +23,16 @@ import javax.inject.Inject
 @HiltViewModel
 class UserStoreGetReviewViewModel @Inject constructor(
     private val getStoreReviewUseCase: GetUserStoreReviewUseCase,
-    private val averageUseCase: GetUserStoreReviewAverageUseCase
+    private val averageUseCase: GetUserStoreReviewAverageUseCase,
+    private val getMyPartnershipUseCase : GetStorePartnershipUseCase
 ) : ViewModel() {
     private val _reviewList = MutableLiveData<List<Review>>()
     val reviewList: LiveData<List<Review>> = _reviewList
 
+    private val _partnershipContentList = MutableLiveData<List<ReviewStoreItem>>()
+    val partnershipContentList: LiveData<List<ReviewStoreItem>> = _partnershipContentList
+
+    var storeName: String = ""
     private var storeId : Long = 0L
     fun initStoreId(id: Long) {
         if (this.storeId == 0L) { // storeId가 아직 설정되지 않았을 때만 초기화
@@ -58,6 +69,32 @@ class UserStoreGetReviewViewModel @Inject constructor(
                 is RetrofitResult.Fail -> { /* 실패 처리 */ }
             }
             isFetchingReviews = false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getPartnershipForMe(){
+        viewModelScope.launch {
+            when (val result = getMyPartnershipUseCase(storeId)){
+                is RetrofitResult.Success -> {
+                    _partnershipContentList.value = toReviewStoreItem(result.data.contents)
+                }
+                is RetrofitResult.Error -> {
+                    Log.d("getPartnershipForMe", "${result.exception}")
+                }
+                is RetrofitResult.Fail -> {
+                    Log.d("getPartnershipForMe","${result.message}" )
+
+                }
+            }
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun toReviewStoreItem(contents : List<PaperContent>) : List<ReviewStoreItem>{
+        return contents.map { content ->
+            ReviewStoreItem(content.adminName, content.paperContent)
         }
     }
 
