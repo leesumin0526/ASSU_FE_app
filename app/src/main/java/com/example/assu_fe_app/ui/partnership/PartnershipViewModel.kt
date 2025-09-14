@@ -2,9 +2,10 @@ package com.example.assu_fe_app.ui.partnership
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
+import com.example.assu_fe_app.domain.usecase.partnership.GetProposalAdminListUseCase
 import com.example.assu_fe_app.domain.usecase.partnership.GetProposalPartnerListUseCase
-import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.onError
 import com.example.assu_fe_app.util.onFail
 import com.example.assu_fe_app.util.onSuccess
@@ -16,32 +17,60 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PartnershipViewModel @Inject constructor(
-    private val getProposalPartnerListUseCase: GetProposalPartnerListUseCase
+    private val getProposalPartnerListUseCase: GetProposalPartnerListUseCase,
+    private val getProposalAdminListUseCase: GetProposalAdminListUseCase
 ) : ViewModel() {
 
-    sealed interface PartnershipUiState {
-        object Idle : PartnershipUiState
-        object Loading : PartnershipUiState
-        data class Success(val data: List<GetProposalPartnerListModel>) : PartnershipUiState
-        data class Fail(val code: Int, val message: String?) : PartnershipUiState
-        data class Error(val message: String) : PartnershipUiState
+    sealed interface PartnershipPartnerListUiState {
+        object Idle : PartnershipPartnerListUiState
+        object Loading : PartnershipPartnerListUiState
+        data class Success(val data: List<GetProposalPartnerListModel>) : PartnershipPartnerListUiState
+        data class Fail(val code: Int, val message: String?) : PartnershipPartnerListUiState
+        data class Error(val message: String) : PartnershipPartnerListUiState
     }
 
-    private val _uiState = MutableStateFlow<PartnershipUiState>(PartnershipUiState.Idle)
-    val uiState: StateFlow<PartnershipUiState> = _uiState
+    private val _getPartnershipPartnerListUiState = MutableStateFlow<PartnershipPartnerListUiState>(PartnershipPartnerListUiState.Idle)
+    val getPartnershipPartnerListUiState: StateFlow<PartnershipPartnerListUiState> = _getPartnershipPartnerListUiState
 
     fun getProposalPartnerList(isAll: Boolean) {
         viewModelScope.launch {
-            _uiState.value = PartnershipUiState.Loading
+            _getPartnershipPartnerListUiState.value = PartnershipPartnerListUiState.Loading
             getProposalPartnerListUseCase(isAll)
                 .onSuccess { data ->
-                    _uiState.value = PartnershipUiState.Success(data)
+                    _getPartnershipPartnerListUiState.value = PartnershipPartnerListUiState.Success(data)
                 }
                 .onFail { code ->
-                    _uiState.value = PartnershipUiState.Fail(code, "서버 처리 실패")
+                    _getPartnershipPartnerListUiState.value = PartnershipPartnerListUiState.Fail(code, "서버 처리 실패")
                 }
                 .onError { e ->
-                    _uiState.value = PartnershipUiState.Error(e.message ?: "네트워크 연결을 확인해주세요.")
+                    _getPartnershipPartnerListUiState.value = PartnershipPartnerListUiState.Error(e.message ?: "네트워크 연결을 확인해주세요.")
+                }
+        }
+    }
+
+    sealed interface PartnershipAdminListUiState {
+        object Idle : PartnershipAdminListUiState
+        object Loading : PartnershipAdminListUiState
+        data class Success(val data: List<GetProposalAdminListModel>) : PartnershipAdminListUiState
+        data class Fail(val code: Int, val message: String?) : PartnershipAdminListUiState
+        data class Error(val message: String) : PartnershipAdminListUiState
+    }
+
+    private val _getPartnershipAdminListUiState = MutableStateFlow<PartnershipAdminListUiState>(PartnershipAdminListUiState.Idle)
+    val getPartnershipAdminListUiState: StateFlow<PartnershipAdminListUiState> = _getPartnershipAdminListUiState
+
+    fun getProposalAdminList(isAll: Boolean) {
+        viewModelScope.launch {
+            _getPartnershipAdminListUiState.value = PartnershipAdminListUiState.Loading
+            getProposalAdminListUseCase(isAll)
+                .onSuccess { data ->
+                    _getPartnershipAdminListUiState.value = PartnershipAdminListUiState.Success(data)
+                }
+                .onFail { code ->
+                    _getPartnershipAdminListUiState.value = PartnershipAdminListUiState.Fail(code, "서버 처리 실패")
+                }
+                .onError { e ->
+                    _getPartnershipAdminListUiState.value = PartnershipAdminListUiState.Error(e.message ?: "네트워크 연결을 확인해주세요.")
                 }
         }
     }

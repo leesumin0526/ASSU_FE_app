@@ -266,7 +266,7 @@
 
                         <!-- 매장 이름 -->
                         <TextView
-                            android:id="@+id/tv_partner_name2"
+                            android:id="@+id/tv_admin_name2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="역전할머니맥주 숭실대점"
@@ -290,7 +290,7 @@
                             android:textSize="13sp"
                             android:fontFamily="@font/pretendard_medium"
                             android:includeFontPadding="false"
-                            app:layout_constraintTop_toBottomOf="@id/tv_partner_name2"
+                            app:layout_constraintTop_toBottomOf="@id/tv_admin_name2"
                             app:layout_constraintStart_toStartOf="parent" />
 
                         <!-- 제휴내용 설명 -->

@@ -4,6 +4,7 @@ import com.example.assu_fe_app.data.repository.notification.NotificationReposito
 import com.example.assu_fe_app.data.repository.partnership.PartnershipRepository
 import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.example.assu_fe_app.data.service.partnership.PartnershipService
+import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.apiHandler
@@ -17,4 +18,11 @@ class PartnershipRepositoryImpl @Inject constructor(
             {api.getProposalPartnerList(isAll)},
             {list -> list.map{it.toModel()}}
         )
+
+    override suspend fun getProposalAdminList(isAll: Boolean): RetrofitResult<List<GetProposalAdminListModel>> =
+        apiHandler(
+            {api.getProposalAdminList(isAll)},
+            {list -> list.map{it.toModel()}}
+        )
+
 }

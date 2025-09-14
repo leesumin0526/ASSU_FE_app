@@ -96,9 +96,9 @@ class AdminHomeFragment :
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                partnershipViewModel.uiState.collect { state ->
+                partnershipViewModel.getPartnershipPartnerListUiState.collect { state ->
                     when (state) {
-                        is PartnershipViewModel.PartnershipUiState.Success -> {
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Success -> {
                             val list = state.data
 
                             if(list.isEmpty()) {
@@ -136,7 +136,7 @@ class AdminHomeFragment :
                             // 2번째 카드
                             if (list.size > 1) {
                                 val item2 = list[1]
-                                binding.tvPartnerName2.text = item2.shopName
+                                binding.tvAdminName2.text = item2.shopName
                                 binding.tvBenefitDescription2.text =
                                     item2.content.firstOrNull()?.type ?: "제휴 혜택 없음"
                                 binding.tvBenefitPeriod2.text =
@@ -160,10 +160,10 @@ class AdminHomeFragment :
                         }
 
                         // ✅ 나머지 모든 상태에선 가려두기
-                        is PartnershipViewModel.PartnershipUiState.Loading,
-                        is PartnershipViewModel.PartnershipUiState.Idle,
-                        is PartnershipViewModel.PartnershipUiState.Fail,
-                        is PartnershipViewModel.PartnershipUiState.Error -> {
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Loading,
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Idle,
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Fail,
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Error -> {
                             binding.adminHomeListItem1.visibility = View.GONE
                             binding.adminHomeListItem2.visibility = View.GONE
                         }
