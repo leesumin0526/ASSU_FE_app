@@ -5,6 +5,11 @@ import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentUserHomeBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.data.manager.TokenManager
+
+
+private lateinit var tokenManager: TokenManager
+
 
 class UserHomeFragment :
     BaseFragment<FragmentUserHomeBinding>(R.layout.fragment_user_home){
@@ -25,6 +30,10 @@ class UserHomeFragment :
         binding.ivSeeMoreMyStamp.setOnClickListener {
             navigateToMyPartnershipDetails()
         }
+
+        val userName = tokenManager.getUserName() ?: "사용자"
+
+        binding.tvHome1.text = "안녕하세요, ${userName}님!"
     }
     private fun navigateToMyPartnershipDetails() {
         findNavController().navigate(R.id.myPartnershipDetailsFragment)

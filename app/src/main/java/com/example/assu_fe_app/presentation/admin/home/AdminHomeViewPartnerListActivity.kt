@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityAdminHomeViewPartnerListBinding
 import com.example.assu_fe_app.presentation.admin.home.adapter.AdminPartnerListAdapter
-import com.example.assu_fe_app.presentation.admin.home.adapter.AdminPartnerListItem
 import com.example.assu_fe_app.presentation.base.BaseActivity
 
 class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartnerListBinding>(R.layout.activity_admin_home_view_partner_list) {
@@ -36,32 +35,10 @@ class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartn
     }
 
     private fun setupRecyclerView() {
-        val dummyList = listOf(
-            AdminPartnerListItem("역전할머니맥주 숭실대점", "100,000원 이상 주문시 안주 1개 서비스", "2025-03-15  ~  2025-06-15"),
-            AdminPartnerListItem("인쌩맥주 숭실대점", "2인 이상 주문 시 음료 서비스", "2025-04-01  ~  2025-07-31"),
-            AdminPartnerListItem("피자스쿨 숭실대점", "1판 주문시 사이드 1개 증정", "2025-05-01  ~  2025-08-01"),
-            AdminPartnerListItem("역전할머니맥주 숭실대점", "100,000원 이상 주문시 안주 1개 서비스", "2025-03-15  ~  2025-06-15"),
-            AdminPartnerListItem("인쌩맥주 숭실대점", "2인 이상 주문 시 음료 서비스", "2025-04-01  ~  2025-07-31"),
-            AdminPartnerListItem("피자스쿨 숭실대점", "1판 주문시 사이드 1개 증정", "2025-05-01  ~  2025-08-01"),
-            AdminPartnerListItem("역전할머니맥주 숭실대점", "100,000원 이상 주문시 안주 1개 서비스", "2025-03-15  ~  2025-06-15"),
-            AdminPartnerListItem("인쌩맥주 숭실대점", "2인 이상 주문 시 음료 서비스", "2025-04-01  ~  2025-07-31"),
-            AdminPartnerListItem("피자스쿨 숭실대점", "1판 주문시 사이드 1개 증정", "2025-05-01  ~  2025-08-01"),
-            AdminPartnerListItem("역전할머니맥주 숭실대점", "100,000원 이상 주문시 안주 1개 서비스", "2025-03-15  ~  2025-06-15"),
-            AdminPartnerListItem("인쌩맥주 숭실대점", "2인 이상 주문 시 음료 서비스", "2025-04-01  ~  2025-07-31"),
-            AdminPartnerListItem("피자스쿨 숭실대점", "1판 주문시 사이드 1개 증정", "2025-05-01  ~  2025-08-01"),
-            AdminPartnerListItem("역전할머니맥주 숭실대점", "100,000원 이상 주문시 안주 1개 서비스", "2025-03-15  ~  2025-06-15"),
-            AdminPartnerListItem("인쌩맥주 숭실대점", "2인 이상 주문 시 음료 서비스", "2025-04-01  ~  2025-07-31"),
-            AdminPartnerListItem("피자스쿨 숭실대점", "1판 주문시 사이드 1개 증정", "2025-05-01  ~  2025-08-01"),
-            AdminPartnerListItem("역전할머니맥주 숭실대점", "100,000원 이상 주문시 안주 1개 서비스", "2025-03-15  ~  2025-06-15"),
-            AdminPartnerListItem("인쌩맥주 숭실대점", "2인 이상 주문 시 음료 서비스", "2025-04-01  ~  2025-07-31"),
-            AdminPartnerListItem("피자스쿨 숭실대점", "1판 주문시 사이드 1개 증정", "2025-05-01  ~  2025-08-01"),
-            AdminPartnerListItem("역전할머니맥주 숭실대점", "100,000원 이상 주문시 안주 1개 서비스", "2025-03-15  ~  2025-06-15"),
-            AdminPartnerListItem("인쌩맥주 숭실대점", "2인 이상 주문 시 음료 서비스", "2025-04-01  ~  2025-07-31")
-        )
 
-        val adapter = AdminPartnerListAdapter(dummyList, supportFragmentManager)
+//        val adapter = AdminPartnerListAdapter(dummyList, supportFragmentManager)
         binding.rvPartnerList.layoutManager = LinearLayoutManager(this)
-        binding.rvPartnerList.adapter = adapter
+//        binding.rvPartnerList.adapter = adapter
 
         // 아이템 간 여백 설정 (20dp)
         binding.rvPartnerList.addItemDecoration(object : RecyclerView.ItemDecoration() {
