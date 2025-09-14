@@ -35,11 +35,8 @@ import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 class AdminHomeFragment :
     BaseFragment<FragmentAdminHomeBinding>(R.layout.fragment_admin_home) {
     private val vm: HomeViewModel by viewModels()
-
     private val chattingViewModel: ChattingViewModel by viewModels()
-
     private val partnershipViewModel: PartnershipViewModel by viewModels()
-
     lateinit var tokenManager: TokenManager
 
     override fun initObserver() {
@@ -192,8 +189,8 @@ class AdminHomeFragment :
 
         // 🔽 전체 조회 버튼
         binding.btnAdminHomeViewAll.setOnClickListener {
-            // ✅ 전체 조회 API 호출
-            partnershipViewModel.getProposalPartnerList(isAll = true)
+            val intent = Intent(requireContext(), AdminHomeViewPartnerListActivity::class.java)
+            startActivity(intent)
         }
 
         binding.ivAdminHomeNotification.setOnClickListener {
@@ -219,10 +216,10 @@ class AdminHomeFragment :
             val req = CreateChatRoomRequestDto(
                 //TODO : 유저 정보 받아오기
                 adminId = 1L,
-                partnerId = 5L
+                //TODO: 성주 api 연결 후 수정하기
+                partnerId = 1L
             )
             chattingViewModel.createRoom(req)
-
         }
     }
 
@@ -257,8 +254,9 @@ class AdminHomeFragment :
         bindingItem.setOnClickListener {
             val contractData = PartnershipContractData(
 //                partnerName = item.partnerName ?: item.partnerId.toString(),
+                //TODO: 이름 바꾸기
                 partnerName = item.partnerId.toString(),
-                adminName = tokenManager.getUserName() ?: "관리자",
+                adminName = item.adminId.toString() ?: "관리자",
                 options = item.options.map { opt ->
                     when (opt.optionType) {
                         OptionType.SERVICE -> when (opt.criterionType) {

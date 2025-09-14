@@ -11,21 +11,44 @@ import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractIt
 import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
+import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 
 
 class PartnerAdminListAdapter(
-    private val items: List<GetProposalPartnerListModel>,
-    private val fragmentManager: FragmentManager
+    private val items: List<GetProposalAdminListModel>,
+    private val fragmentManager: FragmentManager,
+    private val adminName: String // TokenManager에서 불러온 이름
 ) : RecyclerView.Adapter<PartnerAdminListAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemAssociationListBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: GetProposalPartnerListModel) {
-            binding.tvAssociationName.text = item.partnerId.toString()
-            binding.tvBenefitDescription.text =
-                item.options.firstOrNull()?.optionType?.name ?: "제휴 혜택 없음"
+        fun bind(item: GetProposalAdminListModel) {
+            //TODO: 이름 바꾸기
+            binding.tvAssociationName.text = item.adminId.toString()
+            val option = item.options.firstOrNull()
+            binding.tvBenefitDescription.text = if (option != null) {
+                when (option.optionType) {
+                    OptionType.SERVICE -> when (option.criterionType) {
+                        CriterionType.HEADCOUNT ->
+                            "${option.people ?: 0}명 이상 인증 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
+
+                        CriterionType.PRICE ->
+                            "${option.cost ?: 0}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
+                    }
+
+                    OptionType.DISCOUNT -> when (option.criterionType) {
+                        CriterionType.HEADCOUNT ->
+                            "${option.people ?: 0}명 이상 인증 시${option.discountRate ?: 0}% 할인"
+
+                        CriterionType.PRICE ->
+                            "${option.cost ?: 0}원 이상 주문 시 ${option.discountRate ?: 0}% 할인"
+                    }
+                }
+            } else {
+                "제휴 혜택 없음"
+            }
             binding.tvBenefitPeriod.text =
                 "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
 
@@ -94,4 +117,10 @@ class PartnerAdminListAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+
+    fun updateItems(newItems: List<GetProposalAdminListModel>) {
+        (items as MutableList).clear()
+        (items as MutableList).addAll(newItems)
+        notifyDataSetChanged()
+    }
 }

@@ -3,16 +3,28 @@ package com.example.assu_fe_app.presentation.admin.home
 import android.content.Context
 import android.graphics.Rect
 import android.view.View
+import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityAdminHomeViewPartnerListBinding
+import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.presentation.admin.home.adapter.AdminPartnerListAdapter
 import com.example.assu_fe_app.presentation.base.BaseActivity
+import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartnerListBinding>(R.layout.activity_admin_home_view_partner_list) {
+
+    private val partnershipViewModel: PartnershipViewModel by viewModels()
+    private lateinit var adapter: AdminPartnerListAdapter
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -35,10 +47,16 @@ class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartn
     }
 
     private fun setupRecyclerView() {
+        // 어댑터는 한 번만 생성
+        adapter = AdminPartnerListAdapter(
+            items = mutableListOf(),
+            fragmentManger = supportFragmentManager,
+            adminName = "관리자" // TODO: 필요시 TokenManager로 교체
+        )
 
-//        val adapter = AdminPartnerListAdapter(dummyList, supportFragmentManager)
         binding.rvPartnerList.layoutManager = LinearLayoutManager(this)
-//        binding.rvPartnerList.adapter = adapter
+        binding.rvPartnerList.adapter = adapter
+
 
         // 아이템 간 여백 설정 (20dp)
         binding.rvPartnerList.addItemDecoration(object : RecyclerView.ItemDecoration() {
@@ -54,7 +72,35 @@ class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartn
     }
 
     override fun initObserver() {
-        // 옵저버 필요한 경우 작성
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                partnershipViewModel.getPartnershipPartnerListUiState.collect { state ->
+                    when (state) {
+                        is com.example.assu_fe_app.ui.partnership.PartnershipViewModel.PartnershipPartnerListUiState.Success -> {
+                            updateList(state.data)
+                        }
+                        is com.example.assu_fe_app.ui.partnership.PartnershipViewModel.PartnershipPartnerListUiState.Fail -> {
+                            // TODO: 에러 처리 (토스트 등)
+                        }
+                        is com.example.assu_fe_app.ui.partnership.PartnershipViewModel.PartnershipPartnerListUiState.Error -> {
+                            // TODO: 에러 처리
+                        }
+                        else -> Unit
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 전체 조회 API 호출
+        partnershipViewModel.getProposalPartnerList(isAll = true)
+    }
+
+    private fun updateList(items: List<GetProposalPartnerListModel>) {
+        adapter.updateItems(items)
+        binding.tvPartnerCount.text = items.size.toString()
     }
 
     private fun Int.dpToPx(context: Context): Int {
