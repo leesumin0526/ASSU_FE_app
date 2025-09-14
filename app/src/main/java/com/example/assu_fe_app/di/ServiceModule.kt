@@ -3,6 +3,8 @@ package com.example.assu_fe_app.di
 import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.DevBearerInterceptor
 import com.example.assu_fe_app.data.service.chatting.ChattingService
+import com.example.assu_fe_app.data.service.dashboard.AdminDashboardService
+import com.example.assu_fe_app.data.service.dashboard.PartnerDashboardService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
 import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.squareup.moshi.Moshi
@@ -83,4 +85,16 @@ object ServiceModule {
     @Singleton
     fun provideNotificationService(retrofit: Retrofit): NotificationService =
         retrofit.create(NotificationService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAdminDashboardApiService(retrofit: Retrofit): AdminDashboardService =
+        retrofit.create(AdminDashboardService::class.java)
+
+    @Provides
+    @Singleton
+    fun providePartnerDashboardApiService(retrofit: Retrofit): PartnerDashboardService {
+        return retrofit.create(PartnerDashboardService::class.java)
+    }
+
 }

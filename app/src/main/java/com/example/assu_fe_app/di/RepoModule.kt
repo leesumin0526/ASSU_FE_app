@@ -1,9 +1,13 @@
 package com.example.assu_fe_app.di
 
 import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
+import com.example.assu_fe_app.data.repository.dashboard.AdminDashboardRepository
+import com.example.assu_fe_app.data.repository.dashboard.PartnerDashboardRepository
 import com.example.assu_fe_app.data.repositoryImpl.chatting.ChattingRepositoryImpl
 import com.example.assu_fe_app.data.repository.deviceToken.DeviceTokenRepository
 import com.example.assu_fe_app.data.repository.notification.NotificationRepository
+import com.example.assu_fe_app.data.repositoryImpl.dashboard.AdminDashboardRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.dashboard.PartnerDashboardRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.notification.NotificationRepositoryImpl
 import dagger.Binds
@@ -29,4 +33,15 @@ abstract class RepoModule {
     abstract fun bindNotificationRepository(
         impl: NotificationRepositoryImpl
     ): NotificationRepository
+
+    @Binds @Singleton
+    abstract fun bindAdminDashboardRepository(
+        impl: AdminDashboardRepositoryImpl
+    ): AdminDashboardRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPartnerDashboardRepository(
+        partnerDashboardRepositoryImpl: PartnerDashboardRepositoryImpl
+    ): PartnerDashboardRepository
 }
