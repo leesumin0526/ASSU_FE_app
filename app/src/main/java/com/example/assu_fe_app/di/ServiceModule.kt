@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.BearerInterceptor
+import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
 import com.example.assu_fe_app.data.service.AuthService
 import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
@@ -13,6 +14,7 @@ import com.example.assu_fe_app.data.service.map.SearchLocationService
 import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.example.assu_fe_app.data.service.review.ReviewService
 import com.example.assu_fe_app.data.service.store.StoreService
+import com.example.assu_fe_app.data.service.partnership.PartnershipService
 import com.example.assu_fe_app.data.service.suggestion.SuggestionService
 import com.example.assu_fe_app.data.service.usage.UsageService
 import com.example.assu_fe_app.util.LocalDateMoshiAdapter
@@ -84,6 +86,8 @@ object ServiceModule {
         Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .add(LocalDate::class.java, LocalDateMoshiAdapter()) // LocalDate Adapter 추가
+            .add(LocalDateAdapter)
+            .add(KotlinJsonAdapterFactory())  // ← 추가
             .build()
 
     @Provides @Singleton @Auth
@@ -124,6 +128,12 @@ object ServiceModule {
     @Singleton
     fun provideSuggestionService(@Auth retrofit: Retrofit): SuggestionService =
         retrofit.create(SuggestionService::class.java)
+
+    @Provides
+    @Singleton
+    fun providePartnershipService(@Auth retrofit: Retrofit): PartnershipService =
+        retrofit.create(PartnershipService::class.java)
+
 
     @Provides @Singleton
     fun provideReviewService(@Auth retrofit: Retrofit): ReviewService =
