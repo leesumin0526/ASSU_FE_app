@@ -6,18 +6,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
+import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.databinding.FragmentPartnershipContentBinding
 import com.example.assu_fe_app.presentation.common.contract.adapter.PartnershipContractAdapter
 
-class PartnershipContractDialogFragment(
-    private val partnershipContractItems: List<PartnershipContractItem>
-) : DialogFragment( ) {
+class PartnershipContractDialogFragment() : DialogFragment( ) {
 
     private var _binding: FragmentPartnershipContentBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var adapter: PartnershipContractAdapter
+    private var contractData: PartnershipContractData? = null
+
+    companion object {
+        private const val ARG_CONTRACT = "contract"
+
+        fun newInstance(data: PartnershipContractData): PartnershipContractDialogFragment {
+            return PartnershipContractDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putSerializable(ARG_CONTRACT, data) // Parcelable 아니면 Serializable 사용
+                }
+            }
+        }
+    }
 
 
     override fun onCreateView(
@@ -41,11 +52,19 @@ class PartnershipContractDialogFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = PartnershipContractAdapter(partnershipContractItems)
+        contractData?.let { data ->
+            // 상단 텍스트
+            binding.tvPartnershipContentPartner.text = data.partnerName ?: "-"
+            binding.tvPartnershipContentAdmin.text = data.adminName ?: "-"
+            binding.tvPartnershipContentStartDate.text = data.periodStart ?: ""
+            binding.tvPartnershipContentEndDate.text = data.periodEnd ?: ""
 
-        binding.rvPartnershipContentList.apply {
-            adapter = PartnershipContractAdapter(partnershipContractItems)
-            layoutManager = LinearLayoutManager(requireContext())
+            // 옵션 리스트
+            adapter = PartnershipContractAdapter(data.options ?: emptyList())
+            binding.rvPartnershipContentList.apply {
+                adapter = this@PartnershipContractDialogFragment.adapter
+                layoutManager = LinearLayoutManager(requireContext())
+            }
         }
 
         binding.ivPartnershipContentCross.setOnClickListener {
@@ -56,5 +75,10 @@ class PartnershipContractDialogFragment(
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        contractData = arguments?.getSerializable( ARG_CONTRACT) as? PartnershipContractData
     }
 }
