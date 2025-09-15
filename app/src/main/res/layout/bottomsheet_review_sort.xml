@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tv_latest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="최신순"
+        android:padding="12dp" />
+
+    <TextView
+        android:id="@+id/tv_oldest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="오래된순"
+        android:padding="12dp" />
+
+    <TextView
+        android:id="@+id/tv_rating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="별점순"
+        android:padding="12dp" />
+</LinearLayout>

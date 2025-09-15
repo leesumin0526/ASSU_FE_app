@@ -23,7 +23,7 @@ class ReviewDeleteDialogFragment : DialogFragment() {
         _binding = FragmentReviewDeleteDialogBinding.inflate(inflater, container, false)
 
         binding.btnDeleteCancel.setOnClickListener {
-            onDestroyView()
+            dismiss()
         }
 
         binding.btnDeleteConfirm.setOnClickListener {
@@ -41,15 +41,6 @@ class ReviewDeleteDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_review_delete_dialog)
 
     }
-
-//    override fun onStart() {
-//        super.onStart()
-//
-//        dialog?.window?.setLayout(
-//            (resources.displayMetrics.widthPixels * 0.879).toInt(), // 너비를 화면의 85%로 설정
-//            ViewGroup.LayoutParams.WRAP_CONTENT
-//        )
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

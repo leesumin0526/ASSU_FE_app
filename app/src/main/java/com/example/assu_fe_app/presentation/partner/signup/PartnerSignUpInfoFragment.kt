@@ -1,5 +1,7 @@
 package com.example.assu_fe_app.presentation.partner.signup
 
+import android.os.Bundle
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
@@ -16,6 +18,14 @@ class PartnerSignUpInfoFragment :
     override fun initObserver() {}
 
     override fun initView() {
+
+        parentFragmentManager.setFragmentResultListener("result", this) { _, bundle ->
+            val resultData = bundle.getString("selectedAddress")
+            Log.d("SignupInfoFragment", "받은 데이터: $resultData")
+
+            binding.etPartnerAddress.text = resultData
+        }
+
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
             fromPercent = 0.55f,
@@ -26,7 +36,8 @@ class PartnerSignUpInfoFragment :
 
         // 주소 돋보기 클릭 시 주소 입력 + 상세주소 활성화
         binding.btnPartnerAddressSearch.setOnClickListener {
-            binding.etPartnerAddress.setText("서울특별시 강남구 테헤란로 123")
+            findNavController().navigate(R.id.action_partner_info_to_location)
+
             binding.etPartnerAddressDetail.isEnabled = true
             isAddressSearchClicked = true
             checkAllInputs()

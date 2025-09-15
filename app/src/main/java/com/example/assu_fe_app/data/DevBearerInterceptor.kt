@@ -10,7 +10,7 @@ import javax.inject.Singleton
 class BearerInterceptor @Inject constructor(
     private val tokenManager: TokenManager
 ) : Interceptor {
-    
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val accessToken = tokenManager.getAccessToken()
         val request = if (accessToken != null) {

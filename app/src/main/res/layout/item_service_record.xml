@@ -66,11 +66,25 @@
             app:layout_constraintStart_toStartOf="@id/tv_market"
             app:layout_constraintTop_toBottomOf="@id/tv_market"/>
 
-        <ImageView
+<!--        <ImageView-->
+<!--            android:id="@+id/btn_service_write_review"-->
+<!--            android:layout_width="78dp"-->
+<!--            android:layout_height="31dp"-->
+<!--            android:src="@drawable/btn_review_write"-->
+<!--            app:layout_constraintTop_toTopOf="@id/tv_service_explain"-->
+<!--            app:layout_constraintBottom_toBottomOf="@id/tv_service_explain"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"/>-->
+
+        <TextView
             android:id="@+id/btn_service_write_review"
             android:layout_width="78dp"
             android:layout_height="31dp"
-            android:src="@drawable/btn_review_write"
+            android:gravity="center"
+            android:background="@drawable/btn_write_review"
+            android:text="리뷰 작성하기"
+            android:textSize="11sp"
+            android:textColor="@color/assu_main"
+            android:fontFamily="@font/pretendard_regular"
             app:layout_constraintTop_toTopOf="@id/tv_service_explain"
             app:layout_constraintBottom_toBottomOf="@id/tv_service_explain"
             app:layout_constraintEnd_toEndOf="parent"/>
