@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentServiceProposalWritingBinding
@@ -24,6 +25,13 @@ class ServiceProposalWritingFragment
     }
 
     override fun initView() {
+
+        parentFragmentManager.setFragmentResultListener("result", this) { _, bundle ->
+            val resultData = bundle.getString("selectedPlace")
+            Log.d("SignupInfoFragment", "받은 데이터: $resultData")
+
+            binding.tvFragmentServiceProposalPartner.text = resultData
+        }
         binding.rvFragmentServiceProposalItemSet.adapter = adapter
         binding.rvFragmentServiceProposalItemSet.layoutManager = LinearLayoutManager(requireContext())
 
@@ -38,16 +46,23 @@ class ServiceProposalWritingFragment
         }
 
         binding.btnCompleted.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.chatting_fragment_container, ServiceProposalTermWritingFragment())
-                .addToBackStack(null) // 뒤로가기 가능하게
-                .commit()
+//            parentFragmentManager.beginTransaction()
+//                .replace(R.id.chatting_fragment_container, ServiceProposalTermWritingFragment())
+//                .addToBackStack(null) // 뒤로가기 가능하게
+//                .commit()
+
+            findNavController().navigate(R.id.action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment)
         }
 
         binding.ivFragmentServiceProposalBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
+        binding.tvFragmentServiceProposalPartner.setOnClickListener {
+
+
+            findNavController().navigate(R.id.action_serviceProposalWritingFragment_to_locationSearchFragment)
+        }
 
 
         setUpFragmentEditTextWatchers()
@@ -67,12 +82,12 @@ class ServiceProposalWritingFragment
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
 
-        binding.etFragmentServiceProposalPartner.addTextChangedListener(watcher)
+
         binding.etFragmentServiceProposalAdmin.addTextChangedListener(watcher)
     }
 
     private fun checkAllFieldsFilled() {
-        val partnerFilled = binding.etFragmentServiceProposalPartner.text?.isNotBlank() == true
+        val partnerFilled = binding.tvFragmentServiceProposalPartner.text?.isNotBlank() == true
         val adminFilled = binding.etFragmentServiceProposalAdmin.text?.isNotBlank() == true
         val itemFieldsFilled = adapter.getItems().all { item ->
             item.contents.all{it.isNotBlank()}

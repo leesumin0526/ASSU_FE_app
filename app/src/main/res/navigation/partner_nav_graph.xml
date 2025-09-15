@@ -110,6 +110,9 @@
         <action
             android:id="@+id/action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment"
             app:destination="@id/serviceProposalTermWritingFragment" />
+        <action
+            android:id="@+id/action_serviceProposalWritingFragment_to_locationSearchFragment"
+            app:destination="@id/partnerLocationInfoSearchFragment" />
     </fragment>
 
     <fragment
@@ -118,7 +121,13 @@
         <action
             android:id="@+id/action_serviceProposalTermWritingFragment_to_chattingSentProposalFragment"
             app:destination="@id/chattingSentProposalFragment" />
+
     </fragment>
+
+    <fragment
+        android:id="@+id/partnerLocationInfoSearchFragment"
+        android:name="com.example.assu_fe_app.presentation.common.search.LocationInfoSearchFragment"
+        android:label="제휴업체 이름 검색"/>
 
     <fragment
         android:id="@+id/chattingSentProposalFragment"
