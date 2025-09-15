@@ -11,8 +11,6 @@ import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.domain.model.partnership.CreateDraftResponseModel
 import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
 import com.example.assu_fe_app.domain.model.partnership.WritePartnershipResponseModel
-import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
-import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.apiHandler
 import javax.inject.Inject

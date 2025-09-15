@@ -67,7 +67,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         binding.tvChattingOpponentName?.text = opponentName
 
         // ✅ Intent에서 받은 데이터를 ViewModel에 전달
-        currentUserRole = intent.getStringExtra("role")
+        currentUserRole = tokenManager.getUserRole()
         currentPartnershipStatus = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra("partnershipStatus", PartnershipStatusModel::class.java)
         } else {
@@ -75,6 +75,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         }
 
         // ViewModel에 상태 업데이트 요청
+        Log.d("ChattingActivity", "Intent data received -> role: $currentUserRole, status: $currentPartnershipStatus")
         viewModel.updateChattingBoxState(currentUserRole, currentPartnershipStatus)
 
         // 채팅방 리스트 적용

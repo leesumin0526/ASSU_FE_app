@@ -385,6 +385,7 @@ class ChattingViewModel @Inject constructor(
                 else -> ChattingBoxUiState(isVisible = false)
             }
         }
+        Log.d("ChattingViewModel", "Updating chattingBoxState to: $newState")
         _chattingBoxState.value = newState
     }
 
