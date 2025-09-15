@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.ui.chatting
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
@@ -101,10 +102,15 @@ class ChattingViewModel @Inject constructor(
             _getChatHistoryState.value = GetChatHistoryUiState.Loading
             getChatHistoryUseCase(roomId)
                 .onSuccess {
+                    Log.d("VM", "history success: ${it.messages.size}")
                     _getChatHistoryState.value = GetChatHistoryUiState.Success(it)
                     _messages.value = it.messages}
-                .onFail    { code -> _getChatHistoryState.value = GetChatHistoryUiState.Fail(code, "서버 처리 실패") }
-                .onError   { e -> _getChatHistoryState.value = GetChatHistoryUiState.Error(e.message ?: "Unknown Error") }
+                .onFail    { code ->
+                    Log.e("VM", "history fail code=$code")
+                    _getChatHistoryState.value = GetChatHistoryUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e ->
+                    Log.e("VM", "history error=${e.message}")
+                    _getChatHistoryState.value = GetChatHistoryUiState.Error(e.message ?: "Unknown Error") }
         }
     }
 

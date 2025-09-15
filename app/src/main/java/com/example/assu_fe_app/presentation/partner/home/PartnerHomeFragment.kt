@@ -222,7 +222,7 @@ class PartnerHomeFragment :
             val req = CreateChatRoomRequestDto(
                 //TODO : 유저 정보 받아오기
                 adminId = 1L,
-                partnerId = 5L
+                partnerId = tokenManager.getUserId()
             )
             chattingViewModel.createRoom(req)
         }

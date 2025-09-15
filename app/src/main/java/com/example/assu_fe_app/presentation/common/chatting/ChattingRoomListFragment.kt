@@ -60,7 +60,6 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
                 viewModel.getChattingRoomListState.collect { uiState ->
                     when (uiState) {
                         is ChattingViewModel.GetChattingRoomListUiState.Loading -> {
-                            Toast.makeText(requireContext(), "로딩 중…", Toast.LENGTH_SHORT).show()
                         }
                         is ChattingViewModel.GetChattingRoomListUiState.Success -> {
                             val isEmpty = uiState.data.isEmpty()
@@ -68,7 +67,6 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
 
                             binding.layoutAdminChattingNoHistoryInfo.isGone = !isEmpty
                             binding.rvChattingRoomList.isVisible = true
-                            Toast.makeText(requireContext(), "채팅방 리스트 불러오기 성공", Toast.LENGTH_SHORT).show()
                             Log.i("ChattingRoomListFragment", "채팅방 리스트 불러오기 성공")
                         }
                         is ChattingViewModel.GetChattingRoomListUiState.Fail -> {
@@ -97,6 +95,7 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
 
         val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
             putExtra("roomId", item.roomId)
+            putExtra("opponentId", item.opponentId)
             putExtra("opponentName", item.opponentName)
             putExtra("opponentProfileImage", item.opponentProfileImage)
         }
