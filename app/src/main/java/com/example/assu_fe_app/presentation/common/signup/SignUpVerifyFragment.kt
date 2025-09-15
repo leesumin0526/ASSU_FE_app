@@ -46,13 +46,14 @@ class SignUpVerifyFragment :
 
         // 인증번호 받기
         binding.tvUserVerifyPhone.setOnClickListener {
-            val inputPhone = binding.etUserVerifyPhone.text.toString()
-            if (inputPhone == correctPhoneNumber) {
-                startVerificationUI()
-                startTimer()
-            } else {
-                Toast.makeText(requireContext(), "올바르지 않은 전화번호입니다", Toast.LENGTH_SHORT).show()
-            }
+            findNavController().navigate(R.id.action_toTest)
+//            val inputPhone = binding.etUserVerifyPhone.text.toString()
+//            if (inputPhone == correctPhoneNumber) {
+//                startVerificationUI()
+//                startTimer()
+//            } else {
+//                Toast.makeText(requireContext(), "올바르지 않은 전화번호입니다", Toast.LENGTH_SHORT).show()
+//            }
         }
 
         binding.etUserVerifyCode.setOnFocusChangeListener { _, hasFocus ->
