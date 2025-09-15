@@ -2,21 +2,29 @@ package com.example.assu_fe_app.presentation.common.login
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ImageButton
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityLmsLoginBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
+import com.example.assu_fe_app.presentation.user.UserMainActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LmsLoginActivity : BaseActivity<ActivityLmsLoginBinding>(R.layout.activity_lms_login) {
     
     private lateinit var webView: WebView
     private lateinit var btnBack: ImageButton
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -116,26 +124,30 @@ class LmsLoginActivity : BaseActivity<ActivityLmsLoginBinding>(R.layout.activity
             }
         }
         
-        // LMS 로그인 페이지 로드 (React Native와 동일한 URL 사용)
+        // LMS 로그인 페이지 로드
         webView.loadUrl("https://smartid.ssu.ac.kr/Symtra_sso/smln.asp?apiReturnUrl=https%3A%2F%2Fsaint.ssu.ac.kr%2FwebSSO%2Fsso.jsp")
     }
     
     private fun handleLoginSuccess(sToken: String? = null, sIdno: String? = null) {
-        // 로그인 성공 시 처리
-        android.widget.Toast.makeText(this, "유세인트 로그인 성공!", android.widget.Toast.LENGTH_SHORT).show()
-        
-        // 토큰이 있다면 로그 (디버깅용)
+        // 토큰이 있다면 서버 로그인 시도
         if (sToken != null && sIdno != null) {
-            android.util.Log.d("LmsLoginActivity", "Token: $sToken, ID: $sIdno")
+            Log.d("LmsLoginActivity", "Token: $sToken, ID: $sIdno")
+            loginViewModel.studentLogin(sToken, sIdno)
+        } else {
+            // 토큰이 없는 경우 기본적으로 UserMainActivity로 이동
+            Log.w("LmsLoginActivity", "토큰 정보가 없어 기본 화면으로 이동합니다.")
+            navigateToMainActivity("USER")
         }
-        
-        // 1초 후 UserMainActivity로 자동 이동
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            val intent = android.content.Intent(this, com.example.assu_fe_app.presentation.user.UserMainActivity::class.java)
-            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-            finish()
-        }, 1000)
+    }
+    
+    private fun navigateToMainActivity(userRole: String) {
+        val intent = when (userRole.uppercase()) {
+             "USER" -> Intent(this, UserMainActivity::class.java)
+             else -> Intent(this, UserMainActivity::class.java)
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish()
     }
     
     // JavaScript 인터페이스 클래스
@@ -166,6 +178,48 @@ class LmsLoginActivity : BaseActivity<ActivityLmsLoginBinding>(R.layout.activity
     }
 
     override fun initObserver() {
+        loginViewModel.loginState.observe(this) { state ->
+            when (state) {
+                is LoginState.Idle -> {
+                    hideLoading()
+                }
+                is LoginState.Loading -> {
+                    showLoading("로그인 중...")
+                    Log.d("LmsLoginActivity", "서버 로그인 중...")
+                }
+                is LoginState.Success -> {
+                    hideLoading()
+                    Log.d("LmsLoginActivity", "서버 로그인 성공!")
+                    navigateToMainActivity(state.loginData.userRole)
+                }
+                is LoginState.Error -> {
+                    hideLoading()
+                    // 더 사용자 친화적인 에러 메시지 표시
+                    val errorMessage = when {
+                        state.message.contains("네트워크") -> "네트워크 연결을 확인해주세요."
+                        state.message.contains("401") || state.message.contains("인증") -> "LMS 로그인 정보를 확인해주세요."
+                        state.message.contains("404") -> "존재하지 않는 계정입니다."
+                        state.message.contains("500") -> "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+                        else -> "LMS 로그인에 실패했습니다: ${state.message}"
+                    }
+                    Toast.makeText(this@LmsLoginActivity, errorMessage, Toast.LENGTH_LONG).show()
+                    Log.e("LmsLoginActivity", "서버 로그인 실패: ${state.message}")
+                }
+                is LoginState.PendingApproval -> {
+                    hideLoading()
+                    Toast.makeText(this@LmsLoginActivity, "승인 대기 중입니다: ${state.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun showLoading(message: String = "로딩 중...") {
+        binding.loadingOverlay.visibility = android.view.View.VISIBLE
+        binding.tvLoadingText.text = message
+    }
+    
+    private fun hideLoading() {
+        binding.loadingOverlay.visibility = android.view.View.GONE
     }
 
     private fun Int.dpToPx(context: Context): Int {

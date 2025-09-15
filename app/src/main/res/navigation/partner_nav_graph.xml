@@ -42,7 +42,7 @@
     <!-- 일단 채팅은 주석 처리 -->
     <fragment
         android:id="@+id/partnerChattingFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingListFragment"
+        android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingRoomListFragment"
         android:label="Chatting" >
         <action
             android:id="@+id/action_partnerChattingFragment_to_serviceProposalTermWritingFragment"
@@ -106,6 +106,13 @@
         <action
             android:id="@+id/action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment"
             app:destination="@id/serviceProposalTermWritingFragment" />
+
+        <argument
+            android:name="partnerId"
+            app:argType="long"/>
+        <argument
+            android:name="paperId"
+            app:argType="long"/>
     </fragment>
 
     <fragment

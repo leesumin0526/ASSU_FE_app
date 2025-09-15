@@ -6,8 +6,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class PartnershipOptionRequestDto(
-    val optionType: OptionType,
-    val criterionType: CriterionType,
+    val optionType: String,
+    val criterionType: String,
     val people: Int?,
     val cost: Long?,
     val category: String,

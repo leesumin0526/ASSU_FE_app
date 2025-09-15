@@ -4,7 +4,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class WritePartnershipRequestDto(
-    val adminId: Long,
+    val paperId: Long,
     val partnershipPeriodStart: String,
     val partnershipPeriodEnd: String,
     val options: List<PartnershipOptionRequestDto>

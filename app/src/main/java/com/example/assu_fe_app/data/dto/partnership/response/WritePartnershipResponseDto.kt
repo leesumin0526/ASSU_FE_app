@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.data.dto.partnership.response
 
+import com.example.assu_fe_app.domain.model.partnership.WritePartnershipResponseModel
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -11,4 +12,6 @@ data class WritePartnershipResponseDto(
     val partnerId: Long,
     val storeId: Long,
     val options: List<PartnershipOptionResponseDto>
-)
+) {
+    fun toModel() = WritePartnershipResponseModel(paperId = partnershipId)
+}

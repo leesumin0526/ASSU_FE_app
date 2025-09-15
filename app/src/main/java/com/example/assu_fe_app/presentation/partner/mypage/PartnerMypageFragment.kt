@@ -10,8 +10,11 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentPartnerMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
-import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
+import com.example.assu_fe_app.presentation.common.login.LoginViewModel
+import com.example.assu_fe_app.data.manager.TokenManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -19,9 +22,15 @@ import kotlinx.coroutines.launch
 class PartnerMypageFragment
     : BaseFragment<FragmentPartnerMypageBinding>(R.layout.fragment_partner_mypage) {
 
+    @Inject
+    lateinit var tokenManager: TokenManager
+
+    private val loginViewModel: LoginViewModel by viewModels()
+
     private val viewModel: MypageViewModel by viewModels()
 
-    override fun initView() { /* no-op */ }
+    override fun initView(){
+    }
 
     override fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -36,18 +45,20 @@ class PartnerMypageFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initClick()
+        initClickListeners()
     }
 
-    private fun initClick() {
+    private fun initClickListeners() {
         // 알림 설정
         binding.clPartnerAccountComponent1.setOnClickListener {
             PartnerMypageAlarmDialogFragment()
                 .show(childFragmentManager, "AlarmDialog")
         }
 
-        // 로그아웃: 서버에서 unregister 성공 시에만 화면 이동 (observer에서 처리)
+        // 로그아웃 창
         binding.clPartnerAccountComponent2.setOnClickListener {
+            // 서버에 로그아웃 API 호출 후 토큰 삭제 및 로그인 화면으로 이동
+            loginViewModel.logout()
             findNavController().navigate(
                 R.id.action_partner_mypage_to_mypage_account
             )
@@ -60,4 +71,5 @@ class PartnerMypageFragment
         }
         startActivity(intent)
     }
+
 }

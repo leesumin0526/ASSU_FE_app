@@ -26,7 +26,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "KAKAO_MAP_KEY", "\"${properties.getProperty("KAKAO_MAP_KEY")}\"")    }
+        buildConfigField("String", "KAKAO_MAP_KEY", "${properties.getProperty("KAKAO_MAP_KEY")}")    }
 
     buildTypes {
         debug {
@@ -105,6 +105,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.moshi:moshi:1.15.1")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1") // ← 중요 (Kotlin adapter)
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -127,6 +128,18 @@ dependencies {
     // 테스트 (서버 목)
     testImplementation("com.squareup.okhttp3:mockwebserver:5.1.0")
 
+    // 프로필 사진 처리
+    implementation("io.coil-kt:coil:2.4.0")
+
+    // 채팅
+//    implementation("io.github.hannesa2:stomp-android:2.0.5") // 유지보수 포크
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+    // RxJava 2 (+ RxAndroid 2)  ← 꼭 추가
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+
+    // 시간 포맷
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
     // QR 생성
     implementation("com.google.zxing:core:3.5.3")
 

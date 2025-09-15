@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <FrameLayout
+        android:id="@+id/chatting_fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/chatting_fragment_container">
+        android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+        android:id="@+id/cl_chatting_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/assu_background"
@@ -51,7 +51,7 @@
             app:layout_constraintBottom_toBottomOf="@id/view_chatting_title"/>
 
         <TextView
-            android:id="@+id/tv_chatting_name"
+            android:id="@+id/tv_chatting_opponent_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/pretendard_semibold"
@@ -85,14 +85,26 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_chatting_message_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_chatting_mg4"
-            android:layout_marginBottom="40dp"
+            app:layout_constraintBottom_toTopOf="@id/layout_chatting_input_box"
+            android:layout_marginBottom="20dp"
             android:layout_marginStart="26dp"
             android:layout_marginEnd="26dp">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+        <FrameLayout
+            android:id="@+id/fl_chatting_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone"/>
 
 
         <LinearLayout
@@ -108,7 +120,7 @@
             android:background="@drawable/ic_home_basic_box"
             android:layout_marginBottom="80dp"
             android:padding="12dp"
-            android:visibility="visible">
+            android:visibility="invisible">
 
             <TextView
                 android:id="@+id/tv_chatting_restaurant_name"
@@ -137,69 +149,25 @@
 
 
             <LinearLayout
+                android:id="@+id/ll_chatting_sent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <LinearLayout
-                    android:id="@+id/ll_chatting_call"
-                    android:layout_width="143.5dp"
-                    android:layout_height="41dp"
-                    android:background="@drawable/bg_chatting_call_box"
-                    android:gravity="center">
+                android:layout_height="41dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_chatting_proposal_box"
+                android:gravity="center"
+                android:layout_weight="1">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_chatting_call"/>
+                <TextView
+                    android:id="@+id/tv_chatting_sent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="제안서 작성"
+                    android:fontFamily="@font/pretendard_semibold"
+                    android:textSize="11sp"
+                    android:textColor="@color/white"/>
 
-                    <View
-                        android:id="@+id/view_chatting_mg6"
-                        android:layout_width="30.5dp"
-                        android:layout_height="10dp"
-                        app:layout_constraintBottom_toBottomOf="@id/view_chatting_title"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="전화하기"
-                        android:fontFamily="@font/pretendard_semibold"
-                        android:textSize="11sp"
-                        android:textColor="@color/assu_font_main"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="143.5dp"
-                    android:layout_height="41dp"
-                    android:id="@+id/ll_chatting_sent"
-                    android:background="@drawable/bg_chatting_proposal_box"
-                    android:gravity="center"
-                    android:layout_marginStart="34dp">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_chatting_proposal"/>
-
-                    <View
-                        android:id="@+id/view_chatting_mg7"
-                        android:layout_width="30.5dp"
-                        android:layout_height="10dp"
-                        app:layout_constraintBottom_toBottomOf="@id/view_chatting_title"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="제안서 작성"
-                        android:fontFamily="@font/pretendard_semibold"
-                        android:textSize="11sp"
-                        android:textColor="@color/white"/>
-                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-
 
 
 
@@ -247,14 +215,15 @@
 
             <LinearLayout
                 android:id="@+id/ll_chatting_after_proposal"
-                android:layout_width="292dp"
+                android:layout_width="match_parent"
                 android:layout_height="41dp"
                 android:background="@drawable/bg_chatting_proposal_box"
                 android:gravity="center"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_gravity="center">
 
                 <TextView
+                    android:id="@+id/tv_chatting_after_proposal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="제안서 확인하기"

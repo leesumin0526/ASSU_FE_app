@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -19,7 +18,6 @@ import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.presentation.common.location.adapter.AdminPartnerLocationAdapter
 import com.example.assu_fe_app.presentation.common.location.adapter.LocationSharedViewModel
-import com.example.assu_fe_app.presentation.user.review.store.UserReviewStoreActivity
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
@@ -68,8 +66,8 @@ class LocationFragment :
             val context = it.context
 
             // TODO: 여기서 id 불러오는 방법 바꾸기
-            val adminId =2L
-            val partnerId = 1L
+            val storeId =1L
+            val partnerId = 5L
 
             val entryMessage = if (item.isPartnered) {
                 "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
@@ -79,7 +77,7 @@ class LocationFragment :
 
             vm.createRoom(
                 CreateChatRoomRequestDto(
-                    adminId = adminId,
+                    adminId = storeId,
                     partnerId = partnerId)
             )
             binding.root.tag = entryMessage
