@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.common.chatting.proposal
 
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -51,7 +52,9 @@ class ServiceProposalWritingFragment
 //                .addToBackStack(null) // 뒤로가기 가능하게
 //                .commit()
 
-            findNavController().navigate(R.id.action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment)
+
+            findNavController().navigate(
+                R.id.action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment)
         }
 
         binding.ivFragmentServiceProposalBack.setOnClickListener {
@@ -59,9 +62,12 @@ class ServiceProposalWritingFragment
         }
 
         binding.tvFragmentServiceProposalPartner.setOnClickListener {
+            val bundle = Bundle().apply{
+                putString("type", "passive")
+            }
 
-
-            findNavController().navigate(R.id.action_serviceProposalWritingFragment_to_locationSearchFragment)
+            findNavController().navigate(
+                R.id.action_serviceProposalWritingFragment_to_locationSearchFragment, bundle)
         }
 
 

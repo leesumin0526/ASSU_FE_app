@@ -83,6 +83,9 @@
         <action
             android:id="@+id/action_admin_info_to_seal"
             app:destination="@id/signUpAdminSealFragment" />
+        <action
+            android:id="@+id/action_admin_info_to_location"
+            app:destination="@id/partnerLocationSearchFragment" />
     </fragment>
 
     <fragment

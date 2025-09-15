@@ -73,17 +73,17 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
             adapter = this@LocationInfoSearchFragment.adapter
         }
         adapter.onItemClick = { clickedLocationInfo ->
-            if(tokenManager.getUserRole().equals("PARTNER")){
-                // partner 회원 가입 시 위치 정보를 찾는 경우
+            if(arguments?.getString("type") == "passive"){
+
                 val resultBundle = Bundle().apply {
-                    putString("selectedAddress", clickedLocationInfo.address)
+                    putString("selectedPlace", clickedLocationInfo.name)
                 }
                 parentFragmentManager.setFragmentResult("result", resultBundle)
                 parentFragmentManager.popBackStack()
 
             } else{
                 val resultBundle = Bundle().apply {
-                    putString("selectedPlace", clickedLocationInfo.name)
+                    putString("selectedAddress", clickedLocationInfo.address)
                 }
                 parentFragmentManager.setFragmentResult("result", resultBundle)
                 parentFragmentManager.popBackStack()
