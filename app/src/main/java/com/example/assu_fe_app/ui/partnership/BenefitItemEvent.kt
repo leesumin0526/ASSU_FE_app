@@ -2,6 +2,7 @@ package com.example.assu_fe_app.ui.partnership
 
 import com.example.assu_fe_app.data.dto.partnership.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.OptionType
+import com.example.assu_fe_app.domain.model.partnership.WritePartnershipResponseModel
 
 sealed interface BenefitItemEvent {
     data class OptionTypeChanged(val newType: OptionType) : BenefitItemEvent
@@ -13,4 +14,12 @@ sealed interface BenefitItemEvent {
     data class GoodRemoved(val goodIndex: Int) : BenefitItemEvent
     data class GoodUpdated(val goodIndex: Int, val text: String) : BenefitItemEvent
     data object ItemRemoved : BenefitItemEvent
+}
+
+sealed interface WritePartnershipUiState {
+    data object Idle : WritePartnershipUiState // 초기 상태
+    data object Loading : WritePartnershipUiState // 로딩 중
+    data class Success(val data: WritePartnershipResponseModel) : WritePartnershipUiState // 성공
+    data class Fail(val code: Int, val message: String?) : WritePartnershipUiState // 서버 실패 (4xx, 5xx 등)
+    data class Error(val message: String) : WritePartnershipUiState // 네트워크 등 기타 에러
 }

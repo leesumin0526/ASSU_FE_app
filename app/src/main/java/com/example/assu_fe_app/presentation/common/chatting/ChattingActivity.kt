@@ -104,23 +104,13 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
         // 제안서 작성 클릭하기
         binding.llChattingSent.setOnClickListener {
-            if (currentUserRole.equals("Partner", ignoreCase = true) &&
-                currentPartnershipStatus?.status == "BLANK") {
+            handleProposalButtonClick()
+        }
 
-                currentPartnershipStatus?.paperId?.let { nonNullPaperId ->
-                    val partnerId = tokenManager.getUserId()
-                    val fragment = ServiceProposalWritingFragment.newInstance(partnerId, nonNullPaperId)
-
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.chatting_fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit()
-                } ?: run {
-                    // paperId가 null일 경우 이 부분이 실행됨
-                    Toast.makeText(this, "제안서 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
-                }
+        lifecycleScope.launch {
+            viewModel.toastEvent.collect { message ->
+                Toast.makeText(this@ChattingActivity, message, Toast.LENGTH_SHORT).show()
             }
-
         }
 
         supportFragmentManager.setFragmentResultListener("return_reason", this) { _, bundle ->
@@ -136,6 +126,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             // ✅ 파트너이고 제휴 상태가 NONE이면 아무것도 하지 않고 함수 종료
             if (currentUserRole.equals("PARTNER", ignoreCase = true) &&
                 currentPartnershipStatus?.status == "NONE") {
+                Log.d("ChattingPlusButton", "Partner's partnership status is NONE. No action taken.")
                 return@setOnClickListener
             }
 
@@ -297,6 +288,74 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                 }
             }
         }
+    }
+
+    private fun handleProposalButtonClick() {
+        val role = currentUserRole
+        val status = currentPartnershipStatus
+
+        if (role == null || status == null) {
+            Toast.makeText(this, "사용자 정보를 확인할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        when {
+            // 관리자 케이스들
+            role.equals("ADMIN", ignoreCase = true) -> {
+                when (status.status) {
+                    "NONE" -> { viewModel.onProposalButtonClick() }
+                    "BLANK", "SUSPEND" -> { navigateToProposalView(status, isEditable = true) }
+                    "ACTIVE" -> { navigateToContractView(status) }
+                }
+            }
+
+            // 파트너 케이스들
+            role.equals("PARTNER", ignoreCase = true) -> {
+                when (status.status) {
+                    "NONE" -> { return }
+                    "BLANK" -> { navigateToProposalWriting(status) }
+                    "SUSPEND" -> { navigateToProposalView(status, isEditable = false) }
+                    "ACTIVE" -> { navigateToContractView(status) }
+                }
+            }
+        }
+    }
+
+    private fun navigateToProposalWriting(status: PartnershipStatusModel) {
+        status.paperId?.let { paperId ->
+            val partnerId = tokenManager.getUserId()
+            val fragment = ServiceProposalWritingFragment.newInstance(partnerId, paperId)
+
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.chatting_fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
+        } ?: run {
+            Toast.makeText(this, "제안서 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun navigateToProposalView(status: PartnershipStatusModel, isEditable: Boolean) {
+        status.paperId?.let { paperId ->
+            // TODO: ProposalViewFragment 구현 필요
+            // val fragment = ProposalViewFragment.newInstance(paperId, isEditable)
+            // supportFragmentManager.beginTransaction()...
+
+            // 임시로 토스트 표시
+            val mode = if (isEditable) "수정 가능한" else "읽기 전용"
+            Toast.makeText(this, "${mode} 제안서 확인 화면으로 이동 (paperId: $paperId)", Toast.LENGTH_LONG).show()
+        } ?: run {
+            Toast.makeText(this, "제안서 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun navigateToContractView(status: PartnershipStatusModel) {
+        // TODO: ContractViewFragment 구현 필요
+        // val fragment = ContractViewFragment.newInstance(status.contractId)
+        // supportFragmentManager.beginTransaction()...
+
+        // 임시로 토스트 표시
+        Toast.makeText(this, "제휴 계약서 확인 화면으로 이동", Toast.LENGTH_LONG).show()
     }
 
 

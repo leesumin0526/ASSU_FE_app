@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.common.search.LocationInfoSearchFragment">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@color/assu_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/view_location_info_search_bar_bg"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/assu_background"
+            app:layout_constraintHeight_percent="0.0914"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view_location_info_search_mg1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/view_location_info_search_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.0157"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view_location_info_search_mg2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_location_info_search_bar_bg"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.01816" />
+
+        <ImageView
+            android:id="@+id/fragment_location_info_search_left_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_location_search_left_arrow"
+            app:layout_constraintStart_toEndOf="@id/view_location_info_search_mg2"
+            app:layout_constraintTop_toTopOf="@id/view_location_info_search_bar_bg"
+            app:layout_constraintBottom_toBottomOf="@id/view_location_info_search_bar_bg"/>
+
+
+        <View
+            android:id="@+id/view_location_info_search_bar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_location_search_bar"
+            app:layout_constraintBottom_toTopOf="@id/view_location_info_search_mg4"
+            app:layout_constraintEnd_toStartOf="@id/view_location_info_search_mg3"
+            app:layout_constraintStart_toEndOf="@id/fragment_location_info_search_left_arrow"
+            app:layout_constraintTop_toBottomOf="@id/view_location_info_search_mg1" />
+
+        <ImageView
+            android:id="@+id/iv_location_info_search_ic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_search"
+            app:layout_constraintDimensionRatio="20:20"
+            app:layout_constraintWidth_percent="0.0508"
+            app:layout_constraintTop_toTopOf="@id/view_location_info_search_bar"
+            app:layout_constraintBottom_toBottomOf="@id/view_location_info_search_bar"
+            app:layout_constraintStart_toStartOf="@id/view_location_info_search_bar"
+            android:layout_marginStart="10dp" />
+
+        <EditText
+            android:id="@+id/et_location_info_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="도로명 주소 혹은 가게 이름을 입력해주세요."
+            android:background="@android:color/transparent"
+            app:layout_constraintTop_toTopOf="@id/view_location_info_search_bar"
+            app:layout_constraintStart_toEndOf="@id/iv_location_info_search_ic"
+            app:layout_constraintBottom_toBottomOf="@id/view_location_info_search_bar"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/assu_font_main"
+            android:textColorHint="@color/assu_font_sub"
+            android:textSize="13sp"
+            android:fontFamily="@font/pretendard_regular"
+            android:imeOptions="actionDone"/>
+
+        <ImageView
+            android:id="@+id/iv_location_info_search_cancle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_location_search_cancle"
+            app:layout_constraintEnd_toStartOf="@id/view_location_info_search_mg3"
+            app:layout_constraintTop_toTopOf="@id/view_location_info_search_bar_bg"
+            app:layout_constraintBottom_toBottomOf="@id/view_location_info_search_bar_bg"
+            android:layout_marginEnd="12dp"
+            android:visibility="gone"/>
+
+
+        <View
+            android:id="@+id/view_location_info_search_mg3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_location_info_search_bar_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.03816" />
+
+        <View
+            android:id="@+id/view_location_info_search_mg4"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_location_info_search_bar_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.0157"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/view_location_info_search_mg5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.0610"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <View
+            android:id="@+id/view_location_info_search_mg6"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.0610"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_location_info_search_result"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/view_location_info_search_mg4"
+            app:layout_constraintStart_toEndOf="@id/view_location_info_search_mg5"
+            app:layout_constraintEnd_toStartOf="@id/view_location_info_search_mg6"
+            tools:listitem="@layout/item_location_info_search"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

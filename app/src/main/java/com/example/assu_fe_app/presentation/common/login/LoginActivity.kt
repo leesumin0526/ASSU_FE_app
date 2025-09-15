@@ -148,7 +148,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
-        
+
         // 로그인 액티비티 종료하여 매끄러운 전환
         finish()
 

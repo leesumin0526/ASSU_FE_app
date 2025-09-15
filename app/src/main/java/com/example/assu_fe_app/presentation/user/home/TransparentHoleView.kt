@@ -28,7 +28,7 @@ class TransparentHoleView @JvmOverloads constructor(
         targetView.getLocationOnScreen(location)
 
         val x = location[0].toFloat()
-        val y = location[1].toFloat()
+        val y = location[1].toFloat()-90
         val width = targetView.width.toFloat()
         val height = targetView.height.toFloat()
 
@@ -39,6 +39,6 @@ class TransparentHoleView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), backgroundPaint)
-        canvas.drawRoundRect(holeRect, 32f, 32f, clearPaint)
+        canvas.drawRoundRect(holeRect, 64f, 64f, clearPaint)
     }
 }

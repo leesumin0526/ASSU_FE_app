@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class AdminPartnershipStatusDto(
     val paperId: Long?,
-    val isPartnered: Boolean,
+    val isPartnered: Boolean?,
     val status: String,
     val partnerId: Long?,
     val partnerName: String?,

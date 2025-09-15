@@ -22,6 +22,7 @@ interface PartnershipService {
         @Query("isAll") isAll: Boolean,
     ): BaseResponse<List<GetProposalPartnerListResponseDto>>
 
+    // 제휴업체가 관리자 리스트 보는 api
     @GET("partnership/partner")
     suspend fun getProposalAdminList (
         @Query("isAll") isAll: Boolean

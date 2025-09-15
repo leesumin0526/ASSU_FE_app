@@ -133,36 +133,42 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="31dp" />
 
-        <TextView
-            android:id="@+id/tv_review_store_review_all"
+        <LinearLayout
+            android:id="@+id/ll_sort"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="최신순"
-            android:textSize="13sp"
-            android:layout_marginStart="10dp"
-            android:fontFamily="@font/pretendard_medium"
-            android:textColor="@color/assu_font_main"
-            app:layout_constraintTop_toBottomOf="@id/tv_review_store_review_info_content"
-            app:layout_constraintEnd_toStartOf="@id/iv_review_store_review_sort"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="5dp"/>
-
-        <ImageView
-            android:id="@+id/iv_review_store_review_sort"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tv_review_store_review_info_content"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
-            android:src="@drawable/ic_review_store_detail_sort"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="31dp" />
+            app:layout_constraintTop_toBottomOf="@id/tv_review_store_review_info_content">
+            <TextView
+                android:id="@+id/tv_review_store_review_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="최신순"
+                android:textSize="13sp"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/pretendard_medium"
+                android:textColor="@color/assu_font_main"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="5dp"/>
+
+            <ImageView
+                android:id="@+id/iv_review_store_review_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_review_store_detail_sort"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="31dp" />
+        </LinearLayout>
+
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/fcv_review_store_rank"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:nestedScrollingEnabled="false"
-            app:layout_constraintTop_toBottomOf="@id/tv_review_store_review_all"
+            app:layout_constraintTop_toBottomOf="@id/ll_sort"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

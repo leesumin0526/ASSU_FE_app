@@ -8,7 +8,7 @@ import jakarta.inject.Inject
 class CheckPartnershipUseCase @Inject constructor(
     private val repo: PartnershipRepository
 ) {
-    suspend operator fun invoke(role: String, opponentId: Long): RetrofitResult<PartnershipStatusModel> {
+    suspend operator fun invoke(role: String?, opponentId: Long): RetrofitResult<PartnershipStatusModel> {
         return if (role.equals("ADMIN", ignoreCase = true)) {
             repo.checkPartnershipAsAdmin(partnerId = opponentId)
         } else {

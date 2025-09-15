@@ -42,43 +42,40 @@ class PartnershipViewModel @Inject constructor(
     private val getProposalAdminListUseCase: GetProposalAdminListUseCase
 ) : ViewModel() {
 
-    val partnerName = MutableStateFlow("")
-    val adminName = MutableStateFlow("")
     val partnershipStartDate = MutableStateFlow("")
     val partnershipEndDate = MutableStateFlow("")
+    val partnerName = MutableStateFlow("")
+    val adminName = MutableStateFlow("")
 
-    private val partnerId: Long = savedStateHandle.get<Long>("partnerId") ?: -1L
-    private val paperId: Long = savedStateHandle.get<Long>("paperId") ?: -1L
+    private var paperId: Long = -1L
+    private var partnerId: Long = -1L
 
-    private val _benefitItems = MutableStateFlow<List<BenefitItem>>(listOf(BenefitItem()))
+    private val _benefitItems = MutableStateFlow<List<BenefitItem>>(emptyList())
     val benefitItems: StateFlow<List<BenefitItem>> = _benefitItems.asStateFlow()
 
     val isNextButtonEnabled: StateFlow<Boolean> = combine(
-        partnerName,
-        adminName,
-        benefitItems
+        partnerName, adminName, benefitItems
     ) { partner, admin, benefits ->
-        // 모든 조건이 충족되었는지 확인
-        val partnerFilled = partner.isNotBlank()
-        val adminFilled = admin.isNotBlank()
-        val benefitsFilled = benefits.all { item ->
-            // 각 혜택 항목이 유효한지 확인하는 로직
-            // 예: 카테고리가 비어있지 않고, 기준값이 비어있지 않은지 등
-            item.category.isNotBlank() && item.criterionValue.isNotBlank()
-        }
-        partnerFilled && adminFilled && benefitsFilled
+        partner.isNotBlank() && admin.isNotBlank() && benefits.all { it.criterionValue.isNotBlank() }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = false
     )
 
-    sealed interface WritePartnershipUiState {
-        data object Idle : WritePartnershipUiState
-        data object Loading : WritePartnershipUiState
-        data class Success(val data: WritePartnershipResponseModel) : WritePartnershipUiState
-        data class Fail(val code: Int, val message: String?) : WritePartnershipUiState
-        data class Error(val message: String) : WritePartnershipUiState
+    private val _writePartnershipState = MutableStateFlow<WritePartnershipUiState>(WritePartnershipUiState.Idle)
+    val writePartnershipState: StateFlow<WritePartnershipUiState> = _writePartnershipState.asStateFlow()
+
+    fun initProposalData(partnerId: Long, paperId: Long) {
+        this.partnerId = partnerId
+        this.paperId = paperId
+        if (_benefitItems.value.isEmpty()) {
+            _benefitItems.value = listOf(BenefitItem())
+        }
+    }
+
+    fun addBenefitItem() {
+        _benefitItems.value = _benefitItems.value + BenefitItem()
     }
 
     fun onBenefitEvent(itemIndex: Int, event: BenefitItemEvent) {
@@ -113,12 +110,10 @@ class PartnershipViewModel @Inject constructor(
         _benefitItems.value = currentList
     }
 
-    private val _writePartnershipState = MutableStateFlow<WritePartnershipUiState>(
-        WritePartnershipUiState.Idle
-    )
-    val writePartnershipState: StateFlow<WritePartnershipUiState> =
-        _writePartnershipState.asStateFlow()
-
+    fun resetWritePartnershipState() {
+        _writePartnershipState.value = WritePartnershipUiState.Idle
+    }
+//
     fun onNextButtonClicked() {
         if (paperId == -1L) {
             _writePartnershipState.value = WritePartnershipUiState.Error("잘못된 제안서 정보입니다.")
@@ -157,10 +152,6 @@ class PartnershipViewModel @Inject constructor(
                     _writePartnershipState.value = WritePartnershipUiState.Error(e.message ?: "Unknown Error")
                 }
         }
-    }
-
-    fun resetWritePartnershipState() {
-        _writePartnershipState.value = WritePartnershipUiState.Idle
     }
 
     // 제휴 목록 조회

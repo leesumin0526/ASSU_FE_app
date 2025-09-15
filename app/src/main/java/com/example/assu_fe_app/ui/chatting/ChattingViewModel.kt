@@ -295,7 +295,7 @@ class ChattingViewModel @Inject constructor(
         return sdf.format(java.util.Date())
     }
 
-    suspend fun checkPartnershipStatus(role: String, opponentId: Long): PartnershipStatusModel? {
+    suspend fun checkPartnershipStatus(role: String?, opponentId: Long): PartnershipStatusModel? {
         var statusModel: PartnershipStatusModel? = null
         checkPartnershipUseCase(role, opponentId)
             .onSuccess { status ->
@@ -394,22 +394,22 @@ class ChattingViewModel @Inject constructor(
             val role = currentUserRole
             val status = currentPartnershipStatus
 
-            // 방어 코드: 필요한 정보가 없으면 아무것도 안 함
             if (role == null || status == null) return@launch
 
-            // 조건: 관리자이고, 제휴 상태가 NONE일 때만 초안 생성 API 호출
+            // 관리자이고 NONE 상태일 때만 초안 생성 API 호출
             if (role.equals("ADMIN", ignoreCase = true) && status.status == "NONE") {
-                val partnerId = status.opponentId ?: return@launch // 상대방(파트너) ID
+                val partnerId = status.opponentId ?: return@launch
                 val request = CreateDraftRequestDto(partnerId = partnerId)
 
-                // 초안 생성 API 호출
                 createDraftPartnershipUseCase(request)
-                    .onSuccess {
-                        // 성공 시 UI가 바로 갱신되도록 상태를 수동으로 업데이트
+                    .onSuccess { response ->
+                        // ✅ 성공 시 현재 상태를 업데이트하고 UI 갱신
                         val updatedStatus = status.copy(
-                            paperId = it.paperId,
-                            status = "BLANK" // 상태를 BLANK로 변경
+                            paperId = response.paperId,
+                            status = "BLANK"
                         )
+                        // 내부 상태 업데이트
+                        currentPartnershipStatus = updatedStatus
                         updateChattingBoxState(role, updatedStatus)
                         _toastEvent.emit("제안서 초안이 생성되었습니다.")
                     }
@@ -419,10 +419,6 @@ class ChattingViewModel @Inject constructor(
                     .onError {
                         _toastEvent.emit("오류가 발생했습니다.")
                     }
-            } else {
-                // TODO: 다른 상태일 때의 버튼 클릭 로직 (예: 제안서 확인 화면으로 이동)
-                // 현재는 토스트 메시지만 띄움
-                _toastEvent.emit("확인/수정 기능은 준비 중입니다.")
             }
         }
     }

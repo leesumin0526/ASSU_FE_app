@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentChattingListBinding
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -19,12 +20,13 @@ import com.example.assu_fe_app.presentation.common.chatting.adapter.ChattingRoom
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.layout.fragment_chatting_list){
 
     private val viewModel: ChattingViewModel by viewModels()
-    private val role: String by lazy { arguments?.getString("role") ?: "USER" }
+    @Inject lateinit var tokenManager: TokenManager
 
     // 클릭 시 액션 결정
     private val adapter by lazy {
@@ -102,7 +104,7 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
             Toast.makeText(requireContext(), "제휴 정보 확인 중...", Toast.LENGTH_SHORT).show()
 
             // ViewModel의 suspend 함수를 호출하고 결과를 기다림
-            val status = viewModel.checkPartnershipStatus(role, item.opponentId)
+            val status = viewModel.checkPartnershipStatus(tokenManager.getUserRole(), item.opponentId)
 
             // API 호출 결과에 따라 분기 처리
             if (status != null) {

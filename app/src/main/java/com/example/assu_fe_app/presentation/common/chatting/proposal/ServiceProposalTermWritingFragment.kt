@@ -18,6 +18,7 @@ import com.example.assu_fe_app.databinding.ItemServiceProposalSetBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.ChattingSentProposalFragment
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
+import com.example.assu_fe_app.ui.partnership.WritePartnershipUiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -32,17 +33,29 @@ class ServiceProposalTermWritingFragment
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.writePartnershipState.collect { state ->
                     when(state) {
-                        is PartnershipViewModel.WritePartnershipUiState.Success -> {
-                            findNavController().navigate(R.id.action_serviceProposalTermWritingFragment_to_chattingSentProposalFragment)
-                            viewModel.resetWritePartnershipState() // 상태 리셋
+                        is WritePartnershipUiState.Loading -> {
+                            // ✅ 로딩 상태 처리 (예: 버튼 비활성화)
+                            binding.btnCompleted.isEnabled = false
                         }
-                        is PartnershipViewModel.WritePartnershipUiState.Fail -> {
-                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                        is WritePartnershipUiState.Success -> {
+                            findNavController().navigate(
+                                R.id.action_serviceProposalTermWritingFragment_to_chattingSentProposalFragment
+                            )
                             viewModel.resetWritePartnershipState()
                         }
-                        is PartnershipViewModel.WritePartnershipUiState.Error -> { /* 에러 처리 */ }
-                        is PartnershipViewModel.WritePartnershipUiState.Loading -> { /* 로딩 처리 */ }
-                        else -> { /* Idle */ }
+                        is WritePartnershipUiState.Fail -> {
+                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                            binding.btnCompleted.isEnabled = true
+                            viewModel.resetWritePartnershipState()
+                        }
+                        is WritePartnershipUiState.Error -> {
+                            Toast.makeText(requireContext(), "오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                            binding.btnCompleted.isEnabled = true
+                            viewModel.resetWritePartnershipState()
+                        }
+                        else -> {
+                            binding.btnCompleted.isEnabled = true
+                        }
                     }
                 }
             }
@@ -69,18 +82,26 @@ class ServiceProposalTermWritingFragment
         })
 
         binding.btnCompleted.setOnClickListener {
-            viewModel.partnershipStartDate.value = binding.etFragmentServiceProposalContent2.text.toString()
-            viewModel.partnershipEndDate.value = binding.ivFragmentServiceProposalContent4.text.toString()
             viewModel.onNextButtonClicked()
-
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.chatting_fragment_container, ChattingSentProposalFragment())
-                .addToBackStack(null) // 뒤로가기 가능하게
-                .commit()
         }
 
         binding.ivFragmentServiceProposalBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+
+        checkFormValid()
+    }
+
+    private fun checkFormValid() {
+        val startDateFilled = binding.etFragmentServiceProposalContent2.text?.isNotBlank() == true
+        val endDateFilled = binding.ivFragmentServiceProposalContent4.text?.isNotBlank() == true
+        val additionalInfoFilled = binding.etFragmentServiceProposalSign4.text?.isNotBlank() == true
+
+        val isValid = startDateFilled && endDateFilled && additionalInfoFilled
+
+        val colorRes = if (isValid) R.color.assu_main else R.color.assu_sub
+        binding.btnCompleted.backgroundTintList =
+            ContextCompat.getColorStateList(requireContext(), colorRes)
+        binding.btnCompleted.isEnabled = isValid
     }
 }

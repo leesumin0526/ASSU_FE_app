@@ -16,7 +16,7 @@ class UserReviewStoreViewHolder(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun bind(review: Review) {
-        binding.tvMarket.text = review.studentCategory // 원래 가게 이름이 표시되던 곳을 studentCategory로 변경되게끔함.
+        binding.tvMarket.text = review.marketName // 그냥 marketName으로 전부 통일 시킴 이게 한 가게에 해당할때는 소속명이 표기 됨.
         binding.tvReviewContent.text = review.content
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")

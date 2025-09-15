@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -41,11 +42,12 @@ class LocationFragment :
 
     override fun initView() {
         val dummyList = listOf(
-            LocationAdminPartnerSearchResultItem("역전할머니맥주 숭실대점1", "서울 동작구 사당로 36-1 서정캐슬", true, "2025.02.24 ~ 2025.06.15"),
-            LocationAdminPartnerSearchResultItem("역전할머니맥주 숭실대점2", "서울 동작구 사당로 36-1 서정캐슬", false, "")
+            LocationAdminPartnerSearchResultItem(2,"IT대 학생회", "서울 동작구 사당로 36-1 서정캐슬", true, 1,"2025.02.24 ~ 2025.06.15"),
+            LocationAdminPartnerSearchResultItem(2,"역전할머니맥주 숭실대점2", "서울 동작구 사당로 36-1 서정캐슬", false, null,"")
         )
         sharedViewModel.locationList.value = dummyList
-        adapter = AdminPartnerLocationAdapter(dummyList)
+        adapter = AdminPartnerLocationAdapter()
+        adapter.submitList(dummyList)
 
         binding.viewLocationSearchBar.setOnClickListener {
             navigateToSearch()
@@ -92,9 +94,9 @@ class LocationFragment :
 //            intent.putExtra("entryMessage", message)
 //            context.startActivity(intent)
         }
-//        mapView = MapView(requireContext())
-//        val mapContainer = binding.root.findViewById<ViewGroup>(R.id.view_location_map)
-//        mapContainer.addView(mapView)
+        mapView = MapView(requireContext())
+        val mapContainer = binding.root.findViewById<ViewGroup>(R.id.view_location_map)
+        mapContainer.addView(mapView)
 //
     }
 

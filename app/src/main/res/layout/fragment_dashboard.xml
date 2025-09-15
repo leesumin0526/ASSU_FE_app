@@ -97,25 +97,25 @@
         app:layout_constraintStart_toEndOf="@id/dashboard_mg2"
         app:layout_constraintTop_toBottomOf="@id/dashboard_mg3">
 
-        <TextView
-            android:id="@+id/tv_discount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/pretendard_semibold"
-            android:textSize="25sp"
-            android:includeFontPadding="false"
-            android:layout_marginEnd="4dp"
-            android:text="20000"
-            android:textColor="@color/assu_main"/>
+<!--        <TextView-->
+<!--            android:id="@+id/tv_discount"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:fontFamily="@font/pretendard_semibold"-->
+<!--            android:textSize="25sp"-->
+<!--            android:includeFontPadding="false"-->
+<!--            android:layout_marginEnd="4dp"-->
+<!--            android:text="20000"-->
+<!--            android:textColor="@color/assu_main"/>-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:text="원 할인!"
-            android:textColor="@color/assu_main"
-            android:textSize="25sp"
-            android:fontFamily="@font/pretendard_semibold"/>
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:includeFontPadding="false"-->
+<!--            android:text="원 할인!"-->
+<!--            android:textColor="@color/assu_main"-->
+<!--            android:textSize="25sp"-->
+<!--            android:fontFamily="@font/pretendard_semibold"/>-->
 
     </LinearLayout>
 

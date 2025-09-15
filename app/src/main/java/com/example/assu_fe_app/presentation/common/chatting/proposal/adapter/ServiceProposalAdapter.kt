@@ -25,12 +25,8 @@ import com.example.assu_fe_app.ui.partnership.BenefitItemEvent
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 
 object BenefitDiffCallback : DiffUtil.ItemCallback<BenefitItem>() {
-    override fun areItemsTheSame(oldItem: BenefitItem, newItem: BenefitItem): Boolean {
-        return oldItem.id == newItem.id
-    }
-    override fun areContentsTheSame(oldItem: BenefitItem, newItem: BenefitItem): Boolean {
-        return oldItem == newItem
-    }
+    override fun areItemsTheSame(oldItem: BenefitItem, newItem: BenefitItem): Boolean = oldItem.id == newItem.id
+    override fun areContentsTheSame(oldItem: BenefitItem, newItem: BenefitItem): Boolean = oldItem == newItem
 }
 
 class ServiceProposalAdapter(
@@ -49,8 +45,6 @@ class ServiceProposalAdapter(
     inner class ViewHolder(
         private val binding: ItemServiceProposalSetBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-
-        private var criterionTextWatcher: TextWatcher? = null
 
         fun bind(item: BenefitItem) {
             binding.clDropdownMenu.visibility = View.GONE
@@ -93,15 +87,6 @@ class ServiceProposalAdapter(
             }
             if (binding.etProposalProvideCategory.text.toString() != item.category) {
                 binding.etProposalProvideCategory.setText(item.category)
-            }
-
-            // 기존 TextWatcher가 있다면 제거 (중복 방지)
-            criterionTextWatcher?.let { binding.etFragmentServiceProposalContent.removeTextChangedListener(it) }
-
-            // 새 TextWatcher 설정
-            criterionTextWatcher = binding.etFragmentServiceProposalContent.doAfterTextChanged { text ->
-                // 변경된 텍스트(String)를 criterionValue로 업데이트하도록 ViewModel에 알림
-                onItemEvent(bindingAdapterPosition, BenefitItemEvent.CriterionValueChanged(text.toString()))
             }
 
             setupGoodsLayout(item)

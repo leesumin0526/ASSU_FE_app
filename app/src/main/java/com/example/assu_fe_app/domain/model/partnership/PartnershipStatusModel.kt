@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PartnershipStatusModel(
     val paperId: Long?,
-    val isPartnered: Boolean,
+    val isPartnered: Boolean?,
     val status: String,
     val opponentId: Long?,
     val opponentName: String?,

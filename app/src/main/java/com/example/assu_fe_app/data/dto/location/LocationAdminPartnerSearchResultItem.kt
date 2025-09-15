@@ -1,8 +1,10 @@
 package com.example.assu_fe_app.data.dto.location
 
 data class LocationAdminPartnerSearchResultItem(
-    val shopName: String,
+    val id: Long, // 상대 id -> admin 화면일 경우 partnerId를 partnerId일 경우 adminId를 반환합니다.
+    val name: String,
     val address: String,
     val isPartnered: Boolean,
-    val term: String
+    val paperId: Long?,
+    val term: String?
 )
