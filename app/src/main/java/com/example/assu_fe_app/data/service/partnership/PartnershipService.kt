@@ -12,8 +12,20 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Query
+import com.example.assu_fe_app.data.dto.partnership.response.GetProposalAdminListResponseDto
+import com.example.assu_fe_app.data.dto.partnership.response.GetProposalPartnerListResponseDto
 
 interface PartnershipService {
+    // 관리자가 제휴업체 리스트 보는 api
+    @GET("partnership/admin")
+    suspend fun getProposalPartnerList(
+        @Query("isAll") isAll: Boolean,
+    ): BaseResponse<List<GetProposalPartnerListResponseDto>>
+
+    @GET("partnership/partner")
+    suspend fun getProposalAdminList (
+        @Query("isAll") isAll: Boolean
+    ): BaseResponse<List<GetProposalAdminListResponseDto>>
 
     //제휴 제안서 초안 작성 API
     @POST("partnership/proposal/draft")
@@ -36,5 +48,6 @@ interface PartnershipService {
     suspend fun checkPartnershipAsPartner(
         @Query("adminId") adminId: Long
     ): BaseResponse<PartnerPartnershipStatusDto>
+
 
 }

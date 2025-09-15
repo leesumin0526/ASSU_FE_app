@@ -2,6 +2,7 @@ package com.example.assu_fe_app.di
 
 import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.BearerInterceptor
+import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
 import com.example.assu_fe_app.data.service.AuthService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
@@ -71,6 +72,7 @@ object ServiceModule {
     @Provides @Singleton
     fun provideMoshi(): Moshi =
         Moshi.Builder()
+            .add(LocalDateAdapter)
             .add(KotlinJsonAdapterFactory())  // ← 추가
             .build()
 
