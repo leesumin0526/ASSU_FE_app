@@ -3,6 +3,7 @@ package com.example.assu_fe_app.presentation.common.location
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.UserRole
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
@@ -96,13 +97,6 @@ class LocationItemFragment :
 
         binding.tvAdminPartnerLocationShopName.text = item.shopName
 
-        // 🔁 이미지: 내 역할 기준으로 지정
-        when (role) {
-            UserRole.ADMIN   -> binding.ivAdminPartnerLocationImg.setBackgroundResource(R.drawable.img_partner)
-            UserRole.PARTNER -> binding.ivAdminPartnerLocationImg.setBackgroundResource(R.drawable.img_ssu)
-            else             -> binding.ivAdminPartnerLocationImg.setBackgroundResource(R.drawable.img_ssu)
-        }
-
         if (item.partnered) {
             binding.ivAdminPartnerLocationCapsule.visibility = View.VISIBLE
             binding.tvAdminPartnerLocationCapsuleText.visibility = View.VISIBLE
@@ -112,6 +106,8 @@ class LocationItemFragment :
             binding.tvAdminPartnerLocationCapsuleText.visibility = View.GONE
             binding.tvAdminPartnerLocationAddressDate.text = item.address
         }
+
+        loadProfile(item.profileUrl)
 
         binding.tvAdminPartnerLocationContact.text =
             if (item.partnered) "제휴 계약서 보기" else "문의하기"
@@ -189,5 +185,29 @@ class LocationItemFragment :
     }
     private fun showLoading(show: Boolean) {
         // TODO: ProgressBar 노출/숨김
+    }
+
+    private fun loadProfile(imageUrl: String?) {
+        val iv = binding.ivAdminPartnerLocationImg
+
+        // 역할별 기본 이미지 id
+        val fallbackRes = when (role) {
+            UserRole.ADMIN   -> R.drawable.img_partner
+            UserRole.PARTNER -> R.drawable.img_ssu
+            else             -> R.drawable.img_ssu
+        }
+
+        if (imageUrl.isNullOrBlank() || imageUrl.endsWith(".svg", ignoreCase = true)) {
+            // url 없음 또는 svg면 기본이미지
+            iv.setImageResource(fallbackRes)
+            return
+        }
+
+        // url 있으면 로드 (실패 시 기본이미지)
+        Glide.with(iv.context)
+            .load(imageUrl)
+            .placeholder(fallbackRes)
+            .error(fallbackRes)
+            .into(iv)
     }
 }

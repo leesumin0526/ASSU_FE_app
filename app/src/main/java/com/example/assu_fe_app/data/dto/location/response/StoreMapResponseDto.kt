@@ -18,7 +18,8 @@ data class StoreMapResponseDto(
     val discountRate: Int?,
     val hasPartner: Boolean,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val profileUrl: String? = null
 ) {
     fun toModel() = StoreOnMap(
         storeId = this.storeId,
@@ -34,6 +35,7 @@ data class StoreMapResponseDto(
         discountRate = this.discountRate,
         hasPartner = this.hasPartner,
         latitude = this.latitude,
-        longitude = this.longitude
+        longitude = this.longitude,
+        profileUrl = this.profileUrl
     )
 }

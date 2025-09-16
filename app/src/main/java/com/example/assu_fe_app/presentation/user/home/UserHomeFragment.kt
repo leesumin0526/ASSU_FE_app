@@ -15,13 +15,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
-
 @AndroidEntryPoint
 class UserHomeFragment :
     BaseFragment<FragmentUserHomeBinding>(R.layout.fragment_user_home){
 
     private val viewModel: UserHomeViewModel by viewModels()
-    
+
     @Inject
     lateinit var tokenManager: TokenManager
 
@@ -48,7 +47,6 @@ class UserHomeFragment :
     }
 
     override fun initView() {
-
         // 제휴 QR 박스 클릭 시 인증 액티비티로 이동
         binding.clHomeQrBox.setOnClickListener {
             val intent = Intent(requireContext(), UserQRVerifyActivity::class.java)

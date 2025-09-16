@@ -376,6 +376,7 @@ class LocationFragment :
                         latitude = p.latitude,
                         longitude = p.longitude,
                         paperId = null,
+                        profileUrl = p.profileUrl,
                         term = if (!p.partnershipStartDate.isNullOrBlank() && !p.partnershipEndDate.isNullOrBlank())
                             "${p.partnershipStartDate} ~ ${p.partnershipEndDate}"
                         else null
@@ -398,6 +399,7 @@ class LocationFragment :
                         latitude = a.latitude,
                         longitude = a.longitude,
                         paperId = null,
+                        profileUrl = a.profileUrl,
                         term = if (!a.partnershipStartDate.isNullOrBlank() && !a.partnershipEndDate.isNullOrBlank())
                             "${a.partnershipStartDate} ~ ${a.partnershipEndDate}"
                         else null
@@ -446,4 +448,5 @@ class LocationFragment :
         d.draw(canvas)
         return bmp
     }
+
 }

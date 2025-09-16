@@ -7,29 +7,32 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
-import com.example.assu_fe_app.data.dto.location.LocationUserSearchResultItem
+import com.example.assu_fe_app.data.dto.UserRole
+import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentLocationSearchSuccessBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.location.adapter.AdminPartnerLocationAdapter
 import com.example.assu_fe_app.presentation.common.location.adapter.LocationSharedViewModel
-import com.example.assu_fe_app.presentation.user.location.adapter.UserLocationSearchSuccessAdapter
 import com.example.assu_fe_app.ui.map.AdminPartnerKeyWordSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.getValue
 
 
 @AndroidEntryPoint
 class LocationSearchSuccessFragment :
     BaseFragment<FragmentLocationSearchSuccessBinding>(R.layout.fragment_location_search_success) {
+    @Inject lateinit var tokenManager: TokenManager
 
     private val sharedViewModel: LocationSharedViewModel by viewModels()
-
     private val searchViewModel : AdminPartnerKeyWordSearchViewModel by activityViewModels()
 
     private lateinit var adapter: AdminPartnerLocationAdapter
+    private lateinit var role: UserRole
+
 
     override fun initObserver() {
+
         searchViewModel.contentList.observe(viewLifecycleOwner){ contentList ->
             adapter.submitList(contentList)
             Log.d("LocationSearchSuccessFragment", "관찰된 데이터: $contentList")
@@ -53,9 +56,8 @@ class LocationSearchSuccessFragment :
     }
 
     override fun initView() {
+        role = tokenManager.getUserRoleEnum() ?: UserRole.ADMIN
         initAdapter()
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,7 +65,7 @@ class LocationSearchSuccessFragment :
     }
 
     private fun initAdapter(){
-        adapter = AdminPartnerLocationAdapter()
+        adapter = AdminPartnerLocationAdapter(role)
         binding.rvLocationSearchSuccess.apply{
             layoutManager = LinearLayoutManager(requireContext())
             this.adapter = this@LocationSearchSuccessFragment.adapter

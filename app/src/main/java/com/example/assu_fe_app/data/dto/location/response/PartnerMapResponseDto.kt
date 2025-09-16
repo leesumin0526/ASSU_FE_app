@@ -14,7 +14,8 @@ data class PartnerMapResponseDto(
     @Json(name = "partnershipStartDate") val partnershipStartDate: String?,
     @Json(name = "partnershipEndDate") val partnershipEndDate: String?,
     @Json(name = "latitude") val latitude: Double,
-    @Json(name = "longitude") val longitude: Double
+    @Json(name = "longitude") val longitude: Double,
+    val profileUrl: String? = null
 ) {
     fun toModel() = PartnerOnMap(
         partnerId = partnerId,
@@ -25,6 +26,7 @@ data class PartnerMapResponseDto(
         partnershipStartDate = partnershipStartDate,
         partnershipEndDate = partnershipEndDate,
         latitude = latitude,
-        longitude = longitude
+        longitude = longitude,
+        profileUrl = profileUrl
     )
 }

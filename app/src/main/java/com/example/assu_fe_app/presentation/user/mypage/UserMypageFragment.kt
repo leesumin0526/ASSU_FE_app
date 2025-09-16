@@ -11,6 +11,7 @@ import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentUserMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
+import com.example.assu_fe_app.presentation.common.mypage.CustomerServiceDialogFragment
 import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
 import com.example.assu_fe_app.presentation.user.review.mypage.UserMyReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +25,6 @@ class UserMypageFragment
 
     @Inject
     lateinit var tokenManager: TokenManager
-
     private val viewModel: MypageViewModel by viewModels()
 
     override fun initView() { /* no-op */ }
@@ -42,6 +42,7 @@ class UserMypageFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.tvAccountName.setText(tokenManager.getUserName())
         initClick() // 여기서 호출
     }
 
@@ -76,8 +77,9 @@ class UserMypageFragment
 
         // 고객센터
         binding.clAccountComponent6.setOnClickListener {
-            UserCustomerServiceDialogFragment()
-                .show(childFragmentManager, "CustomerServiceDialog")
+            findNavController().navigate(
+                R.id.action_user_mypage_to_inquiry
+            )
         }
     }
 
