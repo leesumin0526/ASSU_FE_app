@@ -7,10 +7,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentUserHomeBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.ui.user.UserHomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -18,6 +20,8 @@ class UserHomeFragment :
     BaseFragment<FragmentUserHomeBinding>(R.layout.fragment_user_home){
 
     private val viewModel: UserHomeViewModel by viewModels()
+    @Inject
+    lateinit var tokenManager: TokenManager
 
     override fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -42,7 +46,7 @@ class UserHomeFragment :
     }
 
     override fun initView() {
-        tokenManager = TokenManager(requireContext())
+
         // 제휴 QR 박스 클릭 시 인증 액티비티로 이동
         binding.clHomeQrBox.setOnClickListener {
             val intent = Intent(requireContext(), UserQRVerifyActivity::class.java)
