@@ -7,6 +7,7 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
 import com.example.assu_fe_app.databinding.ItemPartnershipContentListBinding
 
+
 class PartnershipContractAdapter (
     private val items: List<PartnershipContractItem>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

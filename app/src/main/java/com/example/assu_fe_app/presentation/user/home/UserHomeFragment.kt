@@ -15,11 +15,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
+
 @AndroidEntryPoint
 class UserHomeFragment :
     BaseFragment<FragmentUserHomeBinding>(R.layout.fragment_user_home){
 
     private val viewModel: UserHomeViewModel by viewModels()
+    
     @Inject
     lateinit var tokenManager: TokenManager
 

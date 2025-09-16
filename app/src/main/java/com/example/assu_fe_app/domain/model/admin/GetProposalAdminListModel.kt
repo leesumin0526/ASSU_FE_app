@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.domain.model.admin
 
+import com.example.assu_fe_app.domain.model.partnership.PartnershipOptionModel
 import java.time.LocalDate
 
 data class GetProposalAdminListModel(

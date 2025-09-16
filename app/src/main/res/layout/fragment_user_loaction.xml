@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/assu_background"
-            app:layout_constraintBottom_toTopOf="@id/view_location_map"
+            app:layout_constraintBottom_toTopOf="@id/user_location_map_view"
             app:layout_constraintHeight_percent="0.0914"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -92,11 +92,10 @@
             app:layout_constraintHeight_percent="0.0157"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageView
-            android:id="@+id/view_location_map"
+        <com.kakao.vectormap.MapView
+            android:id="@+id/user_location_map_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/iv_location_map"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.9085"

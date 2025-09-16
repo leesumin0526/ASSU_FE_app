@@ -85,7 +85,8 @@
             android:textColorHint="@color/assu_font_sub"
             android:textSize="13sp"
             android:fontFamily="@font/pretendard_regular"
-            android:imeOptions="actionDone"/>
+            android:imeOptions="actionDone"
+            android:singleLine="true"/>
 
         <ImageView
             android:id="@+id/iv_location_search_cancle"
