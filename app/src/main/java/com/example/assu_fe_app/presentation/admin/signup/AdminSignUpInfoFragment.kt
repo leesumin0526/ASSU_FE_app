@@ -8,12 +8,14 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.DropdownAdminPartBinding
 import com.example.assu_fe_app.databinding.FragmentAdminSignUpInfoBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,6 +23,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class AdminSignUpInfoFragment :
     BaseFragment<FragmentAdminSignUpInfoBinding>(R.layout.fragment_admin_sign_up_info) {
 
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
+    
     private lateinit var partDropdownAdapter: SignUpDropdownAdapter
     private lateinit var departmentDropdownAdapter: SignUpDropdownAdapter
     private lateinit var majorDropdownAdapter: SignUpDropdownAdapter
@@ -89,6 +93,8 @@ class AdminSignUpInfoFragment :
 
         binding.btnCompleted.setOnClickListener {
             if (binding.btnCompleted.isEnabled) {
+                // ViewModel에 관리자 정보 저장
+                saveAdminInfoToViewModel()
                 findNavController().navigate(R.id.action_admin_info_to_seal)
             }
         }
@@ -224,5 +230,36 @@ class AdminSignUpInfoFragment :
             requireContext(),
             if (enabled) R.drawable.btn_basic_selected else R.drawable.btn_basic_unselected
         )
+    }
+    
+    private fun saveAdminInfoToViewModel() {
+        // 대학교는 기본적으로 SSU로 설정
+        signUpViewModel.setUniversity("SSU")
+        
+        // 부서 정보 설정 (단과대학)
+        currentDepartmentSelection?.let { department ->
+            signUpViewModel.setDepartment(department)
+        }
+        
+        // 전공 정보 설정
+        currentMajorSelection?.let { major ->
+            signUpViewModel.setMajor(major)
+        }
+        
+        // 관리자 이름 설정 (선택된 부서/전공 정보를 이름으로 사용)
+        val adminName = when (currentPartSelection) {
+            "총학생회" -> "총학생회"
+            "단과대학 학생회" -> "${currentDepartmentSelection} 학생회"
+            "학과/부 학생회" -> "${currentMajorSelection} 학생회"
+            else -> "관리자"
+        }
+        signUpViewModel.setAdminName(adminName)
+        
+        // 상세 주소 설정
+        val detailAddress = binding.etAdminAddressDetail.text.toString().trim()
+        signUpViewModel.setDetailAddress(detailAddress)
+        
+        // 선택된 장소 정보는 주소 검색에서 설정됨
+        // TODO: 주소 검색 결과를 SelectedPlaceDto로 변환하여 설정
     }
 }

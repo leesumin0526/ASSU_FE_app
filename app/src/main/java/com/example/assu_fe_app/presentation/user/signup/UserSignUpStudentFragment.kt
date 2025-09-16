@@ -7,16 +7,36 @@ import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentUserSignUpStudentBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class UserSignUpStudentFragment :
     BaseFragment<FragmentUserSignUpStudentBinding>(R.layout.fragment_user_sign_up_student) {
 
-    override fun initObserver() {}
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
+
+    override fun initObserver() {
+        // 학생 토큰 검증 결과 관찰
+        signUpViewModel.studentVerifyResult.observe(viewLifecycleOwner) { result ->
+            result?.let {
+                // 검증 성공 시 다음 화면으로 이동
+                findNavController().navigate(R.id.action_user_student_to_student_check)
+            }
+        }
+
+        // 에러 메시지 관찰
+        signUpViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                android.widget.Toast.makeText(requireContext(), it, android.widget.Toast.LENGTH_SHORT).show()
+                signUpViewModel.clearError()
+            }
+        }
+    }
 
     override fun initView() {
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
@@ -124,17 +144,19 @@ class UserSignUpStudentFragment :
         // LMS 인증 성공 시 처리
         android.widget.Toast.makeText(requireContext(), "LMS 인증 성공!", android.widget.Toast.LENGTH_SHORT).show()
         
-        // 토큰이 있다면 로그 (디버깅용)
+        // 토큰이 있다면 ViewModel에 저장하고 검증 API 호출
         if (sToken != null && sIdno != null) {
             android.util.Log.d("UserSignUpStudentFragment", "Token: $sToken, ID: $sIdno")
+            signUpViewModel.setStudentToken(sToken, sIdno)
+            signUpViewModel.verifyStudentToken()
+        } else {
+            // 토큰이 없는 경우 에러 처리
+            android.widget.Toast.makeText(requireContext(), "인증 정보를 가져올 수 없습니다.", android.widget.Toast.LENGTH_SHORT).show()
         }
         
         // WebView 숨기고 기본 컨텐츠 복원
         binding.webviewLmsAuth.visibility = View.GONE
         binding.llDefaultContent.visibility = View.VISIBLE
-        
-        // LMS 인증 성공 후 학생 정보 확인 화면으로 이동
-        findNavController().navigate(R.id.action_user_student_to_student_check)
     }
 
     // 유세인트 인증 로직 추가 예정

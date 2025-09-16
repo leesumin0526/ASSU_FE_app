@@ -2,14 +2,17 @@ package com.example.assu_fe_app.presentation.common.signup
 
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpAccountBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class SignUpAccountFragment : BaseFragment<FragmentSignUpAccountBinding>(R.layout.fragment_sign_up_account) {
     
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
     private var selectedUserType: String? = null
     
     override fun initObserver() {
@@ -33,6 +36,12 @@ class SignUpAccountFragment : BaseFragment<FragmentSignUpAccountBinding>(R.layou
 
         binding.btnCompleted.setOnClickListener {
             if (binding.btnCompleted.isEnabled) {
+                // ViewModel에 이메일과 비밀번호 저장
+                val email = binding.etUserId.text.toString().trim()
+                val password = binding.etUserPw.text.toString().trim()
+                signUpViewModel.setEmail(email)
+                signUpViewModel.setPassword(password)
+                
                 when (selectedUserType) {
                     "admin" -> {
                         findNavController().navigate(R.id.action_account_to_admin_info)

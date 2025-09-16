@@ -1,14 +1,38 @@
 package com.example.assu_fe_app.presentation.admin.signup
 
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentAdminSignUpSealBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
+import java.io.File
 
 class AdminSignUpSealFragment :
     BaseFragment<FragmentAdminSignUpSealBinding>(R.layout.fragment_admin_sign_up_seal) {
+
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
+    
+    // 갤러리에서 이미지 선택을 위한 launcher
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { selectedUri ->
+            // 선택된 이미지 파일을 ViewModel에 저장
+            val file = File(selectedUri.path ?: "")
+            if (file.exists()) {
+                signUpViewModel.setSignImageFile(file)
+                binding.etAdminSeal.setText(file.name)
+                binding.btnUpload.setImageResource(R.drawable.ic_signup_verified)
+                setButtonEnabled(true)
+            }
+        }
+    }
 
     override fun initObserver() {}
 
@@ -23,10 +47,8 @@ class AdminSignUpSealFragment :
 
         // 업로드 버튼 클릭
         binding.btnUpload.setOnClickListener {
-            val fakeFileName = "IMG.${(100..999).random()}"
-            binding.etAdminSeal.setText(fakeFileName)
-            binding.btnUpload.setImageResource(R.drawable.ic_signup_verified)
-            setButtonEnabled(true)
+            // 갤러리에서 이미지 선택
+            imagePickerLauncher.launch("image/*")
         }
 
         binding.btnCompleted.setOnClickListener {

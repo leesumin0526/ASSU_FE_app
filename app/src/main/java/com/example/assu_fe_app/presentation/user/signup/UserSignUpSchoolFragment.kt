@@ -6,14 +6,19 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentUserSignUpSchoolBinding
 import com.example.assu_fe_app.databinding.FragmentUserSignUpSchoolDropDownBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class UserSignUpSchoolFragment : BaseFragment<FragmentUserSignUpSchoolBinding>(R.layout.fragment_user_sign_up_school) {
+    
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
+    
     override fun initObserver() {
     }
 
@@ -33,6 +38,7 @@ class UserSignUpSchoolFragment : BaseFragment<FragmentUserSignUpSchoolBinding>(R
         binding.btnCompleted.setOnClickListener {
             val selectedSchool = binding.tvSelectedSchool.text.toString()
             if (selectedSchool == "숭실대학교") {
+                signUpViewModel.setUniversity("SSU")
                 findNavController().navigate(R.id.action_user_school_to_student)
             }
         }

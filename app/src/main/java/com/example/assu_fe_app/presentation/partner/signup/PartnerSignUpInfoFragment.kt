@@ -4,15 +4,18 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentPartnerSignUpInfoBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class PartnerSignUpInfoFragment :
     BaseFragment<FragmentPartnerSignUpInfoBinding>(R.layout.fragment_partner_sign_up_info) {
 
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
     private var isAddressSearchClicked = false
 
     override fun initObserver() {}
@@ -45,11 +48,15 @@ class PartnerSignUpInfoFragment :
 
         // 텍스트 변경 감지 리스너 등록
         binding.etPartnerName.addTextChangedListener { checkAllInputs() }
+        binding.etPartnerBusinessNumber.addTextChangedListener { checkAllInputs() }
+        binding.etPartnerRepresentative.addTextChangedListener { checkAllInputs() }
         binding.etPartnerAddressDetail.addTextChangedListener { checkAllInputs() }
 
         // 버튼 클릭 시 다음 화면으로 이동
         binding.btnCompleted.setOnClickListener {
             if (binding.btnCompleted.isEnabled) {
+                // ViewModel에 제휴업체 정보 저장
+                savePartnerInfoToViewModel()
                 findNavController().navigate(R.id.action_partner_info_to_license)
             }
         }
@@ -60,10 +67,13 @@ class PartnerSignUpInfoFragment :
 
     private fun checkAllInputs() {
         val isNameFilled = binding.etPartnerName.text?.isNotBlank() == true
+        val isBusinessNumberFilled = binding.etPartnerBusinessNumber.text?.isNotBlank() == true
+        val isRepresentativeFilled = binding.etPartnerRepresentative.text?.isNotBlank() == true
         val isAddressFilled = binding.etPartnerAddress.text?.isNotBlank() == true
         val isDetailFilled = binding.etPartnerAddressDetail.text?.isNotBlank() == true
 
-        val allValid = isNameFilled && isAddressFilled && isDetailFilled && isAddressSearchClicked
+        val allValid = isNameFilled && isBusinessNumberFilled && isRepresentativeFilled && 
+                      isAddressFilled && isDetailFilled && isAddressSearchClicked
         setButtonEnabled(allValid)
     }
 
@@ -73,5 +83,28 @@ class PartnerSignUpInfoFragment :
             requireContext(),
             if (enabled) R.drawable.btn_basic_selected else R.drawable.btn_basic_unselected
         )
+    }
+    
+    private fun savePartnerInfoToViewModel() {
+        // 대학교는 기본적으로 SSU로 설정
+        signUpViewModel.setUniversity("SSU")
+        
+        // 부서와 전공은 기본값으로 설정 (제휴업체는 해당 없음)
+        signUpViewModel.setDepartment("PARTNER")
+        signUpViewModel.setMajor("PARTNER")
+        
+        // 제휴업체 정보 설정
+        val companyName = binding.etPartnerName.text.toString().trim()
+        val businessNumber = binding.etPartnerBusinessNumber.text.toString().trim()
+        val representativeName = binding.etPartnerRepresentative.text.toString().trim()
+        val detailAddress = binding.etPartnerAddressDetail.text.toString().trim()
+        
+        signUpViewModel.setCompanyName(companyName)
+        signUpViewModel.setBusinessNumber(businessNumber)
+        signUpViewModel.setRepresentativeName(representativeName)
+        signUpViewModel.setDetailAddress(detailAddress)
+        
+        // 선택된 장소 정보는 주소 검색에서 설정됨
+        // TODO: 주소 검색 결과를 SelectedPlaceDto로 변환하여 설정
     }
 }

@@ -1,14 +1,18 @@
 package com.example.assu_fe_app.presentation.common.signup
 
 import android.os.Bundle
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpTypeBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class SignUpTypeFragment : BaseFragment<FragmentSignUpTypeBinding>(R.layout.fragment_sign_up_type){
 
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
+    
     // 선택된 타입을 저장: "admin", "partner", "user"
     private var selectedType: String? = null
 
@@ -40,18 +44,21 @@ class SignUpTypeFragment : BaseFragment<FragmentSignUpTypeBinding>(R.layout.frag
         binding.btnCompleted.setOnClickListener {
             when (selectedType) {
                 "admin" -> {
+                    signUpViewModel.setUserType("admin")
                     val bundle = Bundle().apply {
                         putString("userType", "admin")
                     }
                     findNavController().navigate(R.id.action_type_to_account, bundle)
                 }
                 "partner" -> {
+                    signUpViewModel.setUserType("partner")
                     val bundle = Bundle().apply {
                         putString("userType", "partner")
                     }
                     findNavController().navigate(R.id.action_type_to_account, bundle)
                 }
                 "user" -> {
+                    signUpViewModel.setUserType("user")
                     findNavController().navigate(R.id.action_type_to_user_school)
                 }
             }

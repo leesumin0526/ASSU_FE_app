@@ -12,11 +12,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
 import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel
 import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel.SendPhoneVerificationUiState
 import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel.VerifyPhoneVerificationUiState
@@ -28,6 +30,7 @@ class SignUpVerifyFragment :
     BaseFragment<FragmentSignUpVerifyBinding>(R.layout.fragment_sign_up_verify) {
 
     private val viewModel: SignUpVerifyViewModel by viewModels()
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
 
     private var countDownTimer: CountDownTimer? = null
     private val totalTimeMillis = 5 * 60 * 1000L // 5분
@@ -165,6 +168,9 @@ class SignUpVerifyFragment :
         // 인증 완료 버튼 클릭 → 다음 프래그먼트 이동
         binding.btnCompleted.setOnClickListener {
             if (isVerified) {
+                // 전화번호를 SignUpViewModel에 저장
+                val phoneNumber = binding.etUserVerifyPhone.text.toString().trim()
+                signUpViewModel.setPhoneNumber(phoneNumber)
                 findNavController().navigate(R.id.action_verify_to_type)
             }
         }
