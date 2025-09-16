@@ -12,6 +12,7 @@
         <action
             android:id="@+id/action_verify_to_type"
             app:destination="@id/signUpCommonTypeFragment" />
+
     </fragment>
 
     <!-- 2단계: 사용자 유형 선택 -->

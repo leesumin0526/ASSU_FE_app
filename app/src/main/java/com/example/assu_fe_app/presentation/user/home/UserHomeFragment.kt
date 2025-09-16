@@ -42,6 +42,7 @@ class UserHomeFragment :
     }
 
     override fun initView() {
+        tokenManager = TokenManager(requireContext())
         // 제휴 QR 박스 클릭 시 인증 액티비티로 이동
         binding.clHomeQrBox.setOnClickListener {
             val intent = Intent(requireContext(), UserQRVerifyActivity::class.java)
