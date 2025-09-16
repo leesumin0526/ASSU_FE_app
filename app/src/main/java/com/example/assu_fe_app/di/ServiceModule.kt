@@ -1,8 +1,9 @@
 package com.example.assu_fe_app.di
 
 import com.example.assu_fe_app.BuildConfig
-import com.example.assu_fe_app.data.BearerInterceptor
+import com.example.assu_fe_app.data.remote.AuthInterceptor
 import com.example.assu_fe_app.data.service.AuthService
+import com.example.assu_fe_app.data.service.NoAuthService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
 import com.example.assu_fe_app.data.service.notification.NotificationService
@@ -47,9 +48,9 @@ object ServiceModule {
     }
 
     @Provides @Singleton @Auth
-    fun provideOkHttp(bearerInterceptor: BearerInterceptor): OkHttpClient =
+    fun provideOkHttp(authInterceptor: AuthInterceptor): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(bearerInterceptor)
+            .addInterceptor(authInterceptor)
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY // 개발에서만
             })
@@ -94,7 +95,11 @@ object ServiceModule {
         retrofit.create(ChattingService::class.java)
 
     @Provides @Singleton
-    fun provideAuthService(@NoAuth retrofit: Retrofit): AuthService =
+    fun provideNoAuthService(@NoAuth retrofit: Retrofit): NoAuthService =
+        retrofit.create(NoAuthService::class.java)
+
+    @Provides @Singleton
+    fun provideAuthService(@Auth retrofit: Retrofit): AuthService =
         retrofit.create(AuthService::class.java)
 
     @Provides
