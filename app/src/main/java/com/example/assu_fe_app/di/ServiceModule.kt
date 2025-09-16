@@ -8,6 +8,8 @@ import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
 import com.example.assu_fe_app.data.service.AuthService
 import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
+import com.example.assu_fe_app.data.service.dashboard.AdminDashboardService
+import com.example.assu_fe_app.data.service.dashboard.PartnerDashboardService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
 import com.example.assu_fe_app.data.service.map.MapService
 import com.example.assu_fe_app.data.service.map.SearchLocationService
@@ -19,6 +21,7 @@ import com.example.assu_fe_app.data.service.suggestion.SuggestionService
 import com.example.assu_fe_app.data.service.usage.UsageService
 import com.example.assu_fe_app.util.LocalDateMoshiAdapter
 import com.google.gson.GsonBuilder
+import com.example.assu_fe_app.data.service.user.UserHomeService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -128,6 +131,23 @@ object ServiceModule {
     @Singleton
     fun provideSuggestionService(@Auth retrofit: Retrofit): SuggestionService =
         retrofit.create(SuggestionService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAdminDashboardApiService(@Auth retrofit: Retrofit): AdminDashboardService =
+        retrofit.create(AdminDashboardService::class.java)
+
+    @Provides
+    @Singleton
+    fun providePartnerDashboardApiService(@Auth retrofit: Retrofit): PartnerDashboardService =
+        retrofit.create(PartnerDashboardService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUserHomeService(@Auth retrofit: Retrofit): UserHomeService =
+        retrofit.create(UserHomeService::class.java)
+
+
 
     @Provides
     @Singleton
