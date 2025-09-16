@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".presentation.admin.signup.AdminSignUpInfoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@color/assu_background"
+        android:id="@+id/root_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/assu_background">
 
-        <!-- 프로그레스바 영역 -->
         <FrameLayout
             android:id="@+id/fl_signup_progress_container"
             android:layout_width="0dp"
@@ -31,81 +30,111 @@
                 android:src="@drawable/ic_signup_progress_bar" />
         </FrameLayout>
 
-        <!-- 관리단체 정보 텍스트 -->
         <TextView
             android:id="@+id/tv_admin_account_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="46dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="24dp"
             android:fontFamily="@font/pretendard_bold"
             android:text="관리단체의 정보를\n입력해주세요!"
-            android:layout_marginStart="24dp"
             android:textColor="@color/assu_font_main"
             android:textSize="25sp"
             app:layout_constraintTop_toBottomOf="@id/fl_signup_progress_container"
             app:layout_constraintStart_toStartOf="parent" />
 
 
-        <!-- 관리단체명 라벨 -->
         <TextView
             android:id="@+id/tv_admin_name_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="29dp"
             android:layout_marginTop="63dp"
-            android:text="관리단체명"
+            android:text="단위"
             android:textSize="13sp"
-            android:textColor="@color/assu_font_sub"
-            android:fontFamily="@font/pretendard_regular"
             app:layout_constraintTop_toBottomOf="@id/tv_admin_account_title"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!-- 관리단체명 입력 필드 받기 -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_admin_name"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/bg_signup_input_bar"
-            app:layout_constraintTop_toBottomOf="@id/tv_admin_name_label"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
 
-            <EditText
-                android:id="@+id/et_admin_name"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:hint="단체명을 입력해주세요"
-                android:inputType="text"
-                android:background="@android:color/transparent"
-                android:textSize="14sp"
-                android:textColor="@color/assu_font_main"
-                android:textColorHint="@color/assu_font_sub"
-                android:fontFamily="@font/pretendard_regular"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintBottom_toTopOf="@+id/dv_part"
+            app:layout_constraintVertical_chainStyle="packed" />
 
-        <!-- 사무실 주소 라벨 -->
+        <include
+            android:id="@+id/dv_part"
+            layout="@layout/dropdown_admin_part"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_admin_name_label"
+
+            app:layout_constraintBottom_toTopOf="@+id/tv_admin_department_label" />
+
+        <TextView
+            android:id="@+id/tv_admin_department_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="29dp"
+            android:layout_marginTop="15dp"
+            android:text="단과대학 선택"
+            android:visibility="gone"
+            android:textSize="13sp"
+            app:layout_constraintTop_toBottomOf="@id/dv_part"
+            app:layout_constraintStart_toStartOf="parent"
+
+            app:layout_constraintBottom_toTopOf="@+id/dv_department" />
+
+        <include
+            android:id="@+id/dv_department"
+            layout="@layout/dropdown_admin_part"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/tv_admin_department_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintBottom_toTopOf="@+id/tv_admin_major_label" />
+
+        <TextView
+            android:id="@+id/tv_admin_major_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="29dp"
+            android:layout_marginTop="15dp"
+            android:text="학과/부 선택"
+            android:visibility="gone"
+            android:textSize="13sp"
+            app:layout_constraintTop_toBottomOf="@id/dv_department"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/dv_major" />
+
+        <include
+            android:id="@+id/dv_major"
+            layout="@layout/dropdown_admin_part"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/tv_admin_major_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintBottom_toTopOf="@+id/tv_admin_address_label" />
+
+
         <TextView
             android:id="@+id/tv_admin_address_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="29dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:text="사무실주소"
             android:textSize="13sp"
-            android:textColor="@color/assu_font_sub"
-            android:fontFamily="@font/pretendard_regular"
-            app:layout_constraintTop_toBottomOf="@id/cl_admin_name"
+            app:layout_constraintTop_toBottomOf="@id/dv_major"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- 주소 받기 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_admin_address"
             android:layout_width="0dp"
@@ -117,38 +146,28 @@
             app:layout_constraintTop_toBottomOf="@id/tv_admin_address_label"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-
-            <EditText
-                android:id="@+id/et_admin_address"
-                android:layout_width="300dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
-                android:background="@android:color/transparent"
-                android:cursorVisible="false"
-                android:focusable="false"
-                android:fontFamily="@font/pretendard_regular"
-                android:hint=""
-                android:inputType="text"
-                android:textColor="@color/assu_font_main"
-                android:textColorHint="@color/assu_font_sub"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+            <TextView
+                android:id="@+id/tv_admin_address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="주소를 입력하세요"
+                android:layout_marginStart="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_admin_search"/>
 
             <ImageView
-                android:id="@+id/btn_admin_address_search"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:id="@+id/btn_admin_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="15dp"
                 android:src="@drawable/ic_search"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- 상세주소 필드 받기 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_admin_address_detail"
             android:layout_width="0dp"
@@ -160,36 +179,32 @@
             app:layout_constraintTop_toBottomOf="@id/cl_admin_address"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-
             <EditText
                 android:id="@+id/et_admin_address_detail"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:hint="상세주소를 입력해주세요"
-                android:inputType="text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
                 android:background="@android:color/transparent"
                 android:textSize="14sp"
                 android:textColor="@color/assu_font_main"
                 android:textColorHint="@color/assu_font_sub"
                 android:fontFamily="@font/pretendard_regular"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="15dp"
+                android:hint="상세주소를 입력하세요"
+                android:layout_marginStart="15dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- 인증 완료 버튼 (하단 고정) -->
         <ImageButton
             android:id="@+id/btn_completed"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="46dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:textColor="@android:color/white"
             android:background="@drawable/btn_basic_unselected"
-            android:fontFamily="@font/pretendard_semibold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -198,15 +213,14 @@
             android:id="@+id/tv_completed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="57dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
             android:text="입력완료"
             android:textSize="20sp"
             android:textColor="@android:color/white"
             android:fontFamily="@font/pretendard_bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="@id/btn_completed"
+            app:layout_constraintStart_toStartOf="@id/btn_completed"
+            app:layout_constraintEnd_toEndOf="@id/btn_completed"
+            app:layout_constraintTop_toTopOf="@id/btn_completed"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

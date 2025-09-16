@@ -32,7 +32,12 @@ class SearchRepositoryImpl @Inject constructor(
         return dtos.map{ dto ->
             LocationInfo(
                 name = dto.name,
-                address = dto.address
+                address = dto.address,
+                id = dto.placeId,
+                latitude = dto.latitude,
+                longitude = dto.longitude,
+                roadAddress = dto.roadAddress
+
             )
         }
     }

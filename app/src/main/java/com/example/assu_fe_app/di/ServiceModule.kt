@@ -157,6 +157,6 @@ object ServiceModule {
         retrofit.create(MapService::class.java)
 
     @Provides @Singleton
-    fun provideSearchService(@Auth retrofit: Retrofit) : SearchLocationService
+    fun provideSearchService(@NoAuth retrofit: Retrofit) : SearchLocationService
     = retrofit.create(SearchLocationService::class.java)
 }
