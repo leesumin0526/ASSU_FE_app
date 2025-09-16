@@ -23,6 +23,7 @@ import javax.inject.Inject
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.example.assu_fe_app.data.dto.chatting.WsMessageDto
+import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
 import com.example.assu_fe_app.domain.model.chatting.ReadChattingModel
 import com.example.assu_fe_app.domain.usecase.chatting.LeaveChattingRoomUseCase
@@ -207,6 +208,7 @@ class ChattingViewModel @Inject constructor(
     /** 소켓 연결 */
     fun connectSocket() {
         if (roomId <= 0) return
+
         chatSocket.connect(
             roomId = roomId,
             onConnected = { _socketConnected.value = true },

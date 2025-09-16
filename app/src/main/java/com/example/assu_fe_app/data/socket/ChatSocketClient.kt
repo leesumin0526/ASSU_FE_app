@@ -42,6 +42,7 @@ class ChatSocketClient(
         onError: (Throwable) -> Unit
     ) {
         val authHeader = tokenProvider.bearer()
+        android.util.Log.d("WS", "🔑 Authorization header being sent = $authHeader")
         // 1) 핸드셰이크(HTTP 업그레이드) 헤더: Map<String, String>
         val handshakeHeaders: Map<String, String> =
             if (!authHeader.isNullOrBlank()) mapOf("Authorization" to authHeader!!)

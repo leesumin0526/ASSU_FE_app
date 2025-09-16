@@ -3,12 +3,9 @@ package com.example.assu_fe_app.presentation.common.chatting
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
-import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -27,7 +24,7 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.getValue
-import androidx.core.view.isVisible
+import com.example.assu_fe_app.LeaveChatRoomDialog
 import com.example.assu_fe_app.data.manager.TokenManager
 
 @AndroidEntryPoint
@@ -91,6 +88,11 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                 .replace(R.id.chatting_fragment_container, ServiceProposalWritingFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+
+        // 채팅방 나가기
+        binding.ivLeaveChatting.setOnClickListener {
+            LeaveChatRoomDialog.newInstance(roomId).show(supportFragmentManager, "LeaveChattingDialog")
         }
 
         supportFragmentManager.setFragmentResultListener("return_reason", this) { _, bundle ->
@@ -244,7 +246,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         return (this * context.resources.displayMetrics.density).toInt()
     }
 
-    private fun navigateToChatting() {
+    fun navigateToChatting() {
         val intent = Intent(this, AdminMainActivity::class.java).apply {
             // 기존 Task 스택 위로 올라가서 중복 생성 방지
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
