@@ -4,22 +4,22 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.example.assu_fe_app.databinding.ItemAdminPartnerLocationSearchResultItemBinding
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
-import com.example.assu_fe_app.presentation.user.review.store.UserReviewStoreActivity
 
-class AdminPartnerLocationAdapter(
-    private val items: List<LocationAdminPartnerSearchResultItem>
-) : RecyclerView.Adapter<AdminPartnerLocationAdapter.ViewHolder>() {
+class AdminPartnerLocationAdapter :
+    ListAdapter<LocationAdminPartnerSearchResultItem, AdminPartnerLocationAdapter.ViewHolder>(DiffCallback) {
 
     inner class ViewHolder(
         private val binding: ItemAdminPartnerLocationSearchResultItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: LocationAdminPartnerSearchResultItem, isLastItem: Boolean) {
-            binding.tvItemAdminPartnerLocationSearchResultItemShopName.text = item.shopName
+            binding.tvItemAdminPartnerLocationSearchResultItemShopName.text = item.name
 
             if (item.isPartnered) {
                 binding.tvItemAdminPartnerLocationSearchResultItemPartnered.visibility = View.VISIBLE
@@ -60,9 +60,26 @@ class AdminPartnerLocationAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val isLast = position == items.size - 1
-        holder.bind(items[position], isLast)
+        val isLast = position == currentList.size - 1
+        holder.bind(getItem(position), isLast)
     }
 
-    override fun getItemCount(): Int = items.size
+
+    companion object {
+        private val DiffCallback = object : DiffUtil.ItemCallback<LocationAdminPartnerSearchResultItem>() {
+            override fun areItemsTheSame(
+                oldItem: LocationAdminPartnerSearchResultItem,
+                newItem: LocationAdminPartnerSearchResultItem
+            ): Boolean {
+                return oldItem.hashCode() == newItem.hashCode()
+            }
+
+            override fun areContentsTheSame(
+                oldItem: LocationAdminPartnerSearchResultItem,
+                newItem: LocationAdminPartnerSearchResultItem
+            ): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
 }

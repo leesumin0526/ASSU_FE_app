@@ -1,16 +1,26 @@
 package com.example.assu_fe_app.di
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.BearerInterceptor
 import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
 import com.example.assu_fe_app.data.service.AuthService
+import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
 import com.example.assu_fe_app.data.service.dashboard.AdminDashboardService
 import com.example.assu_fe_app.data.service.dashboard.PartnerDashboardService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
+import com.example.assu_fe_app.data.service.map.MapService
+import com.example.assu_fe_app.data.service.map.SearchLocationService
 import com.example.assu_fe_app.data.service.notification.NotificationService
+import com.example.assu_fe_app.data.service.review.ReviewService
+import com.example.assu_fe_app.data.service.store.StoreService
 import com.example.assu_fe_app.data.service.partnership.PartnershipService
 import com.example.assu_fe_app.data.service.suggestion.SuggestionService
+import com.example.assu_fe_app.data.service.usage.UsageService
+import com.example.assu_fe_app.util.LocalDateMoshiAdapter
+import com.google.gson.GsonBuilder
 import com.example.assu_fe_app.data.service.user.UserHomeService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -22,6 +32,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -73,8 +84,11 @@ object ServiceModule {
             .build()
 
     @Provides @Singleton
+    @RequiresApi(Build.VERSION_CODES.O)
     fun provideMoshi(): Moshi =
         Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .add(LocalDate::class.java, LocalDateMoshiAdapter()) // LocalDate Adapter 추가
             .add(LocalDateAdapter)
             .add(KotlinJsonAdapterFactory())  // ← 추가
             .build()
@@ -140,4 +154,29 @@ object ServiceModule {
     fun providePartnershipService(@Auth retrofit: Retrofit): PartnershipService =
         retrofit.create(PartnershipService::class.java)
 
+
+    @Provides @Singleton
+    fun provideReviewService(@Auth retrofit: Retrofit): ReviewService =
+        retrofit.create(ReviewService::class.java)
+
+    @Provides @Singleton
+    fun provideStoreService(@Auth retrofit: Retrofit): StoreService =
+        retrofit.create(StoreService::class.java)
+
+    @Provides @Singleton
+    fun provideUsageService(@Auth retrofit: Retrofit): UsageService =
+        retrofit.create(UsageService::class.java)
+
+    @Provides @Singleton
+    fun provideCertificationService(@Auth retrofit: Retrofit): CertificationService =
+        retrofit.create(CertificationService::class.java)
+
+
+    @Provides @Singleton
+    fun provideMapService(@Auth retrofit: Retrofit): MapService =
+        retrofit.create(MapService::class.java)
+
+    @Provides @Singleton
+    fun provideSearchService(@Auth retrofit: Retrofit) : SearchLocationService
+    = retrofit.create(SearchLocationService::class.java)
 }

@@ -9,12 +9,19 @@
         android:orientation="vertical"
         tools:context=".presentation.common.location.LocationSearchRankFragment">
 
+        <View
+            android:id="@+id/view_common_location_mg1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.3525"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
         <TextView
-            android:id="@+id/tv_location_search_success_title"
+            android:id="@+id/tv_location_search_success_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14dp"
-            android:text="3개의 검색 결과가 있습니다"
+            android:text="3"
             android:bufferType="spannable"
             android:textColor="@color/assu_font_sub"
             android:fontFamily="@font/pretendard_regular"
@@ -22,6 +29,48 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="17dp"
             android:layout_marginStart="25dp"/>
+        <LinearLayout
+            android:id="@+id/ll_location_admin_partner_item_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/view_common_location_mg1"
+            app:layout_constraintStart_toStartOf="parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="검색 결과를 찾지 못했어요"
+                android:textSize="16sp"
+                android:fontFamily="@font/pretendard_medium"
+                android:textColor="@color/assu_font_main"
+                />
+            <TextView
+                android:layout_marginTop="7dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/assu_font_sub"
+                android:textSize="14sp"
+                android:textAlignment="center"
+                android:text="매장을 찾지 못해 페이지를 표시할 수 없어요\n이용에 불편을 드려 죄송합니다."
+                android:fontFamily="@font/pretendard_regular"/>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_location_search_success_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:text="개의 검색 결과가 있습니다"
+            android:bufferType="spannable"
+            android:textColor="@color/assu_font_sub"
+            android:fontFamily="@font/pretendard_regular"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf = "@id/tv_location_search_success_count"
+            android:layout_marginTop="17dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_location_search_success"

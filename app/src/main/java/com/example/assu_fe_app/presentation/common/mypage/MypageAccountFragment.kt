@@ -9,6 +9,7 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentMypageAccountBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
+import com.example.assu_fe_app.ui.auth.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ class MypageAccountFragment
     : BaseFragment<FragmentMypageAccountBinding>(R.layout.fragment_mypage_account) {
 
     private val viewModel: MypageViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun initView() { /* no-op */ }
 
@@ -42,12 +44,16 @@ class MypageAccountFragment
     }
 
     private fun initClick() {
-        binding.clAdmAccountComponent1.setOnClickListener {
-            viewModel.logoutAndUnregister()
-        }
 
         binding.btnPendingBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+
+        binding.clAdmAccountComponent1.setOnClickListener {
+            viewModel.logoutAndUnregister()
+            // 서버에 로그아웃 API 호출 후 토큰 삭제 및 로그인 화면으로 이동
+            loginViewModel.logout()
         }
 
         binding.clAdmAccountComponent2.setOnClickListener {

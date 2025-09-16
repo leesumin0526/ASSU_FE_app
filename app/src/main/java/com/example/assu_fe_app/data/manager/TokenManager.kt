@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.example.assu_fe_app.domain.model.auth.LoginModel
+import com.example.assu_fe_app.domain.model.auth.UserBasicInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,6 +30,10 @@ class TokenManager @Inject constructor(
         private const val KEY_STATUS = "status"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
         private const val KEY_DEVICE_TOKEN_ID = "device_token_id"
+        private const val KEY_BASIC_INFO_NAME = "basic_info_name"
+        private const val KEY_BASIC_INFO_UNIVERSITY = "basic_info_university"
+        private const val KEY_BASIC_INFO_DEPARTMENT = "basic_info_department"
+        private const val KEY_BASIC_INFO_MAJOR = "basic_info_major"
     }
     
     fun saveLoginData(loginModel: LoginModel) {
@@ -42,6 +47,15 @@ class TokenManager @Inject constructor(
             putString(KEY_PROFILE_IMAGE_URL, loginModel.profileImageUrl)
             putString(KEY_STATUS, loginModel.status)
             putBoolean(KEY_IS_LOGGED_IN, true)
+            
+            // basicInfo 저장
+            loginModel.basicInfo?.let { basicInfo ->
+                putString(KEY_BASIC_INFO_NAME, basicInfo.name)
+                putString(KEY_BASIC_INFO_UNIVERSITY, basicInfo.university)
+                putString(KEY_BASIC_INFO_DEPARTMENT, basicInfo.department)
+                putString(KEY_BASIC_INFO_MAJOR, basicInfo.major)
+            }
+            
             apply()
         }
     }
@@ -64,6 +78,17 @@ class TokenManager @Inject constructor(
         val profileImageUrl = prefs.getString(KEY_PROFILE_IMAGE_URL, null)
         val status = prefs.getString(KEY_STATUS, null)
         
+        // basicInfo 조회
+        val basicInfoName = prefs.getString(KEY_BASIC_INFO_NAME, null)
+        val basicInfo = if (basicInfoName != null) {
+            UserBasicInfo(
+                name = basicInfoName,
+                university = prefs.getString(KEY_BASIC_INFO_UNIVERSITY, null),
+                department = prefs.getString(KEY_BASIC_INFO_DEPARTMENT, null),
+                major = prefs.getString(KEY_BASIC_INFO_MAJOR, null)
+            )
+        } else null
+        
         return LoginModel(
             accessToken = accessToken,
             refreshToken = refreshToken,
@@ -72,7 +97,8 @@ class TokenManager @Inject constructor(
             userRole = userRole,
             email = email,
             profileImageUrl = profileImageUrl,
-            status = status
+            status = status,
+            basicInfo = basicInfo
         )
     }
     
