@@ -6,6 +6,7 @@ import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.BearerInterceptor
 import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
 import com.example.assu_fe_app.data.service.AuthService
+import com.example.assu_fe_app.data.service.admin.AdminHomeService
 import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
 import com.example.assu_fe_app.data.service.dashboard.AdminDashboardService
@@ -179,4 +180,10 @@ object ServiceModule {
     @Provides @Singleton
     fun provideSearchService(@NoAuth retrofit: Retrofit) : SearchLocationService
     = retrofit.create(SearchLocationService::class.java)
+
+    @Provides @Singleton
+    fun provideAdminHomeApiService(retrofit: Retrofit): AdminHomeService =
+        retrofit.create(AdminHomeService::class.java)
+
+
 }

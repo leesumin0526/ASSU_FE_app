@@ -2,6 +2,7 @@ package com.example.assu_fe_app.di
 
 import com.example.assu_fe_app.data.local.TokenProvider
 import com.example.assu_fe_app.data.local.TokenProviderImpl
+import com.example.assu_fe_app.data.repository.admin.AdminHomeRepository
 import com.example.assu_fe_app.data.repository.auth.AuthRepository
 import com.example.assu_fe_app.data.repository.certification.CertificationRepository
 import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
@@ -23,6 +24,7 @@ import com.example.assu_fe_app.data.repository.partnership.PartnershipRepository
 import com.example.assu_fe_app.data.repository.suggestion.SuggestionRepository
 import com.example.assu_fe_app.data.repository.user.UserHomeRepository
 import com.example.assu_fe_app.data.repositoryImpl.AuthRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.admin.AdminHomeRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.location.LocationRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.location.SearchRepositoryImpl
@@ -126,4 +128,9 @@ abstract class RepoModule {
         userHomeRepositoryImpl: UserHomeRepositoryImpl
     ): UserHomeRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindAdminHomeRepository(
+        adminHomeRepositoryImpl: AdminHomeRepositoryImpl
+    ): AdminHomeRepository
 }

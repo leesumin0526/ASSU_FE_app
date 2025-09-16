@@ -28,6 +28,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
+import com.example.assu_fe_app.domain.model.admin.RecommendedPartnerModel
+import com.example.assu_fe_app.ui.admin.PartnerRecommendViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 
 
@@ -39,6 +41,9 @@ class AdminHomeFragment :
     private val chattingViewModel: ChattingViewModel by viewModels()
 
     private val partnershipViewModel: PartnershipViewModel by viewModels()
+    private val partnerRecommendViewModel: PartnerRecommendViewModel by viewModels()
+    private var currentRecommendedPartner: RecommendedPartnerModel? = null
+
 
     lateinit var tokenManager: TokenManager
 
@@ -171,12 +176,28 @@ class AdminHomeFragment :
                 }
             }
         }
+        // 추천 파트너 상태만 추가
+        viewLifecycleOwner.lifecycleScope.launch {
+            partnerRecommendViewModel.recommendState.collect { state ->
+                when (state) {
+                    is PartnerRecommendViewModel.RecommendUiState.Success -> {
+                        updateRecommendCard(state.partner)
+                        currentRecommendedPartner = state.partner
+                    }
+                    is PartnerRecommendViewModel.RecommendUiState.Error -> {
+                        // 에러 시 기본값 유지
+                    }
+                    else -> Unit
+                }
+    }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         vm.refreshBell()
         partnershipViewModel.getProposalPartnerList(isAll = false) // true면 전체
+        partnerRecommendViewModel.refreshPartner()
     }
 
     override fun initView() {
@@ -224,7 +245,18 @@ class AdminHomeFragment :
             chattingViewModel.createRoom(req)
 
         }
+        binding.btnRecommendInquiry.setOnClickListener {
+            currentRecommendedPartner?.let { partner ->
+                val req = CreateChatRoomRequestDto(
+                    adminId = tokenManager.getUserId() ?: 1L,
+                    partnerId = partner.partnerId
+                )
+                chattingViewModel.createRoom(req)
+            }
+        }
     }
+
+    private fun updateRecommendCard(partner: RecommendedPartnerModel) {}
 
     private fun bindAdminItem(
         bindingItem: ViewGroup,
