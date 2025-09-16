@@ -11,6 +11,7 @@ import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
 import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.example.assu_fe_app.data.service.partnership.PartnershipService
 import com.example.assu_fe_app.data.service.suggestion.SuggestionService
+import com.example.assu_fe_app.data.service.user.UserHomeService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -124,9 +125,14 @@ object ServiceModule {
 
     @Provides
     @Singleton
-    fun providePartnerDashboardApiService(@Auth retrofit: Retrofit): PartnerDashboardService {
-        return retrofit.create(PartnerDashboardService::class.java)
-    }
+    fun providePartnerDashboardApiService(@Auth retrofit: Retrofit): PartnerDashboardService =
+        retrofit.create(PartnerDashboardService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUserHomeService(@Auth retrofit: Retrofit): UserHomeService =
+        retrofit.create(UserHomeService::class.java)
+
 
 
     @Provides

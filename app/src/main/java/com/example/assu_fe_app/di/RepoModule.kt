@@ -14,11 +14,13 @@ import com.example.assu_fe_app.data.repositoryImpl.dashboard.AdminDashboardRepos
 import com.example.assu_fe_app.data.repositoryImpl.dashboard.PartnerDashboardRepositoryImpl
 import com.example.assu_fe_app.data.repository.partnership.PartnershipRepository
 import com.example.assu_fe_app.data.repository.suggestion.SuggestionRepository
+import com.example.assu_fe_app.data.repository.user.UserHomeRepository
 import com.example.assu_fe_app.data.repositoryImpl.AuthRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.notification.NotificationRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.partnership.PartnershipRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.suggestion.SuggestionRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.user.UserHomeRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -75,4 +77,10 @@ abstract class RepoModule {
     abstract fun bindPartnershipRepository(
         impl: PartnershipRepositoryImpl
     ): PartnershipRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserHomeRepository(
+        userHomeRepositoryImpl: UserHomeRepositoryImpl
+    ): UserHomeRepository
 }
