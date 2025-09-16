@@ -84,7 +84,7 @@
             android:id="@+id/btn_cancel"
             android:layout_width="109dp"
             android:layout_height="wrap_content"
-            android:text="취소"
+            android:text="아니오"
             android:textSize="11sp"
             android:textColor="@color/assu_main"
             android:fontFamily="@font/pretendard_semibold"

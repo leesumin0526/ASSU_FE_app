@@ -12,7 +12,6 @@ import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.FragmentAdminMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
-import com.example.assu_fe_app.presentation.common.login.LoginViewModel
 import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -25,8 +24,6 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
 
     @Inject
     lateinit var tokenManager: TokenManager
-
-    private val loginViewModel: LoginViewModel by viewModels()
 
     private val viewModel: MypageViewModel by viewModels()
 
@@ -57,19 +54,17 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
                 .show(childFragmentManager, "AlarmDialog")
         }
 
+        // 계정관리 페이지 이동
+        binding.clAdmAccountComponent2.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_admin_mypage_to_mypage_account
+            )
+        }
+
         // 대기중인 제휴계약서
         binding.clAdmAccountComponent3.setOnClickListener {
             AdminMypagePendingPartnershipDialogFragment()
                 .show(childFragmentManager, "PendingPartnershipDialog")
-        }
-
-        // 로그아웃: 서버에서 unregister 성공 시에만 화면 이동 (observer에서 처리)
-        binding.clAdmAccountComponent2.setOnClickListener {
-            // 서버에 로그아웃 API 호출 후 토큰 삭제 및 로그인 화면으로 이동
-            loginViewModel.logout()
-            findNavController().navigate(
-                R.id.action_admin_mypage_to_mypage_account
-            )
         }
     }
 

@@ -8,7 +8,8 @@ data class LoginModel(
     val userRole: String,
     val email: String?,
     val profileImageUrl: String?,
-    val status: String? = null
+    val status: String? = null,
+    val basicInfo: UserBasicInfo? = null
 ) {
     val isAdmin: Boolean
         get() = userRole == "ADMIN"

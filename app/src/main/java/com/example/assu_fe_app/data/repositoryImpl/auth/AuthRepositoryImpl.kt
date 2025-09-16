@@ -1,6 +1,8 @@
 package com.example.assu_fe_app.data.repositoryImpl
 
 import com.example.assu_fe_app.data.dto.auth.CommonLoginRequestDto
+import com.example.assu_fe_app.data.dto.auth.PhoneVerificationSendRequestDto
+import com.example.assu_fe_app.data.dto.auth.PhoneVerificationVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentLoginRequestDto
 import com.example.assu_fe_app.data.service.AuthService
 import com.example.assu_fe_app.domain.model.auth.LoginModel
@@ -30,6 +32,27 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun logout(): RetrofitResult<Unit> {
         return apiHandler(
             execute = { authService.logout() },
+            mapper = { Unit }
+        )
+    }
+    
+    override suspend fun withdraw(): RetrofitResult<Unit> {
+        return apiHandler(
+            execute = { authService.withdraw() },
+            mapper = { Unit }
+        )
+    }
+    
+    override suspend fun sendPhoneVerification(request: PhoneVerificationSendRequestDto): RetrofitResult<Unit> {
+        return apiHandler(
+            execute = { authService.sendPhoneVerification(request) },
+            mapper = { Unit }
+        )
+    }
+    
+    override suspend fun verifyPhoneVerification(request: PhoneVerificationVerifyRequestDto): RetrofitResult<Unit> {
+        return apiHandler(
+            execute = { authService.verifyPhoneVerification(request) },
             mapper = { Unit }
         )
     }
