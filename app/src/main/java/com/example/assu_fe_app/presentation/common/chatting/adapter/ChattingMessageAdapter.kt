@@ -84,7 +84,7 @@ class ChattingMessageAdapter
             if (p != null) {
                 when (holder) {
                     is MyMessageViewHolder -> holder.setUnread(p.isRead)
-                    is OtherMessageViewHolder -> holder.setUnread(p.isRead)
+//                    is OtherMessageViewHolder -> holder.setUnread(p.isRead)
                 }
                 return
             }
@@ -125,11 +125,11 @@ class ChattingMessageAdapter
             // 프로필 이미지 로딩 필요하면 여기에 Glide 등 사용
         }
 
-        fun setUnread(isRead: Boolean) {
-            binding.tvUnreadBadge.apply {
-                visibility = if (isRead) View.INVISIBLE else View.VISIBLE
-                text = if (isRead) "" else "1"
-            }
-        }
+//        fun setUnread(isRead: Boolean) {
+//            binding.tvUnreadBadge.apply {
+//                visibility = if (isRead) View.INVISIBLE else View.VISIBLE
+//                text = if (isRead) "" else "1"
+//            }
+//        }
     }
 }
