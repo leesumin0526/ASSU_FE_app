@@ -1,8 +1,6 @@
 package com.example.assu_fe_app.data.dto.partnership.response
 
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
-import com.example.assu_fe_app.domain.model.admin.PartnershipGoodsModel
-import com.example.assu_fe_app.domain.model.admin.PartnershipOptionModel
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)

@@ -27,6 +27,7 @@ class PartnerMypageFragment
     private val viewModel: MypageViewModel by viewModels()
 
     override fun initView(){
+        binding.tvPartnerAccountName.setText(tokenManager.getUserName())
     }
 
     override fun initObserver() {

@@ -19,9 +19,9 @@ class AdminPartnerLocationAdapter :
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: LocationAdminPartnerSearchResultItem, isLastItem: Boolean) {
-            binding.tvItemAdminPartnerLocationSearchResultItemShopName.text = item.name
+            binding.tvItemAdminPartnerLocationSearchResultItemShopName.text = item.shopName
 
-            if (item.isPartnered) {
+            if (item.partnered) {
                 binding.tvItemAdminPartnerLocationSearchResultItemPartnered.visibility = View.VISIBLE
                 binding.tvItemAdminPartnerLocationSearchResultItemTerm.text = item.term
                 binding.tvItemAdminPartnerLocationSearchResultItemContact.text = "제휴 계약서 보기"
@@ -38,7 +38,7 @@ class AdminPartnerLocationAdapter :
                 val context = it.context
                 val intent = Intent(context, ChattingActivity::class.java)
 
-                val message = if (item.isPartnered) {
+                val message = if (item.partnered) {
                     "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
                 } else {
                     "'문의하기' 버튼을 통해 이동했습니다."

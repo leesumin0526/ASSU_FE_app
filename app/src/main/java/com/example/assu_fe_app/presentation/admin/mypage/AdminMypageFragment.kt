@@ -66,6 +66,8 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
             AdminMypagePendingPartnershipDialogFragment()
                 .show(childFragmentManager, "PendingPartnershipDialog")
         }
+
+        binding.tvAdmAccountName.setText(tokenManager.getUserName())
     }
 
     private fun navigateToLoginAndClear() {

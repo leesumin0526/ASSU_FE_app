@@ -151,4 +151,7 @@ dependencies {
 
     //Graph (dashboard)
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    // 현재 위치 받아오기
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
 }

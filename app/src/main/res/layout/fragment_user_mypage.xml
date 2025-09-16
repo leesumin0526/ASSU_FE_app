@@ -37,7 +37,7 @@
             android:id="@+id/iv_account_profileImg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/img_user"/>
+            android:src="@drawable/img_student"/>
     </androidx.cardview.widget.CardView>
 
     <View

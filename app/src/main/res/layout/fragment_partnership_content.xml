@@ -348,11 +348,12 @@
 
 
         <TextView
+            android:id="@+id/tv_partnership_content_summary"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             app:layout_constraintTop_toBottomOf="@id/partnership_content_mg21"
             android:background="@drawable/bg_review_box"
-            android:text="위와 같이 숭실대학교 총학생회 \n제휴를 제안합니다.\n\n2025 03월 29일\n대표 (인)"
+            android:text="위와 같이 숭실대학교 총학생회 \n제휴를 제안합니다.\n\n2025년 03월 29일\n대표 (인)"
             android:textColor="@color/assu_font_sub"
             android:fontFamily="@font/pretendard_medium"
             android:textSize="14sp"

@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
@@ -72,7 +73,6 @@ class LocationSearchActivity :
                     Log.d("LocationSearchActivity", "Partner 기준 Admin 찾기 함수로 연결됩니다. ")
                     searchViewModel.searchAdmins(keyword)
                 }
-
                 hideKeyboard()
                 binding.fvLocationSearchRank.visibility = android.view.View.INVISIBLE
                 binding.fvLocationSearchSuccess.visibility = android.view.View.VISIBLE
