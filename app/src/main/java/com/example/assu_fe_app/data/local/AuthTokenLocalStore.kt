@@ -2,6 +2,7 @@ package com.example.assu_fe_app.data.local
 
 import com.example.assu_fe_app.domain.model.auth.LoginModel
 import com.example.assu_fe_app.domain.model.auth.UserBasicInfo
+import com.example.assu_fe_app.data.dto.UserRole
 
 interface AuthTokenLocalStore {
     
@@ -19,8 +20,9 @@ interface AuthTokenLocalStore {
     // 사용자 정보 getter
     fun getLoginModel(): LoginModel?
     fun getUserId(): Long
-    fun getUsername(): String?
+    fun getUserName(): String?
     fun getUserRole(): String?
+    fun getUserRoleEnum(): UserRole?
     fun getEmail(): String?
     fun getProfileImageUrl(): String?
     fun getStatus(): String?

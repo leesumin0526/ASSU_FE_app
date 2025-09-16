@@ -42,7 +42,7 @@
                 android:id="@+id/iv_location_item_main_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/img_location_beer"/>
+                android:src="@drawable/img_partner"/>
         </androidx.cardview.widget.CardView>
 
         <View

@@ -5,32 +5,45 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
+import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.databinding.ItemAssociationListBinding
+import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 
-// 데이터 모델 정의
-data class AdminPartnerListItem(
-    val partnerName: String,
-    val benefitDescription: String,
-    val benefitPeriod: String
-)
 
 class AdminPartnerListAdapter(
-    private val items: List<AdminPartnerListItem>,
-    private val fragmentManger: FragmentManager
+    private val items: List<GetProposalPartnerListModel>,
+    private val fragmentManger: FragmentManager,
+    private val proposerName: String // AuthTokenLocalStore에서 불러온 관리자 이름
 ) : RecyclerView.Adapter<AdminPartnerListAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemAssociationListBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: AdminPartnerListItem) {
-            binding.tvAssociationName.text = item.partnerName
-            binding.tvBenefitDescription.text = item.benefitDescription
-            binding.tvBenefitPeriod.text = item.benefitPeriod
+        fun bind(item: GetProposalPartnerListModel) {
+            binding.tvAssociationName.text = item.partnerId.toString()
+            binding.tvBenefitDescription.text =
+                item.options.firstOrNull()?.optionType?.name ?: "제휴 혜택 없음"
+            binding.tvBenefitPeriod.text =
+                "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
 
             itemView.setOnClickListener {
-                val dialog = PartnershipContractDialogFragment(dummyItem)
-                dialog.show(fragmentManger, "PartnershipContentFragment")
+                val contractData = PartnershipContractData(
+                    partnerName = item.partnerId.toString(),
+                    adminName = item.adminId.toString(),
+                    options = item.options.map { opt ->
+                        // 이미 PartnershipContractItem으로 변환된 구조라면 그대로 넣어도 됨
+                        PartnershipContractItem.Service.ByPeople(
+                            opt.people,
+                            opt.category
+                        )
+                    },
+                    periodStart = item.partnershipPeriodStart.toString(),
+                    periodEnd = item.partnershipPeriodEnd.toString()
+                )
+
+                val dialog = PartnershipContractDialogFragment.newInstance(contractData)
+                dialog.show(fragmentManger, "PartnershipContractDialog")
             }
         }
     }
@@ -48,10 +61,4 @@ class AdminPartnerListAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    val dummyItem = listOf(
-        PartnershipContractItem.Service.ByPeople(4,"캔음료"),
-        PartnershipContractItem.Discount.ByPeople(4, 10),
-        PartnershipContractItem.Service.ByAmount(10000, "캔음료"),
-        PartnershipContractItem.Discount.ByAmount(10000, 10)
-    )
 }

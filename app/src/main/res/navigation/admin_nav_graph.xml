@@ -18,7 +18,7 @@
 
         <action
             android:id="@+id/action_admin_home_to_contract_passive_register"
-            app:destination="@id/adminContractPassiveRegisterFragment"/>
+            app:destination="@id/adminServiceProposalWritingFragment"/>
 
     </fragment>
 
@@ -69,12 +69,20 @@
         <action
             android:id="@+id/action_admin_mypage_to_mypage_account"
             app:destination="@id/mypageAccountFragment" />
+        <action
+            android:id="@+id/action_admin_mypage_to_inquiry"
+            app:destination="@id/customerServiceDialogFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/mypageAccountFragment"
         android:name="com.example.assu_fe_app.presentation.common.mypage.MypageAccountFragment"
         tools:layout="@layout/fragment_mypage_account" />
+
+    <fragment
+        android:id="@+id/customerServiceDialogFragment"
+        android:name="com.example.assu_fe_app.presentation.common.mypage.CustomerServiceDialogFragment"
+        tools:layout="@layout/fragment_user_customer_service" />
 
 
     <!-- 관리자 알림설정 -->
@@ -112,5 +120,22 @@
             android:id="@+id/action_admin_passive_register_finish_to_admin_home"
             app:destination="@id/adminHomeFragment"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/adminServiceProposalWritingFragment"
+        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalWritingFragment"
+        android:label="제휴 수동등록">
+        <action
+            android:id="@+id/action_serviceProposalWritingFragment_to_locationSearchFragment"
+            app:destination="@id/LocationInfoSearchFragment"/>
+        <action
+            android:id="@+id/action_serviceProposalWritingFragment_to_registerFinishFragment"
+            app:destination="@id/adminContractPassiveRegisterFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/LocationInfoSearchFragment"
+        android:name="com.example.assu_fe_app.presentation.common.search.LocationInfoSearchFragment"
+        android:label="제휴업체 이름 검색"/>
 
 </navigation>

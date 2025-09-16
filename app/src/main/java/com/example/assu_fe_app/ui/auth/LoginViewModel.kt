@@ -121,11 +121,4 @@ class LoginViewModel @Inject constructor(
         data class Error(val message: String) : LoginState()
         data class PendingApproval(val message: String) : LoginState()
     }
-
-    sealed class WithdrawState {
-        object Idle : WithdrawState()
-        object Loading : WithdrawState()
-        object Success : WithdrawState()
-        data class Error(val message: String) : WithdrawState()
-    }
 }

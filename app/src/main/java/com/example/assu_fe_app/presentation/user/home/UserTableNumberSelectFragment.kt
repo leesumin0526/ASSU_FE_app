@@ -1,24 +1,49 @@
 package com.example.assu_fe_app.presentation.user.home
 
+import android.os.Bundle
+import android.provider.Settings.Global.putString
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.activityViewModels
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentUserTableNumberSelectBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class UserTableNumberSelectFragment :
     BaseFragment<FragmentUserTableNumberSelectBinding>(R.layout.fragment_user_table_number_select) {
 
-    override fun initObserver() {}
+    private var storeId: Long = 2L
+
+    private val viewModel : UserVerifyViewModel by activityViewModels()
+
+    override fun initObserver() {
+        viewModel.storeName.observe(viewLifecycleOwner) { storeName ->
+            binding.tvGroupMarketName.text = storeName
+            // UI가 업데이트될 때 로그를 추가하여 확인
+            Log.d("프래그먼트 UI 업데이트", "storeName: $storeName")
+        }
+    }
 
     override fun initView() {
+        arguments?.let {
+            storeId = it.getLong("storeId")
+            if (storeId != null) {
+                // storeId를 성공적으로 받았는지 로그로 확인
+                Log.d("전달된 데이터!!!!!!!", "프래그먼트에서 받은 storeId: $storeId")
+            }
+        }
+        viewModel.storeId = storeId
         initializeUI()
         setupTableInput()
         setupCompleteButton()
+        viewModel.getStorePartnership()
     }
 
     private fun initializeUI() {
@@ -81,8 +106,15 @@ class UserTableNumberSelectFragment :
 
     private fun setupCompleteButton() {
         binding.btnTableNumberSelectComplete.setOnClickListener {
+
+            val tableNumber = binding.hiddenInputEditText.text.toString()
+
+            viewModel.tableNumber = tableNumber
+
+            val nextFragment = UserPartnershipSelectFragment()
+
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container_view, UserPartnershipSelectFragment())
+                .replace(R.id.fragment_container_view, nextFragment)
                 .addToBackStack(null)
                 .commit()
         }

@@ -1,7 +1,6 @@
 package com.example.assu_fe_app.data.service
 
 import com.example.assu_fe_app.data.dto.BaseResponse
-import com.example.assu_fe_app.data.dto.EmptyResponse
 import com.example.assu_fe_app.data.dto.auth.CommonLoginRequestDto
 import com.example.assu_fe_app.data.dto.auth.CommonLoginResponseDto
 import com.example.assu_fe_app.data.dto.auth.PhoneVerificationSendRequestDto
@@ -25,18 +24,18 @@ interface AuthService {
     ): BaseResponse<CommonLoginResponseDto>
     
     @POST("auth/logout")
-    suspend fun logout(): BaseResponse<EmptyResponse>
+    suspend fun logout(): BaseResponse<Any>
     
     @POST("auth/phone-verification/send")
     suspend fun sendPhoneVerification(
         @Body request: PhoneVerificationSendRequestDto
-    ): BaseResponse<EmptyResponse>
+    ): BaseResponse<Any>
     
     @POST("auth/phone-verification/verify")
     suspend fun verifyPhoneVerification(
         @Body request: PhoneVerificationVerifyRequestDto
-    ): BaseResponse<EmptyResponse>
+    ): BaseResponse<Any>
     
     @PATCH("auth/withdraw")
-    suspend fun withdraw(): BaseResponse<EmptyResponse>
+    suspend fun withdraw(): BaseResponse<Any>
 }

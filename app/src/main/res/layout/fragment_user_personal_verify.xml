@@ -241,19 +241,19 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_group_verified"/>
+            android:src="@drawable/ic_group_unverified"/>
         <ImageView
             android:id="@+id/group_verify2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_group_verified"/>
+            android:src="@drawable/ic_group_unverified"/>
         <ImageView
             android:id="@+id/group_verify3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_group_verified"/>
+            android:src="@drawable/ic_group_unverified"/>
         <ImageView
             android:id="@+id/group_verify4"
             android:layout_width="0dp"

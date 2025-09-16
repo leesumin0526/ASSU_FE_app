@@ -7,12 +7,13 @@ import com.example.assu_fe_app.domain.model.auth.UserBasicInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.example.assu_fe_app.data.dto.UserRole
 
 @Singleton
 class AuthTokenLocalStoreImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : AuthTokenLocalStore {
-    
+
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "assu_auth_tokens", 
         Context.MODE_PRIVATE
@@ -74,9 +75,9 @@ class AuthTokenLocalStoreImpl @Inject constructor(
 
     /****************************** 초기화 메소드 ******************************/
     override fun clearTokens() {
-        android.util.Log.d("TokenManager", "clearTokens() called - clearing all auth data")
+        android.util.Log.d("AuthTokenLocalStore", "clearTokens() called - clearing all auth data")
         prefs.edit().clear().apply()
-        android.util.Log.d("TokenManager", "clearTokens() completed - all tokens cleared")
+        android.util.Log.d("AuthTokenLocalStore", "clearTokens() completed - all tokens cleared")
     }
 
     /****************************** 토큰 관련 getter ******************************/
@@ -146,12 +147,22 @@ class AuthTokenLocalStoreImpl @Inject constructor(
         return prefs.getLong(KEY_USER_ID, -1L)
     }
 
-    override fun getUsername(): String? {
+    override fun getUserName(): String? {
         return prefs.getString(KEY_USERNAME, null)
     }
 
     override fun getUserRole(): String? {
         return prefs.getString(KEY_USER_ROLE, null)
+    }
+
+    override fun getUserRoleEnum(): UserRole? {
+        val roleString = prefs.getString(KEY_USER_ROLE, null)
+        return when (roleString?.uppercase()) {
+            "ADMIN" -> UserRole.ADMIN
+            "PARTNER" -> UserRole.PARTNER
+            "STUDENT" -> UserRole.STUDENT
+            else -> null
+        }
     }
 
     override fun getEmail(): String? {
@@ -221,11 +232,11 @@ class AuthTokenLocalStoreImpl @Inject constructor(
             val currentTime = System.currentTimeMillis() / 1000
             val isExpired = currentTime >= exp
             
-            android.util.Log.d("TokenManager", "Token exp: $exp, current: $currentTime, expired: $isExpired")
+            android.util.Log.d("AuthTokenLocalStore", "Token exp: $exp, current: $currentTime, expired: $isExpired")
             return isExpired
             
         } catch (e: Exception) {
-            android.util.Log.e("TokenManager", "Error checking token expiration: ${e.message}")
+            android.util.Log.e("AuthTokenLocalStore", "Error checking token expiration: ${e.message}")
             return true // 파싱 오류 시 만료된 것으로 간주
         }
     }

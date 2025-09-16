@@ -3,17 +3,26 @@ package com.example.assu_fe_app.presentation.user.location
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityUserLocationSearchBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
+import com.example.assu_fe_app.ui.map.UserLocationSearchViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class UserLocationSearchActivity :
     BaseActivity<ActivityUserLocationSearchBinding>(R.layout.activity_user_location_search) {
+
+    private val searchViewModel: UserLocationSearchViewModel by viewModels()
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -45,10 +54,14 @@ class UserLocationSearchActivity :
         })
 
         // 3. enter 입력 시 view 전환
-        binding.etLocationSearch.setOnEditorActionListener { _: TextView, actionId: Int, event: KeyEvent? ->
+        binding.etLocationSearch.setOnEditorActionListener { keyword: TextView, actionId: Int, event: KeyEvent? ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                val keyword = keyword.text.toString().trim()
+                Log.d("UserLocationSearchActivity", "검색어: $keyword")
 
+                searchViewModel.getStoreListByKeyword(keyword)
+                hideKeyboard()
                 binding.fvLocationSearchRank.visibility = android.view.View.INVISIBLE
                 binding.fvLocationSearchSuccess.visibility = android.view.View.VISIBLE
                 true
@@ -67,5 +80,13 @@ class UserLocationSearchActivity :
 
     private fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
+    }
+
+    private fun hideKeyboard() {
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+            imm?.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 }

@@ -61,12 +61,21 @@
         <action
             android:id="@+id/action_partner_mypage_to_mypage_account"
             app:destination="@id/mypageAccountFragment" />
+        <action
+            android:id="@+id/action_partner_mypage_to_inquiry"
+            app:destination="@id/customerServiceDialogFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/mypageAccountFragment"
         android:name="com.example.assu_fe_app.presentation.common.mypage.MypageAccountFragment"
         tools:layout="@layout/fragment_mypage_account" />
+
+    <fragment
+        android:id="@+id/customerServiceDialogFragment"
+        android:name="com.example.assu_fe_app.presentation.common.mypage.CustomerServiceDialogFragment"
+        tools:layout="@layout/fragment_user_customer_service" />
+
 
 
     <!-- 제휴업체 알림설정 -->
@@ -91,7 +100,11 @@
     <fragment
         android:id="@+id/partnerReviewFragment"
         android:name="com.example.assu_fe_app.presentation.partner.dashboard.review.PartnerReviewFragment"
-        android:label="Review" />
+        android:label="Review">
+        <action
+            android:id="@+id/action_partnerReviewFragment_to_partnerReviewNoneFragment"
+            app:destination="@id/partnerReviewNoneFragment" />
+    </fragment>
 
     <!--리뷰리스트가 null이나 갯수가 null로 들어올때 들어가지는 페이지-->
     <fragment
@@ -106,6 +119,9 @@
         <action
             android:id="@+id/action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment"
             app:destination="@id/serviceProposalTermWritingFragment" />
+        <action
+            android:id="@+id/action_serviceProposalWritingFragment_to_locationSearchFragment"
+            app:destination="@id/partnerLocationInfoSearchFragment" />
     </fragment>
 
     <fragment
@@ -114,7 +130,13 @@
         <action
             android:id="@+id/action_serviceProposalTermWritingFragment_to_chattingSentProposalFragment"
             app:destination="@id/chattingSentProposalFragment" />
+
     </fragment>
+
+    <fragment
+        android:id="@+id/partnerLocationInfoSearchFragment"
+        android:name="com.example.assu_fe_app.presentation.common.search.LocationInfoSearchFragment"
+        android:label="제휴업체 이름 검색"/>
 
     <fragment
         android:id="@+id/chattingSentProposalFragment"

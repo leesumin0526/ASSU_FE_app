@@ -1,171 +1,190 @@
 package com.example.assu_fe_app.presentation.common.location
 
-import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
+import com.example.assu_fe_app.data.dto.UserRole
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
+import com.example.assu_fe_app.data.dto.location.ViewportQuery
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentLoactionBinding
+import com.example.assu_fe_app.domain.model.location.AdminOnMap
+import com.example.assu_fe_app.domain.model.location.PartnerOnMap
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.presentation.common.location.adapter.AdminPartnerLocationAdapter
 import com.example.assu_fe_app.presentation.common.location.adapter.LocationSharedViewModel
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
-import com.kakao.vectormap.KakaoMap
-import com.kakao.vectormap.KakaoMapReadyCallback
-import com.kakao.vectormap.MapLifeCycleCallback
-import com.kakao.vectormap.MapView
+import com.example.assu_fe_app.ui.location.AdminPartnerLocationViewModel
+import com.google.android.gms.location.LocationServices
+import com.kakao.vectormap.*
+import com.kakao.vectormap.camera.CameraUpdateFactory
+import com.kakao.vectormap.label.Label
+import com.kakao.vectormap.label.LabelLayer
+import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelStyles
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlin.getValue
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LocationFragment :
     BaseFragment<FragmentLoactionBinding>(R.layout.fragment_loaction) {
+
     private val sharedViewModel: LocationSharedViewModel by activityViewModels()
     private lateinit var adapter: AdminPartnerLocationAdapter
     private var currentItem: LocationAdminPartnerSearchResultItem? = null
-    private lateinit var mapView: MapView
-    private lateinit var kakaoMap : KakaoMap
 
-    // 뷰모델 주입
-    private val vm: ChattingViewModel by viewModels()
+    private lateinit var mapView: MapView
+    private lateinit var kakaoMap: KakaoMap
+    private var mapReady = false
+
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
+
+    private var poiLayer: LabelLayer? = null
+    private var partnerStyles: LabelStyles? = null
+    private var adminStyles: LabelStyles? = null
+
+    private val labelToPartner = mutableMapOf<Label, PartnerOnMap>()
+    private val labelToAdmin   = mutableMapOf<Label, AdminOnMap>()
+
+    private val chatVm: ChattingViewModel by activityViewModels()
+    private val vm: AdminPartnerLocationViewModel by viewModels()
+
+    private val role: UserRole by lazy {
+        authTokenLocalStore.getUserRoleEnum() ?: UserRole.ADMIN
+    }
+
+    private val fused by lazy { LocationServices.getFusedLocationProviderClient(requireContext()) }
+    private val permLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { _ -> moveToDefaultThenQuery() }
+
+    private val DEFAULT_LATITUDE = 37.5662952
+    private val DEFAULT_LONGITUDE = 126.9779451
+    private val DEFAULT_ZOOM = 17
 
     override fun initView() {
-        val dummyList = listOf(
-            LocationAdminPartnerSearchResultItem("역전할머니맥주 숭실대점1", "서울 동작구 사당로 36-1 서정캐슬", true, "2025.02.24 ~ 2025.06.15"),
-            LocationAdminPartnerSearchResultItem("역전할머니맥주 숭실대점2", "서울 동작구 사당로 36-1 서정캐슬", false, "")
-        )
-        sharedViewModel.locationList.value = dummyList
-        adapter = AdminPartnerLocationAdapter(dummyList)
-
-        binding.viewLocationSearchBar.setOnClickListener {
-            navigateToSearch()
-        }
-        binding.ivLocationSearchIc.setOnClickListener {
-            navigateToSearch()
-        }
-        binding.tvLocationHint.setOnClickListener {
-            navigateToSearch()
-        }
-
-        binding.viewLocationMap.setOnClickListener{
-            binding.fvLocationItem.visibility = View.VISIBLE
-        }
-
-        binding.fvLocationItem.setOnClickListener {
-            val item = currentItem ?: return@setOnClickListener
-            val context = it.context
-
-            // TODO: 여기서 id 불러오는 방법 바꾸기
-            val storeId =1L
-            val partnerId = 5L
-
-            val entryMessage = if (item.isPartnered) {
-                "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
-            } else {
-                "'문의하기' 버튼을 통해 이동했습니다.이거야?"
-            }
-
-            vm.createRoom(
-                CreateChatRoomRequestDto(
-                    adminId = storeId,
-                    partnerId = partnerId)
-            )
-            binding.root.tag = entryMessage
-        //            val intent = Intent(context, ChattingActivity::class.java)
-
-//            val message = if (item.isPartnered) {
-//                "'제휴 계약서 보기' 버튼을 통해 이동했습니다."
-//            } else {
-//                "'문의하기' 버튼을 통해 이동했습니다.이거야?"
-//            }
-//
-//            intent.putExtra("entryMessage", message)
-//            context.startActivity(intent)
-        }
-//        mapView = MapView(requireContext())
-//        val mapContainer = binding.root.findViewById<ViewGroup>(R.id.view_location_map)
-//        mapContainer.addView(mapView)
-//
+        binding.viewLocationSearchBar.setOnClickListener { navigateToSearch() }
+        binding.ivLocationSearchIc.setOnClickListener { navigateToSearch() }
+        binding.tvLocationHint.setOnClickListener { navigateToSearch() }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapView = binding.viewLocationMap
-        mapView.start(object : MapLifeCycleCallback() {
-            override fun onMapDestroy() {
-                // 지도 API가 정상적으로 종료될 때 호출
-                Log.d("KakaoMap", "onMapDestroy: ")
-            }
 
-            override fun onMapError(error: Exception) {
-                // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출
-                Log.e("KakaoMap", "onMapError: ", error)
-            }
-        }, object : KakaoMapReadyCallback() {
-            override fun onMapReady(map: KakaoMap) {
-                // 정상적으로 인증이 완료되었을 때 호출
-                // KakaoMap 객체를 얻어 옵니다.
-                kakaoMap = map
-            }
-        })
+        mapView.start(
+            object : MapLifeCycleCallback() {
+                override fun onMapDestroy() { Log.d("KakaoMap", "onMapDestroy") }
+                override fun onMapError(error: Exception) { Log.e("KakaoMap", "onMapError", error) }
+            },
+            object : KakaoMapReadyCallback() {
+                override fun onMapReady(map: KakaoMap) {
+                    kakaoMap = map
+                    mapReady = true
 
-        // ViewModel 상태 수집
+                    // 클릭 리스너
+                    kakaoMap.setOnLabelClickListener(object : KakaoMap.OnLabelClickListener {
+                        override fun onLabelClicked(map: KakaoMap, layer: LabelLayer, label: Label): Boolean {
+                            handleLabelClick(label)
+                            return true
+                        }
+                    })
+
+                    // 마커 스타일 (벡터 → 비트맵, 크기 24dp)
+                    val partnerBmp = vectorToBitmap(R.drawable.ic_marker, 24)
+                    partnerStyles = kakaoMap.labelManager?.addLabelStyles(
+                        LabelStyles.from(LabelStyle.from(partnerBmp).setAnchorPoint(0.5f, 1.0f))
+                    )
+                    val adminBmp = vectorToBitmap(R.drawable.ic_marker, 24)
+                    adminStyles = kakaoMap.labelManager?.addLabelStyles(
+                        LabelStyles.from(LabelStyle.from(adminBmp).setAnchorPoint(0.5f, 1.0f))
+                    )
+
+                    poiLayer = kakaoMap.labelManager?.layer
+
+                    kakaoMap.setOnCameraMoveEndListener { _, _, _ -> requestNearbyFromCurrentViewport() }
+
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            vm.state.collect { s ->
+                                when (s) {
+                                    is AdminPartnerLocationViewModel.UiState.Idle -> Unit
+                                    is AdminPartnerLocationViewModel.UiState.Loading -> Log.d("UIState", "Loading…")
+                                    is AdminPartnerLocationViewModel.UiState.PartnerSuccess -> drawMarkersPartners(s.items)
+                                    is AdminPartnerLocationViewModel.UiState.AdminSuccess -> drawMarkersAdmins(s.items)
+                                    is AdminPartnerLocationViewModel.UiState.Fail ->
+                                        Log.e("UIState", "Fail: ${s.code}, ${s.message}")
+                                    is AdminPartnerLocationViewModel.UiState.Error ->
+                                        Log.e("UIState", "Error", s.t)
+                                }
+                            }
+                        }
+                    }
+
+                    moveToDefaultThenQuery()
+                }
+            }
+        )
+
+        // 채팅 상태 수집
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.createRoomState.collect { state ->
+                chatVm.createRoomState.collect { state ->
                     when (state) {
-                        is ChattingViewModel.CreateRoomUiState.Idle -> {
-                            setCreateLoading(false)
-                        }
-
-                        is ChattingViewModel.CreateRoomUiState.Loading -> {
-                            setCreateLoading(true)
-                        }
-
+                        is ChattingViewModel.CreateRoomUiState.Idle -> setCreateLoading(false)
+                        is ChattingViewModel.CreateRoomUiState.Loading -> setCreateLoading(true)
                         is ChattingViewModel.CreateRoomUiState.Success -> {
                             setCreateLoading(false)
-                            // 채팅방 화면으로 이동
-                            val intent =
-                                Intent(requireContext(), ChattingActivity::class.java).apply {
-                                    putExtra("roomId", state.data.roomId)
-                                    (binding.root.tag as? String)?.let {
-                                        putExtra(
-                                            "entryMessage",
-                                            it
-                                        )
-                                    }
-                                }
+                            val intent = android.content.Intent(requireContext(), com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java).apply {
+                                putExtra("roomId", state.data.roomId)
+                                (binding.root.tag as? String)?.let { putExtra("entryMessage", it) }
+                            }
                             startActivity(intent)
-                            vm.resetCreateState()
+                            chatVm.resetCreateState()
                         }
-
                         is ChattingViewModel.CreateRoomUiState.Fail -> {
                             setCreateLoading(false)
-                            Toast.makeText(
-                                requireContext(),
+                            Toast.makeText(requireContext(),
                                 "채팅방 생성 실패(${state.code}) ${state.message ?: ""}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                Toast.LENGTH_SHORT).show()
                         }
-
                         is ChattingViewModel.CreateRoomUiState.Error -> {
                             setCreateLoading(false)
-                            Toast.makeText(
-                                requireContext(),
-                                "오류: ${state.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(requireContext(),
+                                "오류: ${state.message}", Toast.LENGTH_SHORT).show()
                         }
+                    }
+                }
+            }
+        }
+
+        // 목록 상태 수집 + 마커 표시 (지도 준비 안됐으면 스킵)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.state.collect { s ->
+                    if (!mapReady) return@collect
+                    when (s) {
+                        is AdminPartnerLocationViewModel.UiState.Idle -> Unit
+                        is AdminPartnerLocationViewModel.UiState.Loading -> Log.d("UIState", "Loading…")
+                        is AdminPartnerLocationViewModel.UiState.PartnerSuccess -> drawMarkersPartners(s.items)
+                        is AdminPartnerLocationViewModel.UiState.AdminSuccess -> drawMarkersAdmins(s.items)
+                        is AdminPartnerLocationViewModel.UiState.Fail ->
+                            Log.e("UIState", "Fail: ${s.code}, ${s.message}")
+                        is AdminPartnerLocationViewModel.UiState.Error ->
+                            Log.e("UIState", "Error", s.t)
                     }
                 }
             }
@@ -173,60 +192,261 @@ class LocationFragment :
     }
 
     override fun initObserver() {
+        // 1) 지도 아래 캡슐 초기 데이터 바인딩 (첫 번째 아이템)
         sharedViewModel.locationList.observe(viewLifecycleOwner) { list ->
-            val item = list.getOrNull(1) ?: return@observe
+            val item = list.getOrNull(0) ?: return@observe
             currentItem = item
-
-            val fragment = childFragmentManager.findFragmentById(R.id.fv_location_item) as? LocationItemFragment
+            val fragment = childFragmentManager
+                .findFragmentById(R.id.fv_location_item) as? LocationItemFragment
             fragment?.showCapsuleInfo(item)
+        }
+
+        // 2) 채팅방 생성 상태 수집 → 성공 시 ChattingActivity 이동
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                chatVm.createRoomState.collect { state ->
+                    when (state) {
+                        is ChattingViewModel.CreateRoomUiState.Idle -> {
+                            setCreateLoading(false)
+                        }
+                        is ChattingViewModel.CreateRoomUiState.Loading -> {
+                            setCreateLoading(true)
+                        }
+                        is ChattingViewModel.CreateRoomUiState.Success -> {
+                            setCreateLoading(false)
+
+                            Log.d("CreateRoom", "roomId=${state.data.roomId}, adminView=${state.data.adminViewName}, partnerView=${state.data.partnerViewName}")
+
+                            // 서버 응답: roomId, adminViewName, partnerViewName 사용
+                            val roomId = state.data.roomId
+                            // TODO: 거꾸로 되어있는 것 같음 
+                            val displayName = when (role) {
+                                UserRole.ADMIN   -> state.data.adminViewName
+                                UserRole.PARTNER -> state.data.partnerViewName
+                                else             -> state.data.adminViewName
+                            }
+
+                            val intent = android.content.Intent(
+                                requireContext(),
+                                com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java
+                            ).apply {
+                                putExtra("roomId", roomId)
+                                putExtra("opponentName", displayName)
+                                // 캡슐 클릭 시 넣어둔 안내 메시지 (optional)
+                                (binding.root.tag as? String)?.let { putExtra("entryMessage", it) }
+                            }
+                            startActivity(intent)
+
+                            chatVm.resetCreateState()
+                        }
+                        is ChattingViewModel.CreateRoomUiState.Fail -> {
+                            setCreateLoading(false)
+                            android.widget.Toast.makeText(
+                                requireContext(),
+                                "채팅방 생성 실패(${state.code}) ${state.message ?: ""}",
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                            chatVm.resetCreateState()
+                        }
+                        is ChattingViewModel.CreateRoomUiState.Error -> {
+                            setCreateLoading(false)
+                            android.widget.Toast.makeText(
+                                requireContext(),
+                                "오류: ${state.message}",
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                            chatVm.resetCreateState()
+                        }
+                    }
+                }
+            }
         }
     }
 
     private fun navigateToSearch() {
-        val intent = Intent(requireContext(), LocationSearchActivity::class.java)
-        startActivity(intent)
+        startActivity(android.content.Intent(requireContext(), LocationSearchActivity::class.java))
     }
 
     private fun setCreateLoading(loading: Boolean) {
-        // 캡슐 뷰 클릭 방지
         binding.fvLocationItem.isEnabled = !loading
+    }
+
+    // ===== 카메라 이동 & 조회 =====
+    private fun moveCameraAndQuery(lat: Double, lng: Double) {
+        if (!mapReady) return
+        kakaoMap.moveCamera(
+            CameraUpdateFactory.newCenterPosition(LatLng.from(lat, lng), DEFAULT_ZOOM)
+        )
+        requestNearbyFromCurrentViewport()
+    }
+
+    private fun moveToDefaultThenQuery() {
+        moveCameraAndQuery(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+    }
+
+    private fun requestNearbyFromCurrentViewport() {
+        if (!mapReady || mapView.width == 0 || mapView.height == 0) return
+        val vp = mapView.getViewportCorners(kakaoMap)
+        val q = ViewportQuery(
+            lng1 = vp.nw.longitude, lat1 = vp.nw.latitude,
+            lng2 = vp.ne.longitude, lat2 = vp.ne.latitude,
+            lng3 = vp.se.longitude, lat3 = vp.se.latitude,
+            lng4 = vp.sw.longitude, lat4 = vp.sw.latitude
+        )
+        vm.load(role, q)
+    }
+
+    private fun MapView.getViewportCorners(kakaoMap: KakaoMap): Viewport {
+        val w = width
+        val h = height
+
+        val nw = kakaoMap.fromScreenPoint(0, 0)!!
+        val ne = kakaoMap.fromScreenPoint(w, 0)!!
+        val se = kakaoMap.fromScreenPoint(w, h)!!
+        val sw = kakaoMap.fromScreenPoint(0, h)!!
+
+        return Viewport(
+            minLng = listOf(nw.longitude, ne.longitude, se.longitude, sw.longitude).minOrNull() ?: 0.0,
+            minLat = listOf(nw.latitude, ne.latitude, se.latitude, sw.latitude).minOrNull() ?: 0.0,
+            maxLng = listOf(nw.longitude, ne.longitude, se.longitude, sw.longitude).maxOrNull() ?: 0.0,
+            maxLat = listOf(nw.latitude, ne.latitude, se.latitude, sw.latitude).maxOrNull() ?: 0.0,
+            nw = nw, ne = ne, se = se, sw = sw
+        )
+    }
+
+    private data class Viewport(
+        val minLng: Double, val minLat: Double,
+        val maxLng: Double, val maxLat: Double,
+        val nw: LatLng, val ne: LatLng, val se: LatLng, val sw: LatLng
+    )
+
+    // ===== 파트너 마커 (ADMIN에서 보는 목록) =====
+    private fun drawMarkersPartners(items: List<PartnerOnMap>) {
+        if (!mapReady) return
+        val layer = poiLayer ?: kakaoMap.labelManager?.layer ?: return
+        val styles = partnerStyles ?: return
+
+        labelToPartner.clear()
+        labelToAdmin.clear()
+        layer.removeAll()
+
+        items.forEach { p ->
+            val label = layer.addLabel(
+                LabelOptions.from(LatLng.from(p.latitude, p.longitude))
+                    .setStyles(styles)
+            )
+            labelToPartner[label] = p
+        }
+    }
+
+    // ===== 관리자(기관) 마커 (PARTNER에서 보는 목록) =====
+    private fun drawMarkersAdmins(items: List<AdminOnMap>) {
+        if (!mapReady) return
+        val layer = poiLayer ?: kakaoMap.labelManager?.layer ?: return
+        val styles = adminStyles ?: return
+
+        labelToPartner.clear()
+        labelToAdmin.clear()
+        layer.removeAll()
+
+        items.forEach { a ->
+            val label = layer.addLabel(
+                LabelOptions.from(LatLng.from(a.latitude, a.longitude))
+                    .setStyles(styles)
+            )
+            labelToAdmin[label] = a
+        }
+    }
+
+    // ===== 라벨 클릭 → 아래 캡슐 띄우기 =====
+    private fun handleLabelClick(label: Label) {
+        when (role) {
+            UserRole.ADMIN -> {
+                // ADMIN은 파트너 마커만 유효
+                val p = labelToPartner[label] ?: return
+                showCapsule(
+                    LocationAdminPartnerSearchResultItem(
+                        id = p.partnerId,                   // 상대(파트너) id
+                        shopName = p.shopName,
+                        address = p.address ?: "",
+                        partnered = p.partnered,
+                        partnershipId = p.partnershipId,
+                        partnershipStartDate = p.partnershipStartDate,
+                        partnershipEndDate = p.partnershipEndDate,
+                        latitude = p.latitude,
+                        longitude = p.longitude,
+                        paperId = null,
+                        profileUrl = p.profileUrl,
+                        term = if (!p.partnershipStartDate.isNullOrBlank() && !p.partnershipEndDate.isNullOrBlank())
+                            "${p.partnershipStartDate} ~ ${p.partnershipEndDate}"
+                        else null
+                    )
+                )
+            }
+
+            UserRole.PARTNER -> {
+                // PARTNER는 관리자 마커만 유효
+                val a = labelToAdmin[label] ?: return
+                showCapsule(
+                    LocationAdminPartnerSearchResultItem(
+                        id = a.adminId,                     // 상대(관리자) id
+                        shopName = a.name,
+                        address = a.address ?: "",
+                        partnered = a.partnered,
+                        partnershipId = a.partnershipId,
+                        partnershipStartDate = a.partnershipStartDate,
+                        partnershipEndDate = a.partnershipEndDate,
+                        latitude = a.latitude,
+                        longitude = a.longitude,
+                        paperId = null,
+                        profileUrl = a.profileUrl,
+                        term = if (!a.partnershipStartDate.isNullOrBlank() && !a.partnershipEndDate.isNullOrBlank())
+                            "${a.partnershipStartDate} ~ ${a.partnershipEndDate}"
+                        else null
+                    )
+                )
+            }
+
+            else -> return
+        }
+    }
+
+    private fun showCapsule(item: LocationAdminPartnerSearchResultItem) {
+        val frag = childFragmentManager.findFragmentById(R.id.fv_location_item) as? LocationItemFragment
+            ?: LocationItemFragment().also {
+                childFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fv_location_item, it)
+                    .commitNowAllowingStateLoss()
+            }
+        currentItem = item
+        frag.showCapsuleInfo(item)
+        binding.fvLocationItem.apply {
+            visibility = View.VISIBLE
+            bringToFront()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-//        mapView.removeAllViews()
-        if (::mapView.isInitialized) {
-            mapView.removeAllViews()
-        }
+        mapReady = false
+        if (::mapView.isInitialized) mapView.removeAllViews()
     }
+    override fun onResume() { super.onResume(); if (::mapView.isInitialized) mapView.resume() }
+    override fun onPause() { super.onPause(); if (::mapView.isInitialized) mapView.pause() }
 
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("KakaoMapLifecycle", "onStop: Fragment stopped")
-        // onPause에서 이미 mapView.pause()를 호출하고 있으므로,
-        // Kakao SDK에서 명시적으로 onStop에서 호출해야 하는 API가 없다면 추가 작업은 필요 없을 수 있습니다.
-        // SDK 문서 확인 필요.
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Fragment가 화면에 다시 나타날 때 MapView를 다시 시작합니다.
-        // MapView가 초기화된 후에만 start()를 호출해야 합니다.
-        if (::mapView.isInitialized) {
-            Log.d("KakaoMapLifecycle", "onResume: Starting MapView")
-            mapView.resume() // Kakao SDK에 resume()이 있다면 사용, 없다면 start()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        // Fragment가 화면에서 사라질 때 MapView를 일시 중지합니다.
-        // MapView가 초기화된 후에만 pause()를 호출해야 합니다.
-        if (::mapView.isInitialized) {
-            Log.d("KakaoMapLifecycle", "onPause: Pausing MapView")
-            mapView.pause() // Kakao SDK에 pause()가 있다면 사용, 없다면 stop() 또는 API 문서 참고
-        }
+    // ===== 벡터 → 비트맵 =====
+    private fun vectorToBitmap(resId: Int, targetDp: Int): Bitmap {
+        val d = ContextCompat.getDrawable(requireContext(), resId)
+            ?: throw IllegalArgumentException("Drawable not found")
+        val density = resources.displayMetrics.density
+        val w = (targetDp * density).toInt().coerceAtLeast(1)
+        val h = (targetDp * density).toInt().coerceAtLeast(1)
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bmp)
+        d.setBounds(0, 0, canvas.width, canvas.height)
+        d.draw(canvas)
+        return bmp
     }
 
 }

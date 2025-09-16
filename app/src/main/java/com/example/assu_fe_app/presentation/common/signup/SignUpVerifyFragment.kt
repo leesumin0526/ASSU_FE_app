@@ -28,7 +28,7 @@ class SignUpVerifyFragment :
     BaseFragment<FragmentSignUpVerifyBinding>(R.layout.fragment_sign_up_verify) {
 
     private val viewModel: SignUpVerifyViewModel by viewModels()
-    
+
     private var countDownTimer: CountDownTimer? = null
     private val totalTimeMillis = 5 * 60 * 1000L // 5분
     private var isVerified = false
@@ -63,7 +63,7 @@ class SignUpVerifyFragment :
                 is SendPhoneVerificationUiState.Loading -> Unit
             }
         }
-        
+
         viewModel.verifyPhoneVerificationState.observe(this) { state ->
             when (state) {
                 is VerifyPhoneVerificationUiState.Success -> {
@@ -292,7 +292,6 @@ class SignUpVerifyFragment :
         binding.llQuestionCodeIsNotComing.visibility = View.GONE
         setButtonEnabled(false)
     }
-
 
     override fun onDestroyView() {
         countDownTimer?.cancel()

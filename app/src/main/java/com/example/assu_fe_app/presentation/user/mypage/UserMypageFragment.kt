@@ -42,6 +42,7 @@ class UserMypageFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.tvAccountName.setText(authTokenLocalStore.getUserName())
         initClick() // 여기서 호출
     }
 
@@ -76,8 +77,9 @@ class UserMypageFragment
 
         // 고객센터
         binding.clAccountComponent6.setOnClickListener {
-            UserCustomerServiceDialogFragment()
-                .show(childFragmentManager, "CustomerServiceDialog")
+            findNavController().navigate(
+                R.id.action_user_mypage_to_inquiry
+            )
         }
     }
 

@@ -65,6 +65,7 @@
                 android:layout_gravity="center">
 
                 <TextView
+                    android:id="@+id/tv_photo_review_admin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="인쌩맥주 숭실대점"
@@ -84,6 +85,7 @@
                         android:textColor="@color/assu_font_sub"/>
 
                     <TextView
+                        android:id="@+id/tv_photo_review_content"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="4인 이상 식사 시 음료 제공"
@@ -220,14 +222,64 @@
             android:layout_height="10dp"
             app:layout_constraintTop_toBottomOf="@id/tv_my_photo_review_select_photo"/>
 
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_select_photo"
+        <View
+            android:id="@+id/view_photo_review_mg8"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.0712"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_photo_review_mg7"/>
+
+        <View
+            android:id="@+id/view_photo_review_mg9"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.0712"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_photo_review_mg7"/>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/view_photo_review_mg7"
-            android:layout_marginStart="24dp"/>
+            app:layout_constraintStart_toEndOf="@id/view_photo_review_mg8"
+            app:layout_constraintEnd_toStartOf="@id/view_photo_review_mg9">
+
+            <!-- 첫 번째 ImageView: 부모의 시작(start)에 제약(constraint)을 걸어 맨 왼쪽에 배치 -->
+            <ImageView
+                android:id="@+id/iv_photo_review_photo1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_select_photo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <!-- 두 번째 ImageView: 부모의 중앙에 제약(constraint)을 걸어 중앙에 배치 -->
+            <ImageView
+                android:id="@+id/iv_photo_review_photo2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_select_photo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <!-- 세 번째 ImageView: 부모의 끝(end)에 제약(constraint)을 걸어 맨 오른쪽에 배치 -->
+            <ImageView
+                android:id="@+id/iv_photo_review_photo3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_select_photo"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
         <androidx.constraintlayout.widget.ConstraintLayout

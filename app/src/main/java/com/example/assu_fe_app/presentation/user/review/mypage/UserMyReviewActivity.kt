@@ -2,22 +2,33 @@ package com.example.assu_fe_app.presentation.user.review.mypage
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
+import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.review.Review
 import com.example.assu_fe_app.databinding.ActivityUserMyReviewBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
+import com.example.assu_fe_app.ui.review.GetReviewViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
+import kotlin.getValue
 
-class UserMyReviewActivity : BaseActivity<ActivityUserMyReviewBinding>(R.layout.activity_user_my_review)
-    , OnItemClickListener, OnReviewDeleteConfirmedListener {
+@AndroidEntryPoint
+class UserMyReviewActivity :
+    BaseActivity<ActivityUserMyReviewBinding>(R.layout.activity_user_my_review),
+    OnItemClickListener, OnReviewDeleteConfirmedListener {
 
-    private lateinit var userReviewAdapter : UserReviewAdapter
-    val manager = supportFragmentManager
+    private val getReviewViewModel: GetReviewViewModel by viewModels()
+
+    private lateinit var userReviewAdapter: UserReviewAdapter
+    private val manager = supportFragmentManager
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -39,20 +50,35 @@ class UserMyReviewActivity : BaseActivity<ActivityUserMyReviewBinding>(R.layout.
         }
 
         initAdapter()
+        initScrollListener()
     }
 
     override fun initObserver() {
+        getReviewViewModel.reviewList.observe(this) { reviews ->
+            if (reviews.isNullOrEmpty()) {
+                // 빈 리스트 처리
+                userReviewAdapter.submitList(emptyList())
+                binding.tvManageReviewReviewCount.text = "0"
 
+                binding.flManageReviewReviewNull.visibility = View.VISIBLE
+                binding.flManageReviewReviewExist.visibility = View.GONE
+            } else {
+                userReviewAdapter.submitList(reviews)
+                binding.tvManageReviewReviewCount.text = reviews.size.toString()
+                binding.flManageReviewReviewNull.visibility = View.GONE
+                binding.flManageReviewReviewExist.visibility = View.VISIBLE
+            }
+        }
     }
 
-    private fun Int.dpToPx(context: Context): Int {
+    fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun initAdapter(){
+    private fun initAdapter() {
         //adapter초기화
-        userReviewAdapter = UserReviewAdapter(showDeleteButton = true, listener = this )
+        userReviewAdapter = UserReviewAdapter(showDeleteButton = true, listener = this)
 
         binding.rvManageReview.apply {
             layoutManager = LinearLayoutManager(this@UserMyReviewActivity)
@@ -61,41 +87,42 @@ class UserMyReviewActivity : BaseActivity<ActivityUserMyReviewBinding>(R.layout.
 
         // 여기에 review List가 null 일때 ui 업데이트 관련 사항도 해줘야 함.
 
-        userReviewAdapter.setData(createDummyData())
+
         binding.tvManageReviewReviewCount.text = userReviewAdapter.itemCount.toString()
 
     }
 
-    override fun onClick(position : Int) {
+    private fun initScrollListener() {
+        binding.rvManageReview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val lastVisibleItemPosition =
+                    layoutManager.findLastCompletelyVisibleItemPosition()
+                val totalItemCount = layoutManager.itemCount
+
+                // 스크롤이 마지막 아이템에 도달했고, 현재 로딩 중이 아니라면
+                if (lastVisibleItemPosition == totalItemCount - 1 && !getReviewViewModel.isFetchingReviews) {
+                    // 다음 페이지 로드
+                    getReviewViewModel.getReviews()
+                }
+            }
+        })
+    }
+
+    override fun onClick(position: Int) {
         val dialog = ReviewDeleteDialogFragment.newInstance(position)
         dialog.show(manager, "ReviewDeleteDialogFragment")
     }
 
     override fun onReviewDeleteConfirmed(position: Int) {
-        userReviewAdapter.removeAt(position)
-        binding.tvManageReviewReviewCount.text = userReviewAdapter.itemCount.toString()
-    }
-
-    // 임의의 DummyData를 생성하는 함수
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createDummyData(): List<Review>{
-        return listOf(
-            Review(
-                marketName = "스시천국",
-                studentCategory = "경영대학 재학생",
-                rate = 5,
-                content = "진짜 맛있었어요! 또 가고 싶어요!",
-                date = LocalDateTime.now().minusDays(1),
-                reviewImage = listOf()
-            ),
-            Review(
-                marketName = "돈까스집",
-                studentCategory = "경영대학 재학생",
-                rate = 4,
-                content = "튀김이 바삭해서 좋았어요. 양도 많아요.",
-                date = LocalDateTime.now().minusDays(3),
-                reviewImage = listOf()
-            )
-        )
+        // 해당 position의 리뷰 ID 가져오기
+        val currentList = userReviewAdapter.currentList
+        if (position < currentList.size) {
+            val reviewToDelete = currentList[position]
+            // ViewModel을 통해 서버에서 삭제
+            getReviewViewModel.deleteReview(reviewToDelete.id)
+        }
     }
 }
