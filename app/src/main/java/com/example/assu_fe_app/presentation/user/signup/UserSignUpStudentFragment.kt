@@ -8,12 +8,16 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentUserSignUpStudentBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
+import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
+import kotlinx.coroutines.launch
 
 class UserSignUpStudentFragment :
     BaseFragment<FragmentUserSignUpStudentBinding>(R.layout.fragment_user_sign_up_student) {
@@ -22,18 +26,33 @@ class UserSignUpStudentFragment :
 
     override fun initObserver() {
         // 학생 토큰 검증 결과 관찰
-        signUpViewModel.studentVerifyResult.observe(viewLifecycleOwner) { result ->
-            result?.let {
-                // 검증 성공 시 다음 화면으로 이동
-                findNavController().navigate(R.id.action_user_student_to_student_check)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                signUpViewModel.studentVerifyResult.collect { result ->
+                    result?.let {
+                        // 검증 성공 시 다음 화면으로 이동
+                        findNavController().navigate(R.id.action_user_student_to_student_check)
+                    }
+                }
             }
         }
 
         // 에러 메시지 관찰
-        signUpViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
-            error?.let {
-                android.widget.Toast.makeText(requireContext(), it, android.widget.Toast.LENGTH_SHORT).show()
-                signUpViewModel.clearError()
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                signUpViewModel.errorMessage.collect { error ->
+                    error?.let {
+                        // 서버 에러 메시지는 토스트로 표시하지 않음
+                        // 사용자에게는 간단한 안내 메시지만 표시
+                        val userMessage = when {
+                            it.contains("enrollmentStatus") -> "학생 인증에 실패했습니다. 다시 시도해주세요."
+                            it.contains("Non-null value") -> "학생 인증에 실패했습니다. 다시 시도해주세요."
+                            else -> it
+                        }
+                        android.widget.Toast.makeText(requireContext(), userMessage, android.widget.Toast.LENGTH_SHORT).show()
+                        signUpViewModel.clearError()
+                    }
+                }
             }
         }
     }

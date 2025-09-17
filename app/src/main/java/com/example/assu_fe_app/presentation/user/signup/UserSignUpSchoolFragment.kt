@@ -12,7 +12,7 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentUserSignUpSchoolBinding
 import com.example.assu_fe_app.databinding.FragmentUserSignUpSchoolDropDownBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
+import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
 class UserSignUpSchoolFragment : BaseFragment<FragmentUserSignUpSchoolBinding>(R.layout.fragment_user_sign_up_school) {
