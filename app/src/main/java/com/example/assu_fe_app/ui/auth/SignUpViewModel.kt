@@ -88,6 +88,16 @@ class SignUpViewModel @Inject constructor(
         _signUpData.value = _signUpData.value.copy(locationAgree = agree)
     }
 
+    // 개인정보 처리방침 동의 설정
+    fun setPrivacyAgree(agree: Boolean) {
+        _signUpData.value = _signUpData.value.copy(privacyAgree = agree)
+    }
+
+    // 서비스 이용약관 동의 설정
+    fun setTermsAgree(agree: Boolean) {
+        _signUpData.value = _signUpData.value.copy(termsAgree = agree)
+    }
+
     // 관리자 회원가입 관련 메서드들
     fun setEmail(email: String) {
         _signUpData.value = _signUpData.value.copy(email = email)
@@ -378,6 +388,8 @@ data class SignUpData(
     val sIdno: String? = null,
     val marketingAgree: Boolean = false,
     val locationAgree: Boolean = false,
+    val privacyAgree: Boolean = false,
+    val termsAgree: Boolean = false,
     // 관리자 회원가입 관련 필드들
     val email: String? = null,
     val password: String? = null,

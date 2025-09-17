@@ -27,8 +27,3 @@ data class StudentTokenSignUpResponseDto(
         get() = status == "ACTIVE"
 }
 
-@JsonClass(generateAdapter = true)
-data class TokenDto(
-    val accessToken: String,
-    val refreshToken: String
-)

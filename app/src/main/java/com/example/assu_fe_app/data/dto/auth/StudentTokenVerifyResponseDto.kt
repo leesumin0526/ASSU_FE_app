@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 data class StudentTokenVerifyResponseDto(
     val studentNumber: String,
     val name: String,
-    val enrollmentStatus: String,
+    val enrollmentStatus: String?, // nullable로 변경
     val yearSemester: String,
     val major: String
 )
