@@ -7,7 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentUserHomeBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.ui.user.UserHomeViewModel
@@ -22,7 +22,7 @@ class UserHomeFragment :
     private val viewModel: UserHomeViewModel by viewModels()
 
     @Inject
-    lateinit var tokenManager: TokenManager
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {

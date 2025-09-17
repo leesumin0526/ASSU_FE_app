@@ -8,10 +8,10 @@ import com.example.assu_fe_app.data.dto.auth.PhoneVerificationVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentLoginRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentLoginResponseDto
 import retrofit2.http.Body
-import retrofit2.http.PATCH
 import retrofit2.http.POST
 
-interface AuthService {
+// 로그인 전용 Service (NoAuth)
+interface NoAuthService {
     
     @POST("auth/students/login")
     suspend fun studentLogin(
@@ -23,9 +23,6 @@ interface AuthService {
         @Body request: CommonLoginRequestDto
     ): BaseResponse<CommonLoginResponseDto>
     
-    @POST("auth/logout")
-    suspend fun logout(): BaseResponse<Any>
-    
     @POST("auth/phone-verification/send")
     suspend fun sendPhoneVerification(
         @Body request: PhoneVerificationSendRequestDto
@@ -35,7 +32,4 @@ interface AuthService {
     suspend fun verifyPhoneVerification(
         @Body request: PhoneVerificationVerifyRequestDto
     ): BaseResponse<Any>
-    
-    @PATCH("auth/withdraw")
-    suspend fun withdraw(): BaseResponse<Any>
 }

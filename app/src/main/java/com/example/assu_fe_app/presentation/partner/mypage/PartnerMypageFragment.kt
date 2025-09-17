@@ -12,24 +12,24 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentPartnerMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
-import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import com.example.assu_fe_app.data.manager.TokenManager
-import com.example.assu_fe_app.presentation.admin.mypage.AdminMypageFragment
+import com.example.assu_fe_app.ui.common.mypage.MypageViewModel
 import com.example.assu_fe_app.ui.profileImage.ProfileImageViewModel
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PartnerMypageFragment
     : BaseFragment<FragmentPartnerMypageBinding>(R.layout.fragment_partner_mypage) {
 
     @Inject
-    lateinit var tokenManager: TokenManager
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
+
     private val viewModel: MypageViewModel by viewModels()
     private val profileViewModel: ProfileImageViewModel by viewModels()
 
@@ -49,7 +49,7 @@ class PartnerMypageFragment
 
     override fun initView(){
         // UI 초기화
-        binding.tvPartnerAccountName.setText(tokenManager.getUserName())
+        binding.tvPartnerAccountName.setText(authTokenLocalStore.getUserName())
 
         binding.tvPartnerAccountImageEdit.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -61,7 +61,7 @@ class PartnerMypageFragment
             }
         }
 
-        binding.tvPartnerAccountName.setText(tokenManager.getUserName())
+        binding.tvPartnerAccountName.setText(authTokenLocalStore.getUserName())
     }
 
     override fun initObserver() {
@@ -93,7 +93,7 @@ class PartnerMypageFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvPartnerAccountName.setText(tokenManager.getUserName())
+        binding.tvPartnerAccountName.setText(authTokenLocalStore.getUserName())
         initClickListeners()
     }
 

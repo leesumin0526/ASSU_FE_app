@@ -17,7 +17,7 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.UserRole
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.example.assu_fe_app.data.dto.location.ViewportQuery
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentLoactionBinding
 import com.example.assu_fe_app.domain.model.location.AdminOnMap
 import com.example.assu_fe_app.domain.model.location.PartnerOnMap
@@ -50,7 +50,7 @@ class LocationFragment :
     private lateinit var kakaoMap: KakaoMap
     private var mapReady = false
 
-    @Inject lateinit var tokenManager: TokenManager
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     private var poiLayer: LabelLayer? = null
     private var partnerStyles: LabelStyles? = null
@@ -63,7 +63,7 @@ class LocationFragment :
     private val vm: AdminPartnerLocationViewModel by viewModels()
 
     private val role: UserRole by lazy {
-         tokenManager.getUserRoleEnum() ?: UserRole.ADMIN
+        authTokenLocalStore.getUserRoleEnum() ?: UserRole.ADMIN
     }
 
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(requireContext()) }

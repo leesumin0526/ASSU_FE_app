@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.UserRole
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.ItemAdminPartnerLocationSearchResultItemBinding
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import javax.inject.Inject

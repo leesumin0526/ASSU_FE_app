@@ -13,11 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentAdminMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
-import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
+import com.example.assu_fe_app.ui.common.mypage.MypageViewModel
 import com.example.assu_fe_app.ui.profileImage.ProfileImageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -29,8 +29,10 @@ import javax.inject.Inject
 class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fragment_admin_mypage) {
 
     @Inject
-    lateinit var tokenManager: TokenManager
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
+
     private val viewModel: MypageViewModel by viewModels()
+
     private val profileViewModel: ProfileImageViewModel by viewModels()
 
     // Android 13+ (Tiramisu) 권장 포토 피커
@@ -49,7 +51,7 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
 
     override fun initView(){
         // UI 초기화
-        binding.tvAdmAccountName.setText(tokenManager.getUserName())
+        binding.tvAdmAccountName.setText(authTokenLocalStore.getUserName())
 
         binding.tvAdmAccountImageEdit.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -92,7 +94,7 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tvAdmAccountName.setText(tokenManager.getUserName())
+        binding.tvAdmAccountName.setText(authTokenLocalStore.getUserName())
         initClick()
     }
 
@@ -116,7 +118,7 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
                 .show(childFragmentManager, "PendingPartnershipDialog")
         }
 
-        binding.tvAdmAccountName.setText(tokenManager.getUserName())
+        binding.tvAdmAccountName.setText(authTokenLocalStore.getUserName())
 
         // 고객센터
         binding.clAdmAccountComponent5.setOnClickListener {

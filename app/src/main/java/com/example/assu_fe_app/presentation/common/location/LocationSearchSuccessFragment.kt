@@ -8,7 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.UserRole
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentLocationSearchSuccessBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.location.adapter.AdminPartnerLocationAdapter
@@ -16,13 +16,12 @@ import com.example.assu_fe_app.presentation.common.location.adapter.LocationShar
 import com.example.assu_fe_app.ui.map.AdminPartnerKeyWordSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlin.getValue
 
 
 @AndroidEntryPoint
 class LocationSearchSuccessFragment :
     BaseFragment<FragmentLocationSearchSuccessBinding>(R.layout.fragment_location_search_success) {
-    @Inject lateinit var tokenManager: TokenManager
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     private val sharedViewModel: LocationSharedViewModel by viewModels()
     private val searchViewModel : AdminPartnerKeyWordSearchViewModel by activityViewModels()
@@ -56,7 +55,7 @@ class LocationSearchSuccessFragment :
     }
 
     override fun initView() {
-        role = tokenManager.getUserRoleEnum() ?: UserRole.ADMIN
+        role = authTokenLocalStore.getUserRoleEnum() ?: UserRole.ADMIN
         initAdapter()
     }
 

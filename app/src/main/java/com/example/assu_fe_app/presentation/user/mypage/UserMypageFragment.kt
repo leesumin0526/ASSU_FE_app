@@ -7,12 +7,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentUserMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
-import com.example.assu_fe_app.presentation.common.mypage.CustomerServiceDialogFragment
-import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
+import com.example.assu_fe_app.ui.common.mypage.MypageViewModel
 import com.example.assu_fe_app.presentation.user.review.mypage.UserMyReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -24,7 +23,8 @@ class UserMypageFragment
     : BaseFragment<FragmentUserMypageBinding>(R.layout.fragment_user_mypage) {
 
     @Inject
-    lateinit var tokenManager: TokenManager
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
+
     private val viewModel: MypageViewModel by viewModels()
 
     override fun initView() { /* no-op */ }
@@ -42,7 +42,7 @@ class UserMypageFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvAccountName.setText(tokenManager.getUserName())
+        binding.tvAccountName.setText(authTokenLocalStore.getUserName())
         initClick() // 여기서 호출
     }
 

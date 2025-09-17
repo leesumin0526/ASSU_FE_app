@@ -8,7 +8,7 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.UserRole
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.ItemLocationBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
@@ -16,8 +16,8 @@ import com.example.assu_fe_app.presentation.common.contract.toContractData
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LocationItemFragment :
@@ -26,13 +26,13 @@ class LocationItemFragment :
     private val chatVm: ChattingViewModel by activityViewModels()
     private val partnershipVm: PartnershipViewModel by activityViewModels()
 
-    @Inject lateinit var tokenManager: TokenManager
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     private var lastItem: LocationAdminPartnerSearchResultItem? = null
     private var pendingPartnershipId: Long? = null
 
     private val role: UserRole by lazy {
-        tokenManager.getUserRoleEnum() ?: UserRole.ADMIN
+        authTokenLocalStore.getUserRoleEnum() ?: UserRole.ADMIN
     }
 
     override fun initView() = Unit
@@ -55,7 +55,7 @@ class LocationItemFragment :
                         val (fallbackStart, fallbackEnd) = parseTerm(current?.term)
 
                         // 내 이름 / 상대 이름
-                        val meName = tokenManager.getUserName() ?: "-"
+                        val meName = authTokenLocalStore.getUserName() ?: "-"
                         val counterpartName = current?.shopName ?: "-"
 
                         // 역할에 따라 다이얼로그용 이름 확정
@@ -119,13 +119,13 @@ class LocationItemFragment :
                 // 채팅방 생성
                 val req = when (role) {
                     UserRole.ADMIN -> {
-                        val adminId   = tokenManager.getUserId()
+                        val adminId   = authTokenLocalStore.getUserId()
                         val partnerId = current.id
                         CreateChatRoomRequestDto(adminId = adminId, partnerId = partnerId)
                     }
                     UserRole.PARTNER -> {
                         val adminId   = current.id
-                        val partnerId = tokenManager.getUserId()
+                        val partnerId = authTokenLocalStore.getUserId()
                         CreateChatRoomRequestDto(adminId = adminId, partnerId = partnerId)
                     }
                     else -> return@OnClickListener
@@ -152,7 +152,7 @@ class LocationItemFragment :
     private fun openContractDialogFallback(item: LocationAdminPartnerSearchResultItem) {
         val (start, end) = parseTerm(item.term)
 
-        val meName = tokenManager.getUserName() ?: "-"
+        val meName = authTokenLocalStore.getUserName() ?: "-"
         val counterpartName = item.shopName
         val (partnerNameFb, adminNameFb) = when (role) {
             UserRole.ADMIN   -> counterpartName to meName

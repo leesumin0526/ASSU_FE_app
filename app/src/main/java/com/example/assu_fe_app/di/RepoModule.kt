@@ -1,7 +1,5 @@
 package com.example.assu_fe_app.di
 
-import com.example.assu_fe_app.data.local.TokenProvider
-import com.example.assu_fe_app.data.local.TokenProviderImpl
 import com.example.assu_fe_app.data.repository.auth.AuthRepository
 import com.example.assu_fe_app.data.repository.certification.CertificationRepository
 import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
@@ -82,11 +80,6 @@ abstract class RepoModule {
     ): CertificationRepository
 
 
-    @Binds
-    @Singleton
-    abstract fun bindTokenProvider(
-        impl: TokenProviderImpl
-    ): TokenProvider
 
     @Binds @Singleton
     abstract fun bindNotificationRepository(
