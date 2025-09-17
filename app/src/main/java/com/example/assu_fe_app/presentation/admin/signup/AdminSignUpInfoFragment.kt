@@ -1,9 +1,10 @@
 package com.example.assu_fe_app.presentation.admin.signup
 
 import SignUpDropdownAdapter
-import android.os.Bundle
+import android.content.Intent
 import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -15,8 +16,11 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.DropdownAdminPartBinding
 import com.example.assu_fe_app.databinding.FragmentAdminSignUpInfoBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.example.assu_fe_app.presentation.common.signup.SignUpViewModel
+import com.example.assu_fe_app.presentation.common.location.LocationSearchActivity
+import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
+import com.example.assu_fe_app.domain.model.enums.Department
+import com.example.assu_fe_app.domain.model.enums.Major
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,24 +39,29 @@ class AdminSignUpInfoFragment :
 
     private var isAddressSearchClicked = false
 
-    // 예시 데이터: 단과대학별 학과/부 목록
-    private val majorData = mapOf(
-        "IT대학" to listOf("컴퓨터학부", "소프트웨어학부", "글로벌미디어학부", "AI융합학부","정보보호학과", "전자정보공학부"),
-        "인문대학" to listOf("국어국문학과", "영어영문학과", "사학과", "일어일문학과","독어독문학과","철학과"),
-        "경영대학" to listOf("경영학부"),
-        "공과대학" to listOf("신소재공학과","기계공학과","전자공학과","전기공학과","산업정보시스템공학과"),
-        "사회과학대학" to listOf("건축학부","기독교학과","평생교육학과")
-    )
+    // 주소 검색 결과를 받기 위한 ActivityResultLauncher
+    private val addressSearchLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == LocationSearchActivity.RESULT_CODE_ADDRESS_SELECTED) {
+            val selectedAddress = result.data?.getStringExtra(LocationSearchActivity.EXTRA_SELECTED_ADDRESS)
+            selectedAddress?.let { address ->
+                binding.tvAdminAddress.text = address
+                Log.d("AdminSignUpInfoFragment", "받은 주소: $address")
+            }
+        }
+    }
+
+    // Department enum을 사용한 학과/부 목록
+    private val majorData = Department.values().associate { department ->
+        department.displayName to Major.values()
+            .filter { it.department == department }
+            .map { it.displayName }
+    }
 
     override fun initObserver() {}
 
     override fun initView() {
-
-        parentFragmentManager.setFragmentResultListener("result", this) { _, bundle ->
-            val resultData = bundle.getString("selectedAddress")
-            Log.d("SignupInfoFragment", "받은 데이터: $resultData")
-            binding.tvAdminAddress.text = resultData
-        }
 
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
@@ -115,7 +124,7 @@ class AdminSignUpInfoFragment :
     }
 
     private fun initDepartmentDropdown() {
-        val items = listOf("인문대학", "자연과학대학", "경영대학", "사회과학대학", "공과대학", "IT대학")
+        val items = Department.values().map { it.displayName }
         departmentDropdownAdapter = SignUpDropdownAdapter(items)
         setupDropdown(binding.dvDepartment, departmentDropdownAdapter) { selectedText ->
             if (currentDepartmentSelection != selectedText) {
@@ -236,14 +245,20 @@ class AdminSignUpInfoFragment :
         // 대학교는 기본적으로 SSU로 설정
         signUpViewModel.setUniversity("SSU")
         
-        // 부서 정보 설정 (단과대학)
-        currentDepartmentSelection?.let { department ->
-            signUpViewModel.setDepartment(department)
+        // 부서 정보 설정 (단과대학) - enum 값 사용
+        currentDepartmentSelection?.let { departmentDisplayName ->
+            val departmentEnum = Department.values().find { it.displayName == departmentDisplayName }
+            departmentEnum?.let { 
+                signUpViewModel.setDepartment(it.name) // enum name 사용
+            }
         }
         
-        // 전공 정보 설정
-        currentMajorSelection?.let { major ->
-            signUpViewModel.setMajor(major)
+        // 전공 정보 설정 - enum 값 사용
+        currentMajorSelection?.let { majorDisplayName ->
+            val majorEnum = Major.values().find { it.displayName == majorDisplayName }
+            majorEnum?.let {
+                signUpViewModel.setMajor(it.name) // enum name 사용
+            }
         }
         
         // 관리자 이름 설정 (선택된 부서/전공 정보를 이름으로 사용)

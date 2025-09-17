@@ -1,5 +1,6 @@
-package com.example.assu_fe_app.presentation.common.signup
+package com.example.assu_fe_app.ui.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.data.dto.auth.AdminSignUpRequestDto
@@ -11,11 +12,10 @@ import com.example.assu_fe_app.data.dto.auth.StudentTokenAuthPayloadDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyResponseDto
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 import com.example.assu_fe_app.domain.model.auth.LoginModel
+import com.example.assu_fe_app.domain.model.auth.SignUpData
+import com.example.assu_fe_app.domain.model.enums.Department
+import com.example.assu_fe_app.domain.model.enums.Major
 import com.example.assu_fe_app.domain.usecase.auth.AdminSignUpUseCase
 import com.example.assu_fe_app.domain.usecase.auth.PartnerSignUpUseCase
 import com.example.assu_fe_app.domain.usecase.auth.StudentSignUpUseCase
@@ -26,6 +26,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -115,9 +119,6 @@ class SignUpViewModel @Inject constructor(
         _signUpData.value = _signUpData.value.copy(major = major)
     }
 
-    fun setAdminName(name: String) {
-        _signUpData.value = _signUpData.value.copy(adminName = name)
-    }
 
     fun setDetailAddress(address: String) {
         _signUpData.value = _signUpData.value.copy(detailAddress = address)
@@ -148,6 +149,24 @@ class SignUpViewModel @Inject constructor(
         _signUpData.value = _signUpData.value.copy(licenseImageFile = file)
     }
 
+    // 관리자 이름 자동 생성 (가장 하위 단위 + "학생회")
+    private fun generateAdminName(university: String?, department: String?, major: String?): String {
+        return when {
+            !major.isNullOrEmpty() -> {
+                // Major enum에서 displayName 찾기
+                val majorEnum = Major.values().find { it.name == major }
+                majorEnum?.displayName ?: major
+            } + " 학생회"
+            !department.isNullOrEmpty() -> {
+                // Department enum에서 displayName 찾기
+                val departmentEnum = Department.values().find { it.name == department }
+                departmentEnum?.displayName ?: department
+            } + " 학생회"
+            !university.isNullOrEmpty() -> "$university 학생회"
+            else -> "학생회"
+        }
+    }
+
     // 학생 토큰 검증
     fun verifyStudentToken() {
         val data = _signUpData.value
@@ -167,13 +186,22 @@ class SignUpViewModel @Inject constructor(
 
             when (val result = studentTokenVerifyUseCase(request)) {
                 is RetrofitResult.Success -> {
-                    _studentVerifyResult.value = result.data
+                    // 전공과 학번만 있으면 성공으로 처리
+                    if (!result.data.major.isNullOrEmpty() && !result.data.studentNumber.isNullOrEmpty()) {
+                        _studentVerifyResult.value = result.data
+                    } else {
+                        _errorMessage.value = "학생 정보를 가져올 수 없습니다."
+                    }
                 }
                 is RetrofitResult.Fail -> {
-                    _errorMessage.value = result.message
+                    // 서버 에러 메시지는 토스트로 표시하지 않음
+                    // 로그만 남기고 다음 화면으로 진행하지 않음
+                    Log.d("SignUpViewModel", "학생 토큰 검증 실패: ${result.message}")
+                    _errorMessage.value = "학생 인증에 실패했습니다. 다시 시도해주세요."
                 }
                 is RetrofitResult.Error -> {
-                    _errorMessage.value = result.exception.message ?: "네트워크 오류가 발생했습니다."
+                    Log.d("SignUpViewModel", "학생 토큰 검증 에러: ${result.exception.message}")
+                    _errorMessage.value = "네트워크 오류가 발생했습니다."
                 }
             }
             _isLoading.value = false
@@ -257,7 +285,7 @@ class SignUpViewModel @Inject constructor(
                     university = data.university!!
                 ),
                 commonInfo = CommonInfoDto(
-                    name = data.adminName!!,
+                    name = generateAdminName(data.university, data.department, data.major),
                     detailAddress = data.detailAddress!!,
                     selectedPlace = data.selectedPlace!!
                 )
@@ -349,7 +377,6 @@ class SignUpViewModel @Inject constructor(
                 !data.department.isNullOrEmpty() &&
                 !data.major.isNullOrEmpty() &&
                 !data.university.isNullOrEmpty() &&
-                !data.adminName.isNullOrEmpty() &&
                 !data.detailAddress.isNullOrEmpty() &&
                 data.selectedPlace != null &&
                 data.signImageFile != null &&
@@ -379,29 +406,3 @@ class SignUpViewModel @Inject constructor(
     }
 }
 
-// 회원가입 데이터 클래스
-data class SignUpData(
-    val phoneNumber: String? = null,
-    val userType: String? = null, // "user", "admin", "partner"
-    val university: String? = null,
-    val sToken: String? = null,
-    val sIdno: String? = null,
-    val marketingAgree: Boolean = false,
-    val locationAgree: Boolean = false,
-    val privacyAgree: Boolean = false,
-    val termsAgree: Boolean = false,
-    // 관리자 회원가입 관련 필드들
-    val email: String? = null,
-    val password: String? = null,
-    val department: String? = null,
-    val major: String? = null,
-    val adminName: String? = null,
-    val detailAddress: String? = null,
-    val selectedPlace: SelectedPlaceDto? = null,
-    val signImageFile: File? = null,
-    // 제휴업체 회원가입 관련 필드들
-    val companyName: String? = null,
-    val businessNumber: String? = null,
-    val representativeName: String? = null,
-    val licenseImageFile: File? = null
-)
