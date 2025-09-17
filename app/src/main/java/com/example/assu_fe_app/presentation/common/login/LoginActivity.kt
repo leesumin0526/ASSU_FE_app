@@ -19,6 +19,8 @@ import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.common.signup.SignUpActivity
 import com.example.assu_fe_app.presentation.partner.PartnerMainActivity
 import com.example.assu_fe_app.presentation.user.UserMainActivity
+import com.example.assu_fe_app.ui.auth.LoginViewModel
+import com.example.assu_fe_app.ui.auth.LoginViewModel.LoginState
 import com.example.assu_fe_app.ui.deviceToken.DeviceTokenViewModel
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
@@ -88,6 +90,8 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
                 is LoginState.Success -> {
                     setLoginButtonEnabled(true)
                     Log.d("LoginActivity", "로그인 성공!")
+                    // FCM 토큰 등록
+                    fetchAndRegisterFcmToken()
                     navigateToMainActivity(state.loginData.userRole)
                 }
                 is LoginState.Error -> {
@@ -148,12 +152,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
-
+        
         // 로그인 액티비티 종료하여 매끄러운 전환
         finish()
-
-        // FCM 토큰 등록
-        fetchAndRegisterFcmToken()
     }
 
     private fun checkLoginInputValidity() {

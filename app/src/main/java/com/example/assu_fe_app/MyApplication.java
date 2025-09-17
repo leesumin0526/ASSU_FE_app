@@ -20,14 +20,15 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
-//        KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
-        if (isArmDevice()) {
+
+        if (isArmDevice() && BuildConfig.KAKAO_MAP_KEY != null && !BuildConfig.KAKAO_MAP_KEY.isEmpty()) {
             KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
         }
     }
     private boolean isArmDevice() {
         String abi = Build.SUPPORTED_ABIS != null && Build.SUPPORTED_ABIS.length > 0
-                ? Build.SUPPORTED_ABIS[0] : "";
+                ? Build.SUPPORTED_ABIS[0]
+                : "";
         return abi.contains("arm");
     }
 

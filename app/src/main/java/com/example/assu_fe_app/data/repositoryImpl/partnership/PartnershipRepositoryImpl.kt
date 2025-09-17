@@ -8,17 +8,17 @@ import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.example.assu_fe_app.data.service.partnership.PartnershipService
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
+import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsModel
 import com.example.assu_fe_app.domain.model.partnership.CreateDraftResponseModel
 import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
 import com.example.assu_fe_app.domain.model.partnership.WritePartnershipResponseModel
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.apiHandler
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class PartnershipRepositoryImpl @Inject constructor(
-    private val api: PartnershipService,
+    private val api: PartnershipService
 ) : PartnershipRepository {
-
     override suspend fun createDraftPartnership(
         request: CreateDraftRequestDto
     ): RetrofitResult<CreateDraftResponseModel> {
@@ -55,17 +55,23 @@ class PartnershipRepositoryImpl @Inject constructor(
         )
     }
 
-        override suspend fun getProposalPartnerList(isAll: Boolean): RetrofitResult<List<GetProposalPartnerListModel>> {
-                return apiHandler(
-                        {api.getProposalPartnerList(isAll)},
-                        {list -> list.map{it.toModel()}}
-                )
-        }
+    override suspend fun getProposalPartnerList(isAll: Boolean) : RetrofitResult<List<GetProposalPartnerListModel>> =
+        apiHandler(
+            {api.getProposalPartnerList(isAll)},
+            {list -> list.map{it.toModel()}}
+        )
 
-        override suspend fun getProposalAdminList(isAll: Boolean): RetrofitResult<List<GetProposalAdminListModel>> {
-                return apiHandler(
-                        {api.getProposalAdminList(isAll)},
-                        {list -> list.map{it.toModel()}}
-                )
-        }
+    override suspend fun getProposalAdminList(isAll: Boolean): RetrofitResult<List<GetProposalAdminListModel>> =
+        apiHandler(
+            {api.getProposalAdminList(isAll)},
+            {list -> list.map{it.toModel()}}
+        )
+
+    override suspend fun getPartnership(partnershipId: Long)
+            : RetrofitResult<ProposalPartnerDetailsModel> =
+        apiHandler(
+            execute = { api.getPartnership(partnershipId) },
+            mapper = { dto -> dto.toDetailModel() }
+        )
+
 }

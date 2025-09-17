@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="0dp"
+        android:background="@drawable/bg_signup_input_bar"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp">
+
+        <LinearLayout
+            android:id="@+id/dropdown_header"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_marginStart="15dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+
+                <!-- 선택된 값 -->
+                <TextView
+                    android:id="@+id/tv_selected"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="대상을 선택해주세요"
+                    android:textSize="14sp"
+                    android:textColor="@color/assu_font_sub" />
+
+            </LinearLayout>
+
+            <!-- 화살표 아이콘 -->
+            <ImageView
+                android:id="@+id/iv_arrow"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="15dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_down"
+                android:contentDescription="드롭다운 화살표" />
+
+        </LinearLayout>
+
+        <!-- 드롭다운 리스트 컨테이너 -->
+        <LinearLayout
+            android:id="@+id/dropdown_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/dropdown_header"
+            android:visibility="gone">
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_signup_name_list"
+                tools:listitem="@layout/item_signup_part"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,7 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentLocationInfoSearchBinding
 import com.example.assu_fe_app.ui.search.LocationInfoSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBinding>(R.layout.fragment_location_info_search) {
 
-    private lateinit var tokenManager : TokenManager
+    private lateinit var authTokenLocalStore : AuthTokenLocalStore
     private val searchViewModel: LocationInfoSearchViewModel by activityViewModels()
     private lateinit var adapter: LocationInfoSearchListAdapter
 
@@ -66,7 +66,7 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
 
     private fun initAdapter(){
         adapter= LocationInfoSearchListAdapter()
-        tokenManager = TokenManager(requireContext())
+        // authTokenLocalStore는 @Inject로 주입됨
 
         binding.rvLocationInfoSearchResult.apply{
             layoutManager = LinearLayoutManager(requireContext())

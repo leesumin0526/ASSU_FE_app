@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.assu_fe_app.domain.usecase.map.SearchPlaceUseCase
+import com.example.assu_fe_app.domain.usecase.location.SearchPlaceUseCase
 import com.example.assu_fe_app.presentation.common.search.LocationInfo
 import com.example.assu_fe_app.util.RetrofitResult
 import dagger.hilt.android.lifecycle.HiltViewModel

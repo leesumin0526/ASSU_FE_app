@@ -3,22 +3,27 @@ package com.example.assu_fe_app.di
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.assu_fe_app.BuildConfig
-import com.example.assu_fe_app.data.BearerInterceptor
 import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
+import com.example.assu_fe_app.data.remote.AuthInterceptor
 import com.example.assu_fe_app.data.service.AuthService
+import com.example.assu_fe_app.data.service.NoAuthService
 import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
+import com.example.assu_fe_app.data.service.dashboard.AdminDashboardService
+import com.example.assu_fe_app.data.service.dashboard.PartnerDashboardService
 import com.example.assu_fe_app.data.service.deviceToken.DeviceTokenService
-import com.example.assu_fe_app.data.service.map.MapService
-import com.example.assu_fe_app.data.service.map.SearchLocationService
+import com.example.assu_fe_app.data.service.inquiry.InquiryService
+import com.example.assu_fe_app.data.service.location.LocationService
+import com.example.assu_fe_app.data.service.location.SearchLocationService
 import com.example.assu_fe_app.data.service.notification.NotificationService
+import com.example.assu_fe_app.data.service.partnership.PartnershipService
+import com.example.assu_fe_app.data.service.profileService.ProfileService
 import com.example.assu_fe_app.data.service.review.ReviewService
 import com.example.assu_fe_app.data.service.store.StoreService
-import com.example.assu_fe_app.data.service.partnership.PartnershipService
 import com.example.assu_fe_app.data.service.suggestion.SuggestionService
 import com.example.assu_fe_app.data.service.usage.UsageService
+import com.example.assu_fe_app.data.service.user.UserHomeService
 import com.example.assu_fe_app.util.LocalDateMoshiAdapter
-import com.google.gson.GsonBuilder
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -60,9 +65,9 @@ object ServiceModule {
     }
 
     @Provides @Singleton @Auth
-    fun provideOkHttp(bearerInterceptor: BearerInterceptor): OkHttpClient =
+    fun provideOkHttp(authInterceptor: AuthInterceptor): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(bearerInterceptor)
+            .addInterceptor(authInterceptor)
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY // 개발에서만
             })
@@ -111,7 +116,11 @@ object ServiceModule {
         retrofit.create(ChattingService::class.java)
 
     @Provides @Singleton
-    fun provideAuthService(@NoAuth retrofit: Retrofit): AuthService =
+    fun provideNoAuthService(@NoAuth retrofit: Retrofit): NoAuthService =
+        retrofit.create(NoAuthService::class.java)
+
+    @Provides @Singleton
+    fun provideAuthService(@Auth retrofit: Retrofit): AuthService =
         retrofit.create(AuthService::class.java)
 
     @Provides
@@ -128,6 +137,26 @@ object ServiceModule {
     @Singleton
     fun provideSuggestionService(@Auth retrofit: Retrofit): SuggestionService =
         retrofit.create(SuggestionService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLocationService(@Auth retrofit: Retrofit): LocationService =
+        retrofit.create(LocationService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAdminDashboardApiService(@Auth retrofit: Retrofit): AdminDashboardService =
+        retrofit.create(AdminDashboardService::class.java)
+
+    @Provides
+    @Singleton
+    fun providePartnerDashboardApiService(@Auth retrofit: Retrofit): PartnerDashboardService =
+        retrofit.create(PartnerDashboardService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUserHomeService(@Auth retrofit: Retrofit): UserHomeService =
+        retrofit.create(UserHomeService::class.java)
 
     @Provides
     @Singleton
@@ -151,12 +180,17 @@ object ServiceModule {
     fun provideCertificationService(@Auth retrofit: Retrofit): CertificationService =
         retrofit.create(CertificationService::class.java)
 
-
     @Provides @Singleton
-    fun provideMapService(@Auth retrofit: Retrofit): MapService =
-        retrofit.create(MapService::class.java)
-
-    @Provides @Singleton
-    fun provideSearchService(@Auth retrofit: Retrofit) : SearchLocationService
+    fun provideSearchService(@NoAuth retrofit: Retrofit) : SearchLocationService
     = retrofit.create(SearchLocationService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideInquiryService(@Auth retrofit: Retrofit): InquiryService =
+        retrofit.create(InquiryService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideProfileService(@Auth retrofit: Retrofit): ProfileService =
+        retrofit.create(ProfileService::class.java)
 }

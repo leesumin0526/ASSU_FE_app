@@ -8,12 +8,13 @@ import com.example.assu_fe_app.data.dto.partnership.response.CreateDraftResponse
 import com.example.assu_fe_app.data.dto.partnership.response.PartnerPartnershipStatusDto
 import com.example.assu_fe_app.data.dto.partnership.response.WritePartnershipResponseDto
 import retrofit2.http.Body
+import com.example.assu_fe_app.data.dto.partnership.response.GetProposalAdminListResponseDto
+import com.example.assu_fe_app.data.dto.partnership.response.GetProposalPartnerListResponseDto
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
-import com.example.assu_fe_app.data.dto.partnership.response.GetProposalAdminListResponseDto
-import com.example.assu_fe_app.data.dto.partnership.response.GetProposalPartnerListResponseDto
 
 interface PartnershipService {
     // 관리자가 제휴업체 리스트 보는 api
@@ -50,5 +51,9 @@ interface PartnershipService {
         @Query("adminId") adminId: Long
     ): BaseResponse<PartnerPartnershipStatusDto>
 
-
+    // 제휴 제안서 상세 조회 API
+    @GET("partnership/{partnershipId}")
+    suspend fun getPartnership(
+        @Path("partnershipId") partnershipId: Long
+    ): BaseResponse<WritePartnershipResponseDto>
 }
