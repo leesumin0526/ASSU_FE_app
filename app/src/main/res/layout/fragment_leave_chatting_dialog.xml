@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="330dp"
+    android:layout_width="310dp"
     android:layout_height="174dp"
     tools:context=".LeaveChatRoomDialog">
     <LinearLayout
@@ -28,11 +28,12 @@
                 android:fontFamily="@font/pretendard_semibold" />
 
             <ImageView
+                android:id="@+id/ivCross"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_cross_gray"
                 android:layout_gravity="end"
-                android:layout_marginStart="160dp"/>
+                android:layout_marginStart="140dp"/>
 
 
         </LinearLayout>
@@ -58,15 +59,15 @@
                 android:id="@+id/btnCancel"
                 android:layout_width="109dp"
                 android:layout_height="41dp"
-                android:text="취소"
-                android:textColor="@color/assu_main"
                 android:layout_gravity="start"
+                android:background="@drawable/bg_box_sub3_rounded"
                 android:gravity="center"
-                android:background="@drawable/bg_box_sub3_rounded"/>
+                android:text="취소"
+                android:textColor="@color/assu_main" />
 
             <TextView
                 android:id="@+id/btnLeave"
-                android:layout_width="171dp"
+                android:layout_width="148dp"
                 android:layout_height="41dp"
                 android:layout_gravity="end"
                 android:layout_marginStart="12dp"

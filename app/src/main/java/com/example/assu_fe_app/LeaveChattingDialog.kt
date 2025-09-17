@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -27,9 +28,11 @@ class LeaveChatRoomDialog : DialogFragment() {
         val view = layoutInflater.inflate(R.layout.fragment_leave_chatting_dialog, null)
 
         val cancelBtn = view.findViewById<TextView>(R.id.btnCancel)
+        val cross = view.findViewById<ImageView>(R.id.iv_cross)
         val leaveBtn = view.findViewById<TextView>(R.id.btnLeave)
 
         cancelBtn.setOnClickListener { dismiss() }
+        cross.setOnClickListener { dismiss() }
         leaveBtn.setOnClickListener {
             viewModel.leaveChattingRoom(roomId)
             (activity as? ChattingActivity)?.navigateToChatting()
