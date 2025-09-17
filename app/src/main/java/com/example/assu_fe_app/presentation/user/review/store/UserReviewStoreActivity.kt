@@ -2,6 +2,8 @@ package com.example.assu_fe_app.presentation.user.review.store
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -14,12 +16,19 @@ import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewStoreAdapter
 import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
+import com.example.assu_fe_app.ui.review.UserStoreGetReviewViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import java.lang.Long.getLong
 import java.time.LocalDateTime
 
+@AndroidEntryPoint
 class UserReviewStoreActivity :
     BaseActivity<ActivityUserReviewStoreBinding>(R.layout.activity_user_review_store) {
 
     private lateinit var userReviewAdapter: UserReviewAdapter
+    private lateinit var userPartnershipAdapter : UserReviewStoreAdapter
+    private val getStoreReviewViewModel: UserStoreGetReviewViewModel by viewModels()
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun initView() {
         // 시스템 바 여백 적용
@@ -30,33 +39,31 @@ class UserReviewStoreActivity :
                 systemBars.left,
                 systemBars.top + extraPaddingTop.dpToPx(v.context),
                 systemBars.right,
-                systemBars.bottom
+                0
             )
             insets
         }
 
-        // 제휴 혜택 리스트
-        val reviewStoreList = listOf(
-            ReviewStoreItem("총학생회", "4인 이상 식사시, 음료 제공"),
-            ReviewStoreItem("IT대 학생회", "10% 할인"),
-            ReviewStoreItem("IT대 학생회", "10% 할인")
-        )
-        val adapter = UserReviewStoreAdapter(reviewStoreList)
-        binding.rcReviewStore.layoutManager = LinearLayoutManager(this)
-        binding.rcReviewStore.adapter = adapter
+        initStoreReviewAdapter()
 
-        // 리뷰 어댑터 초기화 및 바인딩
-        userReviewAdapter = UserReviewAdapter(
-            showDeleteButton = false,
-            listener = object : OnItemClickListener {
-                override fun onClick(position: Int) {
-                    // 삭제 기능 없음 → 아무 일도 하지 않음
-                }
-            }
-        )
-        userReviewAdapter.setData(createDummyData())
-        binding.fcvReviewStoreRank.layoutManager = LinearLayoutManager(this)
-        binding.fcvReviewStoreRank.adapter = userReviewAdapter
+        val storeName : String? = intent.getStringExtra("storeName")
+        val storeId : Long = intent.getLongExtra("storeId", 0L)
+
+        binding.tvReviewStoreName.text = storeName
+        getStoreReviewViewModel.storeName = storeName.toString()
+        getStoreReviewViewModel.initStoreId(storeId)
+        getStoreReviewViewModel.getAverage()
+
+        getStoreReviewViewModel.getReviews()
+        getStoreReviewViewModel.getPartnershipForMe()
+
+
+        // 제휴 혜택 리스트
+        userPartnershipAdapter = UserReviewStoreAdapter()
+        binding.rcReviewStorePartnership.layoutManager = LinearLayoutManager(this)
+        binding.rcReviewStorePartnership.adapter = userPartnershipAdapter
+
+
 
         // 전체보기 클릭 시 상세 Fragment로 전환
         binding.tvReviewStoreReviewAll.setOnClickListener {
@@ -71,33 +78,60 @@ class UserReviewStoreActivity :
         }
     }
 
-    override fun initObserver() {}
+    override fun initObserver() {
+        getStoreReviewViewModel.reviewList.observe(this) { reviews ->
+            // reviews 리스트의 처음 2개 항목만 가져와 어댑터에 제출합니다.
+            // 리스트가 2개 미만인 경우, 있는 만큼만 가져옵니다.
+            val topTwoReviews = reviews.take(2)
+            userReviewAdapter.submitList(topTwoReviews)
+            val count = reviews.size
+            binding.tvReviewStoreReviewCount.text= "${count}개의 평가"
+        }
+
+
+        getStoreReviewViewModel.average.observe(this) { average ->
+            val formatted = String.format("%.1f", average) // "3.1"
+            Log.d("평점", formatted)
+            binding.tvReviewStoreScore.text = formatted
+
+            val stars = listOf(
+                binding.ivReviewStoreStar1,
+                binding.ivReviewStoreStar2,
+                binding.ivReviewStoreStar3,
+                binding.ivReviewStoreStar4,
+                binding.ivReviewStoreStar5
+            )
+
+
+            fun setStars(rating: Int) {
+                for (i in stars.indices) {
+                    val drawableRes = if (i < rating) R.drawable.ic_activated_star
+                    else R.drawable.ic_deactivated_star
+                    stars[i].setImageResource(drawableRes)
+                }
+            }
+            setStars(average.toInt())
+        }
+
+        getStoreReviewViewModel.partnershipContentList.observe(this)
+        { partnershipContentList ->
+            userPartnershipAdapter.submitList(partnershipContentList)
+        }
+
+    }
 
     private fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }
 
-    // 임시 더미 리뷰 데이터 생성
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createDummyData(): List<Review> {
-        return listOf(
-            Review(
-                marketName = "스시천국",
-                studentCategory = "경영대학 재학생",
-                rate = 5,
-                content = "진짜 맛있었어요! 또 가고 싶어요!",
-                date = LocalDateTime.now().minusDays(1),
-                reviewImage = listOf()
-            ),
-            Review(
-                marketName = "돈까스집",
-                studentCategory = "인문대학 재학생",
-                rate = 4,
-                content = "튀김이 바삭해서 좋았어요. 양도 많아요.",
-                date = LocalDateTime.now().minusDays(3),
-                reviewImage = listOf()
-            )
+    private fun initStoreReviewAdapter(){
+        userReviewAdapter = UserReviewAdapter(
+            showDeleteButton = false,
+            listener = null
         )
+        binding.fcvReviewStoreRank.layoutManager = LinearLayoutManager(this)
+        binding.fcvReviewStoreRank.adapter = userReviewAdapter
+
     }
 
 }

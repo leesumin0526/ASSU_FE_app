@@ -6,6 +6,7 @@ import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.example.assu_fe_app.data.service.partnership.PartnershipService
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
+import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsModel
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.apiHandler
 import jakarta.inject.Inject
@@ -25,4 +26,10 @@ class PartnershipRepositoryImpl @Inject constructor(
             {list -> list.map{it.toModel()}}
         )
 
+    override suspend fun getPartnership(partnershipId: Long)
+            : RetrofitResult<ProposalPartnerDetailsModel> =
+        apiHandler(
+            execute = { api.getPartnership(partnershipId) },
+            mapper = { dto -> dto.toModel() }
+        )
 }

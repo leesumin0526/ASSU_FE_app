@@ -7,12 +7,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentUserMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
-import com.example.assu_fe_app.presentation.common.login.LoginViewModel
-import com.example.assu_fe_app.presentation.common.mypage.MypageViewModel
+import com.example.assu_fe_app.ui.common.mypage.MypageViewModel
 import com.example.assu_fe_app.presentation.user.review.mypage.UserMyReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -24,9 +23,7 @@ class UserMypageFragment
     : BaseFragment<FragmentUserMypageBinding>(R.layout.fragment_user_mypage) {
 
     @Inject
-    lateinit var tokenManager: TokenManager
-
-    private val loginViewModel: LoginViewModel by viewModels()
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     private val viewModel: MypageViewModel by viewModels()
 
@@ -45,6 +42,7 @@ class UserMypageFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.tvAccountName.setText(authTokenLocalStore.getUserName())
         initClick() // 여기서 호출
     }
 
@@ -56,6 +54,13 @@ class UserMypageFragment
         // 프로필 수정
         binding.clAccountComponent2.setOnClickListener {
             // TODO: 구현 예정
+        }
+
+        // 계정관리 페이지 이동
+        binding.clAccountComponent3.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_user_mypage_to_mypage_account
+            )
         }
 
         // 개인정보 처리방침
@@ -72,17 +77,8 @@ class UserMypageFragment
 
         // 고객센터
         binding.clAccountComponent6.setOnClickListener {
-            UserCustomerServiceDialogFragment()
-                .show(childFragmentManager, "CustomerServiceDialog")
-        }
-
-
-        //로그아웃 페이지
-        binding.clAccountComponent3.setOnClickListener {
-            // 서버에 로그아웃 API 호출 후 토큰 삭제 및 로그인 화면으로 이동
-            loginViewModel.logout()
             findNavController().navigate(
-                R.id.action_user_mypage_to_mypage_account
+                R.id.action_user_mypage_to_inquiry
             )
         }
     }

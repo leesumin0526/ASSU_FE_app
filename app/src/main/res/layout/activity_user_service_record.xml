@@ -8,7 +8,7 @@
     android:background="@color/assu_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.user.dashboard.UserServiceRecordActivity">
+    tools:context=".presentation.user.dashboard.UserServiceRecordFragment">
 
     <View
         android:id="@+id/serviceRecord_mg1"

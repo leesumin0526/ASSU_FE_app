@@ -1,6 +1,6 @@
 package com.example.assu_fe_app.data.socket
 
-import com.example.assu_fe_app.data.local.TokenProvider
+import com.example.assu_fe_app.data.local.AccessTokenProvider
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import io.reactivex.disposables.CompositeDisposable
@@ -11,7 +11,7 @@ import ua.naiksoftware.stomp.dto.StompHeader
 
 class ChatSocketClient(
     private val wsUrl: String,
-    private val tokenProvider: TokenProvider
+    private val accessTokenProvider: AccessTokenProvider
 ) {
     private lateinit var stomp: StompClient
     private val disposables = CompositeDisposable()
@@ -41,8 +41,7 @@ class ChatSocketClient(
         onMessageJson: (String) -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        val authHeader = tokenProvider.bearer()
-        android.util.Log.d("WS", "🔑 Authorization header being sent = $authHeader")
+        val authHeader = accessTokenProvider.bearer()
         // 1) 핸드셰이크(HTTP 업그레이드) 헤더: Map<String, String>
         val handshakeHeaders: Map<String, String> =
             if (!authHeader.isNullOrBlank()) mapOf("Authorization" to authHeader!!)

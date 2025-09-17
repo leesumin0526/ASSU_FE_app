@@ -4,8 +4,11 @@ import android.content.Context
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -15,10 +18,16 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityLocationSearchBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.common.location.adapter.LocationSharedViewModel
+import com.example.assu_fe_app.ui.map.AdminPartnerKeyWordSearchViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlin.getValue
 
+@AndroidEntryPoint
 class LocationSearchActivity :
     BaseActivity<ActivityLocationSearchBinding>(R.layout.activity_location_search) {
 
+
+    private val searchViewModel : AdminPartnerKeyWordSearchViewModel by viewModels()
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -49,10 +58,22 @@ class LocationSearchActivity :
         })
 
         // 3. enter 입력 시 view 전환
-        binding.etLocationSearch.setOnEditorActionListener { _: TextView, actionId: Int, event: KeyEvent? ->
+        binding.etLocationSearch.setOnEditorActionListener { keyword: TextView, actionId: Int, event: KeyEvent? ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
 
+
+                Log.d("LocationSearchActivity", "userRole : ${searchViewModel.userRole}")
+                val keyword = keyword.text.toString().trim()
+
+                // 역할별로 분리
+                if(searchViewModel.userRole.equals("ADMIN")){
+                    searchViewModel.searchPartners(keyword)
+                } else if (searchViewModel.userRole.equals("PARTNER")){
+                    Log.d("LocationSearchActivity", "Partner 기준 Admin 찾기 함수로 연결됩니다. ")
+                    searchViewModel.searchAdmins(keyword)
+                }
+                hideKeyboard()
                 binding.fvLocationSearchRank.visibility = android.view.View.INVISIBLE
                 binding.fvLocationSearchSuccess.visibility = android.view.View.VISIBLE
                 true
@@ -71,5 +92,13 @@ class LocationSearchActivity :
 
     private fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
+    }
+
+    private fun hideKeyboard() {
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+            imm?.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 }

@@ -13,6 +13,8 @@ import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
+import com.example.assu_fe_app.domain.model.partnership.PartnershipOptionModel
+import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsModel
 
 
 class PartnerAdminListAdapter(
@@ -68,7 +70,7 @@ class PartnerAdminListAdapter(
         }
     }
 
-    private fun mapOptionToContractItem(opt: com.example.assu_fe_app.domain.model.admin.PartnershipOptionModel)
+    private fun mapOptionToContractItem(opt:PartnershipOptionModel)
             : PartnershipContractItem {
         // goods를 보기 좋게 합침 (없으면 "상품")
         val goodsText = opt.goods.firstOrNull()?.goodsName ?: "상품"

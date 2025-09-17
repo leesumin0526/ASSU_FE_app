@@ -130,6 +130,10 @@ dependencies {
     // 테스트 (서버 목)
     testImplementation("com.squareup.okhttp3:mockwebserver:5.1.0")
 
+    //Gson
+    implementation("com.google.code.gson:gson:2.10.1")
+
+
     // 프로필 사진 처리
     implementation("io.coil-kt:coil:2.4.0")
 
@@ -144,5 +148,12 @@ dependencies {
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
     // QR 생성
     implementation("com.google.zxing:core:3.5.3")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+
+    //Graph (dashboard)
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    // 현재 위치 받아오기
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
 }

@@ -16,7 +16,7 @@ import com.example.assu_fe_app.presentation.common.contract.PartnershipContractD
 class AdminPartnerListAdapter(
     private val items: List<GetProposalPartnerListModel>,
     private val fragmentManger: FragmentManager,
-    private val adminName: String // TokenManager에서 불러온 관리자 이름
+    private val adminName: String // AuthTokenLocalStore에서 불러온 관리자 이름
 ) : RecyclerView.Adapter<AdminPartnerListAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemAssociationListBinding)
@@ -110,8 +110,7 @@ class AdminPartnerListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = items[position]
-        holder.bind(item)
+        holder.bind(items[position])
     }
 
     override fun getItemCount(): Int = items.size

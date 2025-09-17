@@ -13,11 +13,19 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ActivityLmsLoginBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.user.UserMainActivity
+import com.example.assu_fe_app.ui.auth.LoginViewModel
+import com.example.assu_fe_app.ui.auth.LoginViewModel.LoginState
+import com.example.assu_fe_app.ui.deviceToken.DeviceTokenViewModel
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LmsLoginActivity : BaseActivity<ActivityLmsLoginBinding>(R.layout.activity_lms_login) {
@@ -25,6 +33,7 @@ class LmsLoginActivity : BaseActivity<ActivityLmsLoginBinding>(R.layout.activity
     private lateinit var webView: WebView
     private lateinit var btnBack: ImageButton
     private val loginViewModel: LoginViewModel by viewModels()
+    private val deviceTokenViewModel: DeviceTokenViewModel by viewModels()
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -131,7 +140,7 @@ class LmsLoginActivity : BaseActivity<ActivityLmsLoginBinding>(R.layout.activity
     private fun handleLoginSuccess(sToken: String? = null, sIdno: String? = null) {
         // 토큰이 있다면 서버 로그인 시도
         if (sToken != null && sIdno != null) {
-            Log.d("LmsLoginActivity", "Token: $sToken, ID: $sIdno")
+            Log.d("LmsLoginActivity", "SToken: $sToken, SID: $sIdno")
             loginViewModel.studentLogin(sToken, sIdno)
         } else {
             // 토큰이 없는 경우 기본적으로 UserMainActivity로 이동
@@ -190,6 +199,8 @@ class LmsLoginActivity : BaseActivity<ActivityLmsLoginBinding>(R.layout.activity
                 is LoginState.Success -> {
                     hideLoading()
                     Log.d("LmsLoginActivity", "서버 로그인 성공!")
+                    // FCM 토큰 등록
+                    fetchAndRegisterFcmToken()
                     navigateToMainActivity(state.loginData.userRole)
                 }
                 is LoginState.Error -> {
@@ -210,6 +221,57 @@ class LmsLoginActivity : BaseActivity<ActivityLmsLoginBinding>(R.layout.activity
                     Toast.makeText(this@LmsLoginActivity, "승인 대기 중입니다: ${state.message}", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+
+        // FCM 토큰 등록 상태 관찰
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                deviceTokenViewModel.uiState.collect { state ->
+                    when (state) {
+                        is DeviceTokenViewModel.UiState.Idle -> Unit
+                        is DeviceTokenViewModel.UiState.Loading -> {
+                            // 필요하면 로딩 표시
+                            Log.d("FCM", "디바이스 토큰 등록 중…")
+                        }
+                        is DeviceTokenViewModel.UiState.Success -> {
+                            val tokenId = state.tokenId
+                            Log.i("FCM", "등록 성공: ${tokenId}")
+                        }
+                        is DeviceTokenViewModel.UiState.Fail -> {
+                            Log.e("FCM", "등록 실패: ${state.code} ${state.msg}")
+                            // FCM 토큰 등록 실패해도 앱을 종료하지 않음
+                            // 로그인은 성공했으므로 사용자가 계속 사용할 수 있도록 함
+                        }
+                        is DeviceTokenViewModel.UiState.Error -> {
+                            Log.e("FCM", "등록 오류: ${state.msg}")
+                            // FCM 토큰 등록 오류가 발생해도 앱을 종료하지 않음
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // FCM 토큰 등록 함수
+    private fun fetchAndRegisterFcmToken() {
+        try {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FCM", "토큰 가져오기 실패", task.exception)
+                    // FCM 토큰 가져오기 실패해도 앱을 종료하지 않음
+                    return@addOnCompleteListener
+                }
+                val token = task.result
+                if (token.isNullOrEmpty()) {
+                    Log.w("FCM", "FCM 토큰이 비어있음")
+                    return@addOnCompleteListener
+                }
+                Log.d("FCM", "FCM 토큰: $token")
+                deviceTokenViewModel.register(token)
+            }
+        } catch (e: Exception) {
+            Log.e("FCM", "FCM 토큰 등록 중 예외 발생", e)
+            // 예외가 발생해도 앱을 종료하지 않음
         }
     }
 

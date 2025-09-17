@@ -22,7 +22,16 @@
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.example.assu_fe_app.presentation.user.dashboard.DashboardFragment"
-        android:label="Dashboard" />
+        android:label="Dashboard">
+        <action
+            android:id="@+id/action_dashboardFragment_to_userServiceRecordFragment"
+            app:destination="@id/userServiceRecordFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/userServiceRecordFragment"
+        android:name="com.example.assu_fe_app.presentation.user.dashboard.UserServiceRecordFragment"
+        android:label="UserServiceRecord"/>
 
     <fragment
         android:id="@+id/mypageFragment"
@@ -31,12 +40,21 @@
         <action
             android:id="@+id/action_user_mypage_to_mypage_account"
             app:destination="@id/mypageAccountFragment" />
+
+        <action
+            android:id="@+id/action_user_mypage_to_inquiry"
+            app:destination="@id/customerServiceDialogFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/mypageAccountFragment"
         android:name="com.example.assu_fe_app.presentation.common.mypage.MypageAccountFragment"
         tools:layout="@layout/fragment_mypage_account" />
+
+    <fragment
+        android:id="@+id/customerServiceDialogFragment"
+        android:name="com.example.assu_fe_app.presentation.common.mypage.CustomerServiceDialogFragment"
+        tools:layout="@layout/fragment_user_customer_service" />
 
     <fragment
         android:id="@+id/myPartnershipDetailsFragment"
@@ -77,7 +95,7 @@
 <!--        android:id="@+id/userPartnershipSelectFragment"-->
 <!--        android:name="com.example.assu_fe_app.presentation.user.home.UserPartnershipSelectFragment"-->
 <!--        android:label="UserPartnershipSelectFragment">-->
-
+<!--    </fragment>-->
 <!--        &lt;!&ndash; → 인증 완료 &ndash;&gt;-->
 <!--        <action-->
 <!--            android:id="@+id/action_userPartnershipSelectFragment_to_userPartnershipVerifyCompleteFragment"-->

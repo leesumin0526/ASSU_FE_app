@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -11,28 +12,83 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel
+import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel.SendPhoneVerificationUiState
+import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel.VerifyPhoneVerificationUiState
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SignUpVerifyFragment :
     BaseFragment<FragmentSignUpVerifyBinding>(R.layout.fragment_sign_up_verify) {
+
+    private val viewModel: SignUpVerifyViewModel by viewModels()
 
     private var countDownTimer: CountDownTimer? = null
     private val totalTimeMillis = 5 * 60 * 1000L // 5분
     private var isVerified = false
-    // 임시 허용
-    private val correctPhoneNumber = "01012345678"
-    private val correctVerificationCode = "1234"
 
     private var lastTimerText: String = "05:00"
 
     private var timerStartTime: Long = 0L
     private var timerEndTime: Long = 0L
 
-    override fun initObserver() {}
+    override fun initObserver() {
+        viewModel.sendPhoneVerificationState.observe(this) { state ->
+            when (state) {
+                is SendPhoneVerificationUiState.Success -> {
+                    startVerificationUI()
+                    startTimer()
+                }
+                is SendPhoneVerificationUiState.Fail -> {
+                    Log.d("SignUpVerifyFragment", "전화번호 인증 실패: code=${state.code}, message=${state.message}")
+                    val errorMessage = when {
+                        state.message?.contains("전화번호") == true -> state.message
+                        state.message?.contains("phoneNumber") == true -> "올바른 전화번호 형식이 아닙니다."
+                        state.code == 400 -> "전화번호 형식이 올바르지 않습니다."
+                        else -> state.message ?: "인증번호 발송에 실패했습니다."
+                    }
+                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                }
+                is SendPhoneVerificationUiState.Error -> {
+                    Log.d("SignUpVerifyViewModel", "code : $state.message")
+                    Toast.makeText(requireContext(), "message" + state.message, Toast.LENGTH_SHORT).show()
+                }
+                is SendPhoneVerificationUiState.Idle -> Unit
+                is SendPhoneVerificationUiState.Loading -> Unit
+            }
+        }
+
+        viewModel.verifyPhoneVerificationState.observe(this) { state ->
+            when (state) {
+                is VerifyPhoneVerificationUiState.Success -> {
+                    successVerificationUI()
+                }
+                is VerifyPhoneVerificationUiState.Fail -> {
+                    Log.d("SignUpVerifyFragment", "인증번호 검증 실패: code=${state.code}, message=${state.message}")
+                    errorVerificationUI()
+                    val errorMessage = when {
+                        state.message?.contains("인증번호") == true -> state.message
+                        state.message?.contains("authNumber") == true -> "인증번호가 올바르지 않습니다."
+                        state.code == 400 -> "인증번호가 올바르지 않습니다."
+                        else -> state.message ?: "인증번호가 올바르지 않습니다."
+                    }
+                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                }
+                is VerifyPhoneVerificationUiState.Error -> {
+                    errorVerificationUI()
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
+                is VerifyPhoneVerificationUiState.Idle -> Unit
+                is VerifyPhoneVerificationUiState.Loading -> Unit
+            }
+        }
+    }
 
     override fun initView() {
 
@@ -46,12 +102,14 @@ class SignUpVerifyFragment :
 
         // 인증번호 받기
         binding.tvUserVerifyPhone.setOnClickListener {
-            val inputPhone = binding.etUserVerifyPhone.text.toString()
-            if (inputPhone == correctPhoneNumber) {
-                startVerificationUI()
-                startTimer()
+            val inputPhone = binding.etUserVerifyPhone.text.toString().trim()
+            Log.d("SignUpVerifyFragment", "인증번호 받기 버튼 클릭됨, 입력된 전화번호: $inputPhone")
+            if (inputPhone.isNotEmpty()) {
+                Log.d("SignUpVerifyFragment", "ViewModel에 전화번호 전송 요청")
+                viewModel.sendPhoneVerification(inputPhone)
             } else {
-                Toast.makeText(requireContext(), "올바르지 않은 전화번호입니다", Toast.LENGTH_SHORT).show()
+                Log.w("SignUpVerifyFragment", "전화번호가 비어있음")
+                Toast.makeText(requireContext(), "전화번호를 입력해주세요", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -172,15 +230,16 @@ class SignUpVerifyFragment :
 
     private fun checkVerificationCode() {
         val enteredCode = binding.etUserVerifyCode.text.toString().trim()
+        val phoneNumber = binding.etUserVerifyPhone.text.toString().trim()
 
         // 키보드 내리기
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etUserVerifyCode.windowToken, 0)
 
-        if (enteredCode == correctVerificationCode) {
-            successVerificationUI()
+        if (enteredCode.isNotEmpty() && phoneNumber.isNotEmpty()) {
+            viewModel.verifyPhoneVerification(phoneNumber, enteredCode)
         } else {
-            errorVerificationUI()
+            Toast.makeText(requireContext(), "인증번호를 입력해주세요", Toast.LENGTH_SHORT).show()
         }
     }
 

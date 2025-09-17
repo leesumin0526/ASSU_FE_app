@@ -231,7 +231,7 @@ class ChattingViewModel @Inject constructor(
                     )
                     _messages.value = _messages.value + arrived
                 } else {
-                    android.util.Log.w("CHAT", "WS parse fail: $json")
+                    //android.util.Log.w("CHAT", "WS parse fail: $json")
                 }
             },
             onError = {
@@ -246,15 +246,15 @@ class ChattingViewModel @Inject constructor(
         val trimmed = text.trim()
         if (trimmed.isBlank() || roomId <= 0 || myId <= 0 || opponentId <= 0) {
             // 디버깅용 로그
-            android.util.Log.w("CHAT", "send blocked roomId=$roomId myId=$myId oppId=$opponentId text='$trimmed'")
+            //android.util.Log.w("CHAT", "send blocked roomId=$roomId myId=$myId oppId=$opponentId text='$trimmed'")
             return
         }
         // 디버깅: 전송 payload 로그
-        android.util.Log.d("CHAT", "SEND payload {roomId=$roomId, senderId=$myId, receiverId=$opponentId, message='$trimmed'}")
+        //android.util.Log.d("CHAT", "SEND payload {roomId=$roomId, senderId=$myId, receiverId=$opponentId, message='$trimmed'}")
 
         // 선택: 소켓 연결 확인(연결 전이면 보내지 않고 대기/에러 표시)
         if (socketConnected.value.not()) {
-            android.util.Log.w("CHAT", "socket not connected: queueing handled in client or skip")
+           // android.util.Log.w("CHAT", "socket not connected: queueing handled in client or skip")
             // 필요 시: return 하거나 "전송 보류" UI 처리
         }
 

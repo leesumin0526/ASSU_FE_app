@@ -12,6 +12,7 @@
         <action
             android:id="@+id/action_verify_to_type"
             app:destination="@id/signUpCommonTypeFragment" />
+
     </fragment>
 
     <!-- 2단계: 사용자 유형 선택 -->
@@ -83,6 +84,9 @@
         <action
             android:id="@+id/action_admin_info_to_seal"
             app:destination="@id/signUpAdminSealFragment" />
+        <action
+            android:id="@+id/action_admin_info_to_location"
+            app:destination="@id/partnerLocationSearchFragment" />
     </fragment>
 
     <fragment
@@ -102,7 +106,16 @@
         <action
             android:id="@+id/action_partner_info_to_license"
             app:destination="@id/signUpPartnerLicenseFragment" />
+        <action
+            android:id="@+id/action_partner_info_to_location"
+            app:destination="@id/partnerLocationSearchFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/partnerLocationSearchFragment"
+        android:name="com.example.assu_fe_app.presentation.common.search.LocationInfoSearchFragment"
+        android:label="제휴업체 위치 검색"/>
+
 
     <fragment
         android:id="@+id/signUpPartnerLicenseFragment"
