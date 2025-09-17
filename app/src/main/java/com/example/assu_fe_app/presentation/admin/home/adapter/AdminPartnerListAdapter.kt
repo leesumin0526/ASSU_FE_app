@@ -65,7 +65,7 @@ class AdminPartnerListAdapter(
             }
         }
     }
-    private fun mapOptionToContractItem(opt: com.example.assu_fe_app.domain.model.admin.PartnershipOptionModel)
+    private fun mapOptionToContractItem(opt: com.example.assu_fe_app.domain.model.partnership.PartnershipOptionModel)
             : PartnershipContractItem {
         // goods를 보기 좋게 합침 (없으면 "상품")
         val goodsText = opt.goods.firstOrNull()?.goodsName ?: "상품"

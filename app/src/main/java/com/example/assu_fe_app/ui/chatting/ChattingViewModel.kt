@@ -23,7 +23,6 @@ import javax.inject.Inject
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.example.assu_fe_app.data.dto.chatting.WsMessageDto
-import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
 import com.example.assu_fe_app.domain.model.chatting.ReadChattingModel
 import com.example.assu_fe_app.domain.usecase.chatting.LeaveChattingRoomUseCase
@@ -250,7 +249,7 @@ class ChattingViewModel @Inject constructor(
             return
         }
         // 디버깅: 전송 payload 로그
-        //android.util.Log.d("CHAT", "SEND payload {roomId=$roomId, senderId=$myId, receiverId=$opponentId, message='$trimmed'}")
+        android.util.Log.d("CHAT", "SEND payload {roomId=$roomId, senderId=$myId, receiverId=$opponentId, message='$trimmed'}")
 
         // 선택: 소켓 연결 확인(연결 전이면 보내지 않고 대기/에러 표시)
         if (socketConnected.value.not()) {

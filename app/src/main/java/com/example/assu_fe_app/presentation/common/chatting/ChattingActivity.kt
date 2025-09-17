@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
@@ -25,7 +26,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.getValue
 import com.example.assu_fe_app.LeaveChatRoomDialog
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
+import com.example.assu_fe_app.data.local.AuthTokenLocalStoreImpl
+import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity_chatting) {
@@ -34,11 +38,10 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
     // ✅ 변경: 어댑터를 필드로 보관(한 번만 생성)
     private lateinit var messageAdapter: ChattingMessageAdapter
-    private lateinit var tokenManger: TokenManager
-
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initView() {
-        tokenManger = TokenManager(this)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val extraPaddingTop = 3
@@ -50,6 +53,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             )
             insets
         }
+
 
         val roomId = intent.getLongExtra("roomId", -1L)
         val opponentName = intent.getStringExtra("opponentName") ?: ""
@@ -117,6 +121,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     }
 
     override fun initObserver() {
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -294,7 +299,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             return
         }
 
-        val myId = tokenManger.getUserId()
+        val myId = authTokenLocalStore.getUserId()
 //        val opponentId = viewModel.findOpponentId(roomId) ?: -1L
         Log.d("VM","roomId = $roomId, myId=$myId, opponentId=$opponentId")
         // ✅ 변경: 입장 시 히스토리 + 소켓 연결(뷰모델 내부에서 처리)

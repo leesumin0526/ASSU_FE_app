@@ -16,6 +16,7 @@ import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentLocationInfoSearchBinding
 import com.example.assu_fe_app.ui.search.LocationInfoSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
