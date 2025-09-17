@@ -17,7 +17,8 @@ import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import javax.inject.Inject
 
 class AdminPartnerLocationAdapter(
-    private val role: UserRole
+    private val role: UserRole,
+    private val onAddressSelected: ((String) -> Unit)? = null
 ) :
     ListAdapter<LocationAdminPartnerSearchResultItem, AdminPartnerLocationAdapter.ViewHolder>(DiffCallback) {
     inner class ViewHolder(
@@ -41,6 +42,11 @@ class AdminPartnerLocationAdapter(
 
             binding.viewItemAdminPartnerLocationSearchResultItemDivider.visibility =
                 if (isLastItem) View.GONE else View.VISIBLE
+
+            // 주소 선택 시 콜백 호출 (회원가입에서 주소 선택할 때)
+            binding.root.setOnClickListener {
+                onAddressSelected?.invoke(item.address)
+            }
 
             binding.tvItemAdminPartnerLocationSearchResultItemContact.setOnClickListener {
                 val context = it.context

@@ -64,7 +64,10 @@ class LocationSearchSuccessFragment :
     }
 
     private fun initAdapter(){
-        adapter = AdminPartnerLocationAdapter(role)
+        adapter = AdminPartnerLocationAdapter(role) { selectedAddress ->
+            // 주소 선택 시 LocationSearchActivity로 결과 전달
+            (requireActivity() as? LocationSearchActivity)?.returnSelectedAddress(selectedAddress)
+        }
         binding.rvLocationSearchSuccess.apply{
             layoutManager = LinearLayoutManager(requireContext())
             this.adapter = this@LocationSearchSuccessFragment.adapter
