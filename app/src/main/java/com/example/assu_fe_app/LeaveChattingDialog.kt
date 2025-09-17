@@ -28,7 +28,7 @@ class LeaveChatRoomDialog : DialogFragment() {
         val view = layoutInflater.inflate(R.layout.fragment_leave_chatting_dialog, null)
 
         val cancelBtn = view.findViewById<TextView>(R.id.btnCancel)
-        val cross = view.findViewById<ImageView>(R.id.iv_cross)
+        val cross = view.findViewById<ImageView>(R.id.ivCross)
         val leaveBtn = view.findViewById<TextView>(R.id.btnLeave)
 
         cancelBtn.setOnClickListener { dismiss() }
