@@ -18,6 +18,7 @@ data class BenefitItem(
     val criterionType: CriterionType = CriterionType.PRICE,
     val criterionValue: String = "",
     val category: String = "",
-    val discountRate: Long? = null,
-    val goods: List<String> = emptyList()
+    val discountRate: String = "",
+    val goods: List<String> = emptyList(),
+    val placeholder: String = "캔콜라"
 )

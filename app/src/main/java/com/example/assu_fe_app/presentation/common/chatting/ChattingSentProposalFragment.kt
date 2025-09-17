@@ -6,7 +6,9 @@ import androidx.fragment.app.FragmentManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentChattingSentProposalBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ChattingSentProposalFragment : BaseFragment<FragmentChattingSentProposalBinding>(R.layout.fragment_chatting_sent_proposal) {
     override fun initView() {
         binding.ivCross.setOnClickListener {

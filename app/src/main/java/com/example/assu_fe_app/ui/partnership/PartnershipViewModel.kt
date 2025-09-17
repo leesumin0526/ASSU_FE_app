@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.ui.partnership
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,6 +45,7 @@ class PartnershipViewModel @Inject constructor(
 
     val partnershipStartDate = MutableStateFlow("")
     val partnershipEndDate = MutableStateFlow("")
+    val signature = MutableStateFlow("")
     val partnerName = MutableStateFlow("")
     val adminName = MutableStateFlow("")
 
@@ -63,49 +65,128 @@ class PartnershipViewModel @Inject constructor(
         initialValue = false
     )
 
+    val isSubmitButtonEnabled: StateFlow<Boolean> = combine(
+        partnershipStartDate,
+        partnershipEndDate,
+        signature
+    ) { start, end, sign->
+        start.isNotBlank() && end.isNotBlank() && sign.isNotBlank()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
+
     private val _writePartnershipState = MutableStateFlow<WritePartnershipUiState>(WritePartnershipUiState.Idle)
     val writePartnershipState: StateFlow<WritePartnershipUiState> = _writePartnershipState.asStateFlow()
+
+    fun updatePartnerName(name: String) {
+        partnerName.value = name
+        Log.d("PartnershipViewModel", "Partner name updated: $name")
+    }
+
+    fun updateAdminName(name: String) {
+        adminName.value = name
+        Log.d("PartnershipViewModel", "Admin name updated: $name")
+    }
 
     fun initProposalData(partnerId: Long, paperId: Long) {
         this.partnerId = partnerId
         this.paperId = paperId
         if (_benefitItems.value.isEmpty()) {
-            _benefitItems.value = listOf(BenefitItem())
+            _benefitItems.value = listOf(
+                BenefitItem(
+                    id = System.currentTimeMillis().toString(),
+                    optionType = OptionType.SERVICE,
+                    criterionType = CriterionType.PRICE,
+                    criterionValue = "",
+                    category = "",
+                    goods = listOf(""),
+                    discountRate = ""
+                )
+            )
         }
     }
 
     fun addBenefitItem() {
-        _benefitItems.value = _benefitItems.value + BenefitItem()
+        val newItem = BenefitItem(
+            id = System.currentTimeMillis().toString(),
+            optionType = OptionType.SERVICE,
+            criterionType = CriterionType.PRICE,
+            criterionValue = "",
+            category = "",
+            goods = listOf(""),
+            discountRate = ""
+        )
+        _benefitItems.value = _benefitItems.value + newItem
     }
 
     fun onBenefitEvent(itemIndex: Int, event: BenefitItemEvent) {
         val currentList = _benefitItems.value.toMutableList()
         if (itemIndex !in currentList.indices) return
 
+        // '아이템 삭제' 이벤트는 리스트 전체를 변경하므로 여기서 바로 처리
+        if (event is BenefitItemEvent.ItemRemoved) {
+            currentList.removeAt(itemIndex)
+            _benefitItems.value = currentList
+            return
+        }
+
         val currentItem = currentList[itemIndex]
         val newItem = when (event) {
             is BenefitItemEvent.OptionTypeChanged -> {
-                currentItem.copy(
-                    optionType = event.newType,
-                    discountRate = if (event.newType == OptionType.SERVICE) null else currentItem.discountRate,
-                    goods = if (event.newType == OptionType.DISCOUNT) emptyList() else currentItem.goods
-                )
+                if (event.newType == OptionType.DISCOUNT) {
+                    // '할인 혜택'이 선택된 경우
+                    currentItem.copy(
+                        optionType = OptionType.DISCOUNT,
+                        goods = emptyList(), // 제공 항목 리스트는 비움
+                        category = "",       // 카테고리도 초기화
+                        discountRate = ""
+                    )
+                } else {
+                    // '서비스 제공'이 선택된 경우
+                    currentItem.copy(
+                        optionType = OptionType.SERVICE,
+                        goods = listOf(""), // 제공 항목 리스트를 기본값으로 초기화
+                        category = "",
+                        discountRate = ""
+                    )
+                }
             }
-
-            is BenefitItemEvent.CriterionTypeChanged -> {
-                currentItem.copy(criterionType = event.newType, criterionValue = "")
-            }
-
-            is BenefitItemEvent.CriterionValueChanged -> {
-                currentItem.copy(criterionValue = event.value)
-            }
-
+            is BenefitItemEvent.CriterionTypeChanged -> currentItem.copy(criterionType = event.newType, criterionValue = "")
+            is BenefitItemEvent.CriterionValueChanged -> currentItem.copy(criterionValue = event.value)
+            is BenefitItemEvent.CategoryChanged -> currentItem.copy(category = event.text)
+            is BenefitItemEvent.DiscountRateChanged -> currentItem.copy(discountRate = event.rate)
             is BenefitItemEvent.GoodAdded -> {
-                currentItem.copy(goods = currentItem.goods + "")
+                if (currentItem.optionType == OptionType.SERVICE){
+                    currentItem.copy(goods = currentItem.goods + "")
+                } else {
+                    currentItem
+                }
             }
-
-            else -> currentItem
+            is BenefitItemEvent.GoodRemoved -> {
+                val updatedGoods = currentItem.goods.toMutableList()
+                if (event.goodIndex in updatedGoods.indices) {
+                    updatedGoods.removeAt(event.goodIndex)
+                }
+                // ✅ 서비스 제공에서는 최소 1개 유지
+                val finalGoods = if (updatedGoods.isEmpty() && currentItem.optionType == OptionType.SERVICE) {
+                    listOf("")
+                } else {
+                    updatedGoods
+                }
+                currentItem.copy(goods = finalGoods)
+            }
+            is BenefitItemEvent.GoodUpdated -> {
+                val updatedGoods = currentItem.goods.toMutableList()
+                if (event.goodIndex in updatedGoods.indices) {
+                    updatedGoods[event.goodIndex] = event.text
+                }
+                currentItem.copy(goods = updatedGoods)
+            }
+            is BenefitItemEvent.ItemRemoved -> currentItem // 위에서 이미 처리했으므로 여기서는 변경 없음
         }
+
         currentList[itemIndex] = newItem
         _benefitItems.value = currentList
     }
@@ -129,15 +210,15 @@ class PartnershipViewModel @Inject constructor(
                     people = if (benefit.criterionType == CriterionType.HEADCOUNT) benefit.criterionValue.toIntOrNull() else null,
                     cost = if (benefit.criterionType == CriterionType.PRICE) benefit.criterionValue.toLongOrNull() else null,
                     category = benefit.category,
-                    discountRate = benefit.discountRate,
+                    discountRate = benefit.discountRate.toLongOrNull(),
                     goods = benefit.goods.filter { it.isNotBlank() }.map { PartnershipGoodsRequestDto(it) }
                 )
             }
 
             val updateRequest = WritePartnershipRequestDto(
                 paperId = paperId, // ✅ savedStateHandle로 받은 paperId 사용
-                partnershipPeriodStart = partnershipStartDate.value,
-                partnershipPeriodEnd = partnershipEndDate.value,
+                partnershipPeriodStart = partnershipStartDate.value.replace(" ", ""),
+                partnershipPeriodEnd = partnershipEndDate.value.replace(" ", ""),
                 options = optionsDto
             )
 

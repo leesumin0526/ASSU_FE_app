@@ -3,6 +3,7 @@ package com.example.assu_fe_app.presentation.common.chatting
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Build
 import android.util.Log
@@ -42,6 +43,13 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     // ✅ 변경: 어댑터를 필드로 보관(한 번만 생성)
     private lateinit var messageAdapter: ChattingMessageAdapter
     @Inject lateinit var tokenManager: TokenManager
+//    private const val KEY_USERNAME = "username"
+//    private val prefs: SharedPreferences = context.getSharedPreferences(
+//        "auth_tokens",
+//        Context.MODE_PRIVATE
+//    )
+//    val username = prefs.getString(KEY_USERNAME, "") ?: ""
+
 
     private var currentUserRole: String? = null
     private var currentPartnershipStatus: PartnershipStatusModel? = null
@@ -104,6 +112,9 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
         // 제안서 작성 클릭하기
         binding.llChattingSent.setOnClickListener {
+            handleProposalButtonClick()
+        }
+        binding.llChattingAfterProposal.setOnClickListener {
             handleProposalButtonClick()
         }
 
@@ -322,9 +333,13 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     }
 
     private fun navigateToProposalWriting(status: PartnershipStatusModel) {
+        Log.d("ChattingActivity", "${status.paperId}")
         status.paperId?.let { paperId ->
             val partnerId = tokenManager.getUserId()
-            val fragment = ServiceProposalWritingFragment.newInstance(partnerId, paperId)
+            val adminName = status.opponentName ?: ""
+            val partnerName = tokenManager.getUserName() ?: ""
+            val fragment = ServiceProposalWritingFragment.newInstance(partnerId, paperId, adminName, partnerName)
+            Log.d("PartnerName", "${partnerId}, ${partnerName}")
 
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatting_fragment_container, fragment)
@@ -338,12 +353,8 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     private fun navigateToProposalView(status: PartnershipStatusModel, isEditable: Boolean) {
         status.paperId?.let { paperId ->
             // TODO: ProposalViewFragment 구현 필요
-            // val fragment = ProposalViewFragment.newInstance(paperId, isEditable)
-            // supportFragmentManager.beginTransaction()...
-
-            // 임시로 토스트 표시
-            val mode = if (isEditable) "수정 가능한" else "읽기 전용"
-            Toast.makeText(this, "${mode} 제안서 확인 화면으로 이동 (paperId: $paperId)", Toast.LENGTH_LONG).show()
+            val mode = if (isEditable) "수정" else "읽기"
+            Toast.makeText(this, "$mode 모드로 제안서(ID: $paperId) 확인 화면으로 이동합니다.", Toast.LENGTH_LONG).show()
         } ?: run {
             Toast.makeText(this, "제안서 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
@@ -351,11 +362,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
     private fun navigateToContractView(status: PartnershipStatusModel) {
         // TODO: ContractViewFragment 구현 필요
-        // val fragment = ContractViewFragment.newInstance(status.contractId)
-        // supportFragmentManager.beginTransaction()...
-
-        // 임시로 토스트 표시
-        Toast.makeText(this, "제휴 계약서 확인 화면으로 이동", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "계약서(ID: ${status.paperId}) 확인 화면으로 이동합니다.", Toast.LENGTH_LONG).show()
     }
 
 
