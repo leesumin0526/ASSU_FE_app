@@ -117,9 +117,9 @@ class PartnerHomeFragment :
 
                             if(data.isEmpty()) {
                                 binding.btnPartnerHomeViewAll.visibility = View.INVISIBLE
-//                                binding.tvNoPartnerList.visibility = View.VISIBLE
+                                binding.llNoAdminList.visibility = View.VISIBLE
                             } else {
-//                                binding.tvNoPartnerList.visibility = View.GONE
+                                binding.llNoAdminList.visibility = View.GONE
                             }
 
                             val firstItem = data.getOrNull(0)

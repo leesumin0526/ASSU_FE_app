@@ -237,7 +237,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                         // ✅ DiffUtil + Payload 반영: 실시간 업데이트
                         messageAdapter.submitList(uiItems) {
                             if (uiItems.isNotEmpty()) {
-                                binding.rvChattingMessageList.smoothScrollToPosition(uiItems.size - 1)
+                                binding.rvChattingMessageList.scrollToPosition(uiItems.size - 1)
                             }
                         }
                     }

@@ -109,9 +109,9 @@ class AdminHomeFragment :
 
                             if(data.isEmpty()) {
                                 binding.btnAdminHomeViewAll.visibility = View.INVISIBLE
-                                binding.tvNoPartnerList.visibility = View.VISIBLE
+                                binding.llNoPartnerList.visibility = View.VISIBLE
                             } else {
-                                binding.tvNoPartnerList.visibility = View.GONE
+                                binding.llNoPartnerList.visibility = View.GONE
                             }
 
                             val firstItem = data.getOrNull(0)
@@ -193,10 +193,10 @@ class AdminHomeFragment :
         // 🔽 전체 조회 버튼
         binding.btnAdminHomeViewAll.setOnClickListener {
             //TODO 원래 intent로 보냄
-//            val intent = Intent(requireContext(), AdminHomeViewPartnerListActivity::class.java)
-//            startActivity(intent)
+            val intent = Intent(requireContext(), AdminHomeViewPartnerListActivity::class.java)
+            startActivity(intent)
             // ✅ 전체 조회 API 호출
-            partnershipViewModel.getProposalPartnerList(isAll = true)
+//            partnershipViewModel.getProposalPartnerList(isAll = true)
         }
 
         binding.ivAdminHomeNotification.setOnClickListener {
