@@ -10,6 +10,7 @@ import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.databinding.FragmentPartnershipContentBinding
 import com.example.assu_fe_app.presentation.common.contract.adapter.PartnershipContractAdapter
 
+// 계약서
 class PartnershipContractDialogFragment() : DialogFragment( ) {
 
     private var _binding: FragmentPartnershipContentBinding? = null
@@ -58,6 +59,16 @@ class PartnershipContractDialogFragment() : DialogFragment( ) {
             binding.tvPartnershipContentAdmin.text = data.adminName ?: "-"
             binding.tvPartnershipContentStartDate.text = data.periodStart ?: ""
             binding.tvPartnershipContentEndDate.text = data.periodEnd ?: ""
+
+            val summaryText = buildString {
+                append("위와 같이 ")
+                append(data.partnerName ?: "-")
+                append("와의\n 제휴를 제안합니다.\n\n")
+                append(data.periodStart ?: "")
+                append("\n대표 (인)")
+            }
+            binding.tvPartnershipContentSummary.text = summaryText
+
 
             // 옵션 리스트
             adapter = PartnershipContractAdapter(data.options ?: emptyList())

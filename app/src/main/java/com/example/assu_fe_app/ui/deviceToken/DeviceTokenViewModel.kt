@@ -3,7 +3,6 @@ package com.example.assu_fe_app.ui.deviceToken
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.data.local.DeviceTokenLocalStore
-import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.domain.usecase.deviceToken.RegisterDeviceTokenUseCase
 import com.example.assu_fe_app.util.RetrofitResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DeviceTokenViewModel @Inject constructor(
     private val registerDeviceToken: RegisterDeviceTokenUseCase,
-    private val localStore: DeviceTokenLocalStore,
-    private val tokenManager: TokenManager
+    private val localStore: DeviceTokenLocalStore
 ) : ViewModel() {
 
     sealed interface UiState {
@@ -36,8 +34,7 @@ class DeviceTokenViewModel @Inject constructor(
             when (val r = registerDeviceToken(token)) {
                 is RetrofitResult.Success -> {
                     val tokenId = r.data
-                    localStore.saveTokenId(tokenId)
-                    tokenManager.saveDeviceTokenId(tokenId)
+                    localStore.saveDeviceTokenId(tokenId)
                     _uiState.value = UiState.Success(tokenId)
                 }
                 is RetrofitResult.Fail ->

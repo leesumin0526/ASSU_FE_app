@@ -24,18 +24,18 @@ interface AuthService {
     ): BaseResponse<CommonLoginResponseDto>
     
     @POST("auth/logout")
-    suspend fun logout(): BaseResponse<Unit>
+    suspend fun logout(): BaseResponse<Any>
     
     @POST("auth/phone-verification/send")
     suspend fun sendPhoneVerification(
         @Body request: PhoneVerificationSendRequestDto
-    ): BaseResponse<Unit>
+    ): BaseResponse<Any>
     
     @POST("auth/phone-verification/verify")
     suspend fun verifyPhoneVerification(
         @Body request: PhoneVerificationVerifyRequestDto
-    ): BaseResponse<Unit>
+    ): BaseResponse<Any>
     
     @PATCH("auth/withdraw")
-    suspend fun withdraw(): BaseResponse<Unit>
+    suspend fun withdraw(): BaseResponse<Any>
 }

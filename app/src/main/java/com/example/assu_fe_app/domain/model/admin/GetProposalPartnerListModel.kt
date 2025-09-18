@@ -1,5 +1,7 @@
 package com.example.assu_fe_app.domain.model.admin
 
+import com.example.assu_fe_app.domain.model.partnership.PartnershipOptionModel
+
 data class GetProposalPartnerListModel(
     val partnershipId: Long,
     val partnershipPeriodStart: org.threeten.bp.LocalDate,

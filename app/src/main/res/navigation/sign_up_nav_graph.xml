@@ -13,6 +13,7 @@
             android:id="@+id/action_verify_to_type"
             app:destination="@id/signUpCommonTypeFragment" />
 
+
         <action
             android:id="@+id/action_verify_to_info"
             app:destination="@id/signUpAdminInfoFragment"/>

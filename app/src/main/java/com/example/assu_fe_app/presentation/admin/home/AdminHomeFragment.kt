@@ -18,17 +18,17 @@ import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractIt
 import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentAdminHomeBinding
+import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 import com.example.assu_fe_app.presentation.common.notification.NotificationActivity
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
+import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import com.example.assu_fe_app.data.manager.TokenManager
-import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
-import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 
 
 @AndroidEntryPoint
@@ -40,7 +40,7 @@ class AdminHomeFragment :
 
     private val partnershipViewModel: PartnershipViewModel by viewModels()
 
-    lateinit var tokenManager: TokenManager
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initObserver() {
         // 채팅방 생성 상태 수집
@@ -181,8 +181,8 @@ class AdminHomeFragment :
 
     override fun initView() {
 
-        tokenManager = TokenManager(requireContext())
-        val userName = tokenManager.getUserName() ?: "사용자"
+        // authTokenLocalStore는 @Inject로 주입됨
+        val userName = authTokenLocalStore.getUserName() ?: "사용자"
 
         binding.tvAdminHomeName.text = if (userName.isNotEmpty()) {
             "안녕하세요, ${userName}님!"
@@ -258,7 +258,7 @@ class AdminHomeFragment :
             val contractData = PartnershipContractData(
 //                partnerName = item.partnerName ?: item.partnerId.toString(),
                 partnerName = item.partnerId.toString(),
-                adminName = tokenManager.getUserName() ?: "관리자",
+                adminName = authTokenLocalStore.getUserName() ?: "관리자",
                 options = item.options.map { opt ->
                     when (opt.optionType) {
                         OptionType.SERVICE -> when (opt.criterionType) {
