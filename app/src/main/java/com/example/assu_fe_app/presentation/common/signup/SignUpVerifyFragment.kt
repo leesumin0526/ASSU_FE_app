@@ -86,6 +86,7 @@ class SignUpVerifyFragment :
 
         // 인증번호 받기
         binding.tvUserVerifyPhone.setOnClickListener {
+            findNavController().navigate(R.id.action_verify_to_info)
             val inputPhone = binding.etUserVerifyPhone.text.toString().trim()
             if (inputPhone.isNotEmpty()) {
                 viewModel.sendPhoneVerification(inputPhone)
