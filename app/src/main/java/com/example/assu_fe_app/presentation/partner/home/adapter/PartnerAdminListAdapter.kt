@@ -11,6 +11,7 @@ import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractIt
 import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.domain.model.partnership.PartnershipOptionModel
@@ -20,15 +21,14 @@ import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsMo
 class PartnerAdminListAdapter(
     private val items: List<GetProposalAdminListModel>,
     private val fragmentManager: FragmentManager,
-    private val adminName: String // TokenManager에서 불러온 이름
+    private val authTokenLocalStore: AuthTokenLocalStore
 ) : RecyclerView.Adapter<PartnerAdminListAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemAssociationListBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: GetProposalAdminListModel) {
-            //TODO: 이름 바꾸기
-            binding.tvAssociationName.text = item.adminId.toString()
+            binding.tvAssociationName.text = item.adminName
             val option = item.options.firstOrNull()
             binding.tvBenefitDescription.text = if (option != null) {
                 when (option.optionType) {
@@ -56,8 +56,8 @@ class PartnerAdminListAdapter(
 
             itemView.setOnClickListener {
                 val contractData = PartnershipContractData(
-                    partnerName = item.partnerId.toString(),         // TODO: 파트너명으로 교체
-                    adminName = item.adminId.toString(),                     // ★ 여기서 어댑터 인자 사용
+                    partnerName = authTokenLocalStore.getUserName(),         // TODO: 파트너명으로 교체
+                    adminName = item.adminName,                   // ★ 여기서 어댑터 인자 사용
                     options = item.options.map { mapOptionToContractItem(it) },
                     periodStart = item.partnershipPeriodStart.toString(),
                     periodEnd = item.partnershipPeriodEnd.toString()

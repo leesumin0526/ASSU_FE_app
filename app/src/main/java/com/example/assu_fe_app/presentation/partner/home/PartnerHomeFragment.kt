@@ -236,7 +236,7 @@ class PartnerHomeFragment :
         periodView: TextView,
         item: GetProposalAdminListModel
     ) {
-        titleView.text = item.adminId.toString() // TODO: 실제 어드민명 필드 있으면 교체
+        titleView.text = item.adminName
         periodView.text = "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
 
         // 옵션 설명 만들기
@@ -261,8 +261,8 @@ class PartnerHomeFragment :
             val contractData = PartnershipContractData(
 //                partnerName = item.partnerName ?: item.partnerId.toString(),
                 //TODO: 이름 바꾸기
-                partnerName = item.partnerId.toString(),
-                adminName = item.adminId.toString() ?: "관리자",
+                partnerName = authTokenLocalStore.getUserName(),
+                adminName = item.adminName ?: "관리자",
                 options = item.options.map { opt ->
                     when (opt.optionType) {
                         OptionType.SERVICE -> when (opt.criterionType) {

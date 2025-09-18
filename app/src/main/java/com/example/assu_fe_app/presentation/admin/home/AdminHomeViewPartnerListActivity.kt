@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.ActivityAdminHomeViewPartnerListBinding
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.presentation.admin.home.adapter.AdminPartnerListAdapter
@@ -19,12 +20,14 @@ import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartnerListBinding>(R.layout.activity_admin_home_view_partner_list) {
 
     private val partnershipViewModel: PartnershipViewModel by viewModels()
     private lateinit var adapter: AdminPartnerListAdapter
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -43,6 +46,9 @@ class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartn
             finish() // 현재 Activity 종료 → 이전 화면으로 돌아감
         }
 
+        val adminName = authTokenLocalStore.getUserName()
+        binding.tvProposalInfo.setText("$adminName 와(과) 제휴를 체결한 업체 목록이에요.")
+
         setupRecyclerView()
     }
 
@@ -51,7 +57,7 @@ class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartn
         adapter = AdminPartnerListAdapter(
             items = mutableListOf(),
             fragmentManger = supportFragmentManager,
-            adminName = "관리자" // TODO: 필요시 TokenManager로 교체
+            authTokenLocalStore = authTokenLocalStore
         )
 
         binding.rvPartnerList.layoutManager = LinearLayoutManager(this)
@@ -76,13 +82,13 @@ class AdminHomeViewPartnerListActivity : BaseActivity<ActivityAdminHomeViewPartn
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 partnershipViewModel.getPartnershipPartnerListUiState.collect { state ->
                     when (state) {
-                        is com.example.assu_fe_app.ui.partnership.PartnershipViewModel.PartnershipPartnerListUiState.Success -> {
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Success -> {
                             updateList(state.data)
                         }
-                        is com.example.assu_fe_app.ui.partnership.PartnershipViewModel.PartnershipPartnerListUiState.Fail -> {
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Fail -> {
                             // TODO: 에러 처리 (토스트 등)
                         }
-                        is com.example.assu_fe_app.ui.partnership.PartnershipViewModel.PartnershipPartnerListUiState.Error -> {
+                        is PartnershipViewModel.PartnershipPartnerListUiState.Error -> {
                             // TODO: 에러 처리
                         }
                         else -> Unit

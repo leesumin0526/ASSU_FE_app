@@ -8,23 +8,24 @@ import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractIt
 import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.ItemAssociationListBinding
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
+import javax.inject.Inject
 
 
 class AdminPartnerListAdapter(
-    private val items: List<GetProposalPartnerListModel>,
+    private val items: MutableList<GetProposalPartnerListModel>,
     private val fragmentManger: FragmentManager,
-    private val adminName: String // AuthTokenLocalStore에서 불러온 관리자 이름
+    private val authTokenLocalStore: AuthTokenLocalStore
 ) : RecyclerView.Adapter<AdminPartnerListAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemAssociationListBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: GetProposalPartnerListModel) {
-            //TODO: 이름 바꾸기
-            binding.tvAssociationName.text = item.partnerId.toString()
+            binding.tvAssociationName.text = item.storeName
             val option = item.options.firstOrNull()
             binding.tvBenefitDescription.text = if (option != null) {
                 when (option.optionType) {
@@ -52,8 +53,8 @@ class AdminPartnerListAdapter(
 
             itemView.setOnClickListener {
                 val contractData = PartnershipContractData(
-                    partnerName = item.partnerId.toString(),         // TODO: 파트너명으로 교체
-                    adminName = item.adminId.toString(),                     // ★ 여기서 어댑터 인자 사용
+                    partnerName = item.storeName,         // TODO: 파트너명으로 교체
+                    adminName = authTokenLocalStore.getUserName() ,                     // ★ 여기서 어댑터 인자 사용
                     options = item.options.map { mapOptionToContractItem(it) },
                     periodStart = item.partnershipPeriodStart.toString(),
                     periodEnd   = item.partnershipPeriodEnd.toString()

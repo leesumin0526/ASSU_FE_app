@@ -195,8 +195,6 @@ class AdminHomeFragment :
             //TODO 원래 intent로 보냄
             val intent = Intent(requireContext(), AdminHomeViewPartnerListActivity::class.java)
             startActivity(intent)
-            // ✅ 전체 조회 API 호출
-//            partnershipViewModel.getProposalPartnerList(isAll = true)
         }
 
         binding.ivAdminHomeNotification.setOnClickListener {
@@ -236,7 +234,7 @@ class AdminHomeFragment :
         periodView: TextView,
         item: GetProposalPartnerListModel
     ) {
-        titleView.text = item.partnerId.toString() // TODO: 실제 가맹점명 필드 있으면 교체
+        titleView.text = item.storeName
         periodView.text = "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
 
         // 옵션 설명 만들기
@@ -261,7 +259,7 @@ class AdminHomeFragment :
             val contractData = PartnershipContractData(
 //                partnerName = item.partnerName ?: item.partnerId.toString(),
                 //TODO: 이름 바꾸기
-                partnerName = item.partnerId.toString(),
+                partnerName = item.storeName,
                 adminName = authTokenLocalStore.getUserName() ?: "관리자",
                 options = item.options.map { opt ->
                     when (opt.optionType) {

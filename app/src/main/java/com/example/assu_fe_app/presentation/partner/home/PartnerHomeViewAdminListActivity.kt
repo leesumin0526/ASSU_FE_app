@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.ActivityPartnerHomeViewAdminListBinding
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.presentation.base.BaseActivity
@@ -19,12 +20,14 @@ import com.example.assu_fe_app.presentation.partner.home.adapter.PartnerAdminLis
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PartnerHomeViewAdminListActivity : BaseActivity<ActivityPartnerHomeViewAdminListBinding>(R.layout.activity_partner_home_view_admin_list) {
 
     private val partnershipViewModel: PartnershipViewModel by viewModels()
     private lateinit var adapter: PartnerAdminListAdapter
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -43,6 +46,10 @@ class PartnerHomeViewAdminListActivity : BaseActivity<ActivityPartnerHomeViewAdm
             finish() // 현재 Activity 종료 → 이전 화면으로 돌아감
         }
 
+        val storeName = authTokenLocalStore.getUserName()
+        binding.tvAdminListName
+        binding.tvPartnershipInfo.setText("$storeName 와(과) 제휴를 체결한 단체 목록이에요.")
+
         setupRecyclerView()
     }
 
@@ -51,7 +58,7 @@ class PartnerHomeViewAdminListActivity : BaseActivity<ActivityPartnerHomeViewAdm
         adapter = PartnerAdminListAdapter(
             items = mutableListOf(),
             fragmentManager = supportFragmentManager,
-            adminName = "관리자" // TODO: 필요시 TokenManager로 교체
+            authTokenLocalStore = authTokenLocalStore
         )
 
         binding.rvPartnerList.layoutManager = LinearLayoutManager(this)

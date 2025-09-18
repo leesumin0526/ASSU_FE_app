@@ -9,5 +9,7 @@ data class GetProposalPartnerListModel(
     val adminId: Long,
     val partnerId: Long,
     val storeId: Long,
+    val storeName: String,
+    val adminName: String,
     val options: List<PartnershipOptionModel>
 )
