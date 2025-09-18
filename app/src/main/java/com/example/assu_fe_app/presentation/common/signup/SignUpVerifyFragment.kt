@@ -56,7 +56,6 @@ class SignUpVerifyFragment :
                     // 사용자에게는 간단한 안내 메시지만 표시
                     val errorMessage = when {
                         state.code == 400 -> "전화번호 형식이 올바르지 않습니다."
-                        state.code == 429 -> "요청이 너무 많습니다. 잠시 후 다시 시도해주세요."
                         else -> "인증번호 발송에 실패했습니다. 다시 시도해주세요."
                     }
                     Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
@@ -92,7 +91,6 @@ class SignUpVerifyFragment :
                     // 사용자에게는 간단한 안내 메시지만 표시
                     val errorMessage = when {
                         state.code == 400 -> "인증번호가 올바르지 않습니다."
-                        state.code == 429 -> "요청이 너무 많습니다. 잠시 후 다시 시도해주세요."
                         else -> "인증번호가 올바르지 않습니다."
                     }
                     Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
@@ -321,6 +319,7 @@ class SignUpVerifyFragment :
         binding.llQuestionCodeIsNotComing.visibility = View.GONE
         setButtonEnabled(false)
     }
+
 
     override fun onDestroyView() {
         countDownTimer?.cancel()
