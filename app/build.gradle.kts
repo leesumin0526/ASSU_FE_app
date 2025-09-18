@@ -32,7 +32,7 @@ android {
         debug {
             buildConfigField("String", "BASE_URL", "\"https://assu.shop/\"") // 에뮬레이터 → PC 로컬
             buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjExLCJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImp0aSI6IjUyNWQzZTY0LWU3MzAtNGE0Yi04NzE4LTkyZDQwNGM0ZTcyNSIsImlhdCI6MTc1NzM0MTI4NSwiZXhwIjoxNzU3MzQ0ODg1fQ.M8RPD-cjpDoD3V83TBO0W72FUhq5wTMn6tZshiAuxY4\"") // 🔴 임시
-            buildConfigField("String", "CERTIFICATION_URL", "\"ws://10.0.2.2:8080/ws\"") // TODO 주소 바꿔주세요
+            buildConfigField("String", "CERTIFICATION_URL", "\"wss://assu.shop/ws\"") // TODO 주소 바꿔주세요
         }
         release {
             buildConfigField("String", "BASE_URL", "\"https://assu.shop/\"") // 운영 주소로 교체

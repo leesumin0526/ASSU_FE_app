@@ -1,49 +1,45 @@
 package com.example.assu_fe_app.ui.certification
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.assu_fe_app.util.CertificationWebSocketClient
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.dto.certification.response.CertificationProgressDto
-import com.example.assu_fe_app.data.dto.certification.request.GroupSessionRequest
 import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
+import com.example.assu_fe_app.data.local.TokenProvider
 import com.example.assu_fe_app.domain.usecase.usage.SaveUsageUseCase
+import com.example.assu_fe_app.util.CertificationWebSocketClient
 import com.example.assu_fe_app.util.RetrofitResult
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class CertifyViewModel @Inject constructor(
-    private val saveUseCase : SaveUsageUseCase
+    private val saveUseCase: SaveUsageUseCase,
+    private val tokenProvider: TokenProvider
 ) : ViewModel() {
+
+    // LiveData 정의 (기존과 동일)
     private val _connectionStatus = MutableLiveData<ConnectionStatus>()
     val connectionStatus: LiveData<ConnectionStatus> = _connectionStatus
-
+    // ... (다른 LiveData들은 동일하게 유지)
     private val _currentCount = MutableLiveData<Int>()
     val currentCount: LiveData<Int> = _currentCount
-
-    private val _targetCount = MutableLiveData<Int>()
-    val targetCount: LiveData<Int> = _targetCount
-
     private val _isCompleted = MutableLiveData<Boolean>()
     val isCompleted: LiveData<Boolean> = _isCompleted
-
     private val _userIds = MutableLiveData<List<Long>>()
-    val userIds : LiveData<List<Long>> = _userIds
+    val userIds: LiveData<List<Long>> = _userIds
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
-
     private val _completionMessage = MutableLiveData<String>()
     val completionMessage: LiveData<String> = _completionMessage
-
     private val _sessionId = MutableLiveData<Long?>()
     val sessionId: LiveData<Long?> = _sessionId
+
 
     private var stompClient: CertificationWebSocketClient? = null
     private val gson = Gson()
@@ -52,175 +48,127 @@ class CertifyViewModel @Inject constructor(
         DISCONNECTED, CONNECTING, CONNECTED, FAILED
     }
 
+    /**
+     * ✅ [복원] 대표자용: 세션 진행 상황을 구독만 하는 함수
+     */
+    fun subscribeToProgress(sessionId: Long) {
+        _connectionStatus.value = ConnectionStatus.CONNECTING
+        _sessionId.value = sessionId
+        stompClient?.disconnect() // 이전 연결 정리
+
+        stompClient = CertificationWebSocketClient(
+            wsUrl = BuildConfig.CERTIFICATION_URL,
+            tokenProvider = tokenProvider
+        )
+
+        stompClient?.connectAndSubscribe(
+            sessionId = sessionId, // sessionId 전달
+            onConnected = {
+                _connectionStatus.postValue(ConnectionStatus.CONNECTED)
+                Log.d("CertifyViewModel", "✅ 대표자: 구독 성공 (Session: $sessionId)")
+            },
+            onCertificationMessage = { jsonBody -> handleProgressUpdate(jsonBody) },
+            onError = { error ->
+                _connectionStatus.postValue(ConnectionStatus.FAILED)
+                _errorMessage.postValue("연결 실패: ${error.message}")
+                Log.e("CertViewModel_SUB", "Error", error)
+            }
+        )
+    }
+
+    /**
+     * ✅ [복원] 인증자용: 연결 후 인증 요청만 보내고 바로 연결을 끊는 함수
+     */
+    fun connectAndCertify(sessionId: Long, adminId: Long) {
+        Log.d("CertViewModel_CERTIFY", "🚀 인증자: 요청 시작 (Session: $sessionId)")
+        val senderClient = CertificationWebSocketClient(
+            wsUrl = BuildConfig.CERTIFICATION_URL,
+            tokenProvider = tokenProvider
+        )
+
+        senderClient.connectAndSend(
+            adminId = adminId,
+            sessionId = sessionId,
+            onSuccess = {
+                Log.d("CertViewModel_CERTIFY", "✅ 인증자: 요청 성공")
+                // 성공적으로 전송 후 특별한 UI 변경이 필요 없다면 상태 업데이트 생략 가능
+            },
+            onError = { error ->
+                _errorMessage.postValue("요청 실패: ${error.message}")
+                Log.e("CertViewModel_CERTIFY", "❌ 인증자: 요청 실패", error)
+            }
+        )
+    }
+
+    /**
+     * ✅ [복원] 테스트용: 구독 후 바로 인증 요청을 보내 서버의 응답을 확인하는 함수
+     */
+    fun test_subscribeAndSendRequest(sessionId: Long, adminId: Long) {
+        Log.d("CertViewModel_TEST", "🚀 테스트 시작 (Session: $sessionId)")
+        _connectionStatus.value = ConnectionStatus.CONNECTING
+        _sessionId.value = sessionId
+        stompClient?.disconnect() // 이전 연결 정리
+
+        stompClient = CertificationWebSocketClient(
+            wsUrl = BuildConfig.CERTIFICATION_URL,
+            tokenProvider = tokenProvider
+        )
+
+        stompClient?.connectAndSubscribe(
+            sessionId = sessionId, // sessionId 전달
+            onConnected = {
+                _connectionStatus.postValue(ConnectionStatus.CONNECTED)
+                Log.d("CertViewModel_TEST", "✅ 테스트: 연결 및 구독 성공. 이제 인증 요청을 보냅니다...")
+
+                // 연결 성공 콜백 안에서 '인증 요청'을 바로 보냄
+                stompClient?.sendCertificationRequest(adminId, sessionId)
+            },
+            onCertificationMessage = { jsonBody ->
+                // 이 콜백으로 응답이 오는지 확인하는 것이 테스트의 핵심
+                Log.d("CertViewModel_TEST", "📩 테스트: 서버로부터 메시지 수신 성공! -> $jsonBody")
+                handleProgressUpdate(jsonBody)
+            },
+            onError = { error ->
+                _connectionStatus.postValue(ConnectionStatus.FAILED)
+                _errorMessage.postValue("테스트 중 에러 발생: ${error.message}")
+                Log.e("CertViewModel_TEST", "❌ 테스트: 에러 발생", error)
+            }
+        )
+    }
+
+
     private fun handleProgressUpdate(jsonBody: String) {
+        // 메시지 파싱 로직 (기존과 동일)
         try {
             val progress = gson.fromJson(jsonBody, CertificationProgressDto::class.java)
-
-            // 현재 카운트는 항상 업데이트
             _currentCount.postValue(progress.count)
-
             when (progress.type) {
-                "progress" -> {
-                    Log.d("JSON_PARSE🍭", "Progress update received: $jsonBody")
-                }
+                "progress" -> { /* 진행중 상태 처리 */ }
                 "completed" -> {
-                    Log.d("JSON_PARSE🍭", "Completed update received: $jsonBody")
-                    // 완료 상태 처리
-                    _isCompleted.value = true
-                    _completionMessage.value = progress.message ?: "메세지가 비어있습니다. "
-                    _userIds.value = progress.userIds ?: emptyList()
-                    Log.d("userIds 값 update", _userIds.value.toString())
+                    _isCompleted.postValue(true)
+                    _completionMessage.postValue(progress.message ?: "인증 완료")
+                    _userIds.postValue(progress.userIds ?: emptyList())
                 }
             }
         } catch (e: Exception) {
-            Log.e("JSON_PARSE", "Failed to parse progress update", e)
+            Log.e("JSON_PARSE", "메시지 파싱 실패", e)
         }
     }
 
-    fun saveGroupUsage(
-        request : SaveUsageRequestDto
-    ){
+    // ... saveGroupUsage, disconnect, onCleared 등 나머지 함수는 동일하게 유지 ...
+    fun saveGroupUsage(request: SaveUsageRequestDto) {
         viewModelScope.launch {
-            when ( val result = saveUseCase(request) ){
-                is RetrofitResult.Success -> {
-                    Log.d("데이터 저장 성공", "그룹 제휴 사용 데이터를 성공적으로 저장하였습니다.")
-                }
-
-                is RetrofitResult.Error -> {
-
-                }
-                is RetrofitResult.Fail ->{}
+            when (saveUseCase(request)) {
+                is RetrofitResult.Success -> Log.d("CertifyViewModel", "그룹 사용 내역 저장 성공")
+                is RetrofitResult.Error -> { /* 에러 처리 */ }
+                is RetrofitResult.Fail -> { /* 실패 처리 */ }
             }
         }
     }
 
-    fun subscribeToProgress(sessionId: Long, authToken: String) {
-        if (authToken.isEmpty()) {
-            _errorMessage.value = "인증 토큰이 없습니다."
-            return
-        }
-
-        _connectionStatus.value = ConnectionStatus.CONNECTING
-        _sessionId.value = sessionId
-
-        stompClient = CertificationWebSocketClient(
-            serverUrl = BuildConfig.CERTIFICATION_URL,
-            authToken = authToken,
-            listener = object : CertificationWebSocketClient.StompListener {
-                override fun onConnected() {
-                    _connectionStatus.postValue(ConnectionStatus.CONNECTED)
-                    // TODO 아래 2줄 주석 필요 : 세션별 진행 상황 구독만 함 (인증 요청은 하지 않음)
-                    stompClient?.subscribe("/certification/progress/$sessionId")
-                    Log.d("CertifyViewModel", "대표자가 진행 상황을 구독합니다. ")
-                }
-
-                override fun onMessage(destination: String, body: String) {
-                    handleProgressUpdate(body)
-                }
-
-                override fun onError(error: String) {
-                    _connectionStatus.postValue(ConnectionStatus.FAILED)
-                    _errorMessage.postValue("연결 실패: $error")
-                    Log.e("WebSocket", error)
-                }
-
-                override fun onDisconnected() {
-                    _connectionStatus.postValue(ConnectionStatus.DISCONNECTED)
-                }
-            }
-        )
-        stompClient?.connect()
-    }
-
-    fun connectAndCertify(sessionId: Long, adminId: Long, authToken: String) {
-
-        Log.d("CertifyViewModel", "connectAndCertify -> ")
-        if (authToken.isEmpty()) {
-            _errorMessage.value = "인증 토큰이 없습니다."
-            return
-        }
-
-        _connectionStatus.value = ConnectionStatus.CONNECTING
-        _sessionId.value = sessionId
-        Log.d("CertifyViewModel", "sessionId: $sessionId")
-
-        // 이전 연결이 있다면 정리
-        stompClient?.disconnect()
-
-        stompClient = CertificationWebSocketClient(
-            serverUrl = BuildConfig.CERTIFICATION_URL,
-            authToken = authToken,
-            listener = object : CertificationWebSocketClient.StompListener {
-                override fun onConnected() {
-                    _connectionStatus.postValue(ConnectionStatus.CONNECTED)
-
-                    // 임시 테스트 용
-                    stompClient?.subscribe("/certification/progress/$sessionId")
-                    Log.d("CertifyViewModel", "대표자가 진행 상황을 구독합니다. ")
-                    // 인증 요청만 전송 (구독은 하지 않음)
-                    val request = GroupSessionRequest(
-                        adminId = adminId,
-                        sessionId = sessionId
-                    )
-
-                    stompClient?.send(
-                        destination = "/app/certify",
-                        body = gson.toJson(request)
-                    )
-
-                    Log.d("CertifyViewModel", "인증자가 인증 요청을 보냈습니다. ")
-                }
-
-                override fun onMessage(destination: String, body: String) {
-                    handleProgressUpdate(body)
-                }
-
-                override fun onError(error: String) {
-                    _connectionStatus.postValue(ConnectionStatus.FAILED)
-                    _errorMessage.postValue("연결 실패: $error")
-                    Log.e("WebSocket", error)
-                }
-
-                override fun onDisconnected() {
-                    _connectionStatus.postValue(ConnectionStatus.DISCONNECTED)
-                }
-            }
-        )
-        stompClient?.connect()
-    }
-
-    // 연결 해제 함수
     fun disconnect() {
         stompClient?.disconnect()
-        _connectionStatus.value = ConnectionStatus.DISCONNECTED
-    }
-
-    // 재연결 함수
-    fun reconnect() {
-        val currentSessionId = _sessionId.value
-        if (currentSessionId != null) {
-            val authToken = getStoredAuthToken() // 토큰을 다시 가져와야 함
-            if (authToken.isNotEmpty()) {
-                disconnect()
-                subscribeToProgress(currentSessionId, authToken)
-            }
-        }
-    }
-
-    // 현재 연결 상태 확인
-    fun isConnected(): Boolean {
-        return _connectionStatus.value == ConnectionStatus.CONNECTED
-    }
-
-    // 에러 메시지 초기화
-    fun clearErrorMessage() {
-        _errorMessage.value = ""
-    }
-
-    private fun getStoredAuthToken(): String {
-        // Context가 필요하므로 실제로는 Repository나 DataStore를 통해 가져와야 함
-        // 여기서는 예시로만 작성
-        return ""
+        Log.d("CertifyViewModel", "🔌 연결 해제 요청")
     }
 
     override fun onCleared() {

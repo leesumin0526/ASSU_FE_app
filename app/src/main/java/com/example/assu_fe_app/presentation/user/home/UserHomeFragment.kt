@@ -8,16 +8,19 @@ import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.data.manager.TokenManager
 
 
-private lateinit var tokenManager: TokenManager
+
 
 
 class UserHomeFragment :
     BaseFragment<FragmentUserHomeBinding>(R.layout.fragment_user_home){
+    private lateinit var tokenManager: TokenManager
     override fun initObserver() {
 
     }
 
     override fun initView() {
+
+        tokenManager= TokenManager(requireContext())
         // 제휴 QR 박스 클릭 시 인증 액티비티로 이동
         binding.clHomeQrBox.setOnClickListener {
             val intent = Intent(requireContext(), UserQRVerifyActivity::class.java)

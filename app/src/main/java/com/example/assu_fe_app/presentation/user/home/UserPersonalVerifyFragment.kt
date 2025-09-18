@@ -62,8 +62,6 @@ class UserPersonalVerifyFragment : BaseFragment<FragmentUserPersonalVerifyBindin
             return
         }
 
-        // 대표자용 WebSocket 연결 (구독만 하고 인증 요청은 하지 않음)
-        certificationViewModel.subscribeToProgress(7, authToken)
     }
 
     private fun updateProgressButtons(count: Int) {

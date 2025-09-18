@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.local.TokenProvider
+import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.databinding.ActivityUserQrVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.user.home.UserTableNumberSelectFragment
@@ -26,17 +28,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import javax.inject.Inject
 import kotlin.getValue
 
 @AndroidEntryPoint
 class UserQRVerifyActivity :
     BaseActivity<ActivityUserQrVerifyBinding>(R.layout.activity_user_qr_verify) {
-
     private lateinit var cameraExecutor: ExecutorService
     private var qrCodeScannedSuccessfully = false // TODO QR 인식 성공 여부 플래그 ( 에뮬레이터에는 임시로 true 로 두기)
     private var isAnalyzing = true // 분석 상태를 제어하는 플래그
     private val CAMERA_PERMISSION_CODE = 100
     private var qrCodeData: String? = null
+
+    @Inject
+    lateinit var tokenProvider : TokenProvider
     private val certifyViewModel: CertifyViewModel by viewModels()
 
     override fun initView() {
@@ -271,18 +276,10 @@ class UserQRVerifyActivity :
     private fun handleCertificationRequesterFlow(sessionId: Long, adminId: Long) {
         // 로딩 상태 표시
         showCertificationLoadingState()
-
-        // 토큰 확인
-        val authToken = getAuthToken()
-        Log.d("authToken🫵", authToken)
-        if (authToken.isEmpty()) {
-            showAuthTokenError()
-            return
-        }
-
         // TODO : WebSocket 연결 및 인증 요청 - 임시 주석 처리
 //        certifyViewModel.subscribeToProgress(sessionId, authToken) // TODO 이거는 인증자 과정에서 필요없는데 테스트 용임
-        certifyViewModel.connectAndCertify(sessionId, adminId, authToken)
+//        certifyViewModel.connectAndCertify(sessionId, adminId)
+        certifyViewModel.test_subscribeAndSendRequest(sessionId, adminId)
 
     }
 
@@ -348,8 +345,6 @@ class UserQRVerifyActivity :
     private fun showCertificationLoadingState() {
         binding.tvQrInstruction.text = "그룹 인증을 시작합니다..."
         setConfirmButtonState(false)
-        // ProgressBar가 있다면 표시
-        // binding.progressBar.visibility = View.VISIBLE
     }
 
     private fun updateLoadingMessage(message: String) {
@@ -425,10 +420,8 @@ class UserQRVerifyActivity :
         startActivity(intent)
     }
 
-    private fun getAuthToken(): String {
-//        val sharedPref = getSharedPreferences("auth", Context.MODE_PRIVATE)
-//        return sharedPref.getString("token", "") ?: ""
-        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjdmNTNlYmJjLWI0Y2EtNDIwMi1hODFjLWMwYzFjYWFjNjg5YiIsImlhdCI6MTc1Nzc2Nzg5NiwiZXhwIjoxNzU3NzcxNDk2fQ.K-0x5tuz1EXqaqrP79V8RgD6ZQYr7aTuOHb5ymOX0i8"
+    private fun getAuthToken(): String? {
+        return tokenProvider.bearer()
     }
 
     // Activity 종료 시 WebSocket 연결 해제
