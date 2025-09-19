@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.assu_fe_app.domain.usecase.profileImage.GetProfileImageUseCase
 import com.example.assu_fe_app.domain.usecase.profileImage.UploadOrReplaceProfileImageUseCase
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.toMultipartPart
@@ -19,14 +20,16 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ProfileImageViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
-    private val uploadOrReplaceProfileImage: UploadOrReplaceProfileImageUseCase
+    private val uploadOrReplaceProfileImage: UploadOrReplaceProfileImageUseCase,
+    private val getProfileImage: GetProfileImageUseCase
 ) : ViewModel() {
 
     data class ProfileUiState(
         val loading: Boolean = false,
         val lastLocalPreview: Uri? = null,
         val uploadedKey: String? = null,
-        val message: String? = null
+        val message: String? = null,
+        val remoteUrl: String? = null
     )
     private val _profileUi = MutableStateFlow(ProfileUiState())
     val profileUi: StateFlow<ProfileUiState> = _profileUi
@@ -49,6 +52,21 @@ class ProfileImageViewModel @Inject constructor(
             }
             is RetrofitResult.Error -> _profileUi.update {
                 it.copy(loading = false, message = "네트워크 오류가 발생했습니다.")
+            }
+        }
+    }
+
+    fun fetchProfileImage() = viewModelScope.launch {
+        _profileUi.update { it.copy(loading = true, message = null) }
+        when (val res = getProfileImage()) {
+            is RetrofitResult.Success -> {
+                _profileUi.update { it.copy(loading = false, remoteUrl = res.data) }
+            }
+            is RetrofitResult.Fail -> {
+                _profileUi.update { it.copy(loading = false, message = res.message ?: "프로필 조회 실패") }
+            }
+            is RetrofitResult.Error -> {
+                _profileUi.update { it.copy(loading = false, message = "네트워크 오류") }
             }
         }
     }

@@ -10,7 +10,7 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-val properties = Properties().apply {
+val lp = Properties().apply {
     load(FileInputStream(rootProject.file("local.properties")))
 }
 
@@ -26,7 +26,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "KAKAO_MAP_KEY", "${properties.getProperty("KAKAO_MAP_KEY")}")    }
+        buildConfigField("String", "KAKAO_MAP_KEY", "${lp.getProperty("KAKAO_MAP_KEY")}")    }
 
     buildTypes {
         debug {
@@ -99,7 +99,7 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
     implementation("com.google.firebase:firebase-messaging")
-
+    implementation("com.google.firebase:firebase-analytics")
 
     // 네트워크
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -137,7 +137,7 @@ dependencies {
     implementation("io.coil-kt:coil:2.4.0")
 
     // 채팅
-//    implementation("io.github.hannesa2:stomp-android:2.0.5") // 유지보수 포크
+    //    implementation("io.github.hannesa2:stomp-android:2.0.5") // 유지보수 포크
     implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
     // RxJava 2 (+ RxAndroid 2)  ← 꼭 추가
     implementation("io.reactivex.rxjava2:rxjava:2.2.21")

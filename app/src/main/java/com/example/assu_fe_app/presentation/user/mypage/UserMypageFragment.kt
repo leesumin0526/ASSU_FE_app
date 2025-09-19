@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentUserMypageBinding
@@ -13,6 +14,7 @@ import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
 import com.example.assu_fe_app.ui.common.mypage.MypageViewModel
 import com.example.assu_fe_app.presentation.user.review.mypage.UserMyReviewActivity
+import com.example.assu_fe_app.ui.profileImage.ProfileImageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -26,8 +28,12 @@ class UserMypageFragment
     lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     private val viewModel: MypageViewModel by viewModels()
+    private val profileViewModel: ProfileImageViewModel by viewModels()
 
-    override fun initView() { /* no-op */ }
+
+    override fun initView() {
+
+    }
 
     override fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -38,22 +44,19 @@ class UserMypageFragment
                 }
             }
         }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.tvAccountName.setText(authTokenLocalStore.getUserName())
-        initClick() // 여기서 호출
+        binding.tvAccountImageEdit.setText(authTokenLocalStore.getBasicInfoMajor())
+        initClick()
     }
 
     private fun initClick() {
         binding.clAccountComponent1.setOnClickListener {
             startActivity(Intent(requireContext(), UserMyReviewActivity::class.java))
-        }
-
-        // 프로필 수정
-        binding.clAccountComponent2.setOnClickListener {
-            // TODO: 구현 예정
         }
 
         // 계정관리 페이지 이동
