@@ -21,6 +21,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import androidx.core.graphics.toColorInt
+import com.example.assu_fe_app.data.manager.TokenManager
 import com.example.assu_fe_app.domain.model.dashboard.PartnerDashboardModel
 import com.example.assu_fe_app.domain.model.dashboard.PopularStoreModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,8 +32,17 @@ class PartnerDashboardFragment :
     BaseFragment<FragmentPartnerDashboardBinding>(R.layout.fragment_partner_dashboard) {
 
     private val viewModel: PartnerDashboardViewModel by viewModels()
+    lateinit var tokenManager: TokenManager
 
     override fun initObserver() {
+        tokenManager = TokenManager(requireContext())
+        val userName = tokenManager.getUserName() ?: "사용자"
+
+        binding.tvPartnerName.text = if (userName.isNotEmpty()) {
+            "${userName}"
+        } else {
+            "안녕하세요, 사용자님!"
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.dashboardState.collect { state ->
                 when (state) {
@@ -72,8 +82,7 @@ class PartnerDashboardFragment :
     }
 
     private fun setupUI(data: PartnerDashboardModel) {
-        // 상단 정보 설정
-        binding.tvDashboardTitle.text = data.storeInfo.storeName
+
         binding.tvGraphUpdateDateAndTime.text = getCurrentDateString()
         binding.tvTodayUpdateDateAndTime.text = getCurrentDateString()
 
