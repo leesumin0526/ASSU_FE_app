@@ -35,6 +35,7 @@ class LeaveChatRoomDialog : DialogFragment() {
         cross.setOnClickListener { dismiss() }
         leaveBtn.setOnClickListener {
             viewModel.leaveChattingRoom(roomId)
+            viewModel.getChattingRoomList()
             (activity as? ChattingActivity)?.navigateToChatting()
             dismiss()
         }
