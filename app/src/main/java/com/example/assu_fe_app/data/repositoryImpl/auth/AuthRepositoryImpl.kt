@@ -86,7 +86,7 @@ class AuthRepositoryImpl @Inject constructor(
         // JSON을 RequestBody로 변환
         val requestJson = com.google.gson.Gson().toJson(request)
         val requestBody = requestJson.toRequestBody("application/json".toMediaTypeOrNull())
-        val requestPart = MultipartBody.Part.createFormData("request", requestJson, requestBody)
+        val requestPart = MultipartBody.Part.createFormData("request", null, requestBody)
 
         return apiHandler(
             execute = { noAuthService.adminSignUp(requestPart, signImage) },
@@ -98,7 +98,7 @@ class AuthRepositoryImpl @Inject constructor(
         // JSON을 RequestBody로 변환
         val requestJson = com.google.gson.Gson().toJson(request)
         val requestBody = requestJson.toRequestBody("application/json".toMediaTypeOrNull())
-        val requestPart = MultipartBody.Part.createFormData("request", requestJson, requestBody)
+        val requestPart = MultipartBody.Part.createFormData("request", null, requestBody)
 
         return apiHandler(
             execute = { noAuthService.partnerSignUp(requestPart, licenseImage) },
