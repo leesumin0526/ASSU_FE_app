@@ -7,6 +7,12 @@ data class PartnerSignUpRequestDto(
     val phoneNumber: String,
     val marketingAgree: Boolean,
     val locationAgree: Boolean,
-    val commonAuth: CommonAuthDto,
+    val commonAuth: PartnerCommonAuthDto,
     val commonInfo: CommonInfoDto
+)
+
+@JsonClass(generateAdapter = true)
+data class PartnerCommonAuthDto(
+    val email: String,
+    val password: String
 )
