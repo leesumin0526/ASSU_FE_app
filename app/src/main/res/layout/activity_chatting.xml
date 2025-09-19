@@ -170,7 +170,8 @@
                     android:layout_height="41dp"
                     android:background="@drawable/bg_chatting_call_box"
                     android:gravity="center"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:clickable="true">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -201,7 +202,8 @@
                     android:background="@drawable/bg_chatting_proposal_box"
                     android:gravity="center"
                     android:layout_weight="1"
-                    android:layout_marginStart="11dp">
+                    android:layout_marginStart="11dp"
+                    android:clickable="true">
 
                     <ImageView
                         android:layout_width="wrap_content"

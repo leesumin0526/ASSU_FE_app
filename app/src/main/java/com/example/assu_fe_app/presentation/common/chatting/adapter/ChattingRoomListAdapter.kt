@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.dto.chatting.ChattingRoomListItem
+import com.example.assu_fe_app.data.local.AuthTokenLocalStoreImpl
 import com.example.assu_fe_app.databinding.ItemChattingListBinding
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
 
 class ChattingRoomListAdapter (
-    private val onItemClick: (GetChattingRoomListModel) -> Unit
+    private val onItemClick: (GetChattingRoomListModel) -> Unit,
+    private val authTokenLocalStoreImpl: AuthTokenLocalStoreImpl
 ) : ListAdapter<GetChattingRoomListModel, ChattingRoomListAdapter.ViewHolder>(Diff){
 
     object Diff: DiffUtil.ItemCallback<GetChattingRoomListModel>() {
@@ -35,11 +36,21 @@ class ChattingRoomListAdapter (
 
     inner class ViewHolder(private val binding: ItemChattingListBinding)
         :RecyclerView.ViewHolder(binding.root) {
-
+            val opponentRole = if (authTokenLocalStoreImpl.getUserRole() == "ADMIN") {
+                "PARTNER"
+            } else {
+                "ADMIN"
+            }
             fun bind(item: GetChattingRoomListModel, isLastItem: Boolean) = with(binding){
+                val opponentImage = if (opponentRole == "PARTNER") {
+                    R.drawable.img_partner
+                } else {
+                    // TODO: img_admin으로 바꾸기
+                    R.drawable.img_partner
+                }
                 ivItemChattingListRestaurantProfile.load(item.opponentProfileImage) {
                     crossfade(true)
-                    placeholder(R.drawable.img_partner)
+                    placeholder(opponentImage)
                     error(R.drawable.img_partner)
                     transformations(CircleCropTransformation())
                 }
@@ -50,7 +61,11 @@ class ChattingRoomListAdapter (
                     item.opponentName
                 }
                 tvChattingCounterpart.text = opponentName
-                tvChattingLastChat.text = item.lastMessage ?: ""
+                tvChattingLastChat.text = item.lastMessage
+
+                tvUnreadMessageCount.text = item.unreadMessagesCount.toString()
+                tvUnreadMessageCount.visibility = if (item.unreadMessagesCount == 0L) View.GONE else View.VISIBLE
+                Log.d("BIND", "room=${item.roomId}, unread=${item.unreadMessagesCount}")
 
 
                 // 마지막 아이템이면 선 숨기기

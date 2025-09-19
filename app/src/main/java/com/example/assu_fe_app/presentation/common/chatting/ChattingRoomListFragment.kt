@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.local.AuthTokenLocalStoreImpl
 import com.example.assu_fe_app.databinding.FragmentChattingListBinding
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -24,10 +25,13 @@ import kotlinx.coroutines.launch
 class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.layout.fragment_chatting_list){
 
     private val viewModel: ChattingViewModel by viewModels()
+    private val authTokenLocalStoreImpl by lazy {
+        AuthTokenLocalStoreImpl(requireContext())
+    }
 
     // 클릭 시 액션 결정
     private val adapter by lazy {
-        ChattingRoomListAdapter(onItemClick = ::onRoomClick)
+        ChattingRoomListAdapter(onItemClick = ::onRoomClick, authTokenLocalStoreImpl)
     }
 
     override fun initView() {
@@ -97,8 +101,14 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
         } else {
             item.opponentName
         }
+
         val opponentProfile = if (item.opponentId == -1L) {
-            R.drawable.img_partner
+            if (authTokenLocalStoreImpl.getUserRole() == "PARTNER") {
+                // TODO img_admin으로 바꾸기
+                R.drawable.img_partner
+            } else {
+                R.drawable.img_partner
+            }
         } else {
             item.opponentProfileImage
         }
