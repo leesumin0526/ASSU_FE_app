@@ -38,9 +38,7 @@ import jakarta.inject.Inject
 class AdminHomeFragment :
     BaseFragment<FragmentAdminHomeBinding>(R.layout.fragment_admin_home) {
     private val vm: HomeViewModel by viewModels()
-
     private val chattingViewModel: ChattingViewModel by viewModels()
-
     private val partnershipViewModel: PartnershipViewModel by viewModels()
     private val partnerRecommendViewModel: PartnerRecommendViewModel by viewModels()
     private var currentRecommendedPartner: RecommendedPartnerModel? = null

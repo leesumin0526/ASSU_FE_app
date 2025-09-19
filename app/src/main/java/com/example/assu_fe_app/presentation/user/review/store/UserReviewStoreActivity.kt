@@ -3,6 +3,7 @@ package com.example.assu_fe_app.presentation.user.review.store
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
@@ -88,6 +89,13 @@ class UserReviewStoreActivity :
             binding.tvReviewStoreReviewCount.text= "${count}개의 평가"
         }
 
+        getStoreReviewViewModel.partnershipContentList.observe(this) { partnershipContentList ->
+            userPartnershipAdapter.submitList(partnershipContentList)
+
+            // 제휴 혜택이 없으면 타이틀 GONE
+            binding.llReivewSotreContent.visibility =
+                if (partnershipContentList.isNullOrEmpty()) View.GONE else View.VISIBLE
+        }
 
         getStoreReviewViewModel.average.observe(this) { average ->
             val formatted = String.format("%.1f", average) // "3.1"

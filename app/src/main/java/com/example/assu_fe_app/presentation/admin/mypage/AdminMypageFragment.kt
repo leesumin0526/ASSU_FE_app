@@ -17,6 +17,7 @@ import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentAdminMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
+import com.example.assu_fe_app.presentation.user.mypage.UserMypagePrivacyDialogFragment
 import com.example.assu_fe_app.ui.common.mypage.MypageViewModel
 import com.example.assu_fe_app.ui.profileImage.ProfileImageViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,16 +77,25 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
 
         viewLifecycleOwner.lifecycleScope.launch {
             profileViewModel.profileUi.collectLatest { s ->
+                // 1) 서버에서 받은 presigned URL 있으면 표시
+                s.remoteUrl?.let { url ->
+                    Glide.with(this@AdminMypageFragment)
+                        .load(url)
+                        .placeholder(R.drawable.img_student)
+                        .error(R.drawable.img_student)
+                        .into(binding.ivAdmAccountProfileImg)
+                }
 
+                // 2) 방금 업로드한 로컬 미리보기 우선 표시 (있으면)
                 s.lastLocalPreview?.let { uri ->
                     Glide.with(this@AdminMypageFragment)
                         .load(uri)
-                        .into(binding.ivAdmAccountProfileImg) // 프로필 이미지뷰 id 가정: ivAdmProfile
+                        .into(binding.ivAdmAccountProfileImg)
                 }
 
+                // 메시지는 필요 시 Snackbar/Toast
                 s.message?.let { msg ->
-                    // Snackbar/Toast 중 택1
-                    // Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                    // Log.e("Profile", msg) // 또는 Snackbar/Toast
                 }
             }
         }
@@ -95,6 +105,7 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
         super.onViewCreated(view, savedInstanceState)
 
         binding.tvAdmAccountName.setText(authTokenLocalStore.getUserName())
+        profileViewModel.fetchProfileImage()
         initClick()
     }
 
@@ -119,6 +130,12 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
         }
 
         binding.tvAdmAccountName.setText(authTokenLocalStore.getUserName())
+
+        // 개인정보 처리방침
+        binding.clAdmAccountComponent4.setOnClickListener {
+            UserMypagePrivacyDialogFragment()
+                .show(childFragmentManager, "PrivacyDialog")
+        }
 
         // 고객센터
         binding.clAdmAccountComponent5.setOnClickListener {

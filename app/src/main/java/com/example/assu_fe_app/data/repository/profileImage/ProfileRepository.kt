@@ -6,4 +6,5 @@ import okhttp3.MultipartBody
 
 interface ProfileRepository {
     suspend fun uploadOrReplaceProfileImage(imagePart: MultipartBody.Part): RetrofitResult<ProfileImageModel>
+    suspend fun getProfileImageUrl(): RetrofitResult<String>
 }

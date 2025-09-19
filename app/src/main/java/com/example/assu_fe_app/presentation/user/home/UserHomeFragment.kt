@@ -1,19 +1,28 @@
 package com.example.assu_fe_app.presentation.user.home
 
 import android.content.Intent
+import android.util.Log
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.partnership.OpenContractArgs
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentUserHomeBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
+import com.example.assu_fe_app.ui.map.MapBridgeViewModel
+import com.example.assu_fe_app.ui.map.MapEvent
 import com.example.assu_fe_app.ui.user.UserHomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
+import kotlin.getValue
 
 @AndroidEntryPoint
 class UserHomeFragment :
@@ -47,6 +56,9 @@ class UserHomeFragment :
     }
 
     override fun initView() {
+        val name = authTokenLocalStore.getUserName();
+        binding.tvHome1.setText("안녕하세요, ${name}님!")
+
         // 제휴 QR 박스 클릭 시 인증 액티비티로 이동
         binding.clHomeQrBox.setOnClickListener {
             val intent = Intent(requireContext(), UserQRVerifyActivity::class.java)

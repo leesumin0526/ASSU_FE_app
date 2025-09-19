@@ -207,6 +207,7 @@ class PartnerHomeFragment :
 
         binding.viewPartnerHomeCardBg.setOnClickListener {
             val req = CreateChatRoomRequestDto(
+                //TODO : 유저 정보 받아오기
                 adminId = 1L,
                 partnerId = 5L
             )
@@ -246,6 +247,7 @@ class PartnerHomeFragment :
         titleView.text = item.adminId.toString()
         periodView.text = "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
 
+        // 옵션 설명 만들기
         val option = item.options.firstOrNull()
         descView.text = if (option != null) {
             when (option.optionType) {
@@ -264,7 +266,12 @@ class PartnerHomeFragment :
 
         bindingItem.visibility = View.VISIBLE
         bindingItem.setOnClickListener {
-            val dialog = PartnershipContractDialogFragment()
+            val dialog = PartnershipContractDialogFragment(
+//                item.options.map { opt ->
+//                    // 여기서도 OptionType/ CriterionType에 따라 적절한 PartnershipContractItem 변환 가능
+//                    PartnershipContractItem.Service.ByPeople(opt.people, opt.category)
+//                }
+            )
             dialog.show(parentFragmentManager, "PartnershipContentDialog")
         }
     }

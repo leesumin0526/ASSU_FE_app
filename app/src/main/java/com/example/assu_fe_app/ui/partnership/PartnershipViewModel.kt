@@ -123,4 +123,5 @@ class PartnershipViewModel @Inject constructor(
                 }
         }
     }
+
 }
