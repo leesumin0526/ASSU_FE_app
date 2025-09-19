@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="46dp"
             android:fontFamily="@font/pretendard_bold"
-            android:text="마지막이에요!\n사업자 등록증을 등록해주세요"
+            android:text="사업자 등록증 등록 및\n약관 동의를 진행해주세요!"
             android:layout_marginStart="24dp"
             android:textColor="@color/assu_font_main"
             android:textSize="25sp"
@@ -182,7 +182,7 @@
                 android:gravity="center_vertical">
 
                 <CheckBox
-                    android:id="@+id/cb_terms_agree"
+                    android:id="@+id/cb_marketing_agree"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:button="@drawable/ic_agree"

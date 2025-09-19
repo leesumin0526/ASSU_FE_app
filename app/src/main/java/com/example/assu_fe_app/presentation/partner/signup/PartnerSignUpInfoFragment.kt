@@ -1,16 +1,14 @@
 package com.example.assu_fe_app.presentation.partner.signup
 
-import android.content.Intent
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.auth.SelectedPlaceDto
 import com.example.assu_fe_app.databinding.FragmentPartnerSignUpInfoBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.example.assu_fe_app.presentation.common.location.LocationSearchActivity
 import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 
@@ -20,22 +18,52 @@ class PartnerSignUpInfoFragment :
     private val signUpViewModel: SignUpViewModel by activityViewModels()
     private var isAddressSearchClicked = false
 
-    // 주소 검색 결과를 받기 위한 ActivityResultLauncher
-    private val addressSearchLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == LocationSearchActivity.RESULT_CODE_ADDRESS_SELECTED) {
-            val selectedAddress = result.data?.getStringExtra(LocationSearchActivity.EXTRA_SELECTED_ADDRESS)
-            selectedAddress?.let { address ->
-                binding.etPartnerAddress.setText(address)
-                Log.d("PartnerSignUpInfoFragment", "받은 주소: $address")
-            }
-        }
-    }
-
     override fun initObserver() {}
 
     override fun initView() {
+
+        // 주소 검색 결과를 받기 위한 Fragment Result Listener
+        parentFragmentManager.setFragmentResultListener("result", this) { _, bundle ->
+            val resultData = bundle.getString("selectedAddress")
+            Log.d("PartnerSignUpInfoFragment", "받은 주소 데이터: $resultData")
+            resultData?.let { address ->
+                binding.etPartnerAddress.setText(address)
+                // 주소가 설정되면 색상을 assu_font_main으로 변경
+                binding.etPartnerAddress.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_main))
+                // 상세주소 입력 활성화
+                binding.etPartnerAddressDetail.isEnabled = true
+                isAddressSearchClicked = true
+                
+                // selectedPlace 객체 생성 및 ViewModel에 저장
+                val selectedPlaceName = bundle.getString("selectedPlaceName") ?: ""
+                val selectedPlaceId = bundle.getString("selectedPlaceId") ?: ""
+                val selectedPlaceRoadAddress = bundle.getString("selectedPlaceRoadAddress") ?: ""
+                val selectedPlaceLatitude = bundle.getDouble("selectedPlaceLatitude", 0.0)
+                val selectedPlaceLongitude = bundle.getDouble("selectedPlaceLongitude", 0.0)
+                
+                Log.d("PartnerSignUpInfoFragment", "=== selectedPlace 데이터 ===")
+                Log.d("PartnerSignUpInfoFragment", "Name: '$selectedPlaceName'")
+                Log.d("PartnerSignUpInfoFragment", "ID: '$selectedPlaceId'")
+                Log.d("PartnerSignUpInfoFragment", "Address: '$address'")
+                Log.d("PartnerSignUpInfoFragment", "Road Address: '$selectedPlaceRoadAddress'")
+                Log.d("PartnerSignUpInfoFragment", "Latitude: $selectedPlaceLatitude")
+                Log.d("PartnerSignUpInfoFragment", "Longitude: $selectedPlaceLongitude")
+                Log.d("PartnerSignUpInfoFragment", "========================")
+                
+                // SignUpViewModel에 selectedPlace 설정
+                val selectedPlaceDto = SelectedPlaceDto(
+                    placeId = selectedPlaceId,
+                    name = selectedPlaceName,
+                    address = address,
+                    roadAddress = selectedPlaceRoadAddress,
+                    latitude = selectedPlaceLatitude,
+                    longitude = selectedPlaceLongitude
+                )
+                signUpViewModel.setSelectedPlace(selectedPlaceDto)
+                
+                checkAllInputs()
+            }
+        }
 
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
@@ -45,14 +73,14 @@ class PartnerSignUpInfoFragment :
         // 상세주소 입력 비활성화 초기화
         binding.etPartnerAddressDetail.isEnabled = false
 
-        // 주소 돋보기 클릭 시 주소 검색 Activity 실행
+        // 주소 돋보기 클릭 시 주소 검색 프래그먼트로 이동
         binding.btnPartnerAddressSearch.setOnClickListener {
-            val intent = Intent(requireContext(), LocationSearchActivity::class.java)
-            addressSearchLauncher.launch(intent)
+            findNavController().navigate(R.id.action_partner_info_to_location)
+        }
 
-            binding.etPartnerAddressDetail.isEnabled = true
-            isAddressSearchClicked = true
-            checkAllInputs()
+        // 주소 텍스트뷰 클릭 시에도 주소 검색 프래그먼트로 이동
+        binding.etPartnerAddress.setOnClickListener {
+            findNavController().navigate(R.id.action_partner_info_to_location)
         }
 
         // 텍스트 변경 감지 리스너 등록
