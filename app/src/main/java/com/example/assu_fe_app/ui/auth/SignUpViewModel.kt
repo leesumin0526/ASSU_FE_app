@@ -6,12 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.data.dto.auth.AdminSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.CommonAuthDto
 import com.example.assu_fe_app.data.dto.auth.CommonInfoDto
+import com.example.assu_fe_app.data.dto.auth.PartnerCommonAuthDto
 import com.example.assu_fe_app.data.dto.auth.PartnerSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.SelectedPlaceDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenAuthPayloadDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyResponseDto
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.domain.model.auth.LoginModel
 import com.example.assu_fe_app.domain.model.auth.SignUpData
 import com.example.assu_fe_app.domain.model.enums.Department
@@ -37,7 +39,8 @@ class SignUpViewModel @Inject constructor(
     private val studentSignUpUseCase: StudentSignUpUseCase,
     private val studentTokenVerifyUseCase: StudentTokenVerifyUseCase,
     private val adminSignUpUseCase: AdminSignUpUseCase,
-    private val partnerSignUpUseCase: PartnerSignUpUseCase
+    private val partnerSignUpUseCase: PartnerSignUpUseCase,
+    private val authTokenLocalStore: AuthTokenLocalStore
 ) : ViewModel() {
 
     // 회원가입 데이터 상태 관리
@@ -82,23 +85,13 @@ class SignUpViewModel @Inject constructor(
         )
     }
 
-    // 마케팅 동의 설정
-    fun setMarketingAgree(agree: Boolean) {
-        _signUpData.value = _signUpData.value.copy(marketingAgree = agree)
-    }
-
-    // 위치 정보 동의 설정
-    fun setLocationAgree(agree: Boolean) {
-        _signUpData.value = _signUpData.value.copy(locationAgree = agree)
-    }
-
     // 개인정보 처리방침 동의 설정
     fun setPrivacyAgree(agree: Boolean) {
         _signUpData.value = _signUpData.value.copy(privacyAgree = agree)
     }
 
-    // 서비스 이용약관 동의 설정
-    fun setTermsAgree(agree: Boolean) {
+    // 마케팅 동의 설정
+    fun setMarketingAgree(agree: Boolean) {
         _signUpData.value = _signUpData.value.copy(termsAgree = agree)
     }
 
@@ -155,13 +148,13 @@ class SignUpViewModel @Inject constructor(
             !major.isNullOrEmpty() -> {
                 // Major enum에서 displayName 찾기
                 val majorEnum = Major.values().find { it.name == major }
-                majorEnum?.displayName ?: major
-            } + " 학생회"
+                (majorEnum?.displayName ?: major) + " 학생회"
+            }
             !department.isNullOrEmpty() -> {
                 // Department enum에서 displayName 찾기
                 val departmentEnum = Department.values().find { it.name == department }
-                departmentEnum?.displayName ?: department
-            } + " 학생회"
+                (departmentEnum?.displayName ?: department) + " 학생회"
+            }
             !university.isNullOrEmpty() -> "$university 학생회"
             else -> "학생회"
         }
@@ -212,12 +205,28 @@ class SignUpViewModel @Inject constructor(
     fun signUp() {
         val data = _signUpData.value
         val userType = data.userType
+        
+        Log.d("SignUpViewModel", "=== 회원가입 시작 ===")
+        Log.d("SignUpViewModel", "사용자 타입: $userType")
+        Log.d("SignUpViewModel", "현재 로딩 상태: ${_isLoading.value}")
+        Log.d("SignUpViewModel", "현재 에러 메시지: ${_errorMessage.value}")
+        Log.d("SignUpViewModel", "현재 회원가입 결과: ${_signUpResult.value}")
 
         when (userType) {
-            "user" -> signUpStudent()
-            "admin" -> signUpAdmin()
-            "partner" -> signUpPartner()
+            "user" -> {
+                Log.d("SignUpViewModel", "학생 회원가입 시작")
+                signUpStudent()
+            }
+            "admin" -> {
+                Log.d("SignUpViewModel", "관리자 회원가입 시작")
+                signUpAdmin()
+            }
+            "partner" -> {
+                Log.d("SignUpViewModel", "제휴업체 회원가입 시작")
+                signUpPartner()
+            }
             else -> {
+                Log.e("SignUpViewModel", "잘못된 사용자 타입: $userType")
                 _errorMessage.value = "지원하지 않는 사용자 타입입니다."
             }
         }
@@ -246,14 +255,55 @@ class SignUpViewModel @Inject constructor(
                 )
             )
 
+            // API 호출 직전 전달되는 정보 로그 출력
+            Log.d("SignUpViewModel", "=== 학생 회원가입 API 호출 - 전달되는 정보 ===")
+            Log.d("SignUpViewModel", "Phone Number: ${request.phoneNumber}")
+            Log.d("SignUpViewModel", "Marketing Agree: ${request.marketingAgree}")
+            Log.d("SignUpViewModel", "Location Agree: ${request.locationAgree}")
+            Log.d("SignUpViewModel", "Student Token: ${request.studentTokenAuth.sToken}")
+            Log.d("SignUpViewModel", "Student ID: ${request.studentTokenAuth.sIdno}")
+            Log.d("SignUpViewModel", "University: ${request.studentTokenAuth.university}")
+            Log.d("SignUpViewModel", "==========================================")
+
             when (val result = studentSignUpUseCase(request)) {
                 is RetrofitResult.Success -> {
+                    Log.d("SignUpViewModel", "=== 학생 회원가입 API 성공 ===")
+                    Log.d("SignUpViewModel", "받은 데이터: ${result.data}")
+                    
+                    // 토큰 저장
+                    authTokenLocalStore.saveLoginData(result.data)
+                    
+                    // 저장된 정보 로그 출력
+                    val savedLoginModel = authTokenLocalStore.getLoginModel()
+                    Log.d("SignUpViewModel", "=== 학생 회원가입 성공 - 저장된 정보 ===")
+                    Log.d("SignUpViewModel", "Access Token: ${savedLoginModel?.accessToken?.take(20)}...")
+                    Log.d("SignUpViewModel", "Refresh Token: ${savedLoginModel?.refreshToken?.take(20)}...")
+                    Log.d("SignUpViewModel", "User ID: ${savedLoginModel?.userId}")
+                    Log.d("SignUpViewModel", "Username: ${savedLoginModel?.username}")
+                    Log.d("SignUpViewModel", "User Role: ${savedLoginModel?.userRole}")
+                    Log.d("SignUpViewModel", "Email(id): ${savedLoginModel?.email}")
+                    Log.d("SignUpViewModel", "Profile Image Url: ${savedLoginModel?.profileImageUrl}")
+                    Log.d("SignUpViewModel", "Status: ${savedLoginModel?.status}")
+                    savedLoginModel?.basicInfo?.let { basicInfo ->
+                        Log.d("SignUpViewModel", "=== Basic Info ===")
+                        Log.d("SignUpViewModel", "Name: ${basicInfo.name}")
+                        Log.d("SignUpViewModel", "University: ${basicInfo.university}")
+                        Log.d("SignUpViewModel", "Department: ${basicInfo.department}")
+                        Log.d("SignUpViewModel", "Major: ${basicInfo.major}")
+                    } ?: Log.d("SignUpViewModel", "Basic Info: null")
+                    Log.d("SignUpViewModel", "================================")
+                    
                     _signUpResult.value = result.data
                 }
                 is RetrofitResult.Fail -> {
+                    Log.e("SignUpViewModel", "=== 학생 회원가입 API 실패 ===")
+                    Log.e("SignUpViewModel", "Status Code: ${result.statusCode}")
+                    Log.e("SignUpViewModel", "Message: ${result.message}")
                     _errorMessage.value = result.message
                 }
                 is RetrofitResult.Error -> {
+                    Log.e("SignUpViewModel", "=== 학생 회원가입 API 에러 ===")
+                    Log.e("SignUpViewModel", "Exception: ${result.exception}")
                     _errorMessage.value = result.exception.message ?: "네트워크 오류가 발생했습니다."
                 }
             }
@@ -264,10 +314,15 @@ class SignUpViewModel @Inject constructor(
     // 관리자 회원가입
     private fun signUpAdmin() {
         val data = _signUpData.value
+        Log.d("SignUpViewModel", "=== 관리자 회원가입 데이터 유효성 검사 시작 ===")
+        
         if (!isAdminSignUpDataValid(data)) {
+            Log.e("SignUpViewModel", "관리자 회원가입 데이터 유효성 검사 실패")
             _errorMessage.value = "필수 정보가 누락되었습니다."
             return
         }
+        
+        Log.d("SignUpViewModel", "관리자 회원가입 데이터 유효성 검사 통과")
 
         viewModelScope.launch {
             _isLoading.value = true
@@ -280,8 +335,8 @@ class SignUpViewModel @Inject constructor(
                 commonAuth = CommonAuthDto(
                     email = data.email!!,
                     password = data.password!!,
-                    department = data.department!!,
-                    major = data.major!!,
+                    department = data.department?.takeIf { it.isNotEmpty() } ?: "N/A",
+                    major = data.major?.takeIf { it.isNotEmpty() } ?: "N/A",
                     university = data.university!!
                 ),
                 commonInfo = CommonInfoDto(
@@ -296,14 +351,81 @@ class SignUpViewModel @Inject constructor(
             val requestBody = signImageFile.asRequestBody("image/*".toMediaTypeOrNull())
             val signImagePart = MultipartBody.Part.createFormData("signImage", signImageFile.name, requestBody)
 
+            // API 호출 직전 전달되는 정보 로그 출력
+            Log.d("SignUpViewModel", "=== 관리자 회원가입 API 호출 - 전달되는 정보 ===")
+            Log.d("SignUpViewModel", "Phone Number: ${request.phoneNumber}")
+            Log.d("SignUpViewModel", "Marketing Agree: ${request.marketingAgree}")
+            Log.d("SignUpViewModel", "Location Agree: ${request.locationAgree}")
+            Log.d("SignUpViewModel", "Email: ${request.commonAuth.email}")
+            Log.d("SignUpViewModel", "Password: ${request.commonAuth.password}")
+            Log.d("SignUpViewModel", "Department: ${request.commonAuth.department}")
+            Log.d("SignUpViewModel", "Major: ${request.commonAuth.major}")
+            Log.d("SignUpViewModel", "University: ${request.commonAuth.university}")
+            Log.d("SignUpViewModel", "Name: ${request.commonInfo.name}")
+            Log.d("SignUpViewModel", "Detail Address: ${request.commonInfo.detailAddress}")
+            Log.d("SignUpViewModel", "Selected Place: ${request.commonInfo.selectedPlace}")
+            Log.d("SignUpViewModel", "  - Place ID: ${request.commonInfo.selectedPlace.placeId}")
+            Log.d("SignUpViewModel", "  - Name: ${request.commonInfo.selectedPlace.name}")
+            Log.d("SignUpViewModel", "  - Address: ${request.commonInfo.selectedPlace.address}")
+            Log.d("SignUpViewModel", "  - Road Address: ${request.commonInfo.selectedPlace.roadAddress}")
+            Log.d("SignUpViewModel", "  - Latitude: ${request.commonInfo.selectedPlace.latitude}")
+            Log.d("SignUpViewModel", "  - Longitude: ${request.commonInfo.selectedPlace.longitude}")
+            Log.d("SignUpViewModel", "Sign Image File: ${signImageFile.name}")
+            
+            // JSON 직렬화 테스트
+            try {
+                val gson = com.google.gson.Gson()
+                val jsonString = gson.toJson(request)
+                Log.d("SignUpViewModel", "=== 관리자 회원가입 JSON 직렬화 결과 ===")
+                Log.d("SignUpViewModel", "전체 JSON:")
+                Log.d("SignUpViewModel", jsonString)
+                Log.d("SignUpViewModel", "JSON 길이: ${jsonString.length}")
+                Log.d("SignUpViewModel", "==========================================")
+            } catch (e: Exception) {
+                Log.e("SignUpViewModel", "JSON 직렬화 실패: ${e.message}")
+            }
+            
+            Log.d("SignUpViewModel", "==========================================")
+
             when (val result = adminSignUpUseCase(request, signImagePart)) {
                 is RetrofitResult.Success -> {
+                    Log.d("SignUpViewModel", "=== 관리자 회원가입 API 성공 ===")
+                    Log.d("SignUpViewModel", "받은 데이터: ${result.data}")
+                    
+                    // 토큰 저장
+                    authTokenLocalStore.saveLoginData(result.data)
+                    
+                    // 저장된 정보 로그 출력
+                    val savedLoginModel = authTokenLocalStore.getLoginModel()
+                    Log.d("SignUpViewModel", "=== 관리자 회원가입 성공 - 저장된 정보 ===")
+                    Log.d("SignUpViewModel", "Access Token: ${savedLoginModel?.accessToken?.take(20)}...")
+                    Log.d("SignUpViewModel", "Refresh Token: ${savedLoginModel?.refreshToken?.take(20)}...")
+                    Log.d("SignUpViewModel", "User ID: ${savedLoginModel?.userId}")
+                    Log.d("SignUpViewModel", "Username: ${savedLoginModel?.username}")
+                    Log.d("SignUpViewModel", "User Role: ${savedLoginModel?.userRole}")
+                    Log.d("SignUpViewModel", "Email(id): ${savedLoginModel?.email}")
+                    Log.d("SignUpViewModel", "Profile Image Url: ${savedLoginModel?.profileImageUrl}")
+                    Log.d("SignUpViewModel", "Status: ${savedLoginModel?.status}")
+                    savedLoginModel?.basicInfo?.let { basicInfo ->
+                        Log.d("SignUpViewModel", "=== Basic Info ===")
+                        Log.d("SignUpViewModel", "Name: ${basicInfo.name}")
+                        Log.d("SignUpViewModel", "University: ${basicInfo.university}")
+                        Log.d("SignUpViewModel", "Department: ${basicInfo.department}")
+                        Log.d("SignUpViewModel", "Major: ${basicInfo.major}")
+                    } ?: Log.d("SignUpViewModel", "Basic Info: null")
+                    Log.d("SignUpViewModel", "================================")
+                    
                     _signUpResult.value = result.data
                 }
                 is RetrofitResult.Fail -> {
+                    Log.e("SignUpViewModel", "=== 관리자 회원가입 API 실패 ===")
+                    Log.e("SignUpViewModel", "Status Code: ${result.statusCode}")
+                    Log.e("SignUpViewModel", "Message: ${result.message}")
                     _errorMessage.value = result.message
                 }
                 is RetrofitResult.Error -> {
+                    Log.e("SignUpViewModel", "=== 관리자 회원가입 API 에러 ===")
+                    Log.e("SignUpViewModel", "Exception: ${result.exception}")
                     _errorMessage.value = result.exception.message ?: "네트워크 오류가 발생했습니다."
                 }
             }
@@ -327,12 +449,9 @@ class SignUpViewModel @Inject constructor(
                 phoneNumber = data.phoneNumber!!,
                 marketingAgree = data.marketingAgree,
                 locationAgree = data.locationAgree,
-                commonAuth = CommonAuthDto(
+                commonAuth = PartnerCommonAuthDto(
                     email = data.email!!,
-                    password = data.password!!,
-                    department = data.department!!,
-                    major = data.major!!,
-                    university = data.university!!
+                    password = data.password!!
                 ),
                 commonInfo = CommonInfoDto(
                     name = data.companyName!!,
@@ -346,14 +465,78 @@ class SignUpViewModel @Inject constructor(
             val requestBody = licenseImageFile.asRequestBody("image/*".toMediaTypeOrNull())
             val licenseImagePart = MultipartBody.Part.createFormData("licenseImage", licenseImageFile.name, requestBody)
 
+            // API 호출 직전 전달되는 정보 로그 출력
+            Log.d("SignUpViewModel", "=== 제휴업체 회원가입 API 호출 - 전달되는 정보 ===")
+            Log.d("SignUpViewModel", "Phone Number: ${request.phoneNumber}")
+            Log.d("SignUpViewModel", "Marketing Agree: ${request.marketingAgree}")
+            Log.d("SignUpViewModel", "Location Agree: ${request.locationAgree}")
+            Log.d("SignUpViewModel", "Email: ${request.commonAuth.email}")
+            Log.d("SignUpViewModel", "Password: ${request.commonAuth.password}")
+            Log.d("SignUpViewModel", "Company Name: ${request.commonInfo.name}")
+            Log.d("SignUpViewModel", "Detail Address: ${request.commonInfo.detailAddress}")
+            Log.d("SignUpViewModel", "Selected Place: ${request.commonInfo.selectedPlace}")
+            Log.d("SignUpViewModel", "  - Place ID: ${request.commonInfo.selectedPlace.placeId}")
+            Log.d("SignUpViewModel", "  - Name: ${request.commonInfo.selectedPlace.name}")
+            Log.d("SignUpViewModel", "  - Address: ${request.commonInfo.selectedPlace.address}")
+            Log.d("SignUpViewModel", "  - Road Address: ${request.commonInfo.selectedPlace.roadAddress}")
+            Log.d("SignUpViewModel", "  - Latitude: ${request.commonInfo.selectedPlace.latitude}")
+            Log.d("SignUpViewModel", "  - Longitude: ${request.commonInfo.selectedPlace.longitude}")
+            Log.d("SignUpViewModel", "License Image File: ${licenseImageFile.name}")
+            
+            // JSON 직렬화 테스트
+            try {
+                val gson = com.google.gson.Gson()
+                val jsonString = gson.toJson(request)
+                Log.d("SignUpViewModel", "=== 제휴업체 회원가입 JSON 직렬화 결과 ===")
+                Log.d("SignUpViewModel", "전체 JSON:")
+                Log.d("SignUpViewModel", jsonString)
+                Log.d("SignUpViewModel", "JSON 길이: ${jsonString.length}")
+                Log.d("SignUpViewModel", "==========================================")
+            } catch (e: Exception) {
+                Log.e("SignUpViewModel", "JSON 직렬화 실패: ${e.message}")
+            }
+            
+            Log.d("SignUpViewModel", "==========================================")
+
             when (val result = partnerSignUpUseCase(request, licenseImagePart)) {
                 is RetrofitResult.Success -> {
+                    Log.d("SignUpViewModel", "=== 제휴업체 회원가입 API 성공 ===")
+                    Log.d("SignUpViewModel", "받은 데이터: ${result.data}")
+                    
+                    // 토큰 저장
+                    authTokenLocalStore.saveLoginData(result.data)
+                    
+                    // 저장된 정보 로그 출력
+                    val savedLoginModel = authTokenLocalStore.getLoginModel()
+                    Log.d("SignUpViewModel", "=== 제휴업체 회원가입 성공 - 저장된 정보 ===")
+                    Log.d("SignUpViewModel", "Access Token: ${savedLoginModel?.accessToken?.take(20)}...")
+                    Log.d("SignUpViewModel", "Refresh Token: ${savedLoginModel?.refreshToken?.take(20)}...")
+                    Log.d("SignUpViewModel", "User ID: ${savedLoginModel?.userId}")
+                    Log.d("SignUpViewModel", "Username: ${savedLoginModel?.username}")
+                    Log.d("SignUpViewModel", "User Role: ${savedLoginModel?.userRole}")
+                    Log.d("SignUpViewModel", "Email(id): ${savedLoginModel?.email}")
+                    Log.d("SignUpViewModel", "Profile Image Url: ${savedLoginModel?.profileImageUrl}")
+                    Log.d("SignUpViewModel", "Status: ${savedLoginModel?.status}")
+                    savedLoginModel?.basicInfo?.let { basicInfo ->
+                        Log.d("SignUpViewModel", "=== Basic Info ===")
+                        Log.d("SignUpViewModel", "Name: ${basicInfo.name}")
+                        Log.d("SignUpViewModel", "University: ${basicInfo.university}")
+                        Log.d("SignUpViewModel", "Department: ${basicInfo.department}")
+                        Log.d("SignUpViewModel", "Major: ${basicInfo.major}")
+                    } ?: Log.d("SignUpViewModel", "Basic Info: null")
+                    Log.d("SignUpViewModel", "================================")
+                    
                     _signUpResult.value = result.data
                 }
                 is RetrofitResult.Fail -> {
+                    Log.e("SignUpViewModel", "=== 제휴업체 회원가입 API 실패 ===")
+                    Log.e("SignUpViewModel", "Status Code: ${result.statusCode}")
+                    Log.e("SignUpViewModel", "Message: ${result.message}")
                     _errorMessage.value = result.message
                 }
                 is RetrofitResult.Error -> {
+                    Log.e("SignUpViewModel", "=== 제휴업체 회원가입 API 에러 ===")
+                    Log.e("SignUpViewModel", "Exception: ${result.exception}")
                     _errorMessage.value = result.exception.message ?: "네트워크 오류가 발생했습니다."
                 }
             }
@@ -363,41 +546,110 @@ class SignUpViewModel @Inject constructor(
 
     // 학생 회원가입 데이터 유효성 검사
     private fun isStudentSignUpDataValid(data: SignUpData): Boolean {
-        return !data.phoneNumber.isNullOrEmpty() &&
+        val isValid = !data.phoneNumber.isNullOrEmpty() &&
                 !data.sToken.isNullOrEmpty() &&
                 !data.sIdno.isNullOrEmpty() &&
+                data.privacyAgree &&
+                data.termsAgree &&
                 data.userType == "user"
+        
+        // 유효성 검사 결과 로그 출력
+        Log.d("SignUpViewModel", "=== 학생 회원가입 데이터 유효성 검사 ===")
+        Log.d("SignUpViewModel", "Phone Number: '${data.phoneNumber}' (valid: ${!data.phoneNumber.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Student Token: '${data.sToken}' (valid: ${!data.sToken.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Student ID: '${data.sIdno}' (valid: ${!data.sIdno.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Privacy Agree: ${data.privacyAgree}")
+        Log.d("SignUpViewModel", "Terms Agree: ${data.termsAgree}")
+        Log.d("SignUpViewModel", "User Type: '${data.userType}' (valid: ${data.userType == "user"})")
+        Log.d("SignUpViewModel", "Overall Valid: $isValid")
+        Log.d("SignUpViewModel", "=====================================")
+        
+        return isValid
     }
 
     // 관리자 회원가입 데이터 유효성 검사
     private fun isAdminSignUpDataValid(data: SignUpData): Boolean {
-        return !data.phoneNumber.isNullOrEmpty() &&
+        val isValid = !data.phoneNumber.isNullOrEmpty() &&
                 !data.email.isNullOrEmpty() &&
                 !data.password.isNullOrEmpty() &&
-                !data.department.isNullOrEmpty() &&
-                !data.major.isNullOrEmpty() &&
                 !data.university.isNullOrEmpty() &&
                 !data.detailAddress.isNullOrEmpty() &&
                 data.selectedPlace != null &&
                 data.signImageFile != null &&
+                data.privacyAgree &&
+                data.termsAgree &&
                 data.userType == "admin"
+        
+        // 유효성 검사 결과 로그 출력
+        Log.d("SignUpViewModel", "=== 관리자 회원가입 데이터 유효성 검사 ===")
+        Log.d("SignUpViewModel", "Phone Number: '${data.phoneNumber}' (valid: ${!data.phoneNumber.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Email: '${data.email}' (valid: ${!data.email.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Password: '${data.password}' (valid: ${!data.password.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Department: '${data.department}' (optional: ${data.department.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Major: '${data.major}' (optional: ${data.major.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "University: '${data.university}' (valid: ${!data.university.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Detail Address: '${data.detailAddress}' (valid: ${!data.detailAddress.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Selected Place: ${data.selectedPlace} (valid: ${data.selectedPlace != null})")
+        if (data.selectedPlace != null) {
+            Log.d("SignUpViewModel", "  - Place ID: '${data.selectedPlace.placeId}'")
+            Log.d("SignUpViewModel", "  - Name: '${data.selectedPlace.name}'")
+            Log.d("SignUpViewModel", "  - Address: '${data.selectedPlace.address}'")
+            Log.d("SignUpViewModel", "  - Road Address: '${data.selectedPlace.roadAddress}'")
+            Log.d("SignUpViewModel", "  - Latitude: ${data.selectedPlace.latitude}")
+            Log.d("SignUpViewModel", "  - Longitude: ${data.selectedPlace.longitude}")
+        }
+        Log.d("SignUpViewModel", "Sign Image File: ${data.signImageFile?.name ?: "null"} (valid: ${data.signImageFile != null})")
+        Log.d("SignUpViewModel", "Privacy Agree: ${data.privacyAgree}")
+        Log.d("SignUpViewModel", "Terms Agree: ${data.termsAgree}")
+        Log.d("SignUpViewModel", "User Type: '${data.userType}' (valid: ${data.userType == "admin"})")
+        Log.d("SignUpViewModel", "Overall Valid: $isValid")
+        Log.d("SignUpViewModel", "=====================================")
+        
+        return isValid
     }
 
     // 제휴업체 회원가입 데이터 유효성 검사
     private fun isPartnerSignUpDataValid(data: SignUpData): Boolean {
-        return !data.phoneNumber.isNullOrEmpty() &&
+        val isValid = !data.phoneNumber.isNullOrEmpty() &&
                 !data.email.isNullOrEmpty() &&
                 !data.password.isNullOrEmpty() &&
-                !data.department.isNullOrEmpty() &&
-                !data.major.isNullOrEmpty() &&
-                !data.university.isNullOrEmpty() &&
                 !data.companyName.isNullOrEmpty() &&
-                !data.businessNumber.isNullOrEmpty() &&
-                !data.representativeName.isNullOrEmpty() &&
                 !data.detailAddress.isNullOrEmpty() &&
                 data.selectedPlace != null &&
                 data.licenseImageFile != null &&
+                data.privacyAgree &&
+                data.termsAgree &&
                 data.userType == "partner"
+        
+        // 유효성 검사 결과 로그 출력
+        Log.d("SignUpViewModel", "=== 제휴업체 회원가입 데이터 유효성 검사 ===")
+        Log.d("SignUpViewModel", "Phone Number: '${data.phoneNumber}' (valid: ${!data.phoneNumber.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Email: '${data.email}' (valid: ${!data.email.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Password: '${data.password}' (valid: ${!data.password.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Department: '${data.department}' (optional: ${data.department.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Major: '${data.major}' (optional: ${data.major.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "University: '${data.university}' (optional: ${data.university.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Company Name: '${data.companyName}' (valid: ${!data.companyName.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Business Number: '${data.businessNumber}' (optional: ${data.businessNumber.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Representative Name: '${data.representativeName}' (optional: ${data.representativeName.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Detail Address: '${data.detailAddress}' (valid: ${!data.detailAddress.isNullOrEmpty()})")
+        Log.d("SignUpViewModel", "Selected Place: ${data.selectedPlace} (valid: ${data.selectedPlace != null})")
+        if (data.selectedPlace != null) {
+            Log.d("SignUpViewModel", "  - Place ID: '${data.selectedPlace.placeId}'")
+            Log.d("SignUpViewModel", "  - Name: '${data.selectedPlace.name}'")
+            Log.d("SignUpViewModel", "  - Address: '${data.selectedPlace.address}'")
+            Log.d("SignUpViewModel", "  - Road Address: '${data.selectedPlace.roadAddress}'")
+            Log.d("SignUpViewModel", "  - Latitude: ${data.selectedPlace.latitude}")
+            Log.d("SignUpViewModel", "  - Longitude: ${data.selectedPlace.longitude}")
+        }
+        Log.d("SignUpViewModel", "License Image File: ${data.licenseImageFile?.name ?: "null"} (valid: ${data.licenseImageFile != null})")
+        Log.d("SignUpViewModel", "Privacy Agree: ${data.privacyAgree}")
+        Log.d("SignUpViewModel", "Terms Agree: ${data.termsAgree}")
+        Log.d("SignUpViewModel", "User Type: '${data.userType}' (valid: ${data.userType == "partner"})")
+        Log.d("SignUpViewModel", "Overall Valid: $isValid")
+        Log.d("SignUpViewModel", "=====================================")
+        
+        return isValid
     }
 
     // 에러 메시지 초기화
