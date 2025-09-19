@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.transform.CircleCropTransformation
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.ChattingRoomListItem
 import com.example.assu_fe_app.databinding.ItemChattingListBinding
@@ -38,8 +39,9 @@ class ChattingRoomListAdapter (
             fun bind(item: GetChattingRoomListModel, isLastItem: Boolean) = with(binding){
                 ivItemChattingListRestaurantProfile.load(item.opponentProfileImage) {
                     crossfade(true)
-                    placeholder(R.drawable.ic_restaurant_ex)
-                    error(R.drawable.ic_restaurant_ex)
+                    placeholder(R.drawable.img_partner)
+                    error(R.drawable.img_partner)
+                    transformations(CircleCropTransformation())
                 }
                 Log.d("BIND", "id=${item.roomId}, name=${item.opponentName}")
                 tvChattingCounterpart.text = item.opponentName
