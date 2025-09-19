@@ -1,10 +1,8 @@
 package com.example.assu_fe_app.presentation.admin.signup
 
 import SignUpDropdownAdapter
-import android.content.Intent
 import android.util.Log
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -13,14 +11,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.auth.SelectedPlaceDto
 import com.example.assu_fe_app.databinding.DropdownAdminPartBinding
 import com.example.assu_fe_app.databinding.FragmentAdminSignUpInfoBinding
-import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.example.assu_fe_app.presentation.common.location.LocationSearchActivity
-import com.example.assu_fe_app.ui.auth.SignUpViewModel
-import com.example.assu_fe_app.util.setProgressBarFillAnimated
 import com.example.assu_fe_app.domain.model.enums.Department
 import com.example.assu_fe_app.domain.model.enums.Major
+import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.ui.auth.SignUpViewModel
+import com.example.assu_fe_app.util.setProgressBarFillAnimated
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,18 +37,6 @@ class AdminSignUpInfoFragment :
 
     private var isAddressSearchClicked = false
 
-    // 주소 검색 결과를 받기 위한 ActivityResultLauncher
-    private val addressSearchLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == LocationSearchActivity.RESULT_CODE_ADDRESS_SELECTED) {
-            val selectedAddress = result.data?.getStringExtra(LocationSearchActivity.EXTRA_SELECTED_ADDRESS)
-            selectedAddress?.let { address ->
-                binding.tvAdminAddress.text = address
-                Log.d("AdminSignUpInfoFragment", "받은 주소: $address")
-            }
-        }
-    }
 
     // Department enum을 사용한 학과/부 목록
     private val majorData = Department.values().associate { department ->
@@ -61,7 +47,56 @@ class AdminSignUpInfoFragment :
 
     override fun initObserver() {}
 
+    override fun onResume() {
+        super.onResume()
+        // Fragment가 다시 보여질 때 드롭다운 상태 복원
+        restoreDropdownStates()
+    }
+
     override fun initView() {
+
+    // 주소 검색 결과를 받기 위한 Fragment Result Listener
+    parentFragmentManager.setFragmentResultListener("result", this) { _, bundle ->
+        val resultData = bundle.getString("selectedAddress")
+        Log.d("AdminSignUpInfoFragment", "받은 주소 데이터: $resultData")
+        resultData?.let { address ->
+            binding.tvAdminAddress.text = address
+            // 주소가 설정되면 색상을 assu_font_main으로 변경
+            binding.tvAdminAddress.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_main))
+            // 상세주소 입력 활성화
+            binding.etAdminAddressDetail.isEnabled = true
+            isAddressSearchClicked = true
+            
+            // selectedPlace 객체 생성 및 ViewModel에 저장
+            val selectedPlaceName = bundle.getString("selectedPlaceName") ?: ""
+            val selectedPlaceId = bundle.getString("selectedPlaceId") ?: ""
+            val selectedPlaceRoadAddress = bundle.getString("selectedPlaceRoadAddress") ?: ""
+            val selectedPlaceLatitude = bundle.getDouble("selectedPlaceLatitude", 0.0)
+            val selectedPlaceLongitude = bundle.getDouble("selectedPlaceLongitude", 0.0)
+            
+            Log.d("AdminSignUpInfoFragment", "=== selectedPlace 데이터 ===")
+            Log.d("AdminSignUpInfoFragment", "Name: '$selectedPlaceName'")
+            Log.d("AdminSignUpInfoFragment", "ID: '$selectedPlaceId'")
+            Log.d("AdminSignUpInfoFragment", "Address: '$address'")
+            Log.d("AdminSignUpInfoFragment", "Road Address: '$selectedPlaceRoadAddress'")
+            Log.d("AdminSignUpInfoFragment", "Latitude: $selectedPlaceLatitude")
+            Log.d("AdminSignUpInfoFragment", "Longitude: $selectedPlaceLongitude")
+            Log.d("AdminSignUpInfoFragment", "========================")
+            
+            // SignUpViewModel에 selectedPlace 설정
+            val selectedPlaceDto = SelectedPlaceDto(
+                placeId = selectedPlaceId,
+                name = selectedPlaceName,
+                address = address,
+                roadAddress = selectedPlaceRoadAddress,
+                latitude = selectedPlaceLatitude,
+                longitude = selectedPlaceLongitude
+            )
+            signUpViewModel.setSelectedPlace(selectedPlaceDto)
+            
+            checkAllInputs()
+        }
+    }
 
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
             container = binding.flSignupProgressContainer,
@@ -261,20 +296,40 @@ class AdminSignUpInfoFragment :
             }
         }
         
-        // 관리자 이름 설정 (선택된 부서/전공 정보를 이름으로 사용)
-        val adminName = when (currentPartSelection) {
-            "총학생회" -> "총학생회"
-            "단과대학 학생회" -> "${currentDepartmentSelection} 학생회"
-            "학과/부 학생회" -> "${currentMajorSelection} 학생회"
-            else -> "관리자"
-        }
-        signUpViewModel.setAdminName(adminName)
-        
         // 상세 주소 설정
         val detailAddress = binding.etAdminAddressDetail.text.toString().trim()
         signUpViewModel.setDetailAddress(detailAddress)
         
         // 선택된 장소 정보는 주소 검색에서 설정됨
         // TODO: 주소 검색 결과를 SelectedPlaceDto로 변환하여 설정
+    }
+
+    // 드롭다운 상태 복원 함수
+    private fun restoreDropdownStates() {
+        // 단위(part) 선택 상태 복원
+        currentPartSelection?.let { partSelection ->
+            partDropdownAdapter.setSelectedItem(partSelection)
+            binding.dvPart.tvSelected.text = partSelection
+            binding.dvPart.tvSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_main))
+            updateUiBasedOnPartSelection(partSelection)
+        }
+
+        // 단과대학 선택 상태 복원
+        currentDepartmentSelection?.let { departmentSelection ->
+            departmentDropdownAdapter.setSelectedItem(departmentSelection)
+            binding.dvDepartment.tvSelected.text = departmentSelection
+            binding.dvDepartment.tvSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_main))
+            
+            // 전공 목록 업데이트
+            val majors = majorData[departmentSelection] ?: emptyList()
+            majorDropdownAdapter.updateData(majors)
+        }
+
+        // 전공 선택 상태 복원
+        currentMajorSelection?.let { majorSelection ->
+            majorDropdownAdapter.setSelectedItem(majorSelection)
+            binding.dvMajor.tvSelected.text = majorSelection
+            binding.dvMajor.tvSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_main))
+        }
     }
 }
