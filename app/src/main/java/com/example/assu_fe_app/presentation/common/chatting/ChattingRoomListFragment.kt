@@ -92,12 +92,22 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
     private fun onRoomClick(item: GetChattingRoomListModel) {
         binding.rvChattingRoomList.isEnabled = false
         binding.rvChattingRoomList.postDelayed({binding.rvChattingRoomList.isEnabled = true}, 500)
+        val safeName = if (item.opponentId == -1L) {
+            "알 수 없음"
+        } else {
+            item.opponentName
+        }
+        val opponentProfile = if (item.opponentId == -1L) {
+            R.drawable.img_partner
+        } else {
+            item.opponentProfileImage
+        }
 
         val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
             putExtra("roomId", item.roomId)
             putExtra("opponentId", item.opponentId)
-            putExtra("opponentName", item.opponentName)
-            putExtra("opponentProfileImage", item.opponentProfileImage)
+            putExtra("opponentName", safeName)
+            putExtra("opponentProfileImage", opponentProfile)
         }
         startActivity(intent)
     }

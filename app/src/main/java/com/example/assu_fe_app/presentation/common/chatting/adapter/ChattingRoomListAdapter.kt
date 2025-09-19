@@ -44,8 +44,14 @@ class ChattingRoomListAdapter (
                     transformations(CircleCropTransformation())
                 }
                 Log.d("BIND", "id=${item.roomId}, name=${item.opponentName}")
-                tvChattingCounterpart.text = item.opponentName
+                val opponentName = if (item.opponentId == -1L) {
+                    "알 수 없음"
+                } else {
+                    item.opponentName
+                }
+                tvChattingCounterpart.text = opponentName
                 tvChattingLastChat.text = item.lastMessage ?: ""
+
 
                 // 마지막 아이템이면 선 숨기기
                 viewLocationSearchResultItemLine.visibility =

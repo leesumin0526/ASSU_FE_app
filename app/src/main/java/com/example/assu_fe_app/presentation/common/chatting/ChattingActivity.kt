@@ -40,6 +40,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     private lateinit var messageAdapter: ChattingMessageAdapter
     @Inject
     lateinit var authTokenLocalStore: AuthTokenLocalStore
+    private var opponentProfileImage: String = ""   // ✅ 추가
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -57,10 +58,10 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
         val roomId = intent.getLongExtra("roomId", -1L)
         val opponentName = intent.getStringExtra("opponentName") ?: ""
-        val opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
+        opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
 
         Log.d("ChattingActivity", "roomId=$roomId, name=$opponentName")
-        binding.tvChattingOpponentName?.text = opponentName
+        binding.tvChattingOpponentName.text = opponentName
 
         // 채팅방 리스트 적용
         messageAdapter = ChattingMessageAdapter()
@@ -148,7 +149,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                                     } else {
                                         ChattingMessageItem.OtherMessage(
                                             messageId = m.messageId,
-                                            profileImageUrl = m.profileImageUrl,
+                                            profileImageUrl = opponentProfileImage,
                                             message = m.message ?: "",
                                             sentAt = formatTime(m.sendTime),
                                             isRead = m.isRead
