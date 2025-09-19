@@ -115,6 +115,7 @@ class LocationRepositoryImpl @Inject constructor(
                 partnershipEndDate = adminDto.partnershipEndDate,
                 latitude = adminDto.latitude,
                 longitude = adminDto.longitude,
+                profileUrl = adminDto.profileUrl
             )
         }
     }
@@ -141,6 +142,7 @@ class LocationRepositoryImpl @Inject constructor(
                 partnershipEndDate = partnerDto.partnershipEndDate,
                 latitude = partnerDto.latitude,
                 longitude = partnerDto.longitude,
+                profileUrl = partnerDto.profileUrl
             )
         }
     }

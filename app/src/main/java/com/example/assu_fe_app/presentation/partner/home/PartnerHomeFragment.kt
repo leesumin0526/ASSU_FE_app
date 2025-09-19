@@ -12,24 +12,22 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
-import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentPartnerHomeBinding
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.presentation.admin.home.HomeViewModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
+import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 import com.example.assu_fe_app.presentation.common.notification.NotificationActivity
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlin.getValue
-import kotlin.jvm.java
 
 @AndroidEntryPoint
 class PartnerHomeFragment :
@@ -38,7 +36,7 @@ class PartnerHomeFragment :
     private val vm: HomeViewModel by viewModels()
     private val chattingViewModel: ChattingViewModel by viewModels()
     private val partnershipViewModel: PartnershipViewModel by viewModels()
-    lateinit var tokenManager: TokenManager
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initObserver() {
         // 채팅방 생성 상태 수집
@@ -185,8 +183,7 @@ class PartnerHomeFragment :
 
         partnershipViewModel.getProposalAdminList(isAll = false)
 
-        tokenManager = TokenManager(requireContext())
-        val userName = tokenManager.getUserName() ?: "사용자"
+        val userName = authTokenLocalStore.getUserName() ?: "사용자"
 
         binding.tvPartnerHomeName.text = if (userName.isNotEmpty()) {
             "안녕하세요, ${userName}님!"

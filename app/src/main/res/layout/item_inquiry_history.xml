@@ -6,7 +6,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="15dp"
+    android:paddingHorizontal="15dp"
     android:background="?android:attr/selectableItemBackground">
 
     <!-- 제목 -->
@@ -84,6 +84,17 @@
             tools:textColor="@color/assu_main"/>
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider_line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/assu_sub2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/right_container"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="15dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

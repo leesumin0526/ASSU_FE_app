@@ -14,7 +14,8 @@ data class AdminMapResponseDto(
     val partnershipStartDate: String?,
     val partnershipEndDate: String?,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val profileUrl: String? = null
 ) {
     fun toModel() = AdminOnMap(
         adminId = this.adminId,
@@ -25,6 +26,7 @@ data class AdminMapResponseDto(
         partnershipStartDate = this.partnershipStartDate,
         partnershipEndDate = this.partnershipEndDate,
         latitude = this.latitude,
-        longitude = this.longitude
+        longitude = this.longitude,
+        profileUrl = this.profileUrl
     )
 }

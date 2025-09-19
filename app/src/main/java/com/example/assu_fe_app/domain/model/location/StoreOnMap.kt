@@ -14,5 +14,6 @@ data class StoreOnMap(
     val discountRate: Int?,
     val hasPartner: Boolean,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val profileUrl: String?
 )

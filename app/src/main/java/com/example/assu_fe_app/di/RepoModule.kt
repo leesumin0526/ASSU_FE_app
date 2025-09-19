@@ -1,7 +1,5 @@
 package com.example.assu_fe_app.di
 
-import com.example.assu_fe_app.data.local.TokenProvider
-import com.example.assu_fe_app.data.local.TokenProviderImpl
 import com.example.assu_fe_app.data.repository.admin.AdminHomeRepository
 import com.example.assu_fe_app.data.repository.auth.AuthRepository
 import com.example.assu_fe_app.data.repository.certification.CertificationRepository
@@ -12,6 +10,7 @@ import com.example.assu_fe_app.data.repositoryImpl.chatting.ChattingRepositoryIm
 import com.example.assu_fe_app.data.repository.deviceToken.DeviceTokenRepository
 import com.example.assu_fe_app.data.repository.location.LocationRepository
 import com.example.assu_fe_app.data.repository.location.SearchRepository
+import com.example.assu_fe_app.data.repository.inquiry.InquiryRepository
 import com.example.assu_fe_app.data.repository.review.ReviewRepository
 import com.example.assu_fe_app.data.repository.store.StoreRepository
 import com.example.assu_fe_app.data.repository.usage.UsageRepository
@@ -21,6 +20,7 @@ import com.example.assu_fe_app.data.repository.notification.NotificationReposito
 import com.example.assu_fe_app.data.repositoryImpl.dashboard.AdminDashboardRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.dashboard.PartnerDashboardRepositoryImpl
 import com.example.assu_fe_app.data.repository.partnership.PartnershipRepository
+import com.example.assu_fe_app.data.repository.profileImage.ProfileRepository
 import com.example.assu_fe_app.data.repository.suggestion.SuggestionRepository
 import com.example.assu_fe_app.data.repository.user.UserHomeRepository
 import com.example.assu_fe_app.data.repositoryImpl.AuthRepositoryImpl
@@ -28,10 +28,12 @@ import com.example.assu_fe_app.data.repositoryImpl.admin.AdminHomeRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.deviceToken.DeviceTokenRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.location.LocationRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.location.SearchRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.inquiry.InquiryRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.store.StoreRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.usage.UsageRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.notification.NotificationRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.partnership.PartnershipRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.profileImage.ProfileRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.suggestion.SuggestionRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.user.UserHomeRepositoryImpl
 import dagger.Binds
@@ -80,11 +82,6 @@ abstract class RepoModule {
     ): CertificationRepository
 
 
-    @Binds
-    @Singleton
-    abstract fun bindTokenProvider(
-        impl: TokenProviderImpl
-    ): TokenProvider
 
     @Binds @Singleton
     abstract fun bindNotificationRepository(
@@ -101,6 +98,11 @@ abstract class RepoModule {
     abstract fun bindPartnerDashboardRepository(
         partnerDashboardRepositoryImpl: PartnerDashboardRepositoryImpl
     ): PartnerDashboardRepository
+
+    @Binds @Singleton
+    abstract fun bindInquiryRepository(
+        impl: InquiryRepositoryImpl
+    ): InquiryRepository
 
     @Binds @Singleton
     abstract fun bindSuggestionRepository(
@@ -127,6 +129,12 @@ abstract class RepoModule {
     abstract fun bindUserHomeRepository(
         userHomeRepositoryImpl: UserHomeRepositoryImpl
     ): UserHomeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindProfileImageRepository(
+        profileRepositoryImpl: ProfileRepositoryImpl
+    ): ProfileRepository
 
     @Binds
     @Singleton

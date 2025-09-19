@@ -9,5 +9,6 @@ data class AdminOnMap(
     val partnershipStartDate: String?,
     val partnershipEndDate: String?,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val profileUrl: String?
 )
