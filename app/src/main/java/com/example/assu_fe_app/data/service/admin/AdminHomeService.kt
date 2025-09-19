@@ -6,5 +6,6 @@ import retrofit2.http.GET
 
 interface AdminHomeService {
     @GET("/admin/partner-recommend")
-    suspend fun getRecommendedPartner(): BaseResponse<RandomPartnerResponseDto>
+    suspend fun getRecommendedPartner()
+    : BaseResponse<RandomPartnerResponseDto>
 }

@@ -17,6 +17,7 @@ import com.example.assu_fe_app.data.repository.usage.UsageRepository
 import com.example.assu_fe_app.data.repositoryImpl.certification.CertificationRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.review.ReviewRepositoryImpl
 import com.example.assu_fe_app.data.repository.notification.NotificationRepository
+import com.example.assu_fe_app.data.repository.partner.PartnerHomeRepository
 import com.example.assu_fe_app.data.repositoryImpl.dashboard.AdminDashboardRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.dashboard.PartnerDashboardRepositoryImpl
 import com.example.assu_fe_app.data.repository.partnership.PartnershipRepository
@@ -32,6 +33,7 @@ import com.example.assu_fe_app.data.repositoryImpl.inquiry.InquiryRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.store.StoreRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.usage.UsageRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.notification.NotificationRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.partner.PartnerHomeRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.partnership.PartnershipRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.profileImage.ProfileRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.suggestion.SuggestionRepositoryImpl
@@ -141,4 +143,11 @@ abstract class RepoModule {
     abstract fun bindAdminHomeRepository(
         adminHomeRepositoryImpl: AdminHomeRepositoryImpl
     ): AdminHomeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPartnerHomeRepository(
+        partnerHomeRepositoryImpl: PartnerHomeRepositoryImpl
+    ): PartnerHomeRepository
+
 }

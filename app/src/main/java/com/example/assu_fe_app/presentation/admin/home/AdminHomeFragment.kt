@@ -31,6 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.assu_fe_app.domain.model.admin.RecommendedPartnerModel
 import com.example.assu_fe_app.ui.admin.PartnerRecommendViewModel
+import jakarta.inject.Inject
 
 
 @AndroidEntryPoint
@@ -44,7 +45,7 @@ class AdminHomeFragment :
     private val partnerRecommendViewModel: PartnerRecommendViewModel by viewModels()
     private var currentRecommendedPartner: RecommendedPartnerModel? = null
 
-
+    @Inject
     lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initObserver() {
