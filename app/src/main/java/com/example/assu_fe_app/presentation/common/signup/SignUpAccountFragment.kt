@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.common.signup
 
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
@@ -39,6 +40,13 @@ class SignUpAccountFragment : BaseFragment<FragmentSignUpAccountBinding>(R.layou
                 // ViewModel에 이메일과 비밀번호 저장
                 val email = binding.etUserId.text.toString().trim()
                 val password = binding.etUserPw.text.toString().trim()
+                
+                // 비밀번호 8자리 이상 검증
+                if (password.length < 8) {
+                    Toast.makeText(requireContext(), "비밀번호는 8자리 이상이어야 합니다.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                
                 signUpViewModel.setEmail(email)
                 signUpViewModel.setPassword(password)
                 
