@@ -8,7 +8,7 @@ import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsModel
 
 fun ProposalPartnerDetailsModel.toContractData(
-    partnerNameFallback: String,
+    partnerNameFallback: String? = "업체",
     adminNameFallback: String? = "관리자",
     fallbackStart: String? = null,
     fallbackEnd: String? = null
