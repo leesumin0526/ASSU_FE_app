@@ -3,6 +3,7 @@ package com.example.assu_fe_app.presentation.partner.signup
 import android.Manifest
 import android.content.ContentResolver
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.provider.OpenableColumns
@@ -57,6 +58,9 @@ class PartnerSignUpLicenseFragment :
         )
         // 처음엔 비활성화
         setButtonEnabled(false)
+
+        // 체크박스 색상 설정
+        setupCheckboxColors()
 
         // 업로드 버튼 클릭
         binding.ivUpload.setOnClickListener {
@@ -250,5 +254,25 @@ class PartnerSignUpLicenseFragment :
         } else {
             fileName
         }
+    }
+
+    // 체크박스 색상 설정
+    private fun setupCheckboxColors() {
+        val assuMainColor = ContextCompat.getColor(requireContext(), R.color.assu_main)
+        val assuFontSubColor = ContextCompat.getColor(requireContext(), R.color.assu_font_sub)
+
+        // 체크된 상태와 체크되지 않은 상태의 색상 설정
+        val colorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)
+            ),
+            intArrayOf(assuMainColor, assuFontSubColor)
+        )
+
+        // 모든 체크박스에 색상 적용
+        binding.cbAllAgree.buttonTintList = colorStateList
+        binding.cbPrivacyAgree.buttonTintList = colorStateList
+        binding.cbMarketingAgree.buttonTintList = colorStateList
     }
 }
