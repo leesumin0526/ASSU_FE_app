@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/pretendard_bold"
-            android:text="LMS 인증에 성공했어요!\n학부와 학번을 확인해주세요!"
+            android:text="LMS 인증에 성공했어요!\n정보 확인 및 약관 동의를\n진행해주세요!"
             android:textColor="@color/assu_font_main"
             android:textSize="25sp"
             android:layout_marginTop="46dp"
@@ -79,7 +79,7 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
                 android:hint="컴퓨터학부"
-                android:inputType="textEmailAddress"
+                android:inputType="text"
                 android:background="@android:color/transparent"
                 android:textSize="14sp"
                 android:textColor="@color/assu_font_main"
@@ -124,7 +124,7 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
                 android:hint="20211438"
-                android:inputType="textPassword"
+                android:inputType="text"
                 android:background="@android:color/transparent"
                 android:textSize="14sp"
                 android:textColor="@color/assu_font_main"
@@ -229,7 +229,7 @@
                 android:gravity="center_vertical">
 
                 <CheckBox
-                    android:id="@+id/cb_terms_agree"
+                    android:id="@+id/cb_marketing_agree"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:button="@drawable/ic_agree"

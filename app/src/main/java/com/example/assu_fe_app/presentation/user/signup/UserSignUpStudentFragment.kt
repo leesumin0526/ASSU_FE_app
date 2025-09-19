@@ -45,6 +45,7 @@ class UserSignUpStudentFragment :
                         // 서버 에러 메시지는 토스트로 표시하지 않음
                         // 사용자에게는 간단한 안내 메시지만 표시
                         val userMessage = when {
+                            it.contains("MEMBER_4007") || it.contains("이미 존재하는 회원입니다") -> "이미 가입된 회원입니다. 로그인을 시도해주세요."
                             it.contains("enrollmentStatus") -> "학생 인증에 실패했습니다. 다시 시도해주세요."
                             it.contains("Non-null value") -> "학생 인증에 실패했습니다. 다시 시도해주세요."
                             else -> it
