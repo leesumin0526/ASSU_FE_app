@@ -19,12 +19,14 @@ import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentPartnerHomeBinding
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
+import com.example.assu_fe_app.domain.model.partner.RecommendedAdminModel
 import com.example.assu_fe_app.presentation.admin.home.HomeViewModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 import com.example.assu_fe_app.presentation.common.notification.NotificationActivity
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
+import com.example.assu_fe_app.ui.partner.AdminRecommendViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
@@ -37,7 +39,10 @@ class PartnerHomeFragment :
     private val vm: HomeViewModel by viewModels()
     private val chattingViewModel: ChattingViewModel by viewModels()
     private val partnershipViewModel: PartnershipViewModel by viewModels()
-    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
+    private val adminRecommendViewModel: AdminRecommendViewModel by viewModels()
+    private var recommendedAdmins: List<RecommendedAdminModel> = emptyList()
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initObserver() {
         // 채팅방 생성 상태 수집
@@ -46,53 +51,30 @@ class PartnerHomeFragment :
                 chattingViewModel.createRoomState.collect { state ->
                     when (state) {
                         is ChattingViewModel.CreateRoomUiState.Loading -> {
-                            // 필요시 로딩 UI 처리(버튼 비활성화 등)
                             binding.viewPartnerHomeCardBg.isEnabled = false
-
                         }
 
                         is ChattingViewModel.CreateRoomUiState.Success -> {
                             binding.viewPartnerHomeCardBg.isEnabled = true
-
                             val roomId = state.data.roomId
-
-                            val intent =
-                                Intent(requireContext(), ChattingActivity::class.java).apply {
-                                    putExtra("roomId", roomId)
-                                }
-
+                            val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
+                                putExtra("roomId", roomId)
+                            }
                             startActivity(intent)
-                            Toast.makeText(
-                                requireContext(),
-                                "채팅방 생성 성공: ${state}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            // 한 번 처리 후 상태 리셋
+                            Toast.makeText(requireContext(), "채팅방 생성 성공", Toast.LENGTH_SHORT).show()
                             chattingViewModel.resetCreateState()
                         }
 
                         is ChattingViewModel.CreateRoomUiState.Fail -> {
                             binding.viewPartnerHomeCardBg.isEnabled = true
-                            Toast.makeText(
-                                requireContext(),
-                                "채팅방 생성 실패: ${state.code}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            Log.e(
-                                "AdminHomeFragment",
-                                "Fail code=${state.code}, msg=${state.message}"
-                            )
+                            Toast.makeText(requireContext(), "채팅방 생성 실패: ${state.code}", Toast.LENGTH_SHORT).show()
+                            Log.e("PartnerHomeFragment", "Fail code=${state.code}, msg=${state.message}")
                             chattingViewModel.resetCreateState()
                         }
 
                         is ChattingViewModel.CreateRoomUiState.Error -> {
                             binding.viewPartnerHomeCardBg.isEnabled = true
-                            Toast.makeText(
-                                requireContext(),
-                                "에러: ${state.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(requireContext(), "에러: ${state.message}", Toast.LENGTH_SHORT).show()
                             chattingViewModel.resetCreateState()
                         }
 
@@ -102,6 +84,7 @@ class PartnerHomeFragment :
             }
         }
 
+        // 제휴 Admin 리스트 상태 수집
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 partnershipViewModel.getPartnershipAdminListUiState.collect { state ->
@@ -111,9 +94,6 @@ class PartnerHomeFragment :
 
                             if(data.isEmpty()) {
                                 binding.btnPartnerHomeViewAll.visibility = View.INVISIBLE
-//                                binding.tvNoPartnerList.visibility = View.VISIBLE
-                            } else {
-//                                binding.tvNoPartnerList.visibility = View.GONE
                             }
 
                             val firstItem = data.getOrNull(0)
@@ -142,7 +122,6 @@ class PartnerHomeFragment :
                                 binding.partnerHomeListItem2.isVisible = false
                             }
 
-                            // 전체보기 버튼은 데이터가 1건 이상일 때만 활성화
                             binding.btnPartnerHomeViewAll.isEnabled = data.isNotEmpty()
                         }
 
@@ -173,19 +152,34 @@ class PartnerHomeFragment :
                 }
             }
         }
+
+        // 추천 Admin 상태 수집
+        viewLifecycleOwner.lifecycleScope.launch {
+            adminRecommendViewModel.recommendState.collect { state ->
+                when (state) {
+                    is AdminRecommendViewModel.RecommendUiState.Success -> {
+                        updateRecommendCards(state.admins)
+                        recommendedAdmins = state.admins
+                    }
+                    is AdminRecommendViewModel.RecommendUiState.Error -> {
+                        Log.e("PartnerHomeFragment", "추천 Admin 로드 실패: ${state.message}")
+                    }
+                    else -> Unit
+                }
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         vm.refreshBell()
+        adminRecommendViewModel.refreshAdmins()
     }
 
     override fun initView() {
-
         partnershipViewModel.getProposalAdminList(isAll = false)
 
         val userName = authTokenLocalStore.getUserName() ?: "사용자"
-
         binding.tvPartnerHomeName.text = if (userName.isNotEmpty()) {
             "안녕하세요, ${userName}님!"
         } else {
@@ -219,6 +213,28 @@ class PartnerHomeFragment :
             )
             chattingViewModel.createRoom(req)
         }
+
+        // 첫 번째 추천 카드 문의하기 버튼
+        binding.clRecommendInquiry1.setOnClickListener {
+            recommendedAdmins.getOrNull(0)?.let { admin ->
+                val req = CreateChatRoomRequestDto(
+                    adminId = admin.adminId,
+                    partnerId = authTokenLocalStore.getUserId() ?: 5L
+                )
+                chattingViewModel.createRoom(req)
+            }
+        }
+
+        // 두 번째 추천 카드 문의하기 버튼
+        binding.flRecommendInquiry2.setOnClickListener {
+            recommendedAdmins.getOrNull(1)?.let { admin ->
+                val req = CreateChatRoomRequestDto(
+                    adminId = admin.adminId,
+                    partnerId = authTokenLocalStore.getUserId() ?: 5L
+                )
+                chattingViewModel.createRoom(req)
+            }
+        }
     }
 
     private fun bindAdminItem(
@@ -228,7 +244,7 @@ class PartnerHomeFragment :
         periodView: TextView,
         item: GetProposalAdminListModel
     ) {
-        titleView.text = item.adminId.toString() // TODO: 실제 가맹점명 필드 있으면 교체
+        titleView.text = item.adminId.toString()
         periodView.text = "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
 
         // 옵션 설명 만들기
@@ -257,6 +273,22 @@ class PartnerHomeFragment :
 //                }
             )
             dialog.show(parentFragmentManager, "PartnershipContentDialog")
+        }
+    }
+
+    // 추천 카드 업데이트 함수
+    private fun updateRecommendCards(admins: List<RecommendedAdminModel>) {
+        // 첫 번째 카드
+        admins.getOrNull(0)?.let { admin ->
+            // 레이아웃에 TextView ID들이 있다면 여기서 업데이트
+            // binding.tvRecommendAdmin1Name?.text = admin.adminName
+            // binding.tvRecommendAdmin1Address?.text = admin.fullAddress
+        }
+
+        // 두 번째 카드
+        admins.getOrNull(1)?.let { admin ->
+            // binding.tvRecommendAdmin2Name?.text = admin.adminName
+            // binding.tvRecommendAdmin2Address?.text = admin.fullAddress
         }
     }
 }

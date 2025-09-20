@@ -28,8 +28,10 @@ import com.example.assu_fe_app.presentation.common.notification.NotificationActi
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import jakarta.inject.Inject
 import kotlinx.coroutines.launch
+import com.example.assu_fe_app.domain.model.admin.RecommendedPartnerModel
+import com.example.assu_fe_app.ui.admin.PartnerRecommendViewModel
+import jakarta.inject.Inject
 
 
 @AndroidEntryPoint
@@ -38,7 +40,11 @@ class AdminHomeFragment :
     private val vm: HomeViewModel by viewModels()
     private val chattingViewModel: ChattingViewModel by viewModels()
     private val partnershipViewModel: PartnershipViewModel by viewModels()
-    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
+    private val partnerRecommendViewModel: PartnerRecommendViewModel by viewModels()
+    private var currentRecommendedPartner: RecommendedPartnerModel? = null
+
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initObserver() {
         // 채팅방 생성 상태 수집
@@ -169,12 +175,28 @@ class AdminHomeFragment :
                 }
             }
         }
+        // 추천 파트너 상태만 추가
+        viewLifecycleOwner.lifecycleScope.launch {
+            partnerRecommendViewModel.recommendState.collect { state ->
+                when (state) {
+                    is PartnerRecommendViewModel.RecommendUiState.Success -> {
+                        updateRecommendCard(state.partner)
+                        currentRecommendedPartner = state.partner
+                    }
+                    is PartnerRecommendViewModel.RecommendUiState.Error -> {
+                        // 에러 시 기본값 유지
+                    }
+                    else -> Unit
+                }
+    }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         vm.refreshBell()
         partnershipViewModel.getProposalPartnerList(isAll = false) // true면 전체
+        partnerRecommendViewModel.refreshPartner()
     }
 
     override fun initView() {
@@ -222,7 +244,18 @@ class AdminHomeFragment :
             chattingViewModel.createRoom(req)
 
         }
+        binding.btnRecommendInquiry.setOnClickListener {
+            currentRecommendedPartner?.let { partner ->
+                val req = CreateChatRoomRequestDto(
+                    adminId = authTokenLocalStore.getUserId() ?: 1L,
+                    partnerId = partner.partnerId
+                )
+                chattingViewModel.createRoom(req)
+            }
+        }
     }
+
+    private fun updateRecommendCard(partner: RecommendedPartnerModel) {}
 
     private fun bindAdminItem(
         bindingItem: ViewGroup,
