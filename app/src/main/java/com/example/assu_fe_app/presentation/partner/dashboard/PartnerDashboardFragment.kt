@@ -105,13 +105,13 @@ class PartnerDashboardFragment :
     private fun createHardcodedPopularStores(): List<PopularStoreModel> {
         return listOf(
             PopularStoreModel(rank = 1, storeName = "스타벅스", isHighlight = true),
-            PopularStoreModel(rank = 5, storeName = "투썸플레이스", isHighlight = false),
-            PopularStoreModel(rank = 2, storeName = "할리스", isHighlight = true),
-            PopularStoreModel(rank = 6, storeName = "이디야", isHighlight = false),
-            PopularStoreModel(rank = 3, storeName = "빽다방", isHighlight = true),
-            PopularStoreModel(rank = 7, storeName = "컴포즈", isHighlight = false),
-            PopularStoreModel(rank = 4, storeName = "메가", isHighlight = false),
-            PopularStoreModel(rank = 8, storeName = "파스쿠찌", isHighlight = false)
+            PopularStoreModel(rank = 5, storeName = "먹돼지", isHighlight = false),
+            PopularStoreModel(rank = 2, storeName = "역전할머니맥주", isHighlight = true),
+            PopularStoreModel(rank = 6, storeName = "청운음식점", isHighlight = false),
+            PopularStoreModel(rank = 3, storeName = "커피나무", isHighlight = true),
+            PopularStoreModel(rank = 7, storeName = "샹츠마라", isHighlight = false),
+            PopularStoreModel(rank = 4, storeName = "지지고", isHighlight = false),
+            PopularStoreModel(rank = 8, storeName = "상도로 3가", isHighlight = false)
         )
     }
 
