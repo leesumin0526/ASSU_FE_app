@@ -79,12 +79,10 @@ class LocationItemFragment :
                     is PartnershipViewModel.PartnershipDetailUiState.Fail -> {
                         showLoading(false)
                         pendingPartnershipId = null
-                        toast(state.message ?: "서버 처리 실패(${state.code})")
                     }
                     is PartnershipViewModel.PartnershipDetailUiState.Error -> {
                         showLoading(false)
                         pendingPartnershipId = null
-                        toast(state.message)
                     }
                     PartnershipViewModel.PartnershipDetailUiState.Idle -> Unit
                 }
@@ -179,10 +177,6 @@ class LocationItemFragment :
         return parts.getOrNull(0) to parts.getOrNull(1)
     }
 
-    // 필요 시 프로젝트 공통 유틸과 교체
-    private fun toast(msg: String) {
-        android.widget.Toast.makeText(requireContext(), msg, android.widget.Toast.LENGTH_SHORT).show()
-    }
     private fun showLoading(show: Boolean) {
         // TODO: ProgressBar 노출/숨김
     }
@@ -193,7 +187,7 @@ class LocationItemFragment :
         // 역할별 기본 이미지 id
         val fallbackRes = when (role) {
             UserRole.ADMIN   -> R.drawable.img_partner
-            UserRole.PARTNER -> R.drawable.img_ssu
+            UserRole.PARTNER -> R.drawable.img_student
             else             -> R.drawable.img_ssu
         }
 

@@ -3,13 +3,11 @@ package com.example.assu_fe_app.presentation.common.chatting
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
-import androidx.activity.addCallback
 import androidx.activity.viewModels
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
@@ -27,7 +25,11 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.getValue
-import androidx.core.view.isVisible
+import com.example.assu_fe_app.LeaveChatRoomDialog
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
+import com.example.assu_fe_app.data.local.AuthTokenLocalStoreImpl
+import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity_chatting) {
@@ -36,7 +38,9 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
     // ✅ 변경: 어댑터를 필드로 보관(한 번만 생성)
     private lateinit var messageAdapter: ChattingMessageAdapter
-
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
+    private var opponentProfileImage: String = ""   // ✅ 추가
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -51,12 +55,13 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             insets
         }
 
+
         val roomId = intent.getLongExtra("roomId", -1L)
         val opponentName = intent.getStringExtra("opponentName") ?: ""
-        val opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
+        opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
 
         Log.d("ChattingActivity", "roomId=$roomId, name=$opponentName")
-        binding.tvChattingOpponentName?.text = opponentName
+        binding.tvChattingOpponentName.text = opponentName
 
         // 채팅방 리스트 적용
         messageAdapter = ChattingMessageAdapter()
@@ -90,6 +95,11 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                 .commit()
         }
 
+        // 채팅방 나가기
+        binding.ivLeaveChatting.setOnClickListener {
+            LeaveChatRoomDialog.newInstance(roomId).show(supportFragmentManager, "LeaveChattingDialog")
+        }
+
         supportFragmentManager.setFragmentResultListener("return_reason", this) { _, bundle ->
             val reason = bundle.getString("reason")
             if (reason != null) {
@@ -112,6 +122,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     }
 
     override fun initObserver() {
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -138,7 +149,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                                     } else {
                                         ChattingMessageItem.OtherMessage(
                                             messageId = m.messageId,
-                                            profileImageUrl = m.profileImageUrl,
+                                            profileImageUrl = opponentProfileImage,
                                             message = m.message ?: "",
                                             sentAt = formatTime(m.sendTime),
                                             isRead = m.isRead
@@ -227,7 +238,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                         // ✅ DiffUtil + Payload 반영: 실시간 업데이트
                         messageAdapter.submitList(uiItems) {
                             if (uiItems.isNotEmpty()) {
-                                binding.rvChattingMessageList.smoothScrollToPosition(uiItems.size - 1)
+                                binding.rvChattingMessageList.scrollToPosition(uiItems.size - 1)
                             }
                         }
                     }
@@ -241,7 +252,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         return (this * context.resources.displayMetrics.density).toInt()
     }
 
-    private fun navigateToChatting() {
+    fun navigateToChatting() {
         val intent = Intent(this, AdminMainActivity::class.java).apply {
             // 기존 Task 스택 위로 올라가서 중복 생성 방지
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -282,16 +293,16 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     override fun onStart() {
         super.onStart()
         val roomId = intent.getLongExtra("roomId", -1L)
-        val myId = 6L // TODO: 로그인 유저 id로 교체
-        val opponentId = 5L
-//        val opponentId = intent.getLongExtra("opponentId", -1L)
-
+        val opponentId = intent.getLongExtra("opponentId",-1L)
         if (roomId <= 0L) {
-            Toast.makeText(this, "유효하지 않은 채팅방입니다", Toast.LENGTH_SHORT).show()
+            Log.e("ChatActivity", "유효하지 않은 채팅방입니다. roomId: $roomId")
             finish()
             return
         }
 
+        val myId = authTokenLocalStore.getUserId()
+//        val opponentId = viewModel.findOpponentId(roomId) ?: -1L
+        Log.d("VM","roomId = $roomId, myId=$myId, opponentId=$opponentId")
         // ✅ 변경: 입장 시 히스토리 + 소켓 연결(뷰모델 내부에서 처리)
         viewModel.enterRoom(roomId, myId, opponentId)
 

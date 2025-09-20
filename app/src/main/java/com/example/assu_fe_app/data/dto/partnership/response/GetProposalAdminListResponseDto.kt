@@ -11,6 +11,7 @@ data class GetProposalAdminListResponseDto(
     val adminId: Long,
     val partnerId: Long,
     val storeId: Long,
+    val adminName: String,
     val options: List<PartnershipOption>
 ) {
     fun toModel() = GetProposalAdminListModel(
@@ -20,6 +21,7 @@ data class GetProposalAdminListResponseDto(
         adminId = this.adminId,
         partnerId = this.partnerId,
         storeId = this.storeId,
+        adminName = this.adminName,
         options = this.options.map { it.toModel() }
     )
 }

@@ -2,6 +2,7 @@ package com.example.assu_fe_app.data.socket
 
 import com.example.assu_fe_app.data.local.AccessTokenProvider
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import io.reactivex.disposables.CompositeDisposable
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient

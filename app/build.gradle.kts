@@ -10,7 +10,7 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-val properties = Properties().apply {
+val lp = Properties().apply {
     load(FileInputStream(rootProject.file("local.properties")))
 }
 
@@ -26,14 +26,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "KAKAO_MAP_KEY", "${properties.getProperty("KAKAO_MAP_KEY")}")    }
+        buildConfigField("String", "KAKAO_MAP_KEY", "${lp.getProperty("KAKAO_MAP_KEY")}")    }
 
     buildTypes {
         debug {
-            //buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"")
+            buildConfigField("String", "BASE_URL", "\"https://assu.shop/\"") // 에뮬레이터 → PC 로컬
             buildConfigField("String", "BASE_URL", "\"http://10.21.36.179:8080/\"") // 에뮬레이터 → PC 로컬
             buildConfigField("String", "DEV_BEARER", "\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJDT01NT04iLCJyb2xlIjoiQURNSU4iLCJ1c2VySWQiOjExLCJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImp0aSI6IjUyNWQzZTY0LWU3MzAtNGE0Yi04NzE4LTkyZDQwNGM0ZTcyNSIsImlhdCI6MTc1NzM0MTI4NSwiZXhwIjoxNzU3MzQ0ODg1fQ.M8RPD-cjpDoD3V83TBO0W72FUhq5wTMn6tZshiAuxY4\"") // 🔴 임시
-//            buildConfigField("String", "CERTIFICATION_URL", "\"wss://assu.shop/ws\"") // TODO 주소 바꿔주세요
+
         }
         release {
             buildConfigField("String", "BASE_URL", "\"https://assu.shop/\"") // 운영 주소로 교체
@@ -99,7 +99,7 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
     implementation("com.google.firebase:firebase-messaging")
-
+    implementation("com.google.firebase:firebase-analytics")
 
     // 네트워크
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -137,7 +137,7 @@ dependencies {
     implementation("io.coil-kt:coil:2.4.0")
 
     // 채팅
-//    implementation("io.github.hannesa2:stomp-android:2.0.5") // 유지보수 포크
+    //    implementation("io.github.hannesa2:stomp-android:2.0.5") // 유지보수 포크
     implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
     // RxJava 2 (+ RxAndroid 2)  ← 꼭 추가
     implementation("io.reactivex.rxjava2:rxjava:2.2.21")

@@ -153,14 +153,14 @@
              />
 
         <!-- 그래프 여백 -->
-        <View
-            android:id="@+id/view_graph_placeholder"
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChart_partners"
             android:layout_width="310dp"
-            android:layout_height="158dp"
+            android:layout_height="138dp"
             android:layout_marginTop="25dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_dashboard_menu_graph_title"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/tv_dashboard_menu_graph_title" />
 
         <!-- 분석 + 예측 문구 영역 -->
         <LinearLayout
@@ -169,11 +169,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="25dp"
-            android:background="@color/assu_box"
+            android:background="@drawable/bg_dashboard_count"
             android:paddingVertical="12dp"
             android:paddingHorizontal="16dp"
             android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/view_graph_placeholder"
+            app:layout_constraintTop_toBottomOf="@id/barChart_partners"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -198,7 +198,7 @@
                 android:gravity="center"
                 android:fontFamily="@font/pretendard_regular"
                 android:textColor="@color/assu_font_sub"
-                android:text="이번달에는 192건 이상일 것으로 예상돼요"
+                android:text="이번달에는 192건 이용했어요."
                 android:textAlignment="center"
                 android:autoLink="none"
                 android:includeFontPadding="false"

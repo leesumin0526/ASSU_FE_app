@@ -1,11 +1,15 @@
 package com.example.assu_fe_app.presentation.common.location
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.PointF
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -17,16 +21,25 @@ import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.UserRole
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.example.assu_fe_app.data.dto.location.ViewportQuery
+import com.example.assu_fe_app.data.dto.partnership.OpenContractArgs
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentLoactionBinding
 import com.example.assu_fe_app.domain.model.location.AdminOnMap
 import com.example.assu_fe_app.domain.model.location.PartnerOnMap
+import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
+import com.example.assu_fe_app.presentation.common.contract.toContractData
 import com.example.assu_fe_app.presentation.common.location.adapter.AdminPartnerLocationAdapter
 import com.example.assu_fe_app.presentation.common.location.adapter.LocationSharedViewModel
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.example.assu_fe_app.ui.location.AdminPartnerLocationViewModel
+import com.example.assu_fe_app.ui.map.MapBridgeViewModel
+import com.example.assu_fe_app.ui.map.MapEvent
+import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.kakao.vectormap.*
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.Label
@@ -41,16 +54,28 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LocationFragment :
     BaseFragment<FragmentLoactionBinding>(R.layout.fragment_loaction) {
-
     private val sharedViewModel: LocationSharedViewModel by activityViewModels()
     private lateinit var adapter: AdminPartnerLocationAdapter
     private var currentItem: LocationAdminPartnerSearchResultItem? = null
+    private val chatVm: ChattingViewModel by activityViewModels()
+    private val vm: AdminPartnerLocationViewModel by viewModels()
+    private val bridgeVm: MapBridgeViewModel by activityViewModels()
 
     private lateinit var mapView: MapView
     private lateinit var kakaoMap: KakaoMap
     private var mapReady = false
 
-    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
+    // KakaoMap 현재위치 라벨
+    private var myLocStyles: LabelStyles? = null
+    private var myLocLabel: Label? = null
+
+    private val partnershipVm: PartnershipViewModel by activityViewModels()
+
+    private var pendingPartnershipId: Long? = null
+    private var contractFallback: OpenContractArgs? = null
+
+    // 마지막으로 성공한 현재 위치(재진입/되돌아가기용 캐시)
+    private var lastMyLatLng: LatLng? = null
 
     private var poiLayer: LabelLayer? = null
     private var partnerStyles: LabelStyles? = null
@@ -59,9 +84,10 @@ class LocationFragment :
     private val labelToPartner = mutableMapOf<Label, PartnerOnMap>()
     private val labelToAdmin   = mutableMapOf<Label, AdminOnMap>()
 
-    private val chatVm: ChattingViewModel by activityViewModels()
-    private val vm: AdminPartnerLocationViewModel by viewModels()
+    // Test
+    // private val SEOUL_CITY_HALL = LatLng.from(37.5665, 126.9780)
 
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
     private val role: UserRole by lazy {
         authTokenLocalStore.getUserRoleEnum() ?: UserRole.ADMIN
     }
@@ -69,16 +95,15 @@ class LocationFragment :
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(requireContext()) }
     private val permLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { _ -> moveToDefaultThenQuery() }
+    ) { _ -> goToMyLocation() }
 
-    private val DEFAULT_LATITUDE = 37.5662952
-    private val DEFAULT_LONGITUDE = 126.9779451
     private val DEFAULT_ZOOM = 17
 
     override fun initView() {
         binding.viewLocationSearchBar.setOnClickListener { navigateToSearch() }
         binding.ivLocationSearchIc.setOnClickListener { navigateToSearch() }
         binding.tvLocationHint.setOnClickListener { navigateToSearch() }
+        binding.ivGoBack.setOnClickListener { goToMyLocation() }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -103,12 +128,28 @@ class LocationFragment :
                         }
                     })
 
+                    val locBmp = vectorToBitmap(R.drawable.ic_present_location, 24)
+                    myLocStyles = map.labelManager?.addLabelStyles(
+                        LabelStyles.from(
+                            LabelStyle.from(locBmp).setAnchorPoint(0.5f, 1.0f)
+                        )
+                    )
+
+                    kakaoMap?.setOnMapClickListener { _: KakaoMap, _: LatLng, _: PointF, _: Poi? ->
+                        // 마커가 아닌 지도 임의 영역을 탭하면 아래 카드와 말풍선 숨김
+                        hideItem()
+                    }
+
+                    kakaoMap?.setOnCameraMoveStartListener { _, _ ->
+                        hideItem()
+                    }
+
                     // 마커 스타일 (벡터 → 비트맵, 크기 24dp)
                     val partnerBmp = vectorToBitmap(R.drawable.ic_marker, 24)
                     partnerStyles = kakaoMap.labelManager?.addLabelStyles(
                         LabelStyles.from(LabelStyle.from(partnerBmp).setAnchorPoint(0.5f, 1.0f))
                     )
-                    val adminBmp = vectorToBitmap(R.drawable.ic_marker, 24)
+                    val adminBmp = vectorToBitmap(R.drawable.ic_partner_location, 24)
                     adminStyles = kakaoMap.labelManager?.addLabelStyles(
                         LabelStyles.from(LabelStyle.from(adminBmp).setAnchorPoint(0.5f, 1.0f))
                     )
@@ -133,8 +174,10 @@ class LocationFragment :
                             }
                         }
                     }
+                    goToMyLocation()
 
-                    moveToDefaultThenQuery()
+                    //Test
+                    //moveCameraAndQuery(SEOUL_CITY_HALL.latitude, SEOUL_CITY_HALL.longitude)
                 }
             }
         )
@@ -157,21 +200,24 @@ class LocationFragment :
                         }
                         is ChattingViewModel.CreateRoomUiState.Fail -> {
                             setCreateLoading(false)
-                            Toast.makeText(requireContext(),
-                                "채팅방 생성 실패(${state.code}) ${state.message ?: ""}",
-                                Toast.LENGTH_SHORT).show()
+                            Log.e(
+                                "CreateRoom",
+                                "채팅방 생성 실패(code=${state.code}) message=${state.message ?: ""}"
+                            )
                         }
                         is ChattingViewModel.CreateRoomUiState.Error -> {
                             setCreateLoading(false)
-                            Toast.makeText(requireContext(),
-                                "오류: ${state.message}", Toast.LENGTH_SHORT).show()
+                            Log.e(
+                                "CreateRoom",
+                                "오류 발생: ${state.message}"
+                            )
                         }
                     }
                 }
             }
         }
 
-        // 목록 상태 수집 + 마커 표시 (지도 준비 안됐으면 스킵)
+        // 목록 상태 수집 + 마커 표시 (지도 준비 안 됐으면 스킵)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 vm.state.collect { s ->
@@ -185,6 +231,43 @@ class LocationFragment :
                             Log.e("UIState", "Fail: ${s.code}, ${s.message}")
                         is AdminPartnerLocationViewModel.UiState.Error ->
                             Log.e("UIState", "Error", s.t)
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                partnershipVm.getPartnershipDetailUiState.collect { s ->
+                    when (s) {
+                        is PartnershipViewModel.PartnershipDetailUiState.Success -> {
+                            val wanted = pendingPartnershipId
+                            if (wanted != null && s.data.partnershipId == wanted) {
+                                val fb = contractFallback
+                                val data = s.data.toContractData(
+                                    partnerNameFallback = fb?.partnerName, // 이름만 보강
+                                    adminNameFallback   = fb?.adminName,
+                                    fallbackStart       = null,            // ← 기간은 응답값 사용
+                                    fallbackEnd         = null
+                                )
+                                PartnershipContractDialogFragment.newInstance(data)
+                                    .show(parentFragmentManager, "PartnershipContractDialog")
+
+                                pendingPartnershipId = null
+                                contractFallback = null
+                            }
+                        }
+                        is PartnershipViewModel.PartnershipDetailUiState.Fail -> {
+                            Log.e("LocationFragment", "계약 상세 실패: ${s.code}, ${s.message}")
+                            pendingPartnershipId = null
+                            contractFallback = null
+                        }
+                        is PartnershipViewModel.PartnershipDetailUiState.Error -> {
+                            Log.e("LocationFragment", "계약 상세 에러: ${s.message}")
+                            pendingPartnershipId = null
+                            contractFallback = null
+                        }
+                        else -> Unit
                     }
                 }
             }
@@ -261,27 +344,79 @@ class LocationFragment :
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                bridgeVm.events.collect { ev ->
+                    when (ev) {
+                        is MapEvent.ShowContract -> {
+                            ev.latitude?.let { lat -> ev.longitude?.let { lng -> moveCameraAndQuery(lat, lng) } }
+                            contractFallback = OpenContractArgs(
+                                partnershipId = ev.partnershipId,
+                                latitude = ev.latitude,
+                                longitude = ev.longitude,
+                                partnerName = ev.partnerName,   // 이벤트에 있다면 사용
+                                adminName   = ev.adminName,
+                                term        = ev.term,
+                                profileUrl  = ev.profileUrl
+                            )
+                            pendingPartnershipId = ev.partnershipId
+                            partnershipVm.getPartnershipDetail(ev.partnershipId)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun navigateToSearch() {
-        startActivity(android.content.Intent(requireContext(), LocationSearchActivity::class.java))
+        val intent = android.content.Intent(requireContext(), LocationSearchActivity::class.java)
+        searchLauncher.launch(intent)
     }
 
     private fun setCreateLoading(loading: Boolean) {
         binding.fvLocationItem.isEnabled = !loading
     }
 
+    @SuppressLint("MissingPermission")
+    private fun goToMyLocation() {
+        val fineGranted   = ContextCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val coarseGranted = ContextCompat.checkSelfPermission(requireContext(), ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+        if (!fineGranted && !coarseGranted) {
+            permLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
+            return
+        }
+
+        // UX 빠르게: 마지막 좌표로 먼저 이동
+        lastMyLatLng?.let { moveCameraAndQuery(it.latitude, it.longitude) }
+
+        fused.lastLocation
+            .addOnSuccessListener { loc ->
+                if (loc != null) {
+                    centerToMyLocation(loc.latitude, loc.longitude)
+                } else {
+                    val cts = CancellationTokenSource()
+                    fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token)
+                        .addOnSuccessListener { cur ->
+                            if (cur != null) centerToMyLocation(cur.latitude, cur.longitude)
+                        }
+                }
+            }
+    }
+
+
     // ===== 카메라 이동 & 조회 =====
     private fun moveCameraAndQuery(lat: Double, lng: Double) {
         if (!mapReady) return
-        kakaoMap.moveCamera(
-            CameraUpdateFactory.newCenterPosition(LatLng.from(lat, lng), DEFAULT_ZOOM)
-        )
+        kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(LatLng.from(lat, lng), DEFAULT_ZOOM))
         requestNearbyFromCurrentViewport()
     }
 
-    private fun moveToDefaultThenQuery() {
-        moveCameraAndQuery(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+    private fun centerToMyLocation(lat: Double, lng: Double) {
+        lastMyLatLng = LatLng.from(lat, lng)
+        showCurrentLocation(lat, lng)
+        moveCameraAndQuery(lat, lng)
     }
 
     private fun requestNearbyFromCurrentViewport() {
@@ -449,4 +584,54 @@ class LocationFragment :
         return bmp
     }
 
+    private fun hideItem() {
+        binding.fvLocationItem.visibility = View.GONE
+    }
+
+    private fun showCurrentLocation(lat: Double, lng: Double) {
+        if (!mapReady || kakaoMap == null) return
+        val styles = myLocStyles ?: return
+        val layer = kakaoMap!!.labelManager?.layer ?: return
+
+        // 이전 현재위치 라벨 제거 후 새로 추가(업데이트 느낌)
+        myLocLabel?.remove()
+        myLocLabel = layer.addLabel(
+            LabelOptions.from(LatLng.from(lat, lng)).setStyles(styles)
+        )
+    }
+
+    private fun showContractDialog(args: OpenContractArgs) {
+        val start = args.term?.split("~")?.getOrNull(0)?.trim().orEmpty()
+        val end   = args.term?.split("~")?.getOrNull(1)?.trim().orEmpty()
+
+        val data = com.example.assu_fe_app.data.dto.partnership.PartnershipContractData(
+            partnerName = args.partnerName ?: "-",
+            adminName   = args.adminName ?: "-",
+            periodStart = start,
+            periodEnd   = end,
+            options     = emptyList() // 지금은 args-only 플로우이므로 옵션은 비움
+        )
+
+        PartnershipContractDialogFragment
+            .newInstance(data)
+            .show(parentFragmentManager, "contractDialog")
+    }
+
+    private val searchLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == android.app.Activity.RESULT_OK) {
+                val args = result.data?.getSerializableExtra("open_contract_args") as? OpenContractArgs
+                    ?: return@registerForActivityResult
+
+                if (args.latitude != null && args.longitude != null) {
+                    moveCameraAndQuery(args.latitude, args.longitude)
+                }
+
+                // ✅ fallback 저장 + 상세조회 호출
+                contractFallback = args
+                pendingPartnershipId = args.partnershipId
+                partnershipVm.getPartnershipDetail(args.partnershipId)
+                Log.d("LocationFragment", "검색 선택: pid=${args.partnershipId}, 상세조회 호출")
+            }
+        }
 }

@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.ChattingMessageItem
 import com.example.assu_fe_app.databinding.ItemChatMineBinding
 import com.example.assu_fe_app.databinding.ItemChatOtherBinding
@@ -84,7 +87,7 @@ class ChattingMessageAdapter
             if (p != null) {
                 when (holder) {
                     is MyMessageViewHolder -> holder.setUnread(p.isRead)
-                    is OtherMessageViewHolder -> holder.setUnread(p.isRead)
+//                    is OtherMessageViewHolder -> holder.setUnread(p.isRead)
                 }
                 return
             }
@@ -123,13 +126,18 @@ class ChattingMessageAdapter
             binding.tvOtherMessage.text = item.message
             binding.tvOtherMessageTime.text = item.sentAt
             // 프로필 이미지 로딩 필요하면 여기에 Glide 등 사용
-        }
-
-        fun setUnread(isRead: Boolean) {
-            binding.tvUnreadBadge.apply {
-                visibility = if (isRead) View.INVISIBLE else View.VISIBLE
-                text = if (isRead) "" else "1"
+            binding.ivRestaurantProfileImage.load(item.profileImageUrl) {
+                placeholder(R.drawable.img_partner) // 여기서 디폴트 처리
+                error(R.drawable.img_partner)
+                transformations(CircleCropTransformation())
             }
         }
+
+//        fun setUnread(isRead: Boolean) {
+//            binding.tvUnreadBadge.apply {
+//                visibility = if (isRead) View.INVISIBLE else View.VISIBLE
+//                text = if (isRead) "" else "1"
+//            }
+//        }
     }
 }

@@ -30,16 +30,19 @@ import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.assu_fe_app.domain.model.admin.RecommendedPartnerModel
+import com.example.assu_fe_app.ui.admin.PartnerRecommendViewModel
+
 
 
 @AndroidEntryPoint
 class AdminHomeFragment :
     BaseFragment<FragmentAdminHomeBinding>(R.layout.fragment_admin_home) {
     private val vm: HomeViewModel by viewModels()
-
     private val chattingViewModel: ChattingViewModel by viewModels()
-
     private val partnershipViewModel: PartnershipViewModel by viewModels()
+    private val partnerRecommendViewModel: PartnerRecommendViewModel by viewModels()
+    private var currentRecommendedPartner: RecommendedPartnerModel? = null
 
     @Inject
     lateinit var authTokenLocalStore: AuthTokenLocalStore
@@ -111,9 +114,9 @@ class AdminHomeFragment :
 
                             if(data.isEmpty()) {
                                 binding.btnAdminHomeViewAll.visibility = View.INVISIBLE
-                                binding.tvNoPartnerList.visibility = View.VISIBLE
+                                binding.llNoPartnerList.visibility = View.VISIBLE
                             } else {
-                                binding.tvNoPartnerList.visibility = View.GONE
+                                binding.llNoPartnerList.visibility = View.GONE
                             }
 
                             val firstItem = data.getOrNull(0)
@@ -173,12 +176,28 @@ class AdminHomeFragment :
                 }
             }
         }
+        // 추천 파트너 상태만 추가
+        viewLifecycleOwner.lifecycleScope.launch {
+            partnerRecommendViewModel.recommendState.collect { state ->
+                when (state) {
+                    is PartnerRecommendViewModel.RecommendUiState.Success -> {
+                        updateRecommendCard(state.partner)
+                        currentRecommendedPartner = state.partner
+                    }
+                    is PartnerRecommendViewModel.RecommendUiState.Error -> {
+                        // 에러 시 기본값 유지
+                    }
+                    else -> Unit
+                }
+    }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         vm.refreshBell()
         partnershipViewModel.getProposalPartnerList(isAll = false) // true면 전체
+        partnerRecommendViewModel.refreshPartner()
     }
 
     override fun initView() {
@@ -194,8 +213,9 @@ class AdminHomeFragment :
 
         // 🔽 전체 조회 버튼
         binding.btnAdminHomeViewAll.setOnClickListener {
-            // ✅ 전체 조회 API 호출
-            partnershipViewModel.getProposalPartnerList(isAll = true)
+            //TODO 원래 intent로 보냄
+            val intent = Intent(requireContext(), AdminHomeViewPartnerListActivity::class.java)
+            startActivity(intent)
         }
 
         binding.ivAdminHomeNotification.setOnClickListener {
@@ -220,13 +240,24 @@ class AdminHomeFragment :
         binding.btnRecommendInquiry.setOnClickListener {
             val req = CreateChatRoomRequestDto(
                 //TODO : 유저 정보 받아오기
-                adminId = 1L,
-                partnerId = 5L
+                adminId = authTokenLocalStore.getUserId(),
+                //TODO: 성주 api 연결 후 수정하기
+                partnerId = 11L
             )
             chattingViewModel.createRoom(req)
-
+        }
+        binding.btnRecommendInquiry.setOnClickListener {
+            currentRecommendedPartner?.let { partner ->
+                val req = CreateChatRoomRequestDto(
+                    adminId = authTokenLocalStore.getUserId() ?: 1L,
+                    partnerId = partner.partnerId
+                )
+                chattingViewModel.createRoom(req)
+            }
         }
     }
+
+    private fun updateRecommendCard(partner: RecommendedPartnerModel) {}
 
     private fun bindAdminItem(
         bindingItem: ViewGroup,
@@ -235,7 +266,7 @@ class AdminHomeFragment :
         periodView: TextView,
         item: GetProposalPartnerListModel
     ) {
-        titleView.text = item.partnerId.toString() // TODO: 실제 가맹점명 필드 있으면 교체
+        titleView.text = item.storeName
         periodView.text = "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
 
         // 옵션 설명 만들기
@@ -259,7 +290,8 @@ class AdminHomeFragment :
         bindingItem.setOnClickListener {
             val contractData = PartnershipContractData(
 //                partnerName = item.partnerName ?: item.partnerId.toString(),
-                partnerName = item.partnerId.toString(),
+                //TODO: 이름 바꾸기
+                partnerName = item.storeName,
                 adminName = authTokenLocalStore.getUserName() ?: "관리자",
                 options = item.options.map { opt ->
                     when (opt.optionType) {

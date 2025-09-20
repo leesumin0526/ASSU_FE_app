@@ -137,6 +137,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <ImageView
+            android:id="@+id/iv_go_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_map_now"
+            app:layout_constraintTop_toBottomOf="@+id/view_location_search_mg4"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fv_location_item"
             android:name="com.example.assu_fe_app.presentation.common.location.LocationItemFragment"

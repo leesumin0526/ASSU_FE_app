@@ -62,17 +62,8 @@ class LocationSearchActivity :
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
 
-
-                Log.d("LocationSearchActivity", "userRole : ${searchViewModel.userRole}")
                 val keyword = keyword.text.toString().trim()
-
-                // 역할별로 분리
-                if(searchViewModel.userRole.equals("ADMIN")){
-                    searchViewModel.searchPartners(keyword)
-                } else if (searchViewModel.userRole.equals("PARTNER")){
-                    Log.d("LocationSearchActivity", "Partner 기준 Admin 찾기 함수로 연결됩니다. ")
-                    searchViewModel.searchAdmins(keyword)
-                }
+                searchViewModel.search(keyword)
                 hideKeyboard()
                 binding.fvLocationSearchRank.visibility = android.view.View.INVISIBLE
                 binding.fvLocationSearchSuccess.visibility = android.view.View.VISIBLE
