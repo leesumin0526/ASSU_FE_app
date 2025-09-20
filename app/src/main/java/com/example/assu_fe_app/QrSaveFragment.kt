@@ -91,7 +91,7 @@ class QrSaveFragment : Fragment() {
     }
 
     private fun buildQrContent(sessionId: Long, adminId: Long): String {
-        return "assu://certify?sid=$sessionId&aid=$adminId"
+        return "assu://certify?sessionId=$sessionId&adminId=$adminId"
     }
 
     private fun createQrBitmap(

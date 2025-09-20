@@ -16,11 +16,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.local.TokenProvider
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.ActivityUserQrVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
-import com.example.assu_fe_app.presentation.user.home.UserTableNumberSelectFragment
 import com.example.assu_fe_app.ui.certification.CertifyViewModel
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
@@ -41,7 +39,7 @@ class UserQRVerifyActivity :
     private var qrCodeData: String? = null
 
     @Inject
-    lateinit var tokenProvider : TokenProvider
+    lateinit var tokenProvider : AuthTokenLocalStore
     private val certifyViewModel: CertifyViewModel by viewModels()
 
     override fun initView() {
@@ -63,19 +61,12 @@ class UserQRVerifyActivity :
                 // QR 인식이 성공했을 때만 다음으로 넘어감
                 Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
 
+                Log.d("UserQRVerifyActivity", "showNextFragment() 가 호출됩니다. ")
                 // 다음 프래그먼트로 전환
                 showNextFragment()
             }
         }
 
-        binding.tvConfirm.setOnClickListener { // 텍스트뷰 클릭 리스너
-            if (qrCodeScannedSuccessfully) {
-                Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
-
-                // 다음 프래그먼트로 전환
-                showNextFragment()
-            }
-        }
 
         binding.tvUniversity.text = "숭실대학교 학생"
         binding.tvDepartment.text = "IT대학"
@@ -97,7 +88,6 @@ class UserQRVerifyActivity :
         qrCodeScannedSuccessfully = true
     }
 
-    // 에뮬레이터 테스트 시 임의로 주석처리 TODO 나중에 주석해제
     private fun checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED) {
@@ -205,6 +195,7 @@ class UserQRVerifyActivity :
     }
 
     private fun showNextFragment() {
+        Log.d("UserQRVerifyActivity", "showNextFragment() 가 호출되었습니다.")
         // QR 코드 데이터 파싱 수정
         val result = qrCodeData?.let { data ->
             when {
@@ -227,6 +218,7 @@ class UserQRVerifyActivity :
         when (type) {
             "storeId" -> {
                 // 대표자 역할: 매장 선택으로 이동
+                Log.d("UserQRVerifyActivity"," 대표자 역할인 것을 확인하였습니다.")
                 handleStoreOwnerFlow(idValue as Long)
             }
             "sessionIdAndAdminId" -> {
@@ -260,6 +252,7 @@ class UserQRVerifyActivity :
 
     // 대표자 플로우: 매장 정보로 이동 (수정 없음)
     private fun handleStoreOwnerFlow(storeId: Long) {
+        Log.d("UserQRVerifyActivity", "곧 테이블 화면으로 전환됩니다. ")
         val fragment = UserTableNumberSelectFragment().apply {
             arguments = Bundle().apply {
                 putLong("storeId", storeId)
@@ -277,7 +270,6 @@ class UserQRVerifyActivity :
         // 로딩 상태 표시
         showCertificationLoadingState()
         // TODO : WebSocket 연결 및 인증 요청 - 임시 주석 처리
-//        certifyViewModel.subscribeToProgress(sessionId, authToken) // TODO 이거는 인증자 과정에서 필요없는데 테스트 용임
 //        certifyViewModel.connectAndCertify(sessionId, adminId)
         certifyViewModel.test_subscribeAndSendRequest(sessionId, adminId)
 
@@ -418,10 +410,6 @@ class UserQRVerifyActivity :
         Toast.makeText(this, "유효하지 않은 QR 코드입니다. 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
         finish()
         startActivity(intent)
-    }
-
-    private fun getAuthToken(): String? {
-        return tokenProvider.bearer()
     }
 
     // Activity 종료 시 WebSocket 연결 해제

@@ -26,9 +26,9 @@ object SocketModule {
     @Provides
     @Singleton
     fun provideCertificationClient(
-        tokenProvider : AccessTokenProvider
+        accessTokenProvider : AccessTokenProvider
     ) : CertificationWebSocketClient {
-        val wsUrl = "ws://10.0.2.2:8080/ws"
-        return CertificationWebSocketClient(wsUrl = wsUrl, tokenProvider = tokenProvider)
+        val wsUrl = "ws://10.21.36.179:8080/ws-certify"
+        return CertificationWebSocketClient(wsUrl = wsUrl, tokenProvider = accessTokenProvider)
     }
 }

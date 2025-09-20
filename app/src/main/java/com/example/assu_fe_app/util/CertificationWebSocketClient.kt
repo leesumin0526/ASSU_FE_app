@@ -2,7 +2,8 @@ package com.example.assu_fe_app.util
 
 import android.util.Log
 import com.example.assu_fe_app.data.dto.certification.request.GroupSessionRequest
-import com.example.assu_fe_app.data.local.TokenProvider
+import com.example.assu_fe_app.data.local.AccessTokenProvider
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.reactivex.disposables.CompositeDisposable
@@ -16,7 +17,7 @@ import java.util.Locale
 
 class CertificationWebSocketClient(
     private val wsUrl: String,
-    private val tokenProvider: TokenProvider
+    private val tokenProvider: AccessTokenProvider
 ) {
     private lateinit var stompClient: StompClient
     private val disposables = CompositeDisposable()
@@ -178,7 +179,7 @@ class CertificationWebSocketClient(
         if (reconnectHandler == null) {
             reconnectHandler = android.os.Handler(android.os.Looper.getMainLooper())
         }
-        val delayMs = (1000L * (1 shl retryCount)).coerceAtMost(15_000L)
+        val delayMs = (3000L * (1 shl retryCount)).coerceAtMost(15_000L)
 
         reconnectHandler?.postDelayed({
             connectAndSubscribe(sessionId, onConnected, onCertificationMessage, onError)

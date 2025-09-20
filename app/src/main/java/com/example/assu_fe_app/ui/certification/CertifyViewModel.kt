@@ -8,7 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.dto.certification.response.CertificationProgressDto
 import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
-import com.example.assu_fe_app.data.local.TokenProvider
+import com.example.assu_fe_app.data.local.AccessTokenProvider
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.domain.usecase.usage.SaveUsageUseCase
 import com.example.assu_fe_app.util.CertificationWebSocketClient
 import com.example.assu_fe_app.util.RetrofitResult
@@ -20,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CertifyViewModel @Inject constructor(
     private val saveUseCase: SaveUsageUseCase,
-    private val tokenProvider: TokenProvider
+    private val tokenProvider: AccessTokenProvider
 ) : ViewModel() {
 
     // LiveData 정의 (기존과 동일)
@@ -48,6 +49,8 @@ class CertifyViewModel @Inject constructor(
         DISCONNECTED, CONNECTING, CONNECTED, FAILED
     }
 
+    private val wsUrl = "ws://10.21.36.179:8080/ws-certify"
+
     /**
      * ✅ [복원] 대표자용: 세션 진행 상황을 구독만 하는 함수
      */
@@ -57,7 +60,7 @@ class CertifyViewModel @Inject constructor(
         stompClient?.disconnect() // 이전 연결 정리
 
         stompClient = CertificationWebSocketClient(
-            wsUrl = BuildConfig.CERTIFICATION_URL,
+            wsUrl = wsUrl,
             tokenProvider = tokenProvider
         )
 
@@ -82,7 +85,7 @@ class CertifyViewModel @Inject constructor(
     fun connectAndCertify(sessionId: Long, adminId: Long) {
         Log.d("CertViewModel_CERTIFY", "🚀 인증자: 요청 시작 (Session: $sessionId)")
         val senderClient = CertificationWebSocketClient(
-            wsUrl = BuildConfig.CERTIFICATION_URL,
+            wsUrl = wsUrl,
             tokenProvider = tokenProvider
         )
 
@@ -110,7 +113,7 @@ class CertifyViewModel @Inject constructor(
         stompClient?.disconnect() // 이전 연결 정리
 
         stompClient = CertificationWebSocketClient(
-            wsUrl = BuildConfig.CERTIFICATION_URL,
+            wsUrl = wsUrl,
             tokenProvider = tokenProvider
         )
 

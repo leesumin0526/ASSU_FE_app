@@ -29,6 +29,7 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -40,6 +41,7 @@ class AdminHomeFragment :
 
     private val partnershipViewModel: PartnershipViewModel by viewModels()
 
+    @Inject
     lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initObserver() {
