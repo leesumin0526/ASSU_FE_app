@@ -28,6 +28,7 @@ import com.example.assu_fe_app.presentation.common.notification.NotificationActi
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
 
@@ -35,12 +36,9 @@ import kotlinx.coroutines.launch
 class AdminHomeFragment :
     BaseFragment<FragmentAdminHomeBinding>(R.layout.fragment_admin_home) {
     private val vm: HomeViewModel by viewModels()
-
     private val chattingViewModel: ChattingViewModel by viewModels()
-
     private val partnershipViewModel: PartnershipViewModel by viewModels()
-
-    lateinit var authTokenLocalStore: AuthTokenLocalStore
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     override fun initObserver() {
         // 채팅방 생성 상태 수집
