@@ -104,7 +104,9 @@ class CertifyViewModel @Inject constructor(
         _sessionId.value = sessionId
 
         stompClient = CertificationWebSocketClient(
-            serverUrl = BuildConfig.CERTIFICATION_URL,
+            // TODO: 원래대로 수정하기
+            serverUrl = BuildConfig.BASE_URL,
+//            serverUrl = BuildConfig.CERTIFICATION_URL,
             authToken = authToken,
             listener = object : CertificationWebSocketClient.StompListener {
                 override fun onConnected() {
@@ -148,7 +150,9 @@ class CertifyViewModel @Inject constructor(
         stompClient?.disconnect()
 
         stompClient = CertificationWebSocketClient(
-            serverUrl = BuildConfig.CERTIFICATION_URL,
+            // TODO: 원래대로 수정하기
+//            serverUrl = BuildConfig.CERTIFICATION_URL
+            serverUrl = BuildConfig.BASE_URL,
             authToken = authToken,
             listener = object : CertificationWebSocketClient.StompListener {
                 override fun onConnected() {

@@ -5,7 +5,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/assu_background">
+        android:background="@color/assu_box">
 
         <!-- 상단 마진 -->
         <View
@@ -128,12 +128,45 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/ll_no_admin_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_assu_background_radius_8"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tv_no_partner_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="아직 등록된 제휴 업체가 없어요!"
+                    android:visibility="visible"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:textColor="@color/assu_font_main"
+                    android:textSize="16sp"
+                    android:paddingTop="20dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="지금 다른 업체와의 제휴를 시작해보세요!"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:fontFamily="@font/pretendard_regular"
+                    android:textColor="@color/assu_font_sub"
+                    android:textSize="14sp"
+                    android:paddingBottom="20dp"/>
+            </LinearLayout>
+
             <!-- 제휴업체 항목 2개 (item_partner_list.xml 포함) -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/partner_home_list_item1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_home_list_item"
+                android:background="@drawable/bg_assu_background_radius_8"
                 android:paddingVertical="20dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -233,7 +266,7 @@
                 android:id="@+id/partner_home_list_item2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_home_list_item"
+                android:background="@drawable/bg_assu_background_radius_8"
                 android:paddingVertical="20dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout

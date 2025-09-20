@@ -12,25 +12,30 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
+import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
+import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
+import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
 import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentPartnerHomeBinding
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
+import com.example.assu_fe_app.presentation.admin.home.AdminHomeViewPartnerListActivity
 import com.example.assu_fe_app.domain.model.partner.RecommendedAdminModel
 import com.example.assu_fe_app.presentation.admin.home.HomeViewModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
-import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 import com.example.assu_fe_app.presentation.common.notification.NotificationActivity
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.example.assu_fe_app.ui.partner.AdminRecommendViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import jakarta.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.getValue
+import kotlin.jvm.java
 
 @AndroidEntryPoint
 class PartnerHomeFragment :
@@ -57,24 +62,44 @@ class PartnerHomeFragment :
                         is ChattingViewModel.CreateRoomUiState.Success -> {
                             binding.viewPartnerHomeCardBg.isEnabled = true
                             val roomId = state.data.roomId
-                            val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
-                                putExtra("roomId", roomId)
-                            }
+
+                            val intent =
+                                Intent(requireContext(), ChattingActivity::class.java).apply {
+                                    putExtra("roomId", roomId)
+                                }
+
                             startActivity(intent)
-                            Toast.makeText(requireContext(), "채팅방 생성 성공", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                "채팅방 생성 성공: ${state}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            // 한 번 처리 후 상태 리셋
                             chattingViewModel.resetCreateState()
                         }
 
                         is ChattingViewModel.CreateRoomUiState.Fail -> {
                             binding.viewPartnerHomeCardBg.isEnabled = true
-                            Toast.makeText(requireContext(), "채팅방 생성 실패: ${state.code}", Toast.LENGTH_SHORT).show()
-                            Log.e("PartnerHomeFragment", "Fail code=${state.code}, msg=${state.message}")
+                            Toast.makeText(
+                                requireContext(),
+                                "채팅방 생성 실패: ${state.code}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            Log.e(
+                                "AdminHomeFragment",
+                                "Fail code=${state.code}, msg=${state.message}"
+                            )
                             chattingViewModel.resetCreateState()
                         }
 
                         is ChattingViewModel.CreateRoomUiState.Error -> {
                             binding.viewPartnerHomeCardBg.isEnabled = true
-                            Toast.makeText(requireContext(), "에러: ${state.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                "에러: ${state.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             chattingViewModel.resetCreateState()
                         }
 
@@ -94,6 +119,9 @@ class PartnerHomeFragment :
 
                             if(data.isEmpty()) {
                                 binding.btnPartnerHomeViewAll.visibility = View.INVISIBLE
+                                binding.llNoAdminList.visibility = View.VISIBLE
+                            } else {
+                                binding.llNoAdminList.visibility = View.GONE
                             }
 
                             val firstItem = data.getOrNull(0)
@@ -122,6 +150,7 @@ class PartnerHomeFragment :
                                 binding.partnerHomeListItem2.isVisible = false
                             }
 
+                            // 전체보기 버튼은 데이터가 1건 이상일 때만 활성화
                             binding.btnPartnerHomeViewAll.isEnabled = data.isNotEmpty()
                         }
 
@@ -173,6 +202,7 @@ class PartnerHomeFragment :
     override fun onResume() {
         super.onResume()
         vm.refreshBell()
+        partnershipViewModel.getProposalAdminList(isAll = false)
         adminRecommendViewModel.refreshAdmins()
     }
 
@@ -187,7 +217,8 @@ class PartnerHomeFragment :
         }
 
         binding.btnPartnerHomeViewAll.setOnClickListener { view ->
-            Navigation.findNavController(view).navigate(R.id.action_partner_home_to_partner_view_admin_list)
+            val intent = Intent(requireContext(), PartnerHomeViewAdminListActivity::class.java)
+            startActivity(intent)
         }
 
         binding.ivPartnerHomeNotification.setOnClickListener {
@@ -209,7 +240,7 @@ class PartnerHomeFragment :
             val req = CreateChatRoomRequestDto(
                 //TODO : 유저 정보 받아오기
                 adminId = 1L,
-                partnerId = 5L
+                partnerId = authTokenLocalStore.getUserId()
             )
             chattingViewModel.createRoom(req)
         }
@@ -244,7 +275,7 @@ class PartnerHomeFragment :
         periodView: TextView,
         item: GetProposalAdminListModel
     ) {
-        titleView.text = item.adminId.toString()
+        titleView.text = item.adminName
         periodView.text = "${item.partnershipPeriodStart} ~ ${item.partnershipPeriodEnd}"
 
         // 옵션 설명 만들기
@@ -266,13 +297,43 @@ class PartnerHomeFragment :
 
         bindingItem.visibility = View.VISIBLE
         bindingItem.setOnClickListener {
-            val dialog = PartnershipContractDialogFragment(
-//                item.options.map { opt ->
-//                    // 여기서도 OptionType/ CriterionType에 따라 적절한 PartnershipContractItem 변환 가능
-//                    PartnershipContractItem.Service.ByPeople(opt.people, opt.category)
-//                }
+            val contractData = PartnershipContractData(
+//                partnerName = item.partnerName ?: item.partnerId.toString(),
+                //TODO: 이름 바꾸기
+                partnerName = authTokenLocalStore.getUserName(),
+                adminName = item.adminName ?: "관리자",
+                options = item.options.map { opt ->
+                    when (opt.optionType) {
+                        OptionType.SERVICE -> when (opt.criterionType) {
+                            CriterionType.HEADCOUNT -> PartnershipContractItem.Service.ByPeople(
+                                opt.people,
+                                opt.goods.firstOrNull()?.goodsName ?: "상품"
+                            )
+
+                            CriterionType.PRICE -> PartnershipContractItem.Service.ByAmount(
+                                (opt.cost ?: 0L).toInt(),
+                                opt.goods.firstOrNull()?.goodsName ?: "상품"
+                            )
+                        }
+
+                        OptionType.DISCOUNT -> when (opt.criterionType) {
+                            CriterionType.HEADCOUNT -> PartnershipContractItem.Discount.ByPeople(
+                                opt.people,
+                                (opt.discountRate ?: 0L).toInt()
+                            )
+
+                            CriterionType.PRICE -> PartnershipContractItem.Discount.ByAmount(
+                                (opt.cost ?: 0L).toInt(),
+                                (opt.discountRate ?: 0L).toInt()
+                            )
+                        }
+                    }
+                },
+                periodStart = item.partnershipPeriodStart.toString(),
+                periodEnd = item.partnershipPeriodEnd.toString()
             )
-            dialog.show(parentFragmentManager, "PartnershipContentDialog")
+            val dialog = PartnershipContractDialogFragment.newInstance(contractData)
+            dialog.show(parentFragmentManager, "PartnershipContractDialog")
         }
     }
 

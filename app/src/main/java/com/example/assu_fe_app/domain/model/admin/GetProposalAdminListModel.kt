@@ -10,5 +10,6 @@ data class GetProposalAdminListModel(
     val adminId: Long,
     val partnerId: Long,
     val storeId: Long,
+    val adminName: String,
     val options: List<PartnershipOptionModel>
 )
