@@ -15,7 +15,7 @@
 
             <!-- 상단 타이틀 -->
             <TextView
-                android:id="@+id/tv_dashboard_title"
+                android:id="@+id/tv_partner_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="41dp"
@@ -36,7 +36,7 @@
                 android:textColor="@color/assu_font_main"
                 android:textSize="22sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_dashboard_title" />
+                app:layout_constraintTop_toBottomOf="@id/tv_partner_name" />
 
             <!-- 메뉴별 분석 그래프 제목 -->
             <TextView

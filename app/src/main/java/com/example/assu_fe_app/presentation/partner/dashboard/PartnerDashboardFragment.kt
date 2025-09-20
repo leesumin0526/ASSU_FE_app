@@ -21,9 +21,11 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import androidx.core.graphics.toColorInt
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.domain.model.dashboard.PartnerDashboardModel
 import com.example.assu_fe_app.domain.model.dashboard.PopularStoreModel
 import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -32,7 +34,18 @@ class PartnerDashboardFragment :
 
     private val viewModel: PartnerDashboardViewModel by viewModels()
 
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
+
     override fun initObserver() {
+        val userName = authTokenLocalStore.getUserName() ?: "사용자"
+
+        binding.tvPartnerName.text = if (userName.isNotEmpty()) {
+            "${userName}"
+        } else {
+            "안녕하세요, 사용자님!"
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.dashboardState.collect { state ->
                 when (state) {
@@ -72,18 +85,34 @@ class PartnerDashboardFragment :
     }
 
     private fun setupUI(data: PartnerDashboardModel) {
-        // 상단 정보 설정
-        binding.tvDashboardTitle.text = data.storeInfo.storeName
         binding.tvGraphUpdateDateAndTime.text = getCurrentDateString()
         binding.tvTodayUpdateDateAndTime.text = getCurrentDateString()
 
-        // 차트 설정
-        setupPartnershipLineChart(data.getRankingTrend())
-        setupClientBarChart(data.getUsageTrend())
-        setupRankingGrid(data.todayBest)
+        // 차트 설정 - 하드코딩된 데이터 사용
+        // setupPartnershipLineChart(data.getRankingTrend())
+        // setupClientBarChart(data.getUsageTrend())
+        // setupRankingGrid(data.todayBest)
+
+        setupPartnershipLineChart(listOf(5L, 3L, 7L, 2L, 4L, 1L)) // 하드코딩된 순위 데이터
+        setupClientBarChart(listOf(120L, 150L, 180L, 220L, 195L, 250L)) // 하드코딩된 사용량 데이터
+        setupRankingGrid(createHardcodedPopularStores()) // 하드코딩된 인기매장 데이터
 
         // 분석 텍스트 초기 설정
         updateAnalysisText()
+    }
+
+    // 하드코딩된 인기매장 데이터 생성 (숭실대 앞 가게들)
+    private fun createHardcodedPopularStores(): List<PopularStoreModel> {
+        return listOf(
+            PopularStoreModel(rank = 1, storeName = "스타벅스", isHighlight = true),
+            PopularStoreModel(rank = 5, storeName = "먹돼지", isHighlight = false),
+            PopularStoreModel(rank = 2, storeName = "역전할머니맥주", isHighlight = true),
+            PopularStoreModel(rank = 6, storeName = "청운음식점", isHighlight = false),
+            PopularStoreModel(rank = 3, storeName = "커피나무", isHighlight = true),
+            PopularStoreModel(rank = 7, storeName = "샹츠마라", isHighlight = false),
+            PopularStoreModel(rank = 4, storeName = "지지고", isHighlight = false),
+            PopularStoreModel(rank = 8, storeName = "상도로 3가", isHighlight = false)
+        )
     }
 
     private fun setupPartnershipLineChart(rankings: List<Long>) {
@@ -106,7 +135,17 @@ class PartnerDashboardFragment :
         dataSet.valueTextSize = 10f
         dataSet.setDrawCircleHole(true)
         dataSet.circleHoleColor = Color.WHITE
-        dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.assu_main))
+
+        // 마지막 노드만 빨간색, 나머지는 메인 색상
+        val circleColors = arrayListOf<Int>()
+        for (i in 0 until entries.size) {
+            if (i == entries.size - 1) {
+                circleColors.add(Color.RED) // 마지막 노드 빨간색
+            } else {
+                circleColors.add(ContextCompat.getColor(requireContext(), R.color.assu_main))
+            }
+        }
+        dataSet.circleColors = circleColors
 
         // 값 표시를 정수로 설정
         dataSet.valueFormatter = object : ValueFormatter() {
@@ -115,7 +154,34 @@ class PartnerDashboardFragment :
             }
         }
 
-        val lineData = LineData(dataSet)
+        // 다중 색상 라인을 위해 여러 데이터셋 생성
+        val dataSets = arrayListOf<LineDataSet>()
+
+        for (i in 0 until entries.size - 1) {
+            val segmentEntries = arrayListOf<Entry>()
+            segmentEntries.add(entries[i])
+            segmentEntries.add(entries[i + 1])
+
+            val segmentDataSet = LineDataSet(segmentEntries, "")
+            segmentDataSet.setDrawCircles(false)
+            segmentDataSet.setDrawValues(false)
+            segmentDataSet.lineWidth = 3f
+
+            if (i == entries.size - 2) {
+                segmentDataSet.color = Color.RED // 마지막 선분 빨간색
+            } else {
+                segmentDataSet.color = ContextCompat.getColor(requireContext(), R.color.assu_main)
+            }
+
+            dataSets.add(segmentDataSet)
+        }
+
+        // 원래 데이터셋 (노드용)
+        dataSet.setDrawCircles(true)
+        dataSet.color = Color.TRANSPARENT // 라인은 투명하게 (세그먼트로 대체)
+        dataSets.add(0, dataSet) // 맨 앞에 추가해서 노드가 위에 그려지도록
+
+        val lineData = LineData(dataSets.map { it as com.github.mikephil.charting.interfaces.datasets.ILineDataSet })
         lineChart.data = lineData
 
         // 차트 기본 설정
@@ -224,11 +290,13 @@ class PartnerDashboardFragment :
         val gridLayout = binding.gridRanking
         gridLayout.removeAllViews()
 
+        // 순서대로 추가하면 GridLayout이 2열로 설정되어 있어서 자동으로 1-5, 2-6, 3-7, 4-8 배치
         popularStores.take(8).forEach { store ->
             val itemView = createRankingItem(store)
             gridLayout.addView(itemView)
         }
     }
+
 
     private fun createRankingItem(store: PopularStoreModel): LinearLayout {
         val context = requireContext()
@@ -239,7 +307,7 @@ class PartnerDashboardFragment :
                 width = 0
                 height = ViewGroup.LayoutParams.WRAP_CONTENT
                 columnSpec = androidx.gridlayout.widget.GridLayout.spec(androidx.gridlayout.widget.GridLayout.UNDEFINED, 1f)
-                setMargins(0, 0, 0, 12.dpToPx())
+                setMargins(0, 0, 0, (12 * resources.displayMetrics.density).toInt())
             }
         }
 
@@ -261,7 +329,7 @@ class PartnerDashboardFragment :
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                marginStart = 8.dpToPx()
+                marginStart = (8 * resources.displayMetrics.density).toInt()
             }
         }
 
@@ -272,8 +340,14 @@ class PartnerDashboardFragment :
     }
 
     private fun updateAnalysisText() {
-        val analysisText = viewModel.getAnalysisText()
-        val usageCount = viewModel.getSelectedWeekUsage()
+        // 하드코딩된 막대그래프 데이터
+        val hardcodedUsageData = listOf(120L, 150L, 180L, 220L, 195L, 250L)
+
+        // 현재 선택된 주차의 사용량 (기본값: 마지막 주차)
+        val selectedWeekIndex = viewModel.selectedWeekIndex.value ?: (hardcodedUsageData.size - 1)
+        val usageCount = hardcodedUsageData.getOrNull(selectedWeekIndex) ?: hardcodedUsageData.last()
+
+        val analysisText = "이번 주에 숭실대학교 학생\n${usageCount}명이 매장에서 제휴 서비스를 이용했어요"
         val highlightText = "${usageCount}명"
 
         setClientAnalysisText(analysisText, highlightText)
@@ -311,9 +385,5 @@ class PartnerDashboardFragment :
     private fun showError(message: String) {
         // 에러 메시지 표시
         android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_SHORT).show()
-    }
-
-    private fun Int.dpToPx(): Int {
-        return (this * resources.displayMetrics.density).toInt()
     }
 }

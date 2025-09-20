@@ -295,7 +295,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         val roomId = intent.getLongExtra("roomId", -1L)
         val opponentId = intent.getLongExtra("opponentId",-1L)
         if (roomId <= 0L) {
-            Toast.makeText(this, "유효하지 않은 채팅방입니다", Toast.LENGTH_SHORT).show()
+            Log.e("ChatActivity", "유효하지 않은 채팅방입니다. roomId: $roomId")
             finish()
             return
         }
