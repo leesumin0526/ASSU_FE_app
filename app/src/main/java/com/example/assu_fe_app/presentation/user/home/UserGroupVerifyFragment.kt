@@ -189,11 +189,11 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
 
     private fun onCertificationCompleted() {
         // 모든 버튼 활성화
-        buttons.forEach {
-            it.background = resources.getDrawable(R.drawable.btn_basic_selected, null)
+        buttons.forEach { button ->
+            val imageView = button as ImageView
+            imageView.setImageResource(R.drawable.ic_group_verified)
+            imageView.background = null // 배경 제거
         }
-
-
         enableCompleteButton()
 
         // 완료 상태 UI 업데이트
