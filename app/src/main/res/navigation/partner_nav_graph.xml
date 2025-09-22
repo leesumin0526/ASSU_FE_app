@@ -77,7 +77,6 @@
         tools:layout="@layout/fragment_user_customer_service" />
 
 
-
     <!-- 제휴업체 알림설정 -->
     <fragment
         android:id="@+id/partnerMypageAlarmFragment"
@@ -155,4 +154,19 @@
     <fragment
         android:id="@+id/chattingSentProposalFragment"
         android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingSentProposalFragment" />
+
+    <fragment
+        android:id="@+id/proposalModifyFragment"
+        android:name="com.example.assu_fe_app.ProposalModifyFragment"
+        tools:layout="@layout/fragment_proposal_modify">
+
+        <argument
+            android:name="paperId"
+            app:argType="long"/>
+
+        <argument
+            android:name="viewMode"
+            app:argType="com.example.assu_fe_app.presentation.common.contract.ViewMode"/>
+
+    </fragment>
 </navigation>

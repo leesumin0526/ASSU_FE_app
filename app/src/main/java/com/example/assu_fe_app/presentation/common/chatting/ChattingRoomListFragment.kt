@@ -12,7 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentChattingListBinding
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.layout.fragment_chatting_list){
 
     private val viewModel: ChattingViewModel by viewModels()
-    @Inject lateinit var tokenManager: TokenManager
+    @Inject lateinit var tokenManager: AuthTokenLocalStore
 
     // 클릭 시 액션 결정
     private val adapter by lazy {

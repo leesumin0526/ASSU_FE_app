@@ -53,8 +53,8 @@ class PartnershipViewModel @Inject constructor(
     val partnerName = MutableStateFlow("")
     val adminName = MutableStateFlow("")
 
-    private var paperId: Long = -1L
-    private var partnerId: Long = -1L
+    var paperId: Long = -1L
+    var partnerId: Long = -1L
 
     private val _benefitItems = MutableStateFlow<List<BenefitItem>>(emptyList())
     val benefitItems: StateFlow<List<BenefitItem>> = _benefitItems.asStateFlow()

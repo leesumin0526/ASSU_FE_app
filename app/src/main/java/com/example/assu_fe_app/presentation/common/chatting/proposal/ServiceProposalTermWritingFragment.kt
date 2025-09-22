@@ -1,6 +1,7 @@
 package com.example.assu_fe_app.presentation.common.chatting.proposal
 
 import android.content.res.ColorStateList
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -27,10 +28,17 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ServiceProposalTermWritingFragment
     : BaseFragment<FragmentServiceProposalTermWritingBinding>(R.layout.fragment_service_proposal_term_writing) {
-
     private val viewModel: PartnershipViewModel by activityViewModels()
 
+    private var isEditMode: Boolean = false
+
     override fun initObserver() {
+        // ✅ arguments에서 수정 모드 여부 확인
+        arguments?.let { bundle ->
+            isEditMode = bundle.getBoolean("isEditMode", false)
+            Log.d("ServiceProposalTermWritingFragment", "Edit mode: $isEditMode")
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
 
@@ -53,25 +61,31 @@ class ServiceProposalTermWritingFragment
                                 // TODO: 로딩 인디케이터 표시
                             }
                             is WritePartnershipUiState.Success -> {
-                                // ✅ API 호출이 성공했을 때만 화면을 이동합니다.
-                                parentFragmentManager.beginTransaction()
-                                    .replace(R.id.chatting_fragment_container, ChattingSentProposalFragment())
-                                    .addToBackStack(null)
-                                    .commit()
+                                if (isEditMode) {
+                                    parentFragmentManager.popBackStack()
+                                } else {
+                                    parentFragmentManager.beginTransaction()
+                                        .replace(R.id.chatting_fragment_container, ChattingSentProposalFragment())
+                                        .addToBackStack(null)
+                                        .commit()
+                                }
                                 viewModel.resetWritePartnershipState() // 상태 리셋
                             }
                             is WritePartnershipUiState.Fail -> {
                                 Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                                 binding.btnCompleted.isEnabled = true // 실패 시 버튼 다시 활성화
+                                binding.tvCompleted.text = if (isEditMode) "제안서 수정하기" else "제안서 보내기"
                                 viewModel.resetWritePartnershipState()
                             }
                             is WritePartnershipUiState.Error -> {
                                 Toast.makeText(requireContext(), "오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
                                 binding.btnCompleted.isEnabled = true // 실패 시 버튼 다시 활성화
+                                binding.tvCompleted.text = if (isEditMode) "제안서 수정하기" else "제안서 보내기"
                                 viewModel.resetWritePartnershipState()
                             }
-                            is WritePartnershipUiState.Idle -> {
-                                // isSubmitButtonEnabled.collect가 버튼 상태를 관리하므로 여기서는 별도 처리 필요 없음
+                            else -> {
+                                binding.btnCompleted.isEnabled = true
+                                binding.tvCompleted.text = if (isEditMode) "제안서 수정하기" else "제안서 보내기"
                             }
                         }
                     }
@@ -82,6 +96,7 @@ class ServiceProposalTermWritingFragment
 
     override fun initView() {
         Log.d("ServiceProposalTermWritingFragment", "Fragment created")
+        binding.tvCompleted.text = if (isEditMode) "제안서 수정하기" else "제안서 보내기"
 
         binding.lifecycleOwner = viewLifecycleOwner
 
@@ -101,6 +116,17 @@ class ServiceProposalTermWritingFragment
 
         binding.ivFragmentServiceProposalBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    companion object {
+        // ✅ 수정 모드용 newInstance
+        fun newInstanceForEdit(): ServiceProposalTermWritingFragment {
+            return ServiceProposalTermWritingFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean("isEditMode", true)
+                }
+            }
         }
     }
 }

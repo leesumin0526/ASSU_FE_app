@@ -30,7 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.getValue
 import androidx.core.view.isVisible
-import com.example.assu_fe_app.data.manager.TokenManager
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
 import com.example.assu_fe_app.ui.partnership.BoxType
 import javax.inject.Inject
@@ -42,14 +42,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
     // ✅ 변경: 어댑터를 필드로 보관(한 번만 생성)
     private lateinit var messageAdapter: ChattingMessageAdapter
-    @Inject lateinit var tokenManager: TokenManager
-//    private const val KEY_USERNAME = "username"
-//    private val prefs: SharedPreferences = context.getSharedPreferences(
-//        "auth_tokens",
-//        Context.MODE_PRIVATE
-//    )
-//    val username = prefs.getString(KEY_USERNAME, "") ?: ""
-
+    @Inject lateinit var tokenManager: AuthTokenLocalStore
 
     private var currentUserRole: String? = null
     private var currentPartnershipStatus: PartnershipStatusModel? = null
