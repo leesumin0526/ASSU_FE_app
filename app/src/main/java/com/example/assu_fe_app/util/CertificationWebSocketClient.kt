@@ -79,14 +79,14 @@ class CertificationWebSocketClient(
                         isConnected = false
                         topicDisposable?.dispose()
                         Log.d("CertWS", "🔌 WebSocket CLOSED")
-                        scheduleReconnect(sessionId, onConnected, onCertificationMessage, onError)
+//                        scheduleReconnect(sessionId, onConnected, onCertificationMessage, onError)
                     }
                     LifecycleEvent.Type.ERROR -> {
                         isConnected = false
                         topicDisposable?.dispose()
                         Log.e("CertWS", "🔌 WebSocket ERROR", event.exception)
                         onError(event.exception ?: Exception("WebSocket connection error"))
-                        scheduleReconnect(sessionId, onConnected, onCertificationMessage, onError)
+//                        scheduleReconnect(sessionId, onConnected, onCertificationMessage, onError)
                     }
                     else -> Unit
                 }

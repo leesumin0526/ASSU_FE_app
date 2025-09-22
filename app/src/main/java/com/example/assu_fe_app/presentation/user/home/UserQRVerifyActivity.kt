@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.Global.putString
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.camera.core.*
@@ -39,6 +40,9 @@ class UserQRVerifyActivity :
     private var qrCodeData: String? = null
 
     @Inject
+    lateinit var infoManager : AuthTokenLocalStore
+
+    @Inject
     lateinit var tokenProvider : AuthTokenLocalStore
     private val certifyViewModel: CertifyViewModel by viewModels()
 
@@ -57,6 +61,7 @@ class UserQRVerifyActivity :
         setConfirmButtonState(false) // 초기에는 비활성화
 
         binding.btnConfirm.setOnClickListener { // 이미지뷰 클릭 리스너
+            Log.d("UserQRVerifyActivity","클릭했음.")
             if (qrCodeScannedSuccessfully) {
                 // QR 인식이 성공했을 때만 다음으로 넘어감
                 Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
@@ -68,8 +73,8 @@ class UserQRVerifyActivity :
         }
 
 
-        binding.tvUniversity.text = "숭실대학교 학생"
-        binding.tvDepartment.text = "IT대학"
+        binding.tvUniversity.text = infoManager.getBasicInfoUniversity()
+        binding.tvDepartment.text = infoManager.getBasicInfoDepartment()
 // TODO 나중에 주석해제
         cameraExecutor = Executors.newSingleThreadExecutor()
         checkCameraPermission()
@@ -85,6 +90,7 @@ class UserQRVerifyActivity :
         Log.d("QR 인식 성공", "에뮬레이터 테스트용 데이터 사용: $qrCodeData")
         binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
         setConfirmButtonState(true)
+        binding.fragmentContainerView.visibility = View.VISIBLE
         qrCodeScannedSuccessfully = true
     }
 
@@ -258,6 +264,7 @@ class UserQRVerifyActivity :
                 putLong("storeId", storeId)
             }
         }
+        binding.fragmentContainerView.visibility = View.VISIBLE
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container_view, fragment)
@@ -270,8 +277,8 @@ class UserQRVerifyActivity :
         // 로딩 상태 표시
         showCertificationLoadingState()
         // TODO : WebSocket 연결 및 인증 요청 - 임시 주석 처리
-//        certifyViewModel.connectAndCertify(sessionId, adminId)
-        certifyViewModel.test_subscribeAndSendRequest(sessionId, adminId)
+        certifyViewModel.connectAndCertify(sessionId, adminId)
+//        certifyViewModel.test_subscribeAndSendRequest(sessionId, adminId)
 
     }
 
@@ -326,6 +333,9 @@ class UserQRVerifyActivity :
                 putLong("sessionId", sessionId)
             }
         }
+
+        binding.fragmentContainerView.visibility = View.VISIBLE
+
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container_view, fragment)

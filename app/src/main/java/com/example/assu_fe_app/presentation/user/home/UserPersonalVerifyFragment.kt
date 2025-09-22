@@ -11,7 +11,7 @@ import kotlin.getValue
 
 
 class UserPersonalVerifyFragment : BaseFragment<FragmentUserPersonalVerifyBinding>(R.layout.fragment_user_personal_verify) {
-// 오직 테스트 용
+    // 오직 테스트 용
     private val buttons = listOf(
         binding.groupVerify1,
         binding.groupVerify2,
@@ -62,6 +62,8 @@ class UserPersonalVerifyFragment : BaseFragment<FragmentUserPersonalVerifyBindin
             return
         }
 
+        // 대표자용 WebSocket 연결 (구독만 하고 인증 요청은 하지 않음)
+        certificationViewModel.subscribeToProgress(7)
     }
 
     private fun updateProgressButtons(count: Int) {

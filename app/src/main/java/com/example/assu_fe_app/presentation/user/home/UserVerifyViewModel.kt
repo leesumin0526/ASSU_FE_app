@@ -29,7 +29,9 @@ class UserVerifyViewModel @Inject constructor(
 
     // 기본 정보
     var storeId : Long = 0
-    var sessionId : Long =0
+
+    private val _sessionId = MutableLiveData<Long>()
+    val sessionId : LiveData<Long> = _sessionId
 
     var tableNumber : String = ""
     private val _storeName = MutableLiveData<String>()
@@ -77,8 +79,8 @@ class UserVerifyViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = certificationUseCase(request)) {
                 is RetrofitResult.Success -> {
-                    sessionId = result.data.sessionId
-                    Log.d("UserVerifyViewModel : requestSessionId()", "업데이트 된 sessionId : ${sessionId}")
+                    _sessionId.value = result.data.sessionId
+                    Log.d("UserVerifyViewModel : requestSessionId()", "업데이트 된 sessionId : ${_sessionId.value}")
                 }
                 is RetrofitResult.Error -> {
                     Log.d("UserVerifyViewModel : requestSessionId()", "${result.exception.message}")

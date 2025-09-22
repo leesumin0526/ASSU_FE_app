@@ -49,7 +49,7 @@ class CertifyViewModel @Inject constructor(
         DISCONNECTED, CONNECTING, CONNECTED, FAILED
     }
 
-    private val wsUrl = "ws://10.21.36.179:8080/ws-certify"
+    private val wsUrl = "wss://assu.shop/ws-certify"
 
     /**
      * ✅ [복원] 대표자용: 세션 진행 상황을 구독만 하는 함수
