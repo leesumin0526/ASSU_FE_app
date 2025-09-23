@@ -44,6 +44,7 @@ class PartnerHomeFragment :
     private val vm: HomeViewModel by viewModels()
     private val chattingViewModel: ChattingViewModel by viewModels()
     private val partnershipViewModel: PartnershipViewModel by viewModels()
+
     private val adminRecommendViewModel: AdminRecommendViewModel by viewModels()
     private var recommendedAdmins: List<RecommendedAdminModel> = emptyList()
     @Inject

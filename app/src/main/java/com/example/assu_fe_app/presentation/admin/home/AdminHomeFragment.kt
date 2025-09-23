@@ -29,9 +29,10 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import com.example.assu_fe_app.domain.model.admin.RecommendedPartnerModel
 import com.example.assu_fe_app.ui.admin.PartnerRecommendViewModel
-import javax.inject.Inject
+
 
 
 @AndroidEntryPoint

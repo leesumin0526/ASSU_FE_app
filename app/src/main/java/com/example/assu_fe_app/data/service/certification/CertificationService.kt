@@ -13,7 +13,7 @@ interface CertificationService {
 
     @POST("/certification/session")
     suspend fun requestSessionId(
-        request: UserSessionRequestDto)
+        @Body request: UserSessionRequestDto)
     : BaseResponse<UserSessionResponseDto>
 
     @POST("/certification/personal")

@@ -4,10 +4,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.usage.SaveUsageRequestDto
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentUserGroupVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.ui.certification.CertifyViewModel
@@ -27,6 +29,16 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
     private var userIds : List<Long>? = null
 
     override fun initObserver() {
+        viewModel.sessionId.observe(viewLifecycleOwner) { sessionId ->
+            // sessionId가 null이 아닐 때만 로직을 실행
+            if (sessionId != null) {
+                Log.d("UserGroupVerifyFragment", "✅ SessionId 수신 성공: $sessionId")
+
+                // SessionId를 받은 후에 웹소켓 연결 및 QR 코드 생성
+                connectToWebSocket()
+                generateQrCode(sessionId, viewModel.selectedAdminId)
+            }
+        }
         // 연결 상태 관찰
         certificationViewModel.connectionStatus.observe(this) { status ->
             when (status) {
@@ -93,10 +105,10 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
         setupInitialUI()
 
         // WebSocket 연결 시작
-        connectToWebSocket()
-
-        // QR 코드 생성
-        generateQrCode(viewModel.sessionId, viewModel.selectedAdminId)
+//        connectToWebSocket()
+//
+//        // QR 코드 생성
+//        generateQrCode(viewModel.sessionId.value, viewModel.selectedAdminId)
     }
 
     private fun setupInitialUI() {
@@ -109,10 +121,12 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
         for (i in 0 until viewModel.selectedPeople) {
             if (i < buttons.size) {
                 buttons[i].visibility = View.VISIBLE
-                // 초기에는 모든 버튼을 비활성 상태로
-                buttons[i].background = resources.getDrawable(R.drawable.btn_basic_unselected, null)
+                val imageView = buttons[i] as ImageView
+                imageView.setImageResource(R.drawable.ic_group_unverified)
+                imageView.background = null // 배경 제거
             }
         }
+        updateProgressButtons(1)
 
         binding.btnGroupVerifyComplete.setOnClickListener {
             if(viewModel.isGoodsList){
@@ -131,7 +145,7 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
                         viewModel.selectedContentId,
                         0 ,
                         viewModel.selectedPaperContent,
-                        viewModel.storeName.toString(),
+                        viewModel.storeName.value.toString(),
                         userIds?: emptyList()
                     )
                 )
@@ -150,24 +164,21 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
     }
 
     private fun connectToWebSocket() {
-        val authToken = getAuthToken()
-        if (authToken.isEmpty()) {
-            Log.d("UserGroupVerifyFragment", "토큰이 들어오지 않았습니다")
-            return
-        }
-
         // 대표자용 WebSocket 연결 (구독만 하고 인증 요청은 하지 않음)
-        certificationViewModel.subscribeToProgress(viewModel.sessionId, authToken)
+        certificationViewModel.subscribeToProgress(viewModel.sessionId.value)
     }
 
     private fun updateProgressButtons(count: Int) {
         // count만큼 버튼을 활성화 상태로 변경
         for (i in 0 until buttons.size) {
+            val imageView = buttons[i] as ImageView
             if (i < count) {
-                buttons[i].background = resources.getDrawable(R.drawable.btn_basic_selected, null)
+                imageView.setImageResource(R.drawable.ic_group_verified) // 인증된 상태 아이콘
             } else {
-                buttons[i].background = resources.getDrawable(R.drawable.btn_basic_unselected, null)
+                imageView.setImageResource(R.drawable.ic_group_unverified) // 미인증 상태 아이콘
             }
+            // 배경은 투명하게 유지
+            imageView.background = null
         }
 
         // 목표 인원에 도달했는지 확인
@@ -178,11 +189,11 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
 
     private fun onCertificationCompleted() {
         // 모든 버튼 활성화
-        buttons.forEach {
-            it.background = resources.getDrawable(R.drawable.btn_basic_selected, null)
+        buttons.forEach { button ->
+            val imageView = button as ImageView
+            imageView.setImageResource(R.drawable.ic_group_verified)
+            imageView.background = null // 배경 제거
         }
-
-
         enableCompleteButton()
 
         // 완료 상태 UI 업데이트
@@ -210,9 +221,6 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
         }, 3000)
     }
 
-    private fun getAuthToken(): String {
-        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6ImIxYTQ5NDkwLWQ5ZTgtNGE5Ny05MmMwLWZmYzhiMmI4YjM4OCIsImlhdCI6MTc1Nzc2Mzk2NCwiZXhwIjoxNzU3NzY3NTY0fQ.La3nlDTcppMvaRecoVOwVO4AtLLy9zeiKMCOMN-DuaM"
-    }
 
     private fun generateQrCode(sessionId: Long, adminId: Long) {
         val qrData = "https://assu.com/verify?sessionId=$sessionId&adminId=$adminId"
