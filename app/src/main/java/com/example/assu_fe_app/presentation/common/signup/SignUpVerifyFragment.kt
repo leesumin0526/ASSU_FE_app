@@ -12,11 +12,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel
 import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel.SendPhoneVerificationUiState
 import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel.VerifyPhoneVerificationUiState
@@ -28,6 +30,7 @@ class SignUpVerifyFragment :
     BaseFragment<FragmentSignUpVerifyBinding>(R.layout.fragment_sign_up_verify) {
 
     private val viewModel: SignUpVerifyViewModel by viewModels()
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
 
     private var countDownTimer: CountDownTimer? = null
     private val totalTimeMillis = 5 * 60 * 1000L // 5분
@@ -47,20 +50,30 @@ class SignUpVerifyFragment :
                 }
                 is SendPhoneVerificationUiState.Fail -> {
                     Log.d("SignUpVerifyFragment", "전화번호 인증 실패: code=${state.code}, message=${state.message}")
+                    // 버튼 재활성화
+                    binding.tvUserVerifyPhone.isEnabled = true
+                    // 서버 에러 메시지는 토스트로 표시하지 않음
+                    // 사용자에게는 간단한 안내 메시지만 표시
                     val errorMessage = when {
-                        state.message?.contains("전화번호") == true -> state.message
-                        state.message?.contains("phoneNumber") == true -> "올바른 전화번호 형식이 아닙니다."
                         state.code == 400 -> "전화번호 형식이 올바르지 않습니다."
-                        else -> state.message ?: "인증번호 발송에 실패했습니다."
+                        else -> "인증번호 발송에 실패했습니다. 다시 시도해주세요."
                     }
                     Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                 }
                 is SendPhoneVerificationUiState.Error -> {
-                    Log.d("SignUpVerifyViewModel", "code : $state.message")
-                    Toast.makeText(requireContext(), "message" + state.message, Toast.LENGTH_SHORT).show()
+                    Log.d("SignUpVerifyViewModel", "네트워크 에러: ${state.message}")
+                    // 버튼 재활성화
+                    binding.tvUserVerifyPhone.isEnabled = true
+                    Toast.makeText(requireContext(), "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
                 }
-                is SendPhoneVerificationUiState.Idle -> Unit
-                is SendPhoneVerificationUiState.Loading -> Unit
+                is SendPhoneVerificationUiState.Idle -> {
+                    // 버튼 활성화
+                    binding.tvUserVerifyPhone.isEnabled = true
+                }
+                is SendPhoneVerificationUiState.Loading -> {
+                    // 버튼 비활성화 (중복 클릭 방지)
+                    binding.tvUserVerifyPhone.isEnabled = false
+                }
             }
         }
 
@@ -72,20 +85,31 @@ class SignUpVerifyFragment :
                 is VerifyPhoneVerificationUiState.Fail -> {
                     Log.d("SignUpVerifyFragment", "인증번호 검증 실패: code=${state.code}, message=${state.message}")
                     errorVerificationUI()
+                    // 버튼 재활성화
+                    binding.btnCompleted.isEnabled = true
+                    // 서버 에러 메시지는 토스트로 표시하지 않음
+                    // 사용자에게는 간단한 안내 메시지만 표시
                     val errorMessage = when {
-                        state.message?.contains("인증번호") == true -> state.message
-                        state.message?.contains("authNumber") == true -> "인증번호가 올바르지 않습니다."
                         state.code == 400 -> "인증번호가 올바르지 않습니다."
-                        else -> state.message ?: "인증번호가 올바르지 않습니다."
+                        else -> "인증번호가 올바르지 않습니다."
                     }
                     Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                 }
                 is VerifyPhoneVerificationUiState.Error -> {
                     errorVerificationUI()
-                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                    Log.d("SignUpVerifyViewModel", "네트워크 에러: ${state.message}")
+                    // 버튼 재활성화
+                    binding.btnCompleted.isEnabled = true
+                    Toast.makeText(requireContext(), "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
                 }
-                is VerifyPhoneVerificationUiState.Idle -> Unit
-                is VerifyPhoneVerificationUiState.Loading -> Unit
+                is VerifyPhoneVerificationUiState.Idle -> {
+                    // 버튼 활성화
+                    binding.btnCompleted.isEnabled = true
+                }
+                is VerifyPhoneVerificationUiState.Loading -> {
+                    // 버튼 비활성화 (중복 클릭 방지)
+                    binding.btnCompleted.isEnabled = false
+                }
             }
         }
     }
@@ -166,6 +190,9 @@ class SignUpVerifyFragment :
         // 인증 완료 버튼 클릭 → 다음 프래그먼트 이동
         binding.btnCompleted.setOnClickListener {
             if (isVerified) {
+                // 전화번호를 SignUpViewModel에 저장
+                val phoneNumber = binding.etUserVerifyPhone.text.toString().trim()
+                signUpViewModel.setPhoneNumber(phoneNumber)
                 findNavController().navigate(R.id.action_verify_to_type)
             }
         }
@@ -293,6 +320,7 @@ class SignUpVerifyFragment :
         binding.llQuestionCodeIsNotComing.visibility = View.GONE
         setButtonEnabled(false)
     }
+
 
     override fun onDestroyView() {
         countDownTimer?.cancel()

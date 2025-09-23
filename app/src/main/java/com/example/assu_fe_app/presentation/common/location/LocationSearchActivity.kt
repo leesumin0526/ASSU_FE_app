@@ -1,6 +1,7 @@
 package com.example.assu_fe_app.presentation.common.location
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
@@ -26,6 +27,10 @@ import kotlin.getValue
 class LocationSearchActivity :
     BaseActivity<ActivityLocationSearchBinding>(R.layout.activity_location_search) {
 
+    companion object {
+        const val EXTRA_SELECTED_ADDRESS = "selected_address"
+        const val RESULT_CODE_ADDRESS_SELECTED = 1001
+    }
 
     private val searchViewModel : AdminPartnerKeyWordSearchViewModel by viewModels()
     override fun initView() {
@@ -91,5 +96,17 @@ class LocationSearchActivity :
             val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             imm?.hideSoftInputFromWindow(view.windowToken, 0)
         }
+    }
+
+    /**
+     * 주소 선택 시 결과를 반환하는 메서드
+     * 회원가입에서 주소를 선택할 때 사용
+     */
+    fun returnSelectedAddress(address: String) {
+        val resultIntent = Intent().apply {
+            putExtra(EXTRA_SELECTED_ADDRESS, address)
+        }
+        setResult(RESULT_CODE_ADDRESS_SELECTED, resultIntent)
+        finish()
     }
 }

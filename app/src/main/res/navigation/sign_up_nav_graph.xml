@@ -90,7 +90,7 @@
             app:destination="@id/signUpAdminSealFragment" />
         <action
             android:id="@+id/action_admin_info_to_location"
-            app:destination="@id/partnerLocationSearchFragment" />
+            app:destination="@id/locationSearchFragment" />
     </fragment>
 
     <fragment
@@ -112,13 +112,13 @@
             app:destination="@id/signUpPartnerLicenseFragment" />
         <action
             android:id="@+id/action_partner_info_to_location"
-            app:destination="@id/partnerLocationSearchFragment" />
+            app:destination="@id/locationSearchFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/partnerLocationSearchFragment"
+        android:id="@+id/locationSearchFragment"
         android:name="com.example.assu_fe_app.presentation.common.search.LocationInfoSearchFragment"
-        android:label="제휴업체 위치 검색"/>
+        android:label="위치 검색"/>
 
 
     <fragment
