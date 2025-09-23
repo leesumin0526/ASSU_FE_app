@@ -76,9 +76,9 @@ class UserQRVerifyActivity :
         binding.tvUniversity.text = infoManager.getBasicInfoUniversity()
         binding.tvDepartment.text = infoManager.getBasicInfoDepartment()
 // TODO 나중에 주석해제
-        cameraExecutor = Executors.newSingleThreadExecutor()
-        checkCameraPermission()
-//        onEmulatorScanSuccess() // 에뮬레이터 용
+//        cameraExecutor = Executors.newSingleThreadExecutor()
+//        checkCameraPermission()
+        onEmulatorScanSuccess() // 에뮬레이터 용
     }
 
     override fun initObserver() {
@@ -86,12 +86,14 @@ class UserQRVerifyActivity :
     }
 
     private fun onEmulatorScanSuccess() {
-        qrCodeData = "https://assu.com/verify?storeId=2" // TODO 여기 ...
+        qrCodeData = "https://assu.com/verify?storeId=7" // TODO 여기 ...
         Log.d("QR 인식 성공", "에뮬레이터 테스트용 데이터 사용: $qrCodeData")
         binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
         setConfirmButtonState(true)
         binding.fragmentContainerView.visibility = View.VISIBLE
         qrCodeScannedSuccessfully = true
+
+        showNextFragment()
     }
 
     private fun checkCameraPermission() {
@@ -135,6 +137,8 @@ class UserQRVerifyActivity :
 
                                 // 카메라 즉시 해제
                                 cameraProvider.unbindAll()
+
+                                showNextFragment()
                             }
                         }
                     })
@@ -277,8 +281,9 @@ class UserQRVerifyActivity :
         // 로딩 상태 표시
         showCertificationLoadingState()
         // TODO : WebSocket 연결 및 인증 요청 - 임시 주석 처리
-        certifyViewModel.connectAndCertify(sessionId, adminId)
-//        certifyViewModel.test_subscribeAndSendRequest(sessionId, adminId)
+        certifyViewModel.connectAndCertify(sessionId, adminId){
+            onCertificationCompleted(sessionId)
+        }
 
     }
 

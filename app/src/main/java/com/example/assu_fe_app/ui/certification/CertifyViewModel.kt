@@ -82,7 +82,7 @@ class CertifyViewModel @Inject constructor(
     /**
      * ✅ [복원] 인증자용: 연결 후 인증 요청만 보내고 바로 연결을 끊는 함수
      */
-    fun connectAndCertify(sessionId: Long, adminId: Long) {
+    fun connectAndCertify(sessionId: Long, adminId: Long, onSuccess: ()-> Unit) {
         Log.d("CertViewModel_CERTIFY", "🚀 인증자: 요청 시작 (Session: $sessionId)")
         val senderClient = CertificationWebSocketClient(
             wsUrl = wsUrl,
@@ -94,7 +94,7 @@ class CertifyViewModel @Inject constructor(
             sessionId = sessionId,
             onSuccess = {
                 Log.d("CertViewModel_CERTIFY", "✅ 인증자: 요청 성공")
-                // 성공적으로 전송 후 특별한 UI 변경이 필요 없다면 상태 업데이트 생략 가능
+                onSuccess()
             },
             onError = { error ->
                 _errorMessage.postValue("요청 실패: ${error.message}")

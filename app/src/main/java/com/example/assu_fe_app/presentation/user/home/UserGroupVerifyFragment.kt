@@ -145,7 +145,7 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
                         viewModel.selectedContentId,
                         0 ,
                         viewModel.selectedPaperContent,
-                        viewModel.storeName.toString(),
+                        viewModel.storeName.value.toString(),
                         userIds?: emptyList()
                     )
                 )
