@@ -10,6 +10,14 @@
     android:layout_height="match_parent"
     tools:context=".presentation.user.dashboard.UserServiceRecordFragment">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@color/assu_font_white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <View
         android:id="@+id/serviceRecord_mg1"
         android:layout_width="10dp"
@@ -103,9 +111,19 @@
                 android:fontFamily="@font/pretendard_medium"
                 android:textSize="17sp"
                 android:layout_marginStart="13dp"
-                android:text="3월"
+                android:text="3"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_serviceRecord_back_arrow"/>
+
+            <TextView
+                android:id="@+id/tv_serviceRecord_month_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/pretendard_medium"
+                android:textSize="17sp"
+                android:text="월"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_serviceRecord_month"/>
 
             <ImageView
                 android:id="@+id/iv_serviceRecord_next_arrow"
@@ -113,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_dash_small_next_disable"
                 android:layout_marginStart="13dp"
-                app:layout_constraintStart_toEndOf="@id/tv_serviceRecord_month"
+                app:layout_constraintStart_toEndOf="@id/tv_serviceRecord_month_text"
                 app:layout_constraintTop_toTopOf="@id/iv_serviceRecord_back_arrow"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -126,43 +144,13 @@
             app:layout_constraintTop_toBottomOf="@id/cl_serviceRecord_month_convert"/>
 
         <LinearLayout
-            android:id="@+id/ll_service_discount_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintStart_toStartOf="@id/cl_serviceRecord_month_convert"
-            app:layout_constraintTop_toBottomOf="@id/serviceRecord_mg6">
-
-            <TextView
-                android:id="@+id/tv_discount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/pretendard_semibold"
-                android:textSize="25sp"
-                android:includeFontPadding="false"
-                android:layout_marginEnd="4dp"
-                android:text="20,000"
-                android:textColor="@color/assu_main"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="원 할인!"
-                android:textColor="@color/assu_main"
-                android:textSize="25sp"
-                android:fontFamily="@font/pretendard_semibold"/>
-
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/ll_service_received"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="11dp"
-            app:layout_constraintStart_toStartOf="@id/ll_service_discount_text"
-            app:layout_constraintTop_toBottomOf="@id/ll_service_discount_text">
+            app:layout_constraintStart_toStartOf="@id/cl_serviceRecord_month_convert"
+            app:layout_constraintTop_toBottomOf="@id/serviceRecord_mg6">
             <TextView
                 android:id="@+id/tv_service"
                 android:layout_width="wrap_content"
