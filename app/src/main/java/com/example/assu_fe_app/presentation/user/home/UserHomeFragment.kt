@@ -167,7 +167,7 @@ class UserHomeFragment :
         val actualStampCount = minOf(stampCount, 10) // 최대 10개로 제한
         for (i in 0 until actualStampCount) {
             val imageView = binding.root.findViewById<ImageView>(stampIds[i])
-            imageView?.setImageResource(R.drawable.ic_home_stamp_selected) // 채워진 스탬프 이미지
+            imageView?.setImageResource(R.drawable.ic_home_stamp_filled) // 채워진 스탬프 이미지
         }
     }
 

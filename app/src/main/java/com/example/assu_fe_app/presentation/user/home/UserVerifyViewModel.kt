@@ -59,7 +59,7 @@ class UserVerifyViewModel @Inject constructor(
                     _storeName.value = result.data.storeName
                     storeId = result.data.storeId
                     _contentList.value = result.data.contents
-                    Log.d("조회된 storeName", "${_storeName.value}")
+                    Log.d("조회된 storeName", "${storeName}")
                     Log.d("조회된 contentList" , contentList.value.toString())
                 }
 
