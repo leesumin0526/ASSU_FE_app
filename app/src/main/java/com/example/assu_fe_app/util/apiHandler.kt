@@ -22,6 +22,7 @@ suspend fun <T : Any, R : Any> apiHandler(
         Log.d("apiHandler", "API 실행 시작")
         val base = execute()
         Log.d("apiHandler", "API 응답 받음: isSuccess=${base.isSuccess}, code=${base.code}, message=${base.message}")
+        Log.d("apiHandler", "API 응답 전체: $base")
 
         if (base.isSuccess) {
             val data = base.result
@@ -34,7 +35,10 @@ suspend fun <T : Any, R : Any> apiHandler(
                 )
             } else {
                 Log.d("apiHandler", "API 성공, 데이터 매핑 시작")
-                RetrofitResult.Success(mapper(data))
+                Log.d("apiHandler", "원본 응답 데이터: $data")
+                val mappedData = mapper(data)
+                Log.d("apiHandler", "매핑된 데이터: $mappedData")
+                RetrofitResult.Success(mappedData)
             }
         } else {
             Log.e("apiHandler", "API 실패: code=${base.code}, message=${base.message}")
@@ -74,11 +78,15 @@ suspend fun <R : Any> apiHandlerForUnit(
         Log.d("apiHandler", "API 실행 시작")
         val base = execute()
         Log.d("apiHandler", "API 응답 받음: isSuccess=${base.isSuccess}, code=${base.code}, message=${base.message}")
+        Log.d("apiHandler", "API 응답 전체: $base")
 
         if (base.isSuccess) {
             val data = base.result
             Log.d("apiHandler", "API 성공, 데이터 매핑 시작")
-            RetrofitResult.Success(mapper(data))
+            Log.d("apiHandler", "원본 응답 데이터: $data")
+            val mappedData = mapper(data)
+            Log.d("apiHandler", "매핑된 데이터: $mappedData")
+            RetrofitResult.Success(mappedData)
         } else {
             Log.e("apiHandler", "API 실패: code=${base.code}, message=${base.message}")
             RetrofitResult.Fail(

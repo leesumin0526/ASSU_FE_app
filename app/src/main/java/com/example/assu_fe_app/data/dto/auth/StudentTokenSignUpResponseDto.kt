@@ -4,7 +4,7 @@ import com.example.assu_fe_app.domain.model.auth.LoginModel
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class StudentLoginResponseDto(
+data class StudentTokenSignUpResponseDto(
     val memberId: Long,
     val role: String,
     val status: String,
@@ -22,5 +22,8 @@ data class StudentLoginResponseDto(
         status = status,
         basicInfo = basicInfo.toModel()
     )
+    
+    val isActive: Boolean
+        get() = status == "ACTIVE"
 }
 
