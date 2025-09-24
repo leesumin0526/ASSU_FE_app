@@ -135,7 +135,9 @@ class UserReviewStoreActivity :
     private fun initStoreReviewAdapter(){
         userReviewAdapter = UserReviewAdapter(
             showDeleteButton = false,
-            listener = null
+            listener = null,
+            showReportButton = false,
+            reportListener = null
         )
         binding.fcvReviewStoreRank.layoutManager = LinearLayoutManager(this)
         binding.fcvReviewStoreRank.adapter = userReviewAdapter

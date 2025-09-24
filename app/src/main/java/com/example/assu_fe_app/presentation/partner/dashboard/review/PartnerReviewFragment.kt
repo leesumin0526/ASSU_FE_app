@@ -12,10 +12,12 @@ import com.example.assu_fe_app.databinding.FragmentPartnerReviewBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.partner.PartnerMainActivity
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
+import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layout.fragment_partner_review) {
+class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layout.fragment_partner_review),
+OnItemClickListener, OnReviewReportConfirmedListener, OnReviewReportCompleteListener {
 
     private val getReviewViewModel: GetPartnerReviewViewModel by viewModels()
 
@@ -78,7 +80,8 @@ class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layou
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initAdapter() {
         // 삭제 기능이 필요 없으므로 showDeleteButton을 false로 설정하고 listener를 null로 전달합니다.
-        userReviewAdapter = UserReviewAdapter(showDeleteButton = false, listener = null)
+        userReviewAdapter = UserReviewAdapter(showDeleteButton = false, listener = null,
+            showReportButton = true, reportListener = this)
 
         binding.rvCustomerReview.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -102,6 +105,53 @@ class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layou
             }
         })
     }
+
+    override fun onClick(position: Int) {
+        val dialog = ReviewReportDialogFragment.newInstance(position)
+        dialog.show(parentFragmentManager, "ReviewReportDialogFragment")
+    }
+
+
+    override fun onReviewReportConfirmed(position: Int, reportReason: String) {
+        val currentList = userReviewAdapter.currentList
+        if (position < currentList.size) {
+            val reviewToReport = currentList[position]
+            // TODO: ViewModel을 통해 실제 서버에 신고하는 API 호출
+
+            ReviewReportCompleteDialogFragment.newInstance(position)
+                .show(parentFragmentManager, "ReportCompleteDialog")
+        }
+    }
+
+    override fun onReviewReportComplete(position: Int) {
+        val reportDialog = parentFragmentManager.findFragmentByTag("ReviewReportDialogFragment") as? ReviewReportDialogFragment
+        reportDialog?.dismiss()
+
+        val currentList = userReviewAdapter.currentList.toMutableList()
+
+        if (position >= 0 && position < currentList.size) {
+            currentList.removeAt(position)
+            userReviewAdapter.submitList(currentList)
+            binding.tvReviewStoreReviewCount.text = "${currentList.size}개의 평가"
+        }
+    }
+
+    private fun handleReviewReport(reviewId: Long, reportReason: String) {
+        // TODO: 실제 신고 API 호출 로직 추가
+        when (reportReason) {
+            "INAPPROPRIATE_CONTENT" -> {
+                // 부적절한 내용 신고 처리
+            }
+            "FALSE_INFORMATION" -> {
+                // 허위정보 신고 처리
+            }
+            "SPAM_PROMOTION" -> {
+                // 스팸/광고 신고 처리
+            }
+        }
+    }
+
+
 
 
 

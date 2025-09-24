@@ -1,6 +1,7 @@
 package com.example.assu_fe_app.presentation.user.review.adapter
 
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ImageView
@@ -20,7 +21,9 @@ import java.time.format.DateTimeFormatter
 class UserReviewViewHolder(
     private val binding: ItemReviewBinding,
     private val showDeleteButton: Boolean,
-    private val listener : OnItemClickListener?
+    private val listener : OnItemClickListener?,
+    private val showReportButton: Boolean,
+    private val reportListener: OnItemClickListener?
 ) : RecyclerView.ViewHolder(binding.root){
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -33,20 +36,32 @@ class UserReviewViewHolder(
 
         setRating(review.rate)
         loadReviewImages(review.reviewImage)
+        setupActionButton()
+    }
 
-//        val imageViews = listOf(
-//            binding.ivReviewImg1,
-//            binding.ivReviewImg2,
-//            binding.ivReviewImg3
-//        )
-//        imageViews.forEach { it.visibility = View.GONE }
-//        review.reviewImage.take(3).forEachIndexed { index, _ ->
-//            imageViews[index].visibility = View.VISIBLE
-//        }
-
-        binding.tvReviewDelete.visibility = if (showDeleteButton) View.VISIBLE else View.GONE
-        binding.tvReviewDelete.setOnClickListener {
-            listener?.onClick(adapterPosition)
+    private fun setupActionButton() {
+        when {
+            // 신고 버튼을 보여줘야 하는 경우
+            showReportButton -> {
+                binding.tvReviewDelete.visibility = View.VISIBLE
+                binding.tvReviewDelete.text = "신고하기"
+                binding.tvReviewDelete.setOnClickListener {
+                    Log.d("reviewAdapter : ", "신고하기가 클릭 되었어요.")
+                    reportListener?.onClick(adapterPosition)
+                }
+            }
+            // 삭제 버튼을 보여줘야 하는 경우
+            showDeleteButton -> {
+                binding.tvReviewDelete.visibility = View.VISIBLE
+                binding.tvReviewDelete.text = "삭제하기" // 원래 텍스트
+                binding.tvReviewDelete.setOnClickListener {
+                    listener?.onClick(adapterPosition)
+                }
+            }
+            // 둘 다 보여주지 않는 경우
+            else -> {
+                binding.tvReviewDelete.visibility = View.GONE
+            }
         }
     }
 
@@ -99,8 +114,4 @@ class UserReviewViewHolder(
                 .into(imageView)
         }
     }
-}
-
-interface onItemClickListener{
-    fun onClick()
 }

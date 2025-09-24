@@ -57,7 +57,8 @@ class UserReviewStoreDetailFragment :
     }
 
     private fun initAdapter(){
-        userReviewAdapter = UserReviewAdapter(showDeleteButton = false, listener = null)
+        userReviewAdapter = UserReviewAdapter(showDeleteButton = false, listener = null,
+            showReportButton = false, reportListener = null)
 
         binding.fcvReviewStoreRank.apply{
             layoutManager = LinearLayoutManager(requireContext())

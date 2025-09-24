@@ -78,7 +78,8 @@ class UserMyReviewActivity :
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initAdapter() {
         //adapter초기화
-        userReviewAdapter = UserReviewAdapter(showDeleteButton = true, listener = this)
+        userReviewAdapter = UserReviewAdapter(showDeleteButton = true, listener = this
+            , showReportButton = false, reportListener = null)
 
         binding.rvManageReview.apply {
             layoutManager = LinearLayoutManager(this@UserMyReviewActivity)

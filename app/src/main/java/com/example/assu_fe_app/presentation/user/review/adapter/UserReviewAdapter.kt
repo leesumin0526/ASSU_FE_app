@@ -13,20 +13,14 @@ import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListen
 
 class UserReviewAdapter(
     private val showDeleteButton: Boolean = false,
-    private val listener: OnItemClickListener?
+    private val showReportButton: Boolean = false,
+    private val listener: OnItemClickListener?,
+    private val reportListener: OnItemClickListener?
 ) : ListAdapter<Review, UserReviewViewHolder>(UserReviewDiffCallback()) {
-
-//    fun removeAt(position: Int) {
-//        val currentList = currentList.toMutableList()
-//        if (position in currentList.indices) {
-//            currentList.removeAt(position)
-//            submitList(currentList) // 변경된 리스트를 제출하여 UI를 업데이트
-//        }
-//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserReviewViewHolder {
         val binding = ItemReviewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return UserReviewViewHolder(binding, showDeleteButton, listener)
+        return UserReviewViewHolder(binding, showDeleteButton, listener, showReportButton, reportListener)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -37,7 +31,6 @@ class UserReviewAdapter(
         }
     }
 }
-
 class UserReviewDiffCallback : DiffUtil.ItemCallback<Review>() {
     // 두 아이템이 동일한 아이템인지 확인 (보통 고유 ID로 비교)
     override fun areItemsTheSame(oldItem: Review, newItem: Review): Boolean {
