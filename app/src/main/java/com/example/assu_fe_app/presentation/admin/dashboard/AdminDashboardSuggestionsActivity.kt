@@ -76,17 +76,6 @@ class AdminDashboardSuggestionsActivity : BaseActivity<ActivityAdminDashboardSug
             adapter = this@AdminDashboardSuggestionsActivity.adapter
             layoutManager = LinearLayoutManager(this@AdminDashboardSuggestionsActivity)
 
-            // 아이템 간 여백 설정 (20dp)
-            addItemDecoration(object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(
-                    outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
-                ) {
-                    val position = parent.getChildAdapterPosition(view)
-                    if (position != 0) {
-                        outRect.top = (20 * resources.displayMetrics.density).toInt()
-                    }
-                }
-            })
         }
     }
 
