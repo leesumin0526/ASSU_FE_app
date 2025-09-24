@@ -6,7 +6,6 @@ import com.example.assu_fe_app.domain.model.chatting.CreateChatRoomModel
 import com.example.assu_fe_app.util.RetrofitResult
 import javax.inject.Inject
 
-//import jakarta.inject.Inject
 
 // domain/usecase/chatting/CreateChatRoomUseCase.kt
 class CreateChatRoomUseCase @Inject constructor(
