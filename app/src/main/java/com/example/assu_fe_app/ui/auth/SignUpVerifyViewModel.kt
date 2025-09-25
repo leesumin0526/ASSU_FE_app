@@ -32,6 +32,11 @@ class SignUpVerifyViewModel @Inject constructor(
     val sendPhoneVerificationState: LiveData<SendPhoneVerificationUiState> = _sendPhoneVerificationState
 
     fun sendPhoneVerification(phoneNumber: String) {
+        // 이미 로딩 중이면 중복 요청 방지
+        if (_sendPhoneVerificationState.value is SendPhoneVerificationUiState.Loading) {
+            return
+        }
+        
         viewModelScope.launch {
             _sendPhoneVerificationState.value = SendPhoneVerificationUiState.Loading
             
@@ -56,6 +61,11 @@ class SignUpVerifyViewModel @Inject constructor(
     val verifyPhoneVerificationState: LiveData<VerifyPhoneVerificationUiState> = _verifyPhoneVerificationState
 
     fun verifyPhoneVerification(phoneNumber: String, authNumber: String) {
+        // 이미 로딩 중이면 중복 요청 방지
+        if (_verifyPhoneVerificationState.value is VerifyPhoneVerificationUiState.Loading) {
+            return
+        }
+        
         viewModelScope.launch {
             _verifyPhoneVerificationState.value = VerifyPhoneVerificationUiState.Loading
             

@@ -34,7 +34,9 @@ class ServiceProposalWritingFragment
 
     private val viewModel: PartnershipViewModel by activityViewModels()
     private lateinit var adapter: ServiceProposalAdapter
-    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
+
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     private var isEditMode: Boolean = false
 
@@ -47,50 +49,13 @@ class ServiceProposalWritingFragment
             Log.d("ServiceProposalWritingFragment", "Edit mode: $isEditMode")
         }
 
-        adapter = ServiceProposalAdapter (onItemEvent = viewModel::onBenefitEvent)
+        adapter = ServiceProposalAdapter(onItemEvent = viewModel::onBenefitEvent)
         binding.rvFragmentServiceProposalItemSet.adapter = adapter
-        binding.rvFragmentServiceProposalItemSet.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvFragmentServiceProposalItemSet.layoutManager =
+            LinearLayoutManager(requireContext())
 
         val userRole = authTokenLocalStore.getUserRole()
         Log.d("RoleCheck", "Current user role is: $userRole")
-
-//        if (userRole.equals("ADMIN", ignoreCase = true)) {
-//            // --- 관리자(ADMIN)일 경우 ---
-//            // 1. 제휴 제안인(본인) 이름 설정 및 비활성화
-//            viewModel.adminName.value = tokenManager.getLoginModel()?.username ?: ""
-//            binding.tvFragmentServiceProposalAdmin.isEnabled = false
-//
-//            // 2. 제휴 업체는 hint만 보여주고, 클릭 시 검색 화면으로 이동
-//            binding.tvFragmentServiceProposalPartner.hint = "업체명을 입력해주세요"
-//            binding.tvFragmentServiceProposalPartner.setOnClickListener {
-//                findNavController().navigate(
-//                    R.id.action_serviceProposalWritingFragment_to_locationSearchFragment,
-//                    Bundle().apply { putString("type", "passive") }
-//                )
-//            }
-//
-//        } else { // PARTNER일 경우
-//            // --- 파트너(PARTNER)일 경우 ---
-//            arguments?.let { bundle ->
-//                val partnerId = bundle.getLong("partnerId", -1L)
-//                val paperId = bundle.getLong("paperId", -1L)
-//                val adminName = bundle.getString("adminName", "")
-////                val partnerName = bundle.getString("partnerName", "")
-//                val partnerName = "제휴 업체" // TODO : 임시 하드코딩
-//
-//                Log.d("BundleCheck", "partnerName from bundle: '$partnerName', adminName from bundle: '$adminName'")
-//
-//                if (partnerId != -1L && paperId != -1L) {
-//                    viewModel.initProposalData(partnerId, paperId)
-//                    // 1. ViewModel의 StateFlow 업데이트
-//                    viewModel.adminName.value = adminName
-//                    viewModel.partnerName.value = partnerName
-//                }
-//            }
-//            // 2. 클릭 기능 비활성화
-//            binding.tvFragmentServiceProposalAdmin.isEnabled = false
-//            binding.tvFragmentServiceProposalPartner.isEnabled = false
-//        }
 
         if (userRole.equals("ADMIN", ignoreCase = true)) {
             setupAdminMode()
@@ -191,7 +156,8 @@ class ServiceProposalWritingFragment
                     viewModel.isNextButtonEnabled.collect { isEnabled ->
                         binding.btnCompleted.isEnabled = isEnabled
                         val colorRes = if (isEnabled) R.color.assu_main else R.color.assu_sub
-                        binding.btnCompleted.backgroundTintList = ContextCompat.getColorStateList(requireContext(), colorRes)
+                        binding.btnCompleted.backgroundTintList =
+                            ContextCompat.getColorStateList(requireContext(), colorRes)
                     }
                 }
                 launch {
@@ -214,7 +180,12 @@ class ServiceProposalWritingFragment
 
     companion object {
         // ✅ 기존 newInstance (일반 모드)
-        fun newInstance(partnerId: Long, paperId: Long, adminName: String, partnerName: String): ServiceProposalWritingFragment {
+        fun newInstance(
+            partnerId: Long,
+            paperId: Long,
+            adminName: String,
+            partnerName: String
+        ): ServiceProposalWritingFragment {
             return ServiceProposalWritingFragment().apply {
                 arguments = Bundle().apply {
                     putLong("partnerId", partnerId)
@@ -227,7 +198,13 @@ class ServiceProposalWritingFragment
         }
 
         // ✅ 수정 모드용 newInstance
-        fun newInstanceForEdit(partnerId: Long, paperId: Long, isEditMode: Boolean = true, adminName: String, partnerName: String): ServiceProposalWritingFragment {
+        fun newInstanceForEdit(
+            partnerId: Long,
+            paperId: Long,
+            isEditMode: Boolean = true,
+            adminName: String,
+            partnerName: String
+        ): ServiceProposalWritingFragment {
             return ServiceProposalWritingFragment().apply {
                 arguments = Bundle().apply {
                     putLong("partnerId", partnerId)

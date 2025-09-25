@@ -156,6 +156,7 @@
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cl_certify_confirm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="48dp">
@@ -199,7 +200,7 @@
             android:layout_height="match_parent"
             app:defaultNavHost="false"
             android:layout_gravity="top"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
     </FrameLayout>
 

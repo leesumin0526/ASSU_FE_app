@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.presentation.admin.dashboard.AdminDashboardSuggestionsActivity
+import com.example.assu_fe_app.presentation.partner.PartnerMainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -67,10 +68,12 @@ class NotificationUnreadFragment : Fragment(R.layout.fragment_notification_unrea
                             }
                         }
                         is NotificationsViewModel.NavEvent.ToPartnerProposalDetail -> {
-                            // findNavController().navigate(
-                            //     R.id.action_notifications_to_partnerProposalDetail,
-                            //     bundleOf("proposalId" to ev.proposalId, "role" to role.name)
-                            // )
+                            val intent = Intent(requireContext(), PartnerMainActivity::class.java).apply {
+                                putExtra("nav_dest_id", R.id.partnerChattingFragment)
+                            }
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            startActivity(intent)
+                            requireActivity().finish()
                         }
                     }
                 }

@@ -63,24 +63,13 @@ class ServiceProposalTermWritingFragment
                                     .replace(R.id.chatting_fragment_container, ChattingSentProposalFragment())
                                     .addToBackStack(null)
                                     .commit()
-                                viewModel.resetWritePartnershipState() // 상태 리셋
-                            }
-                            is WritePartnershipUiState.Fail -> {
-                                Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
-                                binding.btnCompleted.isEnabled = true // 실패 시 버튼 다시 활성화
-                                binding.tvCompleted.text = if (isEditMode) "제안서 수정하기" else "제안서 보내기"
                                 viewModel.resetWritePartnershipState()
                             }
-                            is WritePartnershipUiState.Error -> {
+                            is WritePartnershipUiState.Fail, is WritePartnershipUiState.Error -> {
                                 Toast.makeText(requireContext(), "오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-                                binding.btnCompleted.isEnabled = true // 실패 시 버튼 다시 활성화
-                                binding.tvCompleted.text = if (isEditMode) "제안서 수정하기" else "제안서 보내기"
                                 viewModel.resetWritePartnershipState()
                             }
-                            else -> {
-                                binding.btnCompleted.isEnabled = true
-                                binding.tvCompleted.text = if (isEditMode) "제안서 수정하기" else "제안서 보내기"
-                            }
+                            else -> { /* Idle */ }
                         }
                     }
                 }
@@ -112,7 +101,7 @@ class ServiceProposalTermWritingFragment
         }
 //        binding.etFragmentServiceProposalSign4.addTextChangedListener { text ->
 //            viewModel.signature.value = text.toString()
-//        }
+//        } // TODO: (인) 표시 처리에 따라 수정
 
         binding.btnCompleted.setOnClickListener {
             viewModel.updateSignDate()
@@ -126,13 +115,11 @@ class ServiceProposalTermWritingFragment
     private fun updateSummaryText() {
         val adminName = viewModel.adminName.value
         val partnerName = viewModel.partnerName.value
-        val signDate = viewModel.signDate.value
 
         val summaryText = buildString {
             append("위와 같이 ")
             append(adminName.ifEmpty { "-" })
             append("와의\n제휴를 제안합니다.\n\n")
-            append(signDate + "\n")
             append("대표 ")
             append(partnerName.ifEmpty { "-" })
         }

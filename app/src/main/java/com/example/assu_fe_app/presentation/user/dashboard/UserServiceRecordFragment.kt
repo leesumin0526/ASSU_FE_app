@@ -25,55 +25,69 @@ class UserServiceRecordFragment : BaseFragment<ActivityUserServiceRecordBinding>
     private val usageViewModel: MonthUsageViewModel by activityViewModels()
 
     private val today = LocalDate.now()
-    private var selectedMonth = today.monthValue
-    private var selectedYear = today.year
     private val currentYear = today.year
     private val currentMonth = today.monthValue
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun initView() {
-        // ... (기존 코드 유지)
-
-        // 초기 UI 업데이트
-        updateMonthUI()
-
         binding.btnServiceRecordBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
 
         binding.ivServiceRecordBackArrow.setOnClickListener {
-            if (selectedMonth == 1) {
-                selectedMonth = 12
-                selectedYear -= 1
+            val currentSelectedYear = usageViewModel.getCurrentYear()
+            val currentSelectedMonth = usageViewModel.getCurrentMonth()
+
+            val newYear: Int
+            val newMonth: Int
+
+            if (currentSelectedMonth == 1) {
+                newMonth = 12
+                newYear = currentSelectedYear - 1
             } else {
-                selectedMonth -= 1
+                newMonth = currentSelectedMonth - 1
+                newYear = currentSelectedYear
             }
-            updateMonthUI()
-            usageViewModel.year = selectedYear
-            usageViewModel.month = selectedMonth
+
+            usageViewModel.updateSelectedDate(newYear, newMonth)
             usageViewModel.getMonthUsage()
         }
 
         binding.ivServiceRecordNextArrow.setOnClickListener {
-            val isMaxMonth = selectedYear == currentYear && selectedMonth == currentMonth
+            val currentSelectedYear = usageViewModel.getCurrentYear()
+            val currentSelectedMonth = usageViewModel.getCurrentMonth()
+
+            val isMaxMonth = currentSelectedYear == currentYear && currentSelectedMonth == currentMonth
             if (!isMaxMonth) {
-                if (selectedMonth == 12) {
-                    selectedMonth = 1
-                    selectedYear += 1
+                val newYear: Int
+                val newMonth: Int
+
+                if (currentSelectedMonth == 12) {
+                    newMonth = 1
+                    newYear = currentSelectedYear + 1
                 } else {
-                    selectedMonth += 1
+                    newMonth = currentSelectedMonth + 1
+                    newYear = currentSelectedYear
                 }
-                updateMonthUI()
-                usageViewModel.year = selectedYear
-                usageViewModel.month = selectedMonth
+
+                usageViewModel.updateSelectedDate(newYear, newMonth)
                 usageViewModel.getMonthUsage()
             }
         }
+
         initAdapter()
     }
 
     override fun initObserver() {
+        // 월/연도 변경 관찰
+        usageViewModel.selectedYear.observe(viewLifecycleOwner) { year ->
+            updateMonthUI()
+        }
+
+        usageViewModel.selectedMonth.observe(viewLifecycleOwner) { month ->
+            updateMonthUI()
+        }
+
         usageViewModel.recordList.observe(viewLifecycleOwner) { records ->
             serviceRecordAdapter.setData(records)
             binding.tvServiceCount.text = records.size.toString()
@@ -90,8 +104,26 @@ class UserServiceRecordFragment : BaseFragment<ActivityUserServiceRecordBinding>
     }
 
     private fun updateMonthUI() {
+        val selectedYear = usageViewModel.getCurrentYear()
+        val selectedMonth = usageViewModel.getCurrentMonth()
+
         binding.tvServiceRecordMonth.text = selectedMonth.toString()
-        val isMaxMonth = selectedYear == currentYear && selectedMonth == currentMonth
-        binding.ivServiceRecordNextArrow.isEnabled = !isMaxMonth
+
+        // 현재 달인지 확인
+        val isCurrentMonth = selectedYear == currentYear && selectedMonth == currentMonth
+
+        // 다음 화살표 상태 업데이트
+        binding.ivServiceRecordNextArrow.isEnabled = !isCurrentMonth
+
+        // 화살표 색상 변경 (활성화: 검정색, 비활성화: 회색)
+        if (isCurrentMonth) {
+            binding.ivServiceRecordNextArrow.alpha = 0.3f // 회색처리
+        } else {
+            binding.ivServiceRecordNextArrow.alpha = 1.0f // 검정색 (활성화)
+        }
+
+        // 이전 화살표는 항상 활성화 (과거로는 언제든 이동 가능)
+        binding.ivServiceRecordBackArrow.isEnabled = true
+        binding.ivServiceRecordBackArrow.alpha = 1.0f
     }
 }

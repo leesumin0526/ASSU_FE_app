@@ -402,6 +402,7 @@
                         android:padding="20dp">
 
                         <ImageView
+                            android:id="@+id/iv_admin_home_recommend_shop_img"
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:scaleType="centerCrop"
@@ -417,6 +418,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_admin_home_recommend_shop_name"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="역전할머니맥주 숭실대점"
@@ -425,6 +427,7 @@
                                 android:textSize="17sp" />
 
                             <TextView
+                                android:id="@+id/tv_admin_home_recommend_shop_address"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"

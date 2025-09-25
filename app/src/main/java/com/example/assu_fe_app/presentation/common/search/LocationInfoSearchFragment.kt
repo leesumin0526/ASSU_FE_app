@@ -4,6 +4,7 @@ package com.example.assu_fe_app.presentation.common.search
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -74,17 +75,40 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
             adapter = this@LocationInfoSearchFragment.adapter
         }
         adapter.onItemClick = { clickedLocationInfo ->
+            // 선택된 LocationInfo 데이터 상세 로그
+            Log.d("LocationInfoSearchFragment", "=== 선택된 주소 정보 ===")
+            Log.d("LocationInfoSearchFragment", "Name: '${clickedLocationInfo.name}'")
+            Log.d("LocationInfoSearchFragment", "Address: '${clickedLocationInfo.address}'")
+            Log.d("LocationInfoSearchFragment", "ID: '${clickedLocationInfo.id}'")
+            Log.d("LocationInfoSearchFragment", "Latitude: ${clickedLocationInfo.latitude}")
+            Log.d("LocationInfoSearchFragment", "Longitude: ${clickedLocationInfo.longitude}")
+            Log.d("LocationInfoSearchFragment", "Road Address: '${clickedLocationInfo.roadAddress}'")
+            Log.d("LocationInfoSearchFragment", "Type: '${arguments?.getString("type")}'")
+            Log.d("LocationInfoSearchFragment", "=========================")
+            
             if(arguments?.getString("type") == "passive"){
-
+                Log.d("LocationInfoSearchFragment", "Passive 모드: selectedPlace로 전달")
                 val resultBundle = Bundle().apply {
                     putString("selectedPlace", clickedLocationInfo.name)
+                    putString("selectedPlace_placeId",     clickedLocationInfo.id)
+                    putString("selectedPlace_address",     clickedLocationInfo.address)
+                    putString("selectedPlace_roadAddress", clickedLocationInfo.roadAddress)
+                    putDouble("selectedPlace_latitude",    clickedLocationInfo.latitude)
+                    putDouble("selectedPlace_longitude",   clickedLocationInfo.longitude)
                 }
                 parentFragmentManager.setFragmentResult("result", resultBundle)
                 parentFragmentManager.popBackStack()
 
             } else{
+                Log.d("LocationInfoSearchFragment", "일반 모드: selectedAddress로 전달")
                 val resultBundle = Bundle().apply {
                     putString("selectedAddress", clickedLocationInfo.address)
+                    // selectedPlace 객체 생성을 위한 모든 데이터 전달
+                    putString("selectedPlaceName", clickedLocationInfo.name)
+                    putString("selectedPlaceId", clickedLocationInfo.id)
+                    putString("selectedPlaceRoadAddress", clickedLocationInfo.roadAddress)
+                    putDouble("selectedPlaceLatitude", clickedLocationInfo.latitude)
+                    putDouble("selectedPlaceLongitude", clickedLocationInfo.longitude)
                 }
                 parentFragmentManager.setFragmentResult("result", resultBundle)
                 parentFragmentManager.popBackStack()

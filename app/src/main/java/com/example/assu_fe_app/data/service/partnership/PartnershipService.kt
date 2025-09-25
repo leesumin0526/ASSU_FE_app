@@ -11,11 +11,17 @@ import com.example.assu_fe_app.data.dto.partnership.response.WritePartnershipRes
 import retrofit2.http.Body
 import com.example.assu_fe_app.data.dto.partnership.response.GetProposalAdminListResponseDto
 import com.example.assu_fe_app.data.dto.partnership.response.GetProposalPartnerListResponseDto
+import com.example.assu_fe_app.data.dto.partnership.response.ManualPartnershipResponseDto
+import com.example.assu_fe_app.data.dto.partnership.response.SuspendedPaperDto
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.http.DELETE
 import com.example.assu_fe_app.data.dto.partnership.response.UpdatePartnershipStatusResponseDto
-import com.example.assu_fe_app.domain.model.partnership.UpdatePartnershipStatusResponseModel
 import retrofit2.http.GET
-import retrofit2.http.PATCH
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PATCH
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -66,4 +72,22 @@ interface PartnershipService {
         @Path("partnershipId") partnershipId: Long,
         @Body request: UpdatePartnershipStatusRequestDto
     ): BaseResponse<UpdatePartnershipStatusResponseDto>
+
+    // 제휴 제안서 수동 등록 API
+    @Multipart
+    @POST("partnership/passivity")
+    suspend fun createManualPartnership(
+        @Part("request") requestJson: RequestBody,              // application/json
+        @Part contractImage: MultipartBody.Part? = null         // image/*
+    ): BaseResponse<ManualPartnershipResponseDto>
+
+    // 대기 중인 제휴 계약서 조회 API
+    @GET("partnership/suspended")
+    suspend fun getSuspendedPapers(): BaseResponse<List<SuspendedPaperDto>>
+
+    // 제휴 계약서 삭제 API
+    @DELETE("partnership/proposal/delete/{paperId}")
+    suspend fun deletePartnership(
+        @Path("paperId") paperId: Long
+    ): BaseResponse<Any>
 }

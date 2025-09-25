@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.common.contract
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,8 @@ class PartnershipContractDialogFragment() : DialogFragment( ) {
     private lateinit var adapter: PartnershipContractAdapter
     private var contractData: PartnershipContractData? = null
 
+    var onDismissListener: (() -> Unit)? = null
+
     companion object {
         private const val ARG_CONTRACT = "contract"
 
@@ -29,6 +32,11 @@ class PartnershipContractDialogFragment() : DialogFragment( ) {
                 }
             }
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        onDismissListener?.invoke()
     }
 
 

@@ -8,6 +8,7 @@ import com.example.assu_fe_app.databinding.ActivitySignUpBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class SignUpActivity : BaseActivity<ActivitySignUpBinding>(R.layout.activity_sign_up) {
     override fun initView() {

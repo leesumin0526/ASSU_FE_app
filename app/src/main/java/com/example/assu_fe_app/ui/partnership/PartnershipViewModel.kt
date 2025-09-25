@@ -1,6 +1,8 @@
 package com.example.assu_fe_app.ui.partnership
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -56,6 +58,8 @@ class PartnershipViewModel @Inject constructor(
     val partnerName = MutableStateFlow("")
     val adminName = MutableStateFlow("")
     val signDate = MutableStateFlow("")
+//    private val _signDate = MutableLiveData<String>()
+//    val signDate : LiveData<String> = _signDate
 
     var paperId: Long = -1L
     var partnerId: Long = -1L
@@ -75,10 +79,9 @@ class PartnershipViewModel @Inject constructor(
 
     val isSubmitButtonEnabled: StateFlow<Boolean> = combine(
         partnershipStartDate,
-        partnershipEndDate,
-        signature
-    ) { start, end, sign->
-        start.isNotBlank() && end.isNotBlank() && sign.isNotBlank()
+        partnershipEndDate
+    ) { start, end->
+        start.isNotBlank() && end.isNotBlank()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -90,6 +93,7 @@ class PartnershipViewModel @Inject constructor(
 
     fun updateSignDate() {
         val sdf = java.text.SimpleDateFormat("yyyy년 MM월 dd일", java.util.Locale.getDefault())
+        Log.d("함수", "${sdf}")
         signDate.value = sdf.format(java.util.Date())
     }
 

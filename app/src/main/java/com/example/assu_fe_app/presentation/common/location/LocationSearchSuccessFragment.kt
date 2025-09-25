@@ -32,6 +32,7 @@ class LocationSearchSuccessFragment :
     BaseFragment<FragmentLocationSearchSuccessBinding>(R.layout.fragment_location_search_success) {
     @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
 
+    private val sharedViewModel: LocationSharedViewModel by viewModels()
     private val searchViewModel : AdminPartnerKeyWordSearchViewModel by activityViewModels()
     private val chatVm: ChattingViewModel by activityViewModels()
 
@@ -160,6 +161,7 @@ class LocationSearchSuccessFragment :
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
             adapter = this@LocationSearchSuccessFragment.adapter
         }
+
     }
 
 }

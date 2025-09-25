@@ -14,7 +14,6 @@ fun ProposalPartnerDetailsModel.toContractData(
     fallbackEnd: String? = null
 ): PartnershipContractData {
 
-    // ✅ 여기! goods 가 아니라 options 를 매핑합니다.
     val items: List<PartnershipContractItem> =
         options.mapNotNull { it.toContractItem() }
 
