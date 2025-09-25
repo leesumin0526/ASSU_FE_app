@@ -137,20 +137,56 @@
 
         <View
             android:id="@+id/serviceRecord_mg6"
-            android:layout_width="10dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.0277"
+            app:layout_constraintHeight_percent="0.026"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cl_serviceRecord_month_convert"/>
+
+        <LinearLayout
+            android:id="@+id/ll_month_benefit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/cl_serviceRecord_month_convert"
+            app:layout_constraintTop_toBottomOf="@id/serviceRecord_mg6">
+            <TextView
+                android:id="@+id/tv_record_benefit_month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/pretendard_semibold"
+                android:textSize="25sp"
+                android:layout_marginEnd="4dp"
+                android:text="3"
+                android:textColor="@color/assu_main"/>
+            <TextView
+                android:id="@+id/tv_service_benefit_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/pretendard_semibold"
+                android:textSize="25sp"
+                android:layout_marginStart="4dp"
+                android:text="월의 혜택"
+                android:textColor="@color/assu_main"/>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/serviceRecord_mg30"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.0171"
+            app:layout_constraintTop_toBottomOf="@id/ll_month_benefit"
+            app:layout_constraintStart_toStartOf="@id/ll_month_benefit"/>
 
         <LinearLayout
             android:id="@+id/ll_service_received"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="11dp"
             app:layout_constraintStart_toStartOf="@id/cl_serviceRecord_month_convert"
-            app:layout_constraintTop_toBottomOf="@id/serviceRecord_mg6">
+            app:layout_constraintTop_toBottomOf="@id/serviceRecord_mg30">
             <TextView
                 android:id="@+id/tv_service"
                 android:layout_width="wrap_content"
