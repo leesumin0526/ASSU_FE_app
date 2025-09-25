@@ -33,6 +33,11 @@ class AuthTokenLocalStoreImpl @Inject constructor(
         private const val KEY_BASIC_INFO_UNIVERSITY = "basic_info_university"
         private const val KEY_BASIC_INFO_DEPARTMENT = "basic_info_department"
         private const val KEY_BASIC_INFO_MAJOR = "basic_info_major"
+        private const val KEY_LAST_LOGIN_TIME = "last_login_time"
+        
+        // 학생 사용자만 주기적 로그인 유도 (7일마다)
+        private const val STUDENT_RE_LOGIN_INTERVAL_DAYS = 7
+        private const val STUDENT_RE_LOGIN_INTERVAL_MS = STUDENT_RE_LOGIN_INTERVAL_DAYS * 24 * 60 * 60 * 1000L
     }
 
     /****************************** 저장 메소드 ******************************/
@@ -66,11 +71,26 @@ class AuthTokenLocalStoreImpl @Inject constructor(
                 putString(KEY_BASIC_INFO_MAJOR, basicInfo.major)
             }
         }.apply()
+        
+        // 로그인 시간 저장
+        updateLastLoginTime()
+        
         android.util.Log.d("AuthTokenLocalStore", "=== saveLoginData 완료 ===")
     }
 
     override fun updateAccessToken(newAccessToken: String) {
         prefs.edit().putString(KEY_ACCESS_TOKEN, newAccessToken).apply()
+    }
+
+    override fun updateRefreshToken(newRefreshToken: String) {
+        prefs.edit().putString(KEY_REFRESH_TOKEN, newRefreshToken).apply()
+    }
+
+    override fun updateTokens(accessToken: String, refreshToken: String) {
+        prefs.edit()
+            .putString(KEY_ACCESS_TOKEN, accessToken)
+            .putString(KEY_REFRESH_TOKEN, refreshToken)
+            .apply()
     }
 
     /****************************** 초기화 메소드 ******************************/
@@ -215,18 +235,8 @@ class AuthTokenLocalStoreImpl @Inject constructor(
         val accessToken = getAccessToken() ?: return true
         
         try {
-            // JWT 토큰의 payload 부분 디코딩
-            val parts = accessToken.split(".")
-            if (parts.size != 3) return true
-            
-            val payload = parts[1]
-            // Base64 URL 디코딩
-            val decodedBytes = android.util.Base64.decode(payload, android.util.Base64.URL_SAFE)
-            val payloadJson = String(decodedBytes)
-            
-            // JSON 파싱하여 exp 필드 추출
-            val jsonObject = org.json.JSONObject(payloadJson)
-            val exp = jsonObject.getLong("exp")
+            val exp = getTokenExpirationTime(accessToken)
+            if (exp == null) return true
             
             // 현재 시간과 비교 (초 단위)
             val currentTime = System.currentTimeMillis() / 1000
@@ -239,5 +249,93 @@ class AuthTokenLocalStoreImpl @Inject constructor(
             android.util.Log.e("AuthTokenLocalStore", "Error checking token expiration: ${e.message}")
             return true // 파싱 오류 시 만료된 것으로 간주
         }
+    }
+
+    override fun isAccessTokenExpiringSoon(): Boolean {
+        val accessToken = getAccessToken() ?: return true
+        
+        try {
+            val exp = getTokenExpirationTime(accessToken)
+            if (exp == null) return true
+            
+            // 현재 시간 + 5분 (300초)
+            val currentTime = System.currentTimeMillis() / 1000
+            val bufferTime = 300L // 5분
+            val isExpiringSoon = currentTime >= (exp - bufferTime)
+            
+            android.util.Log.d("AuthTokenLocalStore", "Token exp: $exp, current: $currentTime, expiring soon: $isExpiringSoon")
+            return isExpiringSoon
+            
+        } catch (e: Exception) {
+            android.util.Log.e("AuthTokenLocalStore", "Error checking token expiring soon: ${e.message}")
+            return true // 파싱 오류 시 만료된 것으로 간주
+        }
+    }
+    
+    /**
+     * JWT 토큰에서 만료 시간 추출
+     */
+    private fun getTokenExpirationTime(token: String): Long? {
+        return try {
+            // JWT 토큰의 payload 부분 디코딩
+            val parts = token.split(".")
+            if (parts.size != 3) return null
+            
+            val payload = parts[1]
+            // Base64 URL 디코딩
+            val decodedBytes = android.util.Base64.decode(payload, android.util.Base64.URL_SAFE)
+            val payloadJson = String(decodedBytes)
+            
+            // JSON 파싱하여 exp 필드 추출
+            val jsonObject = org.json.JSONObject(payloadJson)
+            jsonObject.getLong("exp")
+            
+        } catch (e: Exception) {
+            android.util.Log.e("AuthTokenLocalStore", "Error parsing token expiration: ${e.message}")
+            null
+        }
+    }
+
+    /****************************** 주기적 로그인 유도 관련 메소드 ******************************/
+    override fun getLastLoginTime(): Long {
+        return prefs.getLong(KEY_LAST_LOGIN_TIME, 0L)
+    }
+
+    override fun updateLastLoginTime() {
+        val currentTime = System.currentTimeMillis()
+        prefs.edit().putLong(KEY_LAST_LOGIN_TIME, currentTime).apply()
+        android.util.Log.d("AuthTokenLocalStore", "Last login time updated: $currentTime")
+    }
+
+    override fun shouldPromptForReLogin(): Boolean {
+        val lastLoginTime = getLastLoginTime()
+        if (lastLoginTime == 0L) {
+            android.util.Log.d("AuthTokenLocalStore", "No previous login time found")
+            return false
+        }
+
+        val currentTime = System.currentTimeMillis()
+        val timeSinceLastLogin = currentTime - lastLoginTime
+        val shouldPrompt = timeSinceLastLogin >= STUDENT_RE_LOGIN_INTERVAL_MS
+
+        android.util.Log.d("AuthTokenLocalStore", 
+            "Time since last login: ${timeSinceLastLogin / (1000 * 60 * 60 * 24)} days, " +
+            "should prompt: $shouldPrompt"
+        )
+
+        return shouldPrompt
+    }
+
+    override fun shouldPromptForReLoginByUserRole(): Boolean {
+        val userRole = getUserRole()
+        
+        // 학생 사용자가 아니면 주기적 로그인 유도하지 않음
+        if (userRole != "STUDENT") {
+            android.util.Log.d("AuthTokenLocalStore", "User role is $userRole, skipping periodic re-login")
+            return false
+        }
+        
+        // 학생 사용자만 주기적 로그인 유도 적용
+        return shouldPromptForReLogin()
     }
 }

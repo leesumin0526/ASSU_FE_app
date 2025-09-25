@@ -6,6 +6,7 @@ import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
 import com.example.assu_fe_app.data.remote.AuthInterceptor
 import com.example.assu_fe_app.data.service.AuthService
+import com.example.assu_fe_app.data.service.TokenRefreshAuthService
 import com.example.assu_fe_app.data.service.admin.AdminHomeService
 import com.example.assu_fe_app.data.service.NoAuthService
 import com.example.assu_fe_app.data.service.certification.CertificationService
@@ -60,6 +61,10 @@ object ServiceModule {
     @Retention(AnnotationRetention.BINARY)
     annotation class S3
 
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class TokenRefresh
+
     @Provides
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
@@ -79,6 +84,16 @@ object ServiceModule {
 
     @Provides @Singleton @NoAuth
     fun provideOkHttpNoAuth(): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY // 개발에서만
+            })
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .build()
+
+    @Provides @Singleton @TokenRefresh
+    fun provideOkHttpForTokenRefresh(): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY // 개발에서만
@@ -107,6 +122,14 @@ object ServiceModule {
 
     @Provides @Singleton @NoAuth
     fun provideRetrofitNoAuth(@NoAuth client: OkHttpClient, moshi: Moshi): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(client)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+
+    @Provides @Singleton @TokenRefresh
+    fun provideRetrofitForTokenRefresh(@TokenRefresh client: OkHttpClient, moshi: Moshi): Retrofit =
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(client)
@@ -164,6 +187,11 @@ object ServiceModule {
     @Singleton
     fun providePartnershipService(@Auth retrofit: Retrofit): PartnershipService =
         retrofit.create(PartnershipService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideTokenRefreshAuthService(@TokenRefresh retrofit: Retrofit): TokenRefreshAuthService =
+        retrofit.create(TokenRefreshAuthService::class.java)
 
 
     @Provides @Singleton
