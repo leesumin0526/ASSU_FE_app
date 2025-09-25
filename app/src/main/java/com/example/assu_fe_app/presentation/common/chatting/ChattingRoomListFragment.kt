@@ -72,6 +72,7 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
     override fun onStart() {
         super.onStart()
         // 화면이 사용자에게 보일 때, 실시간 업데이트 구독 시작
+        viewModel.getChattingRoomList()
         viewModel.subscribeToUserUpdates()
     }
 
