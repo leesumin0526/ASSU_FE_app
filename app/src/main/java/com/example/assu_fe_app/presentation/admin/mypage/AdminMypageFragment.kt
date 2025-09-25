@@ -104,6 +104,24 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        super.onViewCreated(view, savedInstanceState)
+        val entry = findNavController().getBackStackEntry(R.id.adminMyPageFragment)
+        val handle = entry.savedStateHandle
+
+        handle.getLiveData<Boolean>("openPendingDialog")
+            .observe(viewLifecycleOwner) { need ->
+                if (need == true && childFragmentManager.findFragmentByTag("PendingDialog") == null) {
+                    val targetId = handle.get<Long?>("openPendingTargetId")
+                    AdminMypagePendingPartnershipDialogFragment
+                        .newInstance(targetId)
+                        .show(childFragmentManager, "PendingDialog")
+
+                    // 소모
+                    handle["openPendingDialog"] = false
+                    handle["openPendingTargetId"] = null
+                }
+            }
+
         binding.tvAdmAccountName.setText(authTokenLocalStore.getUserName())
         profileViewModel.fetchProfileImage()
         initClick()

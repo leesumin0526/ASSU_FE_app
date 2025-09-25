@@ -1,6 +1,5 @@
 package com.example.assu_fe_app.presentation.common.mypage
 
-// ❌ import android.app.Fragment  제거
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -71,7 +70,7 @@ class CustomerServiceDialogFragment :
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.list.collectLatest { st -> historyAdapter.submitList(st.items) }
+                vm.list.collectLatest { st -> historyAdapter.submitList(st.items.toList()) }
             }
         }
 

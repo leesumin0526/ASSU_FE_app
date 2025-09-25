@@ -57,6 +57,7 @@ class UserLocationFragment :
     private var myLocStyles: LabelStyles? = null
     private var myLocLabel: Label? = null
 
+    private val SEOUL_CITY_HALL = LatLng.from(37.4947, 126.9576)
 
     // 마지막으로 성공한 현재 위치(재진입 / 되돌아가기용 캐시)
     private var lastMyLatLng: LatLng? = null
@@ -134,31 +135,32 @@ class UserLocationFragment :
                             val item = labelToStore[label] ?: return true
                             showCapsule(item)
 
-                            val hasContent = isPartnerVisual(item)
-                            if (hasContent && !shownPartnerBubbleOnce) {
+                            // 버블은 "컨텐츠 있고 아직 한 번도 안 보여줬을 때만" 1회 노출
+                            if (!shownPartnerBubbleOnce && isPartnerVisual(item)) {
                                 shownPartnerBubbleOnce = true
                                 showSpeechBubbleOver(item.latitude, item.longitude, item.name ?: "")
-                            } else {
-                                // 제휴 내용 없거나 이미 한 번 보여준 이후엔 말풍선 숨김
-                                hideCapsuleAndBubble()
                             }
+                            else hideBubble()
+
                             return true
                         }
                     })
 
-                    // 지도 빈 곳 클릭 → 말풍선 닫기
-                    kakaoMap?.setOnMapClickListener { map, latLng, screenPt, poi ->
+                    kakaoMap?.setOnMapClickListener { _, _, _, _ ->
                         hideCapsuleAndBubble()
                     }
-
-                    // 카메라 움직이면 말풍선 닫기(위치 일치 깨지므로)
                     kakaoMap?.setOnCameraMoveStartListener { _, _ ->
                         hideCapsuleAndBubble()
                     }
 
+                    kakaoMap?.setOnCameraMoveEndListener { _, _, _ ->
+                        requestNearbyFromCurrentViewport()
+                    }
+
                     // 카메라 이동 종료 시 재조회
-                    map.setOnCameraMoveEndListener { _, _, _ -> requestNearbyFromCurrentViewport() }
-                    goToMyLocation()
+                    // map.setOnCameraMoveEndListener { _, _, _ -> requestNearbyFromCurrentViewport() }
+                    //goToMyLocation()
+                    moveCameraAndQuery(SEOUL_CITY_HALL.latitude, SEOUL_CITY_HALL.longitude)
                     requestLocationPermissionsIfNeeded()
                 }
             }
@@ -235,7 +237,7 @@ class UserLocationFragment :
         kakaoMap?.moveCamera(
             CameraUpdateFactory.newCenterPosition(LatLng.from(lat, lng), DEFAULT_ZOOM)
         )
-        requestNearbyFromCurrentViewport()
+        //requestNearbyFromCurrentViewport()
     }
 
     private fun centerToMyLocation(lat: Double, lng: Double) {
@@ -394,9 +396,15 @@ class UserLocationFragment :
         }
     }
 
-    private fun hideCapsuleAndBubble() {
-        binding.fvUserLocationItem.visibility = View.GONE
+    private fun hideBubble() {
         binding.includeSpeechBubble.visibility = View.GONE
+    }
+    private fun hideCapsule() {
+        binding.fvUserLocationItem.visibility = View.GONE
+    }
+    private fun hideCapsuleAndBubble() {
+        hideCapsule()
+        hideBubble()
     }
 
     private fun showSpeechBubbleOver(lat: Double, lng: Double, title: String) {

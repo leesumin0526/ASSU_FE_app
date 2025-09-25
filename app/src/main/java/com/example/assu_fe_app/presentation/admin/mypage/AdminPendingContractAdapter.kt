@@ -5,65 +5,60 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.ItemAdminPendingContractBinding
+import com.example.assu_fe_app.domain.model.partnership.SuspendedPaperModel
 
 class AdminPendingContractAdapter(
-    private val onDeleteClick: (PendingContract) -> Unit
-) : ListAdapter<PendingContract, AdminPendingContractAdapter.ViewHolder>(ContractDiffCallback()) {
+    private val onDeleteClick: (SuspendedPaperModel) -> Unit,
+    private val onItemClick: (SuspendedPaperModel) -> Unit
+) : ListAdapter<SuspendedPaperModel, AdminPendingContractAdapter.ViewHolder>(Diff()) {
 
-    private var onDeleteConfirmed: ((PendingContract) -> Unit)? = null
-
-    fun setOnDeleteConfirmedListener(listener: (PendingContract) -> Unit) {
-        onDeleteConfirmed = listener
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemAdminPendingContractBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return ViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-
-    fun removeContract(contract: PendingContract) {
-        val currentList = currentList.toMutableList()
-        currentList.remove(contract)
-        submitList(currentList)
-        onDeleteConfirmed?.invoke(contract)
-    }
+    private var selectedPosition: Int? = null
 
     inner class ViewHolder(
         private val binding: ItemAdminPendingContractBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(contract: PendingContract) {
-            binding.tvStoreName.text = contract.storeName
-            binding.tvProposalDate.text = contract.proposalDate
+        fun bind(item: SuspendedPaperModel, isSelected: Boolean) {
+            binding.tvStoreName.text = item.partnerName
+            binding.tvProposalDate.text = item.createdAt.toString().split("T")[0]
 
-            binding.btnDelete.setOnClickListener {
-                onDeleteClick(contract)
-            }
+            binding.root.setBackgroundResource(
+                if (isSelected) R.color.assu_sub3 else android.R.color.transparent
+            )
+
+            binding.btnDelete.setOnClickListener { onDeleteClick(item) }
+            binding.root.setOnClickListener { onItemClick(item) } // 배경 변경은 Fragment에서 select 호출
         }
     }
 
-    private class ContractDiffCallback : DiffUtil.ItemCallback<PendingContract>() {
-        override fun areItemsTheSame(
-            oldItem: PendingContract,
-            newItem: PendingContract
-        ): Boolean {
-            return oldItem.storeName == newItem.storeName && oldItem.proposalDate == newItem.proposalDate
-        }
 
-        override fun areContentsTheSame(
-            oldItem: PendingContract,
-            newItem: PendingContract
-        ): Boolean {
-            return oldItem == newItem
-        }
+    override fun onCreateViewHolder(p: ViewGroup, v: Int) =
+        ViewHolder(ItemAdminPendingContractBinding.inflate(LayoutInflater.from(p.context), p, false))
+
+    override fun onBindViewHolder(h: ViewHolder, pos: Int) =
+        h.bind(getItem(pos), pos == selectedPosition)
+
+    /** 선택 표시 */
+    fun selectById(paperId: Long) {
+        val idx = currentList.indexOfFirst { it.paperId == paperId }
+        if (idx == -1) return
+        val prev = selectedPosition
+        selectedPosition = idx
+        prev?.let { notifyItemChanged(it) }
+        notifyItemChanged(idx)
+    }
+
+    /** 선택 해제 */
+    fun clearSelection() {
+        val prev = selectedPosition ?: return
+        selectedPosition = null
+        notifyItemChanged(prev)
+    }
+
+    private class Diff : DiffUtil.ItemCallback<SuspendedPaperModel>() {
+        override fun areItemsTheSame(o: SuspendedPaperModel, n: SuspendedPaperModel) = o.paperId == n.paperId
+        override fun areContentsTheSame(o: SuspendedPaperModel, n: SuspendedPaperModel) = o == n
     }
 }

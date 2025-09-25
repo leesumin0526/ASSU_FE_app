@@ -17,6 +17,7 @@ import com.example.assu_fe_app.databinding.FragmentServiceProposalWritingBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.proposal.adapter.ServiceProposalAdapter
 
+//엥
 class ServiceProposalWritingFragment
     : BaseFragment<FragmentServiceProposalWritingBinding>(R.layout.fragment_service_proposal_writing) {
 
