@@ -3,6 +3,8 @@ package com.example.assu_fe_app.ui.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.example.assu_fe_app.data.dto.auth.AdminSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.CommonAuthDto
 import com.example.assu_fe_app.data.dto.auth.CommonInfoDto
@@ -13,6 +15,8 @@ import com.example.assu_fe_app.data.dto.auth.StudentTokenAuthPayloadDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyResponseDto
+import com.example.assu_fe_app.data.dto.auth.EmailVerificationRequestDto
+import com.example.assu_fe_app.data.repository.auth.AuthRepository
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.domain.model.auth.LoginModel
 import com.example.assu_fe_app.domain.model.auth.SignUpData
@@ -40,7 +44,8 @@ class SignUpViewModel @Inject constructor(
     private val studentTokenVerifyUseCase: StudentTokenVerifyUseCase,
     private val adminSignUpUseCase: AdminSignUpUseCase,
     private val partnerSignUpUseCase: PartnerSignUpUseCase,
-    private val authTokenLocalStore: AuthTokenLocalStore
+    private val authTokenLocalStore: AuthTokenLocalStore,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     // 회원가입 데이터 상태 관리
@@ -61,6 +66,23 @@ class SignUpViewModel @Inject constructor(
     // 회원가입 결과
     private val _signUpResult = MutableStateFlow<LoginModel?>(null)
     val signUpResult: StateFlow<LoginModel?> = _signUpResult.asStateFlow()
+
+    // 이메일 중복 검증 상태
+    private val _isEmailVerifying = MutableStateFlow(false)
+    val isEmailVerifying: StateFlow<Boolean> = _isEmailVerifying.asStateFlow()
+
+    private val _emailVerificationResult = MutableStateFlow<Boolean?>(null)
+    val emailVerificationResult: StateFlow<Boolean?> = _emailVerificationResult.asStateFlow()
+
+    private val _emailVerificationMessage = MutableStateFlow<String?>(null)
+    val emailVerificationMessage: StateFlow<String?> = _emailVerificationMessage.asStateFlow()
+
+    // 이메일 검증 상태 초기화
+    fun resetEmailVerification() {
+        _emailVerificationResult.value = null
+        _emailVerificationMessage.value = null
+        _isEmailVerifying.value = false
+    }
 
     // 전화번호 저장
     fun setPhoneNumber(phoneNumber: String) {
@@ -140,6 +162,80 @@ class SignUpViewModel @Inject constructor(
 
     fun setLicenseImageFile(file: File) {
         _signUpData.value = _signUpData.value.copy(licenseImageFile = file)
+    }
+
+    // 이메일 중복 검증
+    fun checkEmailVerification(email: String) {
+        if (email.isBlank()) {
+            _emailVerificationResult.value = false
+            _emailVerificationMessage.value = "이메일을 입력해주세요."
+            return
+        }
+
+        // 이메일 형식 검증
+        val emailPattern = android.util.Patterns.EMAIL_ADDRESS
+        if (!emailPattern.matcher(email).matches()) {
+            _emailVerificationResult.value = false
+            _emailVerificationMessage.value = "올바른 이메일 형식이 아닙니다."
+            return
+        }
+
+        viewModelScope.launch {
+            _isEmailVerifying.value = true
+            _emailVerificationMessage.value = null
+
+            val request = EmailVerificationRequestDto(email = email)
+
+            when (val result = authRepository.checkEmailVerification(request)) {
+                is RetrofitResult.Success -> {
+                    _emailVerificationResult.value = true
+                    _emailVerificationMessage.value = "사용 가능한 이메일입니다."
+                }
+                is RetrofitResult.Fail -> {
+                    _emailVerificationResult.value = false
+                    // 서버에서 받은 구체적인 오류 메시지 처리
+                    val errorMessage = try {
+                        when (result.statusCode) {
+                            400 -> {
+                                // 400 Bad Request - 이메일 형식 오류
+                                // JSON 응답에서 구체적인 오류 메시지 추출
+                                val gson = Gson()
+                                val jsonObject = gson.fromJson(result.message, JsonObject::class.java)
+                                val resultObject = jsonObject.getAsJsonObject("result")
+                                val emailError = resultObject?.get("email")?.asString
+                                emailError ?: "올바른 이메일 형식을 입력해주세요."
+                            }
+                            404 -> {
+                                // 404 Not Found - 이미 존재하는 이메일
+                                "이미 사용 중인 이메일입니다."
+                            }
+                            409 -> {
+                                // 409 Conflict - 이미 가입된 이메일
+                                "이미 가입된 이메일입니다."
+                            }
+                            else -> {
+                                // 기타 오류 - 서버 메시지 사용
+                                result.message ?: "이메일 검증에 실패했습니다."
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // JSON 파싱 실패 시 기본 메시지 사용
+                        when (result.statusCode) {
+                            400 -> "올바른 이메일 형식을 입력해주세요."
+                            404 -> "이미 사용 중인 이메일입니다."
+                            409 -> "이미 가입된 이메일입니다."
+                            else -> result.message ?: "이메일 검증에 실패했습니다."
+                        }
+                    }
+                    _emailVerificationMessage.value = errorMessage
+                }
+                is RetrofitResult.Error -> {
+                    _emailVerificationResult.value = false
+                    _emailVerificationMessage.value = "네트워크 오류가 발생했습니다. 다시 시도해주세요."
+                }
+            }
+            _isEmailVerifying.value = false
+        }
     }
 
     // 관리자 이름 자동 생성 (가장 하위 단위 + "학생회")
