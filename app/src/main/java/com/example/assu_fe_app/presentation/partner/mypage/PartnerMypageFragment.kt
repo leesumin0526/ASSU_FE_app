@@ -16,6 +16,7 @@ import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentPartnerMypageBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
+import com.example.assu_fe_app.presentation.user.mypage.UserMypagePrivacyDialogFragment
 import com.example.assu_fe_app.ui.common.mypage.MypageViewModel
 import com.example.assu_fe_app.ui.profileImage.ProfileImageViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,7 +61,7 @@ class PartnerMypageFragment
                 pickContent.launch("image/*")
             }
         }
-
+        profileViewModel.fetchProfileImage()
         binding.tvPartnerAccountName.setText(authTokenLocalStore.getUserName())
     }
 
@@ -76,16 +77,25 @@ class PartnerMypageFragment
 
         viewLifecycleOwner.lifecycleScope.launch {
             profileViewModel.profileUi.collectLatest { s ->
+                // 1) 서버에서 받은 presigned URL 있으면 표시
+                s.remoteUrl?.let { url ->
+                    Glide.with(this@PartnerMypageFragment)
+                        .load(url)
+                        .placeholder(R.drawable.img_partner) // 선택
+                        .error(R.drawable.img_partner)        // 선택
+                        .into(binding.ivPartnerAccountProfileImg)
+                }
 
+                // 2) 방금 업로드한 로컬 미리보기 우선 표시 (있으면)
                 s.lastLocalPreview?.let { uri ->
                     Glide.with(this@PartnerMypageFragment)
                         .load(uri)
-                        .into(binding.ivPartnerAccountProfileImg) // 프로필 이미지뷰 id 가정: ivAdmProfile
+                        .into(binding.ivPartnerAccountProfileImg)
                 }
 
+                // 메시지는 필요 시 Snackbar/Toast
                 s.message?.let { msg ->
-                    // Snackbar/Toast 중 택1
-                    // Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                    // Log.e("Profile", msg) // 또는 Snackbar/Toast
                 }
             }
         }
@@ -98,19 +108,26 @@ class PartnerMypageFragment
     }
 
     private fun initClickListeners() {
-        // 알림 설정
+        // 알림 설정으로 이동
         binding.clPartnerAccountComponent1.setOnClickListener {
             PartnerMypageAlarmDialogFragment()
                 .show(childFragmentManager, "AlarmDialog")
         }
 
-        // 계정관리 페이지 이동
+        // 계정관리로 이동
         binding.clPartnerAccountComponent2.setOnClickListener {
             findNavController().navigate(
                 R.id.action_partner_mypage_to_mypage_account
             )
         }
 
+        // 개인정보 처리방침으로 이동
+        binding.clPartnerAccountComponent4.setOnClickListener {
+            UserMypagePrivacyDialogFragment()
+                .show(childFragmentManager, "PrivacyDialog")
+        }
+
+        // 고객센터로 이동
         binding.clPartnerAccountComponent5.setOnClickListener {
             findNavController().navigate(
                 R.id.action_partner_mypage_to_inquiry

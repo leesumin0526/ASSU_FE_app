@@ -2,6 +2,7 @@ package com.example.assu_fe_app.data.service.partnership
 
 import com.example.assu_fe_app.data.dto.BaseResponse
 import com.example.assu_fe_app.data.dto.partnership.request.CreateDraftRequestDto
+import com.example.assu_fe_app.data.dto.partnership.request.UpdatePartnershipStatusRequestDto
 import com.example.assu_fe_app.data.dto.partnership.request.WritePartnershipRequestDto
 import com.example.assu_fe_app.data.dto.partnership.response.AdminPartnershipStatusDto
 import com.example.assu_fe_app.data.dto.partnership.response.CreateDraftResponseDto
@@ -10,6 +11,8 @@ import com.example.assu_fe_app.data.dto.partnership.response.WritePartnershipRes
 import retrofit2.http.Body
 import com.example.assu_fe_app.data.dto.partnership.response.GetProposalAdminListResponseDto
 import com.example.assu_fe_app.data.dto.partnership.response.GetProposalPartnerListResponseDto
+import com.example.assu_fe_app.data.dto.partnership.response.UpdatePartnershipStatusResponseDto
+import com.example.assu_fe_app.domain.model.partnership.UpdatePartnershipStatusResponseModel
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
@@ -56,4 +59,11 @@ interface PartnershipService {
     suspend fun getPartnership(
         @Path("partnershipId") partnershipId: Long
     ): BaseResponse<WritePartnershipResponseDto>
+
+    // 제휴 상태 업데이트 API
+    @PATCH("partnership/{partnershipId}/status")
+    suspend fun updatePartnershipStatus(
+        @Path("partnershipId") partnershipId: Long,
+        @Body request: UpdatePartnershipStatusRequestDto
+    ): BaseResponse<UpdatePartnershipStatusResponseDto>
 }

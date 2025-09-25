@@ -6,6 +6,7 @@ import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
 import com.example.assu_fe_app.data.remote.AuthInterceptor
 import com.example.assu_fe_app.data.service.AuthService
+import com.example.assu_fe_app.data.service.admin.AdminHomeService
 import com.example.assu_fe_app.data.service.NoAuthService
 import com.example.assu_fe_app.data.service.certification.CertificationService
 import com.example.assu_fe_app.data.service.chatting.ChattingService
@@ -16,6 +17,7 @@ import com.example.assu_fe_app.data.service.inquiry.InquiryService
 import com.example.assu_fe_app.data.service.location.LocationService
 import com.example.assu_fe_app.data.service.location.SearchLocationService
 import com.example.assu_fe_app.data.service.notification.NotificationService
+import com.example.assu_fe_app.data.service.partner.PartnerHomeService
 import com.example.assu_fe_app.data.service.partnership.PartnershipService
 import com.example.assu_fe_app.data.service.profileService.ProfileService
 import com.example.assu_fe_app.data.service.review.ReviewService
@@ -193,4 +195,16 @@ object ServiceModule {
     @Singleton
     fun provideProfileService(@Auth retrofit: Retrofit): ProfileService =
         retrofit.create(ProfileService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAdminHomeApiService(@NoAuth retrofit: Retrofit): AdminHomeService =
+        retrofit.create(AdminHomeService::class.java)
+
+    @Provides
+    @Singleton
+    fun providePartnerHomeService(@NoAuth retrofit: Retrofit): PartnerHomeService =
+        retrofit.create(PartnerHomeService::class.java)
+
+
 }

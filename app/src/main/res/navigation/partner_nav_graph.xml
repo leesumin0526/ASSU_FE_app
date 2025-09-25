@@ -157,12 +157,20 @@
 
     <fragment
         android:id="@+id/proposalModifyFragment"
-        android:name="com.example.assu_fe_app.ProposalModifyFragment"
+        android:name="com.example.assu_fe_app.presentation.common.contract.ProposalModifyFragment"
         tools:layout="@layout/fragment_proposal_modify">
 
         <argument
             android:name="paperId"
             app:argType="long"/>
+
+        <argument
+            android:name="adminName"
+            app:argType="string"/>
+
+        <argument
+            android:name="partnerName"
+            app:argType="string"/>
 
         <argument
             android:name="viewMode"

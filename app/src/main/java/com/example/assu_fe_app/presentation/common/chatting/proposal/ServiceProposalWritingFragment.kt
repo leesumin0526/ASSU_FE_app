@@ -34,7 +34,7 @@ class ServiceProposalWritingFragment
 
     private val viewModel: PartnershipViewModel by activityViewModels()
     private lateinit var adapter: ServiceProposalAdapter
-    @Inject lateinit var tokenManager: AuthTokenLocalStore
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     private var isEditMode: Boolean = false
 
@@ -51,7 +51,7 @@ class ServiceProposalWritingFragment
         binding.rvFragmentServiceProposalItemSet.adapter = adapter
         binding.rvFragmentServiceProposalItemSet.layoutManager = LinearLayoutManager(requireContext())
 
-        val userRole = tokenManager.getUserRole()
+        val userRole = authTokenLocalStore.getUserRole()
         Log.d("RoleCheck", "Current user role is: $userRole")
 
 //        if (userRole.equals("ADMIN", ignoreCase = true)) {
@@ -143,7 +143,7 @@ class ServiceProposalWritingFragment
     }
 
     private fun setupAdminMode() {
-        viewModel.adminName.value = tokenManager.getLoginModel()?.username ?: ""
+        viewModel.adminName.value = authTokenLocalStore.getUserName() ?: ""
         binding.tvFragmentServiceProposalAdmin.isEnabled = false
 
         binding.tvFragmentServiceProposalPartner.hint = "업체명을 입력해주세요"
@@ -164,7 +164,7 @@ class ServiceProposalWritingFragment
             val partnerId = bundle.getLong("partnerId", -1L)
             val paperId = bundle.getLong("paperId", -1L)
             val adminName = bundle.getString("adminName", "")
-            val partnerName = "제휴 업체" // TODO : 임시 하드코딩
+            val partnerName = authTokenLocalStore.getUserName() ?: "-"
 
             Log.d("BundleCheck", "partnerName: '$partnerName', adminName: '$adminName'")
 
@@ -227,11 +227,13 @@ class ServiceProposalWritingFragment
         }
 
         // ✅ 수정 모드용 newInstance
-        fun newInstanceForEdit(partnerId: Long, paperId: Long, isEditMode: Boolean = true): ServiceProposalWritingFragment {
+        fun newInstanceForEdit(partnerId: Long, paperId: Long, isEditMode: Boolean = true, adminName: String, partnerName: String): ServiceProposalWritingFragment {
             return ServiceProposalWritingFragment().apply {
                 arguments = Bundle().apply {
                     putLong("partnerId", partnerId)
                     putLong("paperId", paperId)
+                    putString("adminName", adminName)
+                    putString("partnerName", partnerName)
                     putBoolean("isEditMode", isEditMode)
                 }
             }

@@ -1,6 +1,7 @@
 package com.example.assu_fe_app.data.repositoryImpl.partnership
 
 import com.example.assu_fe_app.data.dto.partnership.request.CreateDraftRequestDto
+import com.example.assu_fe_app.data.dto.partnership.request.UpdatePartnershipStatusRequestDto
 import com.example.assu_fe_app.data.dto.partnership.request.WritePartnershipRequestDto
 import com.example.assu_fe_app.data.repository.notification.NotificationRepository
 import com.example.assu_fe_app.data.repository.partnership.PartnershipRepository
@@ -11,6 +12,7 @@ import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsModel
 import com.example.assu_fe_app.domain.model.partnership.CreateDraftResponseModel
 import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
+import com.example.assu_fe_app.domain.model.partnership.UpdatePartnershipStatusResponseModel
 import com.example.assu_fe_app.domain.model.partnership.WritePartnershipResponseModel
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.apiHandler
@@ -73,5 +75,16 @@ class PartnershipRepositoryImpl @Inject constructor(
             execute = { api.getPartnership(partnershipId) },
             mapper = { dto -> dto.toDetailModel() }
         )
+
+    override suspend fun updatePartnershipStatus(
+        partnershipId: Long,
+        status: String
+    ): RetrofitResult<UpdatePartnershipStatusResponseModel> {
+        val requestDto = UpdatePartnershipStatusRequestDto(status = status)
+        return apiHandler(
+            { api.updatePartnershipStatus(partnershipId, requestDto) },
+            { dto -> dto.toModel() }
+        )
+    }
 
 }

@@ -1,11 +1,14 @@
 package com.example.assu_fe_app.presentation.common.chatting.proposal
 
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
@@ -16,6 +19,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentServiceProposalTermWritingBinding
 import com.example.assu_fe_app.databinding.ItemServiceProposalSetBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -23,22 +27,17 @@ import com.example.assu_fe_app.presentation.common.chatting.ChattingSentProposal
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import com.example.assu_fe_app.ui.partnership.WritePartnershipUiState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ServiceProposalTermWritingFragment
     : BaseFragment<FragmentServiceProposalTermWritingBinding>(R.layout.fragment_service_proposal_term_writing) {
     private val viewModel: PartnershipViewModel by activityViewModels()
-
     private var isEditMode: Boolean = false
 
     override fun initObserver() {
-        // ✅ arguments에서 수정 모드 여부 확인
-        arguments?.let { bundle ->
-            isEditMode = bundle.getBoolean("isEditMode", false)
-            Log.d("ServiceProposalTermWritingFragment", "Edit mode: $isEditMode")
-        }
-
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
 
@@ -58,17 +57,12 @@ class ServiceProposalTermWritingFragment
                         when (state) {
                             is WritePartnershipUiState.Loading -> {
                                 binding.btnCompleted.isEnabled = false
-                                // TODO: 로딩 인디케이터 표시
                             }
                             is WritePartnershipUiState.Success -> {
-                                if (isEditMode) {
-                                    parentFragmentManager.popBackStack()
-                                } else {
-                                    parentFragmentManager.beginTransaction()
-                                        .replace(R.id.chatting_fragment_container, ChattingSentProposalFragment())
-                                        .addToBackStack(null)
-                                        .commit()
-                                }
+                                parentFragmentManager.beginTransaction()
+                                    .replace(R.id.chatting_fragment_container, ChattingSentProposalFragment())
+                                    .addToBackStack(null)
+                                    .commit()
                                 viewModel.resetWritePartnershipState() // 상태 리셋
                             }
                             is WritePartnershipUiState.Fail -> {
@@ -95,10 +89,20 @@ class ServiceProposalTermWritingFragment
     }
 
     override fun initView() {
-        Log.d("ServiceProposalTermWritingFragment", "Fragment created")
-        binding.tvCompleted.text = if (isEditMode) "제안서 수정하기" else "제안서 보내기"
+        // ✅ arguments에서 수정 모드 여부 확인
+        arguments?.let { bundle ->
+            isEditMode = bundle.getBoolean("isEditMode", false)
+            Log.d("ServiceProposalTermWritingFragment", "Edit mode: $isEditMode")
+        }
 
+        binding.tvCompleted.text = if (isEditMode) "제안서 수정하기" else "제안서 보내기"
         binding.lifecycleOwner = viewLifecycleOwner
+
+        updateSummaryText()
+
+        if (isEditMode) {
+            loadExistingValues()
+        }
 
         binding.etFragmentServiceProposalContent2.addTextChangedListener { text ->
             viewModel.partnershipStartDate.value = text.toString()
@@ -106,17 +110,56 @@ class ServiceProposalTermWritingFragment
         binding.ivFragmentServiceProposalContent4.addTextChangedListener { text ->
             viewModel.partnershipEndDate.value = text.toString()
         }
-        binding.etFragmentServiceProposalSign4.addTextChangedListener { text ->
-            viewModel.signature.value = text.toString()
-        }
+//        binding.etFragmentServiceProposalSign4.addTextChangedListener { text ->
+//            viewModel.signature.value = text.toString()
+//        }
 
         binding.btnCompleted.setOnClickListener {
+            viewModel.updateSignDate()
             viewModel.onNextButtonClicked()
         }
 
         binding.ivFragmentServiceProposalBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+    }
+    private fun updateSummaryText() {
+        val adminName = viewModel.adminName.value
+        val partnerName = viewModel.partnerName.value
+        val signDate = viewModel.signDate.value
+
+        val summaryText = buildString {
+            append("위와 같이 ")
+            append(adminName.ifEmpty { "-" })
+            append("와의\n제휴를 제안합니다.\n\n")
+            append(signDate + "\n")
+            append("대표 ")
+            append(partnerName.ifEmpty { "-" })
+        }
+        binding.tvFragmentServiceProposalSign2.text = summaryText
+
+        binding.tvFragmentServiceProposalSign3.visibility = View.GONE
+        binding.etFragmentServiceProposalSign4.visibility = View.GONE
+    }
+
+    private fun loadExistingValues() {
+        // ViewModel에서 기존 값 가져와서 EditText에 설정
+        val startDate = viewModel.partnershipStartDate.value
+        val endDate = viewModel.partnershipEndDate.value
+        val signature = viewModel.partnerName.value // 기본값으로 가게 이름 설정
+
+        if (startDate.isNotEmpty()) {
+            binding.etFragmentServiceProposalContent2.setText(startDate)
+        }
+        if (endDate.isNotEmpty()) {
+            binding.ivFragmentServiceProposalContent4.setText(endDate)
+        }
+        if (signature.isNotEmpty()) {
+            binding.etFragmentServiceProposalSign4.setText(signature)
+        }
+
+        Log.d("ServiceProposalTermWritingFragment",
+            "Loaded values - Start: $startDate, End: $endDate, Sign: $signature")
     }
 
     companion object {

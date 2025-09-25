@@ -12,7 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.local.AuthTokenLocalStore
+import com.example.assu_fe_app.data.local.AuthTokenLocalStoreImpl
 import com.example.assu_fe_app.databinding.FragmentChattingListBinding
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -26,11 +26,13 @@ import javax.inject.Inject
 class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.layout.fragment_chatting_list){
 
     private val viewModel: ChattingViewModel by viewModels()
-    @Inject lateinit var tokenManager: AuthTokenLocalStore
+    private val authTokenLocalStoreImpl by lazy {
+        AuthTokenLocalStoreImpl(requireContext())
+    }
 
     // 클릭 시 액션 결정
     private val adapter by lazy {
-        ChattingRoomListAdapter(onItemClick = ::onRoomClick)
+        ChattingRoomListAdapter(onItemClick = ::onRoomClick, authTokenLocalStoreImpl)
     }
 
     override fun initView() {
@@ -63,7 +65,6 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
                 viewModel.getChattingRoomListState.collect { uiState ->
                     when (uiState) {
                         is ChattingViewModel.GetChattingRoomListUiState.Loading -> {
-                            Toast.makeText(requireContext(), "로딩 중…", Toast.LENGTH_SHORT).show()
                         }
                         is ChattingViewModel.GetChattingRoomListUiState.Success -> {
                             val isEmpty = uiState.data.isEmpty()
@@ -71,7 +72,6 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
 
                             binding.layoutAdminChattingNoHistoryInfo.isGone = !isEmpty
                             binding.rvChattingRoomList.isVisible = true
-                            Toast.makeText(requireContext(), "채팅방 리스트 불러오기 성공", Toast.LENGTH_SHORT).show()
                             Log.i("ChattingRoomListFragment", "채팅방 리스트 불러오기 성공")
                         }
                         is ChattingViewModel.GetChattingRoomListUiState.Fail -> {
@@ -97,6 +97,22 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
     private fun onRoomClick(item: GetChattingRoomListModel) {
         binding.rvChattingRoomList.isEnabled = false
         binding.rvChattingRoomList.postDelayed({binding.rvChattingRoomList.isEnabled = true}, 500)
+        val safeName = if (item.opponentId == -1L) {
+            "알 수 없음"
+        } else {
+            item.opponentName
+        }
+
+        val opponentProfile = if (item.opponentId == -1L) {
+            if (authTokenLocalStoreImpl.getUserRole() == "PARTNER") {
+                // TODO img_admin으로 바꾸기
+                R.drawable.img_partner
+            } else {
+                R.drawable.img_partner
+            }
+        } else {
+            item.opponentProfileImage
+        }
 
         // 코루틴 스코프에서 비동기 작업 실행
         viewLifecycleOwner.lifecycleScope.launch {
@@ -104,7 +120,7 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
             Toast.makeText(requireContext(), "제휴 정보 확인 중...", Toast.LENGTH_SHORT).show()
 
             // ViewModel의 suspend 함수를 호출하고 결과를 기다림
-            val status = viewModel.checkPartnershipStatus(tokenManager.getUserRole(), item.opponentId)
+            val status = viewModel.checkPartnershipStatus(authTokenLocalStoreImpl.getUserRole(), item.opponentId)
 
             // API 호출 결과에 따라 분기 처리
             if (status != null) {

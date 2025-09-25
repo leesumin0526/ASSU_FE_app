@@ -2,19 +2,68 @@ package com.example.assu_fe_app.presentation.common.chatting.proposal.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.assu_fe_app.data.dto.partnership.BenefitItem
-import com.example.assu_fe_app.data.dto.partnership.CriterionType
-import com.example.assu_fe_app.data.dto.partnership.OptionType
+import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
+import com.example.assu_fe_app.databinding.ItemPartnershipContentListBinding
 import com.example.assu_fe_app.databinding.ItemPartnershipContentModifyListBinding
 
-class ProposalModifyAdapter(
-    private val onItemClick: (Int, ProposalModifyItem) -> Unit
-) : ListAdapter<ProposalModifyItem, ProposalModifyAdapter.ViewHolder>(ProposalModifyDiffCallback){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+class ProposalModifyAdapter (
+    private val items: List<PartnershipContractItem>
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    inner class ViewHolder(private val binding: ItemPartnershipContentModifyListBinding)
+        :RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: PartnershipContractItem) {
+            when (item) {
+                is PartnershipContractItem.Service.ByPeople -> {
+                    binding.tvType.text = "서비스 제공"
+                    binding.tvPartnershipConditionPeople.text = item.minPeople.toString()
+                    binding.tvPartnershipConditionDetails1.text = "인 이상일 경우"
+                    binding.tvPartnershipConditionGoods.text = item.items
+                    binding.tvPartnershipConditionDetails2.text = "제공"
+                }
+                is PartnershipContractItem.Service.ByAmount ->{
+                    binding.tvType.text = "서비스 제공"
+                    binding.tvPartnershipConditionPeople.text = item.minAmount.toString()
+                    binding.tvPartnershipConditionDetails1.text = "원 이상일 경우"
+                    binding.tvPartnershipConditionGoods.text = item.items
+                    binding.tvPartnershipConditionDetails2.text = "제공"
+                }
+                is PartnershipContractItem.Discount.ByPeople -> {
+                    binding.tvType.text = "할인 혜택"
+                    binding.tvPartnershipConditionPeople.text = item.minPeople.toString()
+                    binding.tvPartnershipConditionDetails1.text = "인 이상일 경우"
+                    binding.tvPartnershipConditionGoods.text =
+                        binding.root.context.getString(R.string.discount_percent, item.percent)
+                    binding.tvPartnershipConditionDetails2.text = "할인"
+                }
+                is PartnershipContractItem.Discount.ByAmount -> {
+                    binding.tvType.text = "할인 혜택"
+                    binding.tvPartnershipConditionPeople.text = item.minAmount.toString()
+                    binding.tvPartnershipConditionDetails1.text = "원 이상일 경우"
+                    binding.tvPartnershipConditionGoods.text =
+                        binding.root.context.getString(R.string.discount_percent, item.percent)
+                    binding.tvPartnershipConditionDetails2.text = "할인"
+                }
+            }
+        }
+    }
+
+
+    override fun getItemViewType(position: Int): Int {
+        return when (items[position]) {
+            is PartnershipContractItem.Service.ByPeople -> 0
+            is PartnershipContractItem.Service.ByAmount -> 1
+            is PartnershipContractItem.Discount.ByPeople -> 2
+            is PartnershipContractItem.Discount.ByAmount -> 3
+        }
+    }
+
+    override fun getItemCount(): Int = items.size
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding = ItemPartnershipContentModifyListBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -23,74 +72,8 @@ class ProposalModifyAdapter(
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = items[position]
+        (holder as ViewHolder).bind(item)
     }
-
-    inner class ViewHolder(
-        private val binding: ItemPartnershipContentModifyListBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(item: ProposalModifyItem) {
-            // TODO: 실제 아이템 레이아웃에 맞게 바인딩
-            binding.root.setOnClickListener {
-                onItemClick(bindingAdapterPosition, item)
-            }
-        }
-    }
-}
-
-object ProposalModifyDiffCallback : DiffUtil.ItemCallback<ProposalModifyItem>() {
-    override fun areItemsTheSame(oldItem: ProposalModifyItem, newItem: ProposalModifyItem): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: ProposalModifyItem, newItem: ProposalModifyItem): Boolean {
-        return oldItem == newItem
-    }
-}
-
-data class ProposalModifyItem(
-    val id: String,
-    val optionType: String, // "서비스 제공" 또는 "할인 혜택"
-    val criterionType: String, // "금액" 또는 "인원"
-    val criterionValue: String, // 기준값
-    val content: String, // 표시할 내용 (제공 항목들 또는 할인율)
-    val category: String = "", // 카테고리 (서비스 제공일 때만)
-)
-
-fun BenefitItem.toProposalModifyItem(): ProposalModifyItem {
-    val optionTypeText = when (this.optionType) {
-        OptionType.SERVICE -> "서비스 제공"
-        OptionType.DISCOUNT -> "할인 혜택"
-    }
-
-    val criterionTypeText = when (this.criterionType) {
-        CriterionType.PRICE -> "금액"
-        CriterionType.HEADCOUNT -> "인원"
-    }
-
-    val criterionValueText = when (this.criterionType) {
-        CriterionType.PRICE -> "${this.criterionValue}원 이상"
-        CriterionType.HEADCOUNT -> "${this.criterionValue}명 이상"
-    }
-
-    val contentText = when (this.optionType) {
-        OptionType.SERVICE -> {
-            val goodsText = this.goods.filter { it.isNotBlank() }.joinToString(", ")
-            if (goodsText.isNotBlank()) goodsText else "제공 항목 없음"
-        }
-        OptionType.DISCOUNT -> {
-            if (this.discountRate.isNotBlank()) "${this.discountRate}% 할인" else "할인율 미설정"
-        }
-    }
-
-    return ProposalModifyItem(
-        id = this.id,
-        optionType = optionTypeText,
-        criterionType = criterionTypeText,
-        criterionValue = criterionValueText,
-        content = contentText,
-        category = this.category,
-    )
 }

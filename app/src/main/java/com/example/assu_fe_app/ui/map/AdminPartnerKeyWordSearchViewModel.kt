@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.domain.usecase.location.AdminSearchPartnerByKeywordUseCase
 import com.example.assu_fe_app.domain.usecase.location.PartnerSearchAdminByKeywordUseCase
 import com.example.assu_fe_app.util.RetrofitResult
@@ -18,8 +19,12 @@ import javax.inject.Inject
 class AdminPartnerKeyWordSearchViewModel @Inject
 constructor(
     private val adminSearchPartnerCase: AdminSearchPartnerByKeywordUseCase,
-    private val partnerSearchAdminCase: PartnerSearchAdminByKeywordUseCase
+    private val partnerSearchAdminCase: PartnerSearchAdminByKeywordUseCase,
+    private val authTokenLocalStore: AuthTokenLocalStore
 ) : ViewModel() {
+
+    val role = authTokenLocalStore.getUserRoleEnum()
+        ?: com.example.assu_fe_app.data.dto.UserRole.ADMIN
 
     private val _isEmptyList = MutableLiveData<Boolean>()
     val isEmptyList: LiveData<Boolean> = _isEmptyList
@@ -27,46 +32,15 @@ constructor(
     private val _contentList = MutableLiveData<List<LocationAdminPartnerSearchResultItem>>()
     val contentList: LiveData<List<LocationAdminPartnerSearchResultItem>> = _contentList
 
-    var userRole : String = "PARTNER"
-
-    init{
-        // 여기서 로그인된 사용자의 유저 정보를 불러서 업데이트
-    }
-
-    fun searchPartners(keyword: String){
-        viewModelScope.launch {
-            when (val result = adminSearchPartnerCase(keyword)) {
-                is RetrofitResult.Success -> {
-                    _contentList.value = result.data
-                    _isEmptyList.value = result.data.isEmpty()
-                    Log.d("admin-partner-search", "${contentList.value}")
-                }
-                is RetrofitResult.Error -> {
-                    Log.d("❌", "Error : ${result.exception.message}")
-                }
-                is RetrofitResult.Fail -> {
-                    Log.d("❌", "Fail : ${result.message}")
-                }
-            }
+    fun search(keyword: String) = viewModelScope.launch {
+        val result = when (role) {
+            com.example.assu_fe_app.data.dto.UserRole.ADMIN   -> adminSearchPartnerCase(keyword)
+            com.example.assu_fe_app.data.dto.UserRole.PARTNER -> partnerSearchAdminCase(keyword)
+            else                                              -> adminSearchPartnerCase(keyword)
         }
-    }
-
-    fun searchAdmins(keyword: String){
-        viewModelScope.launch {
-            Log.d("AdminPartnerKeyWordSearchViewModel", "Partner 기준 Admin 찾기 함수 호출 중")
-            when (val result = partnerSearchAdminCase(keyword)) {
-                is RetrofitResult.Success -> {
-                    _contentList.value = result.data
-                    _isEmptyList.value = result.data.isEmpty()
-                    Log.d("admin-partner-search", "${contentList.value}")
-                }
-                is RetrofitResult.Error -> {
-                    Log.d("❌", "Error : ${result.exception.message}")
-                }
-                is RetrofitResult.Fail -> {
-                    Log.d("❌", "Fail : ${result.message}")
-                }
-            }
+        when (result) {
+            is RetrofitResult.Success -> { _contentList.value = result.data; _isEmptyList.value = result.data.isEmpty() }
+            is RetrofitResult.Fail, is RetrofitResult.Error -> { _contentList.value = emptyList(); _isEmptyList.value = true }
         }
     }
 

@@ -19,8 +19,11 @@ import com.example.assu_fe_app.ui.suggestion.SuggestionViewModel.WriteSuggestion
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsModel
+import com.example.assu_fe_app.domain.model.partnership.UpdatePartnershipStatusResponseModel
 import com.example.assu_fe_app.domain.usecase.partnership.GetProposalAdminListUseCase
 import com.example.assu_fe_app.domain.usecase.partnership.GetProposalPartnerListUseCase
+import com.example.assu_fe_app.domain.usecase.partnership.UpdatePartnershipStatusUseCase
+import com.example.assu_fe_app.presentation.common.contract.ViewMode
 import com.example.assu_fe_app.util.onError
 import com.example.assu_fe_app.util.onFail
 import com.example.assu_fe_app.util.onSuccess
@@ -39,11 +42,11 @@ import kotlin.collections.toMutableList
 @HiltViewModel
 class PartnershipViewModel @Inject constructor(
     private val updatePartnershipUseCase: UpdatePartnershipUseCase,
-    private val savedStateHandle: SavedStateHandle,
     private val getProposalPartnerListUseCase: GetProposalPartnerListUseCase,
     private val getProposalAdminListUseCase: GetProposalAdminListUseCase,
     // ▼ ADD: 제휴 상세 조회 유즈케이스
-    private val getPartnershipUseCase: com.example.assu_fe_app.domain.usecase.partnership.GetPartnershipUseCase
+    private val getPartnershipUseCase: com.example.assu_fe_app.domain.usecase.partnership.GetPartnershipUseCase,
+    private val updatePartnershipStatusUseCase: UpdatePartnershipStatusUseCase
 ) : ViewModel() {
 
     // ===== 파트너 제안 리스트 상태 =====
@@ -52,6 +55,7 @@ class PartnershipViewModel @Inject constructor(
     val signature = MutableStateFlow("")
     val partnerName = MutableStateFlow("")
     val adminName = MutableStateFlow("")
+    val signDate = MutableStateFlow("")
 
     var paperId: Long = -1L
     var partnerId: Long = -1L
@@ -83,6 +87,11 @@ class PartnershipViewModel @Inject constructor(
 
     private val _writePartnershipState = MutableStateFlow<WritePartnershipUiState>(WritePartnershipUiState.Idle)
     val writePartnershipState: StateFlow<WritePartnershipUiState> = _writePartnershipState.asStateFlow()
+
+    fun updateSignDate() {
+        val sdf = java.text.SimpleDateFormat("yyyy년 MM월 dd일", java.util.Locale.getDefault())
+        signDate.value = sdf.format(java.util.Date())
+    }
 
     fun updatePartnerName(name: String) {
         partnerName.value = name
@@ -198,7 +207,7 @@ class PartnershipViewModel @Inject constructor(
     fun resetWritePartnershipState() {
         _writePartnershipState.value = WritePartnershipUiState.Idle
     }
-//
+
     fun onNextButtonClicked() {
         if (paperId == -1L) {
             _writePartnershipState.value = WritePartnershipUiState.Error("잘못된 제안서 정보입니다.")
@@ -337,5 +346,50 @@ class PartnershipViewModel @Inject constructor(
                         PartnershipDetailUiState.Error(e.message ?: "네트워크 연결을 확인해주세요.")
                 }
         }
+    }
+
+    fun updateBenefitItems(items: List<BenefitItem>) {
+        _benefitItems.value = items
+    }
+
+    // 제휴 상태 업데이트 UiState
+    sealed interface UpdatePartnershipStatusUiState {
+        object Idle : UpdatePartnershipStatusUiState
+        object Loading : UpdatePartnershipStatusUiState
+        data class Success(val data: UpdatePartnershipStatusResponseModel) : UpdatePartnershipStatusUiState
+        data class Fail(val code: Int, val message: String?) : UpdatePartnershipStatusUiState
+        data class Error(val message: String) : UpdatePartnershipStatusUiState
+    }
+
+    private val _updatePartnershipStatusUiState =
+        MutableStateFlow<UpdatePartnershipStatusUiState>(UpdatePartnershipStatusUiState.Idle)
+    val updatePartnershipStatusUiState: StateFlow<UpdatePartnershipStatusUiState> =
+        _updatePartnershipStatusUiState
+
+    fun updatePartnershipStatus(partnershipId: Long, status: String) {
+        if (_updatePartnershipStatusUiState.value is UpdatePartnershipStatusUiState.Loading) {
+            return
+        }
+
+        viewModelScope.launch {
+            _updatePartnershipStatusUiState.value = UpdatePartnershipStatusUiState.Loading
+
+            updatePartnershipStatusUseCase(partnershipId, status)
+                .onSuccess { data ->
+                    _updatePartnershipStatusUiState.value = UpdatePartnershipStatusUiState.Success(data)
+                }
+                .onFail { code ->
+                    _updatePartnershipStatusUiState.value =
+                        UpdatePartnershipStatusUiState.Fail(code, "상태 변경 실패")
+                }
+                .onError { e ->
+                    _updatePartnershipStatusUiState.value =
+                        UpdatePartnershipStatusUiState.Error(e.message ?: "오류 발생")
+                }
+        }
+    }
+    // 상태 초기화 함수 추가
+    fun resetUpdatePartnershipStatus() {
+        _updatePartnershipStatusUiState.value = UpdatePartnershipStatusUiState.Idle
     }
 }

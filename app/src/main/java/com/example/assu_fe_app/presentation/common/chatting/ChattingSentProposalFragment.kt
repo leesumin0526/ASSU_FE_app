@@ -6,10 +6,11 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.example.assu_fe_app.ProposalModifyFragment
+import com.example.assu_fe_app.presentation.common.contract.ProposalModifyFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentChattingSentProposalBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.presentation.common.contract.ProposalAgreeFragment
 import com.example.assu_fe_app.presentation.common.contract.ViewMode
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import com.example.assu_fe_app.ui.partnership.WritePartnershipUiState
@@ -19,32 +20,114 @@ import dagger.hilt.android.AndroidEntryPoint
 class ChattingSentProposalFragment : BaseFragment<FragmentChattingSentProposalBinding>(R.layout.fragment_chatting_sent_proposal) {
 
     private val viewModel: PartnershipViewModel by activityViewModels()
+    private var isAgreementComplete: Boolean = false
+    private var partnershipStatus: String? = null
+
+    companion object {
+        fun newInstance(
+            paperId: Long,
+            partnerId: Long,
+            partnershipStatus: String? = null,
+            isAgreementComplete: Boolean,
+            adminName: String? = null,
+            partnerName: String? = null
+        ): ChattingSentProposalFragment {
+            return ChattingSentProposalFragment().apply {
+                arguments = Bundle().apply {
+                    putLong("paperId", paperId)
+                    putLong("partnerId", partnerId)
+                    partnershipStatus?.let { putString("partnershipStatus", it) }
+                    putBoolean("isAgreementComplete", isAgreementComplete)
+                    adminName?.let { putString("adminName", it) }
+                    partnerName?.let { putString("partnerName", it) }
+                }
+            }
+        }
+    }
 
     override fun initView() {
+        // Arguments에서 데이터 추출
+        extractArguments()
+
+        // 체결 완료 여부에 따라 UI 변경
+        updateUIByStatus()
+
         binding.ivCross.setOnClickListener {
             popToRootFragment("x 버튼")
         }
 
         binding.bgImage.setOnClickListener {
-            navigateToProposalModify()
+            handleButtonClick()
         }
 
         // ✅ 제안서 확인하기 버튼 클릭 시 ProposalModifyFragment로 이동
         binding.btnText.setOnClickListener {
+            handleButtonClick()
+        }
+    }
+
+    private fun extractArguments() {
+        arguments?.let { bundle ->
+            isAgreementComplete = bundle.getBoolean("isAgreementComplete", false)
+            partnershipStatus = bundle.getString("partnershipStatus")
+
+            // ViewModel에 데이터 설정
+            bundle.getString("adminName")?.let {
+                viewModel.updateAdminName(it)
+            }
+            bundle.getString("partnerName")?.let {
+                viewModel.updatePartnerName(it)
+            }
+
+            viewModel.paperId = bundle.getLong("paperId", -1L)
+            viewModel.partnerId = bundle.getLong("partnerId", -1L)
+        }
+    }
+
+    private fun updateUIByStatus() {
+        if (isAgreementComplete) {
+            // 체결 완료 상태
+            binding.tvSendingSuccess.text = "체결 완료"
+            binding.tvFinishReviewThanks.text = "제휴가 무사히 체결되었어요!"
+            binding.btnText.text = "계약서 확인하기"
+        } else {
+            // 기본 상태
+            binding.tvSendingSuccess.text = "전송 완료"
+            binding.tvFinishReviewThanks.text = "소중한 제안서가 전송 완료됐어요"
+            binding.btnText.text = "제안서 확인하기"
+        }
+    }
+
+    private fun handleButtonClick() {
+        if (isAgreementComplete) {
+            navigateToContractView()
+        } else {
             navigateToProposalModify()
         }
     }
 
-    // ✅ ProposalModifyFragment로 이동하는 함수
-    private fun navigateToProposalModify() {
-        // ViewModel에서 현재 제안서 데이터를 가져와서 전달
-        val partnerId = viewModel.partnerId
-        val paperId = viewModel.paperId
+    private fun navigateToContractView() {
+        val fragment = ProposalModifyFragment.newInstance(
+            entryType = ViewMode.QR_SAVE,
+            partnerId = viewModel.partnerId,
+            paperId = viewModel.paperId,
+            adminName = viewModel.adminName.value,
+            partnerName = viewModel.partnerName.value
+        )
 
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.chatting_fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun navigateToProposalModify() {
         val fragment = ProposalModifyFragment.newInstance(
             entryType = ViewMode.MODIFY,
-            partnerId = partnerId,
-            paperId = paperId
+            partnerId = viewModel.partnerId,
+            paperId = viewModel.paperId,
+            adminName = viewModel.adminName.value,
+            partnerName = viewModel.partnerName.value
         )
 
         parentFragmentManager.beginTransaction()

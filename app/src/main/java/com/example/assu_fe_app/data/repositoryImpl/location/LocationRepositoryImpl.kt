@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.data.repositoryImpl.location
 
+import android.util.Log
 import com.example.assu_fe_app.data.dto.BaseResponse
 import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.example.assu_fe_app.data.dto.location.LocationUserSearchResultItem
@@ -94,8 +95,10 @@ class LocationRepositoryImpl @Inject constructor(
 
     private fun toLocationSearchAdminResult(
         dtos: List<AdminMapResponseDto>
-    )
-            : List<LocationAdminPartnerSearchResultItem>{
+    ) : List<LocationAdminPartnerSearchResultItem>{
+        dtos.forEach {
+            Log.d("mapper-admin",   "in adminId=${it.adminId}, partnered=${it.partnered}, partnershipId=${it.partnershipId}")
+        }
         return dtos.map{ adminDto ->
             val temp : String?
             if(adminDto.partnershipStartDate==null && adminDto.partnershipEndDate==null){
@@ -123,6 +126,11 @@ class LocationRepositoryImpl @Inject constructor(
     private fun toLocationSearchPartnerResult(
         dtos: List<PartnerMapResponseDto>
     ) : List<LocationAdminPartnerSearchResultItem>{
+        dtos.forEach {
+            Log.d("mapper-partner", "in partnerId=${it.partnerId}, partnered=${it.partnered}, partnershipId=${it.partnershipId}")
+
+        }
+
         return dtos.map{ partnerDto ->
             val temp : String?
             if(partnerDto.partnershipStartDate==null && partnerDto.partnershipEndDate==null){
@@ -134,7 +142,7 @@ class LocationRepositoryImpl @Inject constructor(
                 id= partnerDto.partnerId,
                 shopName = partnerDto.name,
                 address = partnerDto.address.toString(),
-                paperId = partnerDto.partnerId,
+                paperId = partnerDto.partnershipId,
                 partnered = partnerDto.partnered,
                 term = temp,
                 partnershipId = partnerDto.partnershipId,

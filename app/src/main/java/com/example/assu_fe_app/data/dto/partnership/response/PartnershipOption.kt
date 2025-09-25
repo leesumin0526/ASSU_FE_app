@@ -35,3 +35,11 @@ data class PartnershipGoods (
         goodsName = this.goodsName,
     )
 }
+
+enum class OptionType {
+    SERVICE,DISCOUNT
+}
+
+enum class CriterionType {
+    PRICE, HEADCOUNT
+}

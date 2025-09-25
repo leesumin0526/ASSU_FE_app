@@ -18,7 +18,10 @@ object SocketModule {
     fun provideChatSocketClient(
         accessTokenProvider: AccessTokenProvider // "Bearer xxx" 반환하도록 구현되어 있다고 가정
     ): ChatSocketClient {
-        val wsUrl = "ws://10.0.2.2:8080/ws/chat-native" // 서버 설정에 맞춰 변경
+        val wsUrl = "wss://assu.shop/ws"
+//        val wsUrl = "ws://10.0.2.2:8080/ws/chat-native" // 서버 설정에 맞춰 변경
         return ChatSocketClient(wsUrl = wsUrl, accessTokenProvider = accessTokenProvider)
+//        val wsUrl = "ws://10.0.2.2:8080/ws/chat-native" // 서버 설정에 맞춰 변경
+//        return ChatSocketClient(wsUrl = wsUrl, tokenProvider = tokenProvider)
     }
 }

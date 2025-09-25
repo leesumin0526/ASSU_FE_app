@@ -114,10 +114,15 @@ class ChattingViewModel @Inject constructor(
             _getChatHistoryState.value = GetChatHistoryUiState.Loading
             getChatHistoryUseCase(roomId)
                 .onSuccess {
+                    Log.d("VM", "history success: ${it.messages.size}")
                     _getChatHistoryState.value = GetChatHistoryUiState.Success(it)
                     _messages.value = it.messages}
-                .onFail    { code -> _getChatHistoryState.value = GetChatHistoryUiState.Fail(code, "서버 처리 실패") }
-                .onError   { e -> _getChatHistoryState.value = GetChatHistoryUiState.Error(e.message ?: "Unknown Error") }
+                .onFail    { code ->
+                    Log.e("VM", "history fail code=$code")
+                    _getChatHistoryState.value = GetChatHistoryUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e ->
+                    Log.e("VM", "history error=${e.message}")
+                    _getChatHistoryState.value = GetChatHistoryUiState.Error(e.message ?: "Unknown Error") }
         }
     }
 
@@ -214,6 +219,7 @@ class ChattingViewModel @Inject constructor(
     /** 소켓 연결 */
     fun connectSocket() {
         if (roomId <= 0) return
+
         chatSocket.connect(
             roomId = roomId,
             onConnected = { _socketConnected.value = true },
@@ -255,7 +261,7 @@ class ChattingViewModel @Inject constructor(
             return
         }
         // 디버깅: 전송 payload 로그
-        //android.util.Log.d("CHAT", "SEND payload {roomId=$roomId, senderId=$myId, receiverId=$opponentId, message='$trimmed'}")
+        android.util.Log.d("CHAT", "SEND payload {roomId=$roomId, senderId=$myId, receiverId=$opponentId, message='$trimmed'}")
 
         // 선택: 소켓 연결 확인(연결 전이면 보내지 않고 대기/에러 표시)
         if (socketConnected.value.not()) {
@@ -265,18 +271,6 @@ class ChattingViewModel @Inject constructor(
 
         chatSocket.sendMessage(roomId, myId, opponentId, trimmed, "TEXT")
 
-
-        // 낙관적 반영(서버 echo를 따로 받고 싶으면 이 부분 제거)
-        val mine = ChatMessageModel(
-            messageId = System.nanoTime(),
-            message = text,
-            sendTime = nowHHmm(),
-            isRead = false,
-            isMyMessage = true,
-            profileImageUrl = ""
-        )
-        // ⚠️ 디버깅 단계: 낙관적 반영 끄기 (서버 푸시만 렌더)
-         _messages.value = _messages.value + mine
     }
 
     /** 화면 종료 시 호출 */

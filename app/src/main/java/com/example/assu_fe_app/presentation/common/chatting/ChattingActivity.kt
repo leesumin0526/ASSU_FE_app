@@ -3,15 +3,13 @@ package com.example.assu_fe_app.presentation.common.chatting
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.graphics.Rect
 import android.os.Build
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
-import androidx.activity.addCallback
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
@@ -29,20 +27,29 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.getValue
-import androidx.core.view.isVisible
+import com.example.assu_fe_app.LeaveChatRoomDialog
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
+import com.example.assu_fe_app.data.local.AuthTokenLocalStoreImpl
 import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
+import com.example.assu_fe_app.presentation.common.contract.ProposalAgreeFragment
+import com.example.assu_fe_app.presentation.common.contract.ProposalModifyFragment
+import com.example.assu_fe_app.presentation.common.contract.ViewMode
 import com.example.assu_fe_app.ui.partnership.BoxType
+import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity_chatting) {
 
     private val viewModel: ChattingViewModel by viewModels()
+    private val partnershipViewModel: PartnershipViewModel by viewModels()
 
     // ✅ 변경: 어댑터를 필드로 보관(한 번만 생성)
     private lateinit var messageAdapter: ChattingMessageAdapter
-    @Inject lateinit var tokenManager: AuthTokenLocalStore
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
+    private var opponentProfileImage: String = ""   // ✅ 추가
 
     private var currentUserRole: String? = null
     private var currentPartnershipStatus: PartnershipStatusModel? = null
@@ -60,18 +67,22 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             insets
         }
 
+
         val roomId = intent.getLongExtra("roomId", -1L)
         val opponentName = intent.getStringExtra("opponentName") ?: ""
-        val opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
+        opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
 
         Log.d("ChattingActivity", "roomId=$roomId, name=$opponentName")
-        binding.tvChattingOpponentName?.text = opponentName
+        binding.tvChattingOpponentName.text = opponentName
 
         // ✅ Intent에서 받은 데이터를 ViewModel에 전달
-        currentUserRole = tokenManager.getUserRole()
+        currentUserRole = authTokenLocalStore.getUserRole()
         currentPartnershipStatus = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13 (Tiramisu) 이상 버전
             intent.getParcelableExtra("partnershipStatus", PartnershipStatusModel::class.java)
         } else {
+            // ✅ Android 12 이하 버전을 위한 코드
+            @Suppress("DEPRECATION") // "deprecated" 경고를 무시하도록 어노테이션 추가
             intent.getParcelableExtra("partnershipStatus")
         }
 
@@ -107,14 +118,14 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         binding.llChattingSent.setOnClickListener {
             handleProposalButtonClick()
         }
+
         binding.llChattingAfterProposal.setOnClickListener {
             handleProposalButtonClick()
         }
 
-        lifecycleScope.launch {
-            viewModel.toastEvent.collect { message ->
-                Toast.makeText(this@ChattingActivity, message, Toast.LENGTH_SHORT).show()
-            }
+        // 채팅방 나가기
+        binding.ivLeaveChatting.setOnClickListener {
+            LeaveChatRoomDialog.newInstance(roomId).show(supportFragmentManager, "LeaveChattingDialog")
         }
 
         supportFragmentManager.setFragmentResultListener("return_reason", this) { _, bundle ->
@@ -127,6 +138,12 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
         // 하단 + 버튼 클릭
         binding.ivChattingPlus.setOnClickListener {
+
+            Log.d(
+                "PlusButtonCheck",
+                "Button clicked! Role: $currentUserRole, Status: ${currentPartnershipStatus?.status}"
+            )
+
             // ✅ 파트너이고 제휴 상태가 NONE이면 아무것도 하지 않고 함수 종료
             if (currentUserRole.equals("PARTNER", ignoreCase = true) &&
                 currentPartnershipStatus?.status == "NONE") {
@@ -155,6 +172,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     }
 
     override fun initObserver() {
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -181,7 +199,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                                     } else {
                                         ChattingMessageItem.OtherMessage(
                                             messageId = m.messageId,
-                                            profileImageUrl = m.profileImageUrl,
+                                            profileImageUrl = opponentProfileImage,
                                             message = m.message ?: "",
                                             sentAt = formatTime(m.sendTime),
                                             isRead = m.isRead
@@ -270,7 +288,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                         // ✅ DiffUtil + Payload 반영: 실시간 업데이트
                         messageAdapter.submitList(uiItems) {
                             if (uiItems.isNotEmpty()) {
-                                binding.rvChattingMessageList.smoothScrollToPosition(uiItems.size - 1)
+                                binding.rvChattingMessageList.scrollToPosition(uiItems.size - 1)
                             }
                         }
                     }
@@ -308,8 +326,8 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             role.equals("ADMIN", ignoreCase = true) -> {
                 when (status.status) {
                     "NONE" -> { viewModel.onProposalButtonClick() }
-                    "BLANK", "SUSPEND" -> { navigateToProposalView(status, isEditable = true) }
-                    "ACTIVE" -> { navigateToContractView(status) }
+                    "BLANK", "SUSPEND" -> { navigateToProposalView(status, isEditable = false) }
+                    "ACTIVE" -> { navigateToProposalView(status, isEditable = true) }
                 }
             }
 
@@ -318,8 +336,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                 when (status.status) {
                     "NONE" -> { return }
                     "BLANK" -> { navigateToProposalWriting(status) }
-                    "SUSPEND" -> { navigateToProposalView(status, isEditable = false) }
-                    "ACTIVE" -> { navigateToContractView(status) }
+                    "SUSPEND", "ACTIVE" -> { navigateToProposalView(status, isEditable = true) }
                 }
             }
         }
@@ -328,9 +345,9 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     private fun navigateToProposalWriting(status: PartnershipStatusModel) {
         Log.d("ChattingActivity", "${status.paperId}")
         status.paperId?.let { paperId ->
-            val partnerId = tokenManager.getUserId()
+            val partnerId = authTokenLocalStore.getUserId()
             val adminName = status.opponentName ?: ""
-            val partnerName = tokenManager.getUserName() ?: ""
+            val partnerName = authTokenLocalStore.getUserName() ?: ""
             val fragment = ServiceProposalWritingFragment.newInstance(partnerId, paperId, adminName, partnerName)
             Log.d("PartnerName", "${partnerId}, ${partnerName}")
 
@@ -345,25 +362,83 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
     private fun navigateToProposalView(status: PartnershipStatusModel, isEditable: Boolean) {
         status.paperId?.let { paperId ->
-            // TODO: ProposalViewFragment 구현 필요
-            val mode = if (isEditable) "수정" else "읽기"
-            Toast.makeText(this, "$mode 모드로 제안서(ID: $paperId) 확인 화면으로 이동합니다.", Toast.LENGTH_LONG).show()
+            partnershipViewModel.paperId = paperId
+
+            val userRole = authTokenLocalStore.getUserRole()
+            val userName = authTokenLocalStore.getUserName() ?: ""
+
+            when {
+                userRole == "ADMIN" && !isEditable -> {
+                    // Admin이 제안서 확인/승인하는 경우 (ProposalAgreeFragment로)
+                    partnershipViewModel.partnerId = status.opponentId ?: -1L
+                    partnershipViewModel.updateAdminName(userName)
+                    partnershipViewModel.updatePartnerName(status.opponentName ?: "")
+
+                    val fragment = ProposalAgreeFragment.newInstance(
+                        paperId = paperId,
+                        partnerId = status.opponentId ?: -1L,
+                    )
+
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.chatting_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+
+                userRole == "ADMIN" && isEditable -> {
+                    // Admin이 제안서 수정하는 경우 (ProposalModifyFragment로)
+                    partnershipViewModel.partnerId = status.opponentId ?: -1L
+                    partnershipViewModel.updateAdminName(userName)
+                    partnershipViewModel.updatePartnerName(status.opponentName ?: "")
+
+                    val fragment = ProposalModifyFragment.newInstance(
+                        entryType = ViewMode.QR_SAVE,
+                        partnerId = status.opponentId ?: -1L,
+                        paperId = paperId,
+                        adminName = userName,
+                        partnerName = status.opponentName ?: ""
+                    )
+
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.chatting_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+
+                userRole == "PARTNER" -> {
+                    // Partner가 제안서 확인하는 경우 (ProposalModifyFragment로)
+                    partnershipViewModel.partnerId = authTokenLocalStore.getUserId()
+                    partnershipViewModel.updatePartnerName(userName)
+                    partnershipViewModel.updateAdminName(status.opponentName ?: "")
+
+                    val fragment = ProposalModifyFragment.newInstance(
+                        entryType = ViewMode.MODIFY,
+                        partnerId = authTokenLocalStore.getUserId(),
+                        paperId = paperId,
+                        adminName = status.opponentName ?: "",
+                        partnerName = userName
+                    )
+
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.chatting_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+
+                else -> {
+                    Toast.makeText(this, "사용자 정보를 확인할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
         } ?: run {
             Toast.makeText(this, "제안서 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun navigateToContractView(status: PartnershipStatusModel) {
-        // TODO: ContractViewFragment 구현 필요
-        Toast.makeText(this, "계약서(ID: ${status.paperId}) 확인 화면으로 이동합니다.", Toast.LENGTH_LONG).show()
-    }
-
-
     private fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }
 
-    private fun navigateToChatting() {
+    fun navigateToChatting() {
         val intent = Intent(this, AdminMainActivity::class.java).apply {
             // 기존 Task 스택 위로 올라가서 중복 생성 방지
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -403,7 +478,6 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     override fun onStart() {
         super.onStart()
         val roomId = intent.getLongExtra("roomId", -1L)
-        val myId = tokenManager.getUserId()
         val opponentId = intent.getLongExtra("opponentId", -1L)
 
         val partnershipStatus = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -413,11 +487,14 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         }
 
         if (roomId <= 0L) {
-            Toast.makeText(this, "유효하지 않은 채팅방입니다", Toast.LENGTH_SHORT).show()
+            Log.e("ChatActivity", "유효하지 않은 채팅방입니다. roomId: $roomId")
             finish()
             return
         }
 
+        val myId = authTokenLocalStore.getUserId()
+//        val opponentId = viewModel.findOpponentId(roomId) ?: -1L
+        Log.d("VM","roomId = $roomId, myId=$myId, opponentId=$opponentId")
         // ✅ 변경: 입장 시 히스토리 + 소켓 연결(뷰모델 내부에서 처리)
         viewModel.enterRoom(roomId, myId, opponentId)
 
