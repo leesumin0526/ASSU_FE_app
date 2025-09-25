@@ -90,6 +90,11 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
                 Log.d("LocationInfoSearchFragment", "Passive 모드: selectedPlace로 전달")
                 val resultBundle = Bundle().apply {
                     putString("selectedPlace", clickedLocationInfo.name)
+                    putString("selectedPlace_placeId",     clickedLocationInfo.id)
+                    putString("selectedPlace_address",     clickedLocationInfo.address)
+                    putString("selectedPlace_roadAddress", clickedLocationInfo.roadAddress)
+                    putDouble("selectedPlace_latitude",    clickedLocationInfo.latitude)
+                    putDouble("selectedPlace_longitude",   clickedLocationInfo.longitude)
                 }
                 parentFragmentManager.setFragmentResult("result", resultBundle)
                 parentFragmentManager.popBackStack()

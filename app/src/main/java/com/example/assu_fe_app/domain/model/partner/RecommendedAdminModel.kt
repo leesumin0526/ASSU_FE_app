@@ -6,6 +6,7 @@ data class RecommendedAdminModel(
     val adminName: String,
     val adminAddress: String,
     val adminDetailAddress: String,
+    val adminUrl: String? = null
 ) {
     val fullAddress: String
         get() = "$adminAddress $adminDetailAddress"

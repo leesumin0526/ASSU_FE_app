@@ -400,6 +400,7 @@
                         android:gravity="center">
 
                         <TextView
+                            android:id="@+id/tv_partner_home_recommend_admin_name"
                             android:layout_width="124dp"
                             android:layout_height="wrap_content"
                             android:text="숭실대학교\n경영학부 학생회"
@@ -408,6 +409,7 @@
                             android:textColor="@color/assu_font_main" />
 
                         <TextView
+                            android:id="@+id/tv_partner_home_recommend_admin_address"
                             android:layout_width="124dp"
                             android:layout_height="wrap_content"
                             android:text="서울 동작구 사당로 36-1 서경예술"
@@ -470,6 +472,7 @@
                         android:paddingEnd="16dp">
 
                         <TextView
+                            android:id="@+id/tv_partner_home_recommend_admin_name2"
                             android:layout_width="124dp"
                             android:layout_height="wrap_content"
                             android:text="숭실대학교\n스포츠학부 학생회"
@@ -478,6 +481,7 @@
                             android:textColor="@color/assu_font_main" />
 
                         <TextView
+                            android:id="@+id/tv_partner_home_recommend_admin_address2"
                             android:layout_width="124dp"
                             android:layout_height="wrap_content"
                             android:text="서울 동작구 사당로 36-1 서경예술"

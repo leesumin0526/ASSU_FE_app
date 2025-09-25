@@ -7,16 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
-import com.example.assu_fe_app.R
+import android.content.DialogInterface
 import com.example.assu_fe_app.databinding.DialogAdminDeleteContractBinding
+import com.example.assu_fe_app.domain.model.partnership.SuspendedPaperModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AdminDeleteContractDialogFragment : DialogFragment() {
+    var onDismissListener: (() -> Unit)? = null
 
     private var _binding: DialogAdminDeleteContractBinding? = null
     private val binding get() = _binding!!
 
-    private var contract: PendingContract? = null
-    private var onDeleteConfirmed: ((PendingContract) -> Unit)? = null
+    private var contract: SuspendedPaperModel? = null
+    private var onDeleteConfirmed: ((SuspendedPaperModel) -> Unit)? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -33,6 +37,11 @@ class AdminDeleteContractDialogFragment : DialogFragment() {
         }
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        onDismissListener?.invoke()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,45 +53,29 @@ class AdminDeleteContractDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
-        // 계약서 정보 설정
-        contract?.let { contract ->
-            binding.tvDialogStoreName.text = contract.storeName
-        }
+        contract?.let { binding.tvDialogStoreName.text = it.partnerName }
 
-        // 배경 클릭 시 다이얼로그 닫기
-        binding.backgroundOverlay.setOnClickListener {
-            dismiss()
-        }
-
-        // 취소 버튼
-        binding.btnCancel.setOnClickListener {
-            dismiss()
-        }
-
-        // 확인 버튼
+        binding.backgroundOverlay.setOnClickListener { dismiss() }
+        binding.btnCancel.setOnClickListener { dismiss() }
         binding.btnConfirm.setOnClickListener {
-            contract?.let { contract ->
-                onDeleteConfirmed?.invoke(contract)
-            }
+            contract?.let { onDeleteConfirmed?.invoke(it) }
             dismiss()
         }
+    }
+
+    companion object {
+        fun newInstance(
+            contract: SuspendedPaperModel,
+            onDeleteConfirmed: ((SuspendedPaperModel) -> Unit)? = null
+        ): AdminDeleteContractDialogFragment =
+            AdminDeleteContractDialogFragment().apply {
+                this.contract = contract
+                this.onDeleteConfirmed = onDeleteConfirmed
+            }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        fun newInstance(
-            contract: PendingContract,
-            onDeleteConfirmed: ((PendingContract) -> Unit)? = null
-        ): AdminDeleteContractDialogFragment {
-            return AdminDeleteContractDialogFragment().apply {
-                this.contract = contract
-                this.onDeleteConfirmed = onDeleteConfirmed
-            }
-        }
     }
 }
