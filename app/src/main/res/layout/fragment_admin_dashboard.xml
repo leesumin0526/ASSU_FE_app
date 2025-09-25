@@ -67,9 +67,10 @@
                     android:fontFamily="@font/pretendard_medium"/>
 
                 <TextView
+                    android:id="@+id/tv_total_students"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+ 5,010"
+                    android:text="총 5,010명"
                     android:textSize="11sp"
                     android:textColor="@color/assu_main"
                     android:fontFamily="@font/pretendard_regular"
@@ -97,9 +98,10 @@
                     android:fontFamily="@font/pretendard_medium"/>
 
                 <TextView
+                    android:id="@+id/tv_new_students"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+ 74"
+                    android:text="신규 74명"
                     android:textSize="11sp"
                     android:textColor="@color/assu_main"
                     android:fontFamily="@font/pretendard_regular"
@@ -127,9 +129,10 @@
                     android:fontFamily="@font/pretendard_medium"/>
 
                 <TextView
+                    android:id="@+id/tv_today_users"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+ 4,128"
+                    android:text="오늘 4,128명"
                     android:textSize="11sp"
                     android:textColor="@color/assu_main"
                     android:fontFamily="@font/pretendard_regular"
@@ -149,10 +152,9 @@
             android:fontFamily="@font/pretendard_semibold"
             android:layout_marginTop="28dp"
             app:layout_constraintTop_toBottomOf="@id/layout_dashboard_stats"
-            app:layout_constraintStart_toStartOf="parent"
-             />
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- 그래프 여백 -->
+        <!-- 바차트 (클릭 가능) -->
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/barChart_partners"
             android:layout_width="310dp"
@@ -162,7 +164,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_dashboard_menu_graph_title" />
 
-        <!-- 분석 + 예측 문구 영역 -->
+        <!-- 분석 + 이번달 이용현황 영역 -->
         <LinearLayout
             android:id="@+id/ll_dashboard_prediction"
             android:layout_width="match_parent"
@@ -177,18 +179,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- 분석 문구 -->
+            <!-- 분석 문구 (동적으로 업데이트) -->
             <TextView
                 android:id="@+id/tv_dashboard_analysis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="“역전할머니맥주 숭실대점” 의\n제휴 누적이용률이 가장 높아요!"
+                android:text="역전할머니맥주 숭실대점 의\n제휴 누적이용률이 가장 높아요!"
                 android:textColor="@color/assu_font_main"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:fontFamily="@font/pretendard_medium" />
 
-            <!-- 예측 문구 -->
+            <!-- 이번달 이용현황 문구 -->
             <TextView
                 android:id="@+id/tv_dashboard_prediction"
                 android:layout_width="wrap_content"

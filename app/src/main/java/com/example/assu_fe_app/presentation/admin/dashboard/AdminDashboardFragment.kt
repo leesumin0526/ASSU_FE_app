@@ -8,7 +8,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentAdminDashboardBinding
 import com.example.assu_fe_app.domain.model.dashboard.AdminDashboardModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -18,110 +17,106 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.highlight.Highlight
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
+import android.app.AlertDialog
 
 @AndroidEntryPoint
 class AdminDashboardFragment :
     BaseFragment<FragmentAdminDashboardBinding>(R.layout.fragment_admin_dashboard) {
 
-    private val viewModel: AdminDashboardViewModel by viewModels()
-
-    @Inject
-    lateinit var authTokenLocalStore: AuthTokenLocalStore
-
-
+    //private val viewModel: AdminDashboardViewModel by viewModels()
 
     override fun initObserver() {
-        val userName = authTokenLocalStore.getUserName() ?: "사용자"
+        // 기본 제목 설정
+        binding.tvDashboardTitle.text = "숭실대학교 총학생회"
 
-        binding.tvDashboardTitle.text = if (userName.isNotEmpty()) {
-            "${userName}"
-        } else {
-            "안녕하세요, 사용자님!"
-        }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.dashboardState.collect { state ->
-                when (state) {
-                    is AdminDashboardViewModel.DashboardUiState.Idle -> {
-                        // 초기 상태
-                    }
-                    is AdminDashboardViewModel.DashboardUiState.Loading -> {
-                        showLoading()
-                    }
-                    is AdminDashboardViewModel.DashboardUiState.Success -> {
-                        hideLoading()
-                        setupUI(state.data)
-                    }
-                    is AdminDashboardViewModel.DashboardUiState.Fail -> {
-                        hideLoading()
-                        showError("서버 오류: ${state.message}")
-                    }
-                    is AdminDashboardViewModel.DashboardUiState.Error -> {
-                        hideLoading()
-                        showError(state.message)
-                    }
-                }
-            }
+//            viewModel.dashboardState.collect { state ->
+//                when (state) {
+//                    is AdminDashboardViewModel.DashboardUiState.Idle -> {
+//                        // 초기 상태
+//                    }
+//                    is AdminDashboardViewModel.DashboardUiState.Loading -> {
+//                        showLoading()
+//                    }
+//                    is AdminDashboardViewModel.DashboardUiState.Success -> {
+//                        hideLoading()
+//                        setupUI(state.data)
+//                    }
+//                    is AdminDashboardViewModel.DashboardUiState.Fail -> {
+//                        hideLoading()
+//                        showError("서버 오류: ${state.message}")
+//                    }
+//                    is AdminDashboardViewModel.DashboardUiState.Error -> {
+//                        hideLoading()
+//                        showError(state.message)
+//                    }
+//                }
+//            }
         }
     }
 
     override fun initView() {
-        // 하드코딩된 예측값으로 설정
-        setPredictionText(1250) // 하드코딩된 이용 건수
-
         binding.btnViewSuggestions.setOnClickListener { view ->
             Navigation.findNavController(view).navigate(R.id.action_admin_dashboard_to_suggestions)
         }
 
-        // Admin 대시보드 데이터 로드
-        // viewModel.loadAdminDashboard()
-
-        // 하드코딩된 데이터로 UI 설정
-        setupUIWithHardcodedData()
+//        // 통합 API로 대시보드 데이터 로드
+//        viewModel.loadAdminDashboard()
     }
 
     private fun setupUI(data: AdminDashboardModel) {
-        // 원래 코드 주석 처리
-        // val predictedCount = calculatePrediction(data)
-        // setPredictionText(predictedCount)
-        // setupAdminSpecificUI(data)
-
-        // 하드코딩된 데이터 사용
-        setupUIWithHardcodedData()
+        // API에서 받은 이번달 이용현황 데이터 사용
+        setMonthlyUsageText(data.monthlyUsageCount)
+        setupAdminSpecificUI(data)
     }
 
-    // 하드코딩된 데이터로 UI 설정
-    private fun setupUIWithHardcodedData() {
-        // 하드코딩된 예측값 설정
-        setPredictionText(122)
+    private fun setupAdminSpecificUI(adminStats: AdminDashboardModel) {
+        // 통합 API에서 받은 모든 데이터 설정
+        binding.tvTotalStudents?.text = "+ ${adminStats.totalStudentCount}"
+        binding.tvNewStudents?.text = "+ ${adminStats.newStudentCount}"
+        binding.tvTodayUsers?.text = "+ ${adminStats.todayUsagePersonCount}"
 
-        // Admin 차트들 설정 (하드코딩된 데이터)
-        setupAdminChartsWithHardcodedData()
+        // 바차트 설정
+        setupPartnersBarChart(adminStats.storeUsageStats)
 
-        // 하드코딩된 Admin 관련 UI 설정
-        setupAdminSpecificUIWithHardcodedData()
-    }
-
-    // Admin 대시보드 차트들을 하드코딩된 데이터로 설정
-    private fun setupAdminChartsWithHardcodedData() {
-        // 하드코딩된 제휴 이용현황 바 차트
-        setupPartnersBarChart(listOf(320L, 280L, 450L, 380L, 520L, 410L, 600L))
+        // 분석 텍스트 설정
+        if (adminStats.storeUsageStats.isNotEmpty()) {
+            val topStore = adminStats.storeUsageStats.first() // 이미 사용량 내림차순으로 정렬됨
+            binding.tvDashboardAnalysis?.text = "${topStore.storeName}의\n제휴 누적이용률이 가장 높아요!"
+        } else {
+            // 제휴 이용내역이 없는 경우
+            binding.tvDashboardAnalysis?.text = "아직 제휴 이용내역이 없어요.\n첫 번째 이용자를 기다리고 있어요!"
+        }
     }
 
     // 제휴 이용현황 바 차트 설정
-    private fun setupPartnersBarChart(usageData: List<Long>) {
+    private fun setupPartnersBarChart(storeUsageStats: List<AdminDashboardModel.StoreUsageStat>) {
         val barChart = binding.barChartPartners
+
+        // 데이터가 없는 경우 처리
+        if (storeUsageStats.isEmpty()) {
+            barChart.clear()
+            barChart.setNoDataText("아직 제휴 이용내역이 없습니다")
+            barChart.setNoDataTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_sub))
+            barChart.invalidate()
+            return
+        }
+
         val entries = ArrayList<BarEntry>()
 
-        usageData.forEachIndexed { index, usage ->
-            entries.add(BarEntry(index.toFloat(), usage.toFloat()))
+        storeUsageStats.forEachIndexed { index, store ->
+            entries.add(BarEntry(index.toFloat(), store.usageCount.toFloat()))
         }
 
         val dataSet = BarDataSet(entries, "제휴 이용 현황")
 
-        // 바 색상 설정 (모든 바를 메인 색상으로)
+        // 바 색상 설정
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.assu_main)
         dataSet.setDrawValues(true)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.assu_main)
@@ -138,7 +133,7 @@ class AdminDashboardFragment :
 
         // 차트 기본 설정
         barChart.description.isEnabled = false
-        barChart.setTouchEnabled(false)
+        barChart.setTouchEnabled(true) // 터치 활성화 - 바 클릭 가능
         barChart.setDrawGridBackground(false)
         barChart.legend.isEnabled = false
         barChart.setFitBars(true)
@@ -155,68 +150,55 @@ class AdminDashboardFragment :
         barChart.axisLeft.isEnabled = false
         barChart.axisRight.isEnabled = false
 
+        // 바 클릭 리스너 추가
+        barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                e?.let { entry ->
+                    val selectedIndex = entry.x.toInt()
+                    if (selectedIndex < storeUsageStats.size) {
+                        val selectedStore = storeUsageStats[selectedIndex]
+                        showStoreUsageDialog(selectedStore)
+                    }
+                }
+            }
+
+            override fun onNothingSelected() {
+                // 아무것도 선택되지 않았을 때
+            }
+        })
+
         barChart.animateY(1000)
         barChart.invalidate()
     }
 
-    private fun calculatePrediction(adminStats: AdminDashboardModel): Int {
-        // 원래 예측 로직 (주석 처리됨)
-        // val totalUsage = adminStats.storeUsageStats.sumOf { it.usageCount }
-        // val todayUsage = adminStats.todayUsagePersonCount
-        // return (todayUsage * 30).toInt()
+    // 제휴 업체 이용현황 다이얼로그 표시
+    private fun showStoreUsageDialog(store: AdminDashboardModel.StoreUsageStat) {
+        val dialogBuilder = AlertDialog.Builder(requireContext())
 
-        // 하드코딩된 예측값 반환
-        return 1250
+        val message = """
+            업체명: ${store.storeName}
+            총 이용 횟수: ${store.usageCount}건
+            오늘 이용 횟수: ${store.todayUsageCount}건
+            이번 달 이용 횟수: ${store.monthlyUsageCount}건
+            등록일: ${store.registrationDate}
+        """.trimIndent()
+
+        dialogBuilder.setTitle("제휴 업체 이용현황")
+            .setMessage(message)
+            .setPositiveButton("확인") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
-    private fun setupAdminSpecificUI(adminStats: AdminDashboardModel) {
-        // 원래 Admin 전용 UI 요소들 설정 (주석 처리됨)
-        // binding.tvTotalStudents.text = "총 ${adminStats.totalStudentCount}명"
-        // binding.tvNewStudents.text = "신규 ${adminStats.newStudentCount}명"
-        // binding.tvTodayUsers.text = "오늘 ${adminStats.todayUsagePersonCount}명 이용"
-        // setupStoreUsageStats(adminStats.storeUsageStats)
-
-        // 하드코딩된 데이터로 대체
-        setupAdminSpecificUIWithHardcodedData()
-    }
-
-    // 하드코딩된 Admin 전용 UI 설정
-    private fun setupAdminSpecificUIWithHardcodedData() {
-        // Admin 전용 UI 요소들을 하드코딩된 데이터로 설정
-        // 예시: TextView가 있다면 아래와 같이 하드코딩된 값들로 설정
-
-        // binding.tvTotalStudents?.text = "총 3,250명"
-        // binding.tvNewStudents?.text = "신규 45명"
-        // binding.tvTodayUsers?.text = "오늘 127명 이용"
-
-        // 하드코딩된 매장별 사용 통계
-        // setupHardcodedStoreUsageStats()
-    }
-
-    // 하드코딩된 매장별 사용 통계 설정
-    private fun setupHardcodedStoreUsageStats() {
-        // 매장별 통계를 하드코딩된 데이터로 표시
-        // 예시:
-        val hardcodedStoreStats = listOf(
-            "스타벅스 숭실대점: 85명",
-            "투썸플레이스 상도점: 67명",
-            "할리스커피 숭실대역점: 42명",
-            "이디야커피 상도역점: 38명",
-            "빽다방 숭실대점: 35명"
-        )
-
-        // 실제 UI 요소가 있다면 여기서 설정
-        // hardcodedStoreStats.forEach { stat ->
-        //     // 매장별 통계를 UI에 표시하는 로직
-        // }
-    }
-
-    private fun setPredictionText(count: Int) {
-        val fullText = "이번달에는 ${count}건 이용했어요."
+    // 이번달 이용현황 텍스트 설정
+    private fun setMonthlyUsageText(monthlyCount: Int) {
+        val fullText = "이번달에는 ${monthlyCount}건 이용했어요."
         val spannable = SpannableString(fullText)
 
-        val start = fullText.indexOf("$count")
-        val end = start + "$count".length
+        val start = fullText.indexOf("$monthlyCount")
+        val end = start + "$monthlyCount".length
 
         val color = ContextCompat.getColor(requireContext(), R.color.assu_main)
         spannable.setSpan(
@@ -231,10 +213,12 @@ class AdminDashboardFragment :
 
     private fun showLoading() {
         // 로딩 UI 표시
+        // 예: binding.progressBar?.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
         // 로딩 UI 숨김
+        // 예: binding.progressBar?.visibility = View.GONE
     }
 
     private fun showError(message: String) {
