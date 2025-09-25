@@ -32,13 +32,6 @@ class AdminDashboardRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getMonthlyUsageCount(): RetrofitResult<Long> {
-        return apiHandler(
-            execute = { api.getMonthlyUsageCount() },
-            mapper = { dto -> dto.monthlyUsageCount }
-        )
-    }
-
     override suspend fun getDetailedUsageList(): RetrofitResult<List<AdminDashboardModel.StoreUsageStat>> {
         return apiHandler(
             execute = { api.getDetailedUsageList() },

@@ -7,42 +7,34 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
-//class GetTotalStudentCountUseCase @Inject constructor(
-//    private val repo: AdminDashboardRepository
-//) {
-//    suspend operator fun invoke(): RetrofitResult<Long> {
-//        return repo.getTotalStudentCount()
-//    }
-//}
-//
-//class GetNewStudentCountUseCase @Inject constructor(
-//    private val repo: AdminDashboardRepository
-//) {
-//    suspend operator fun invoke(): RetrofitResult<Long> {
-//        return repo.getNewStudentCount()
-//    }
-//}
-//
-//class GetTodayUsageCountUseCase @Inject constructor(
-//    private val repo: AdminDashboardRepository
-//) {
-//    suspend operator fun invoke(): RetrofitResult<Long> {
-//        return repo.getTodayUsageCount()
-//    }
-//}
-//
-//class GetMonthlyUsageCountUseCase @Inject constructor(
-//    private val repo: AdminDashboardRepository
-//) {
-//    suspend operator fun invoke(): RetrofitResult<Long> {
-//        return repo.getMonthlyUsageCount()
-//    }
-//}
-//
-//class GetDetailedUsageListUseCase @Inject constructor(
-//    private val repo: AdminDashboardRepository
-//) {
-//    suspend operator fun invoke(): RetrofitResult<List<AdminDashboardModel.StoreUsageStat>> {
-//        return repo.getDetailedUsageList()
-//    }
-//}
+class GetTotalStudentCountUseCase @Inject constructor(
+    private val repo: AdminDashboardRepository
+) {
+    suspend operator fun invoke(): RetrofitResult<Long> {
+        return repo.getTotalStudentCount()
+    }
+}
+
+class GetNewStudentCountUseCase @Inject constructor(
+    private val repo: AdminDashboardRepository
+) {
+    suspend operator fun invoke(): RetrofitResult<Long> {
+        return repo.getNewStudentCount()
+    }
+}
+
+class GetTodayUsageCountUseCase @Inject constructor(
+    private val repo: AdminDashboardRepository
+) {
+    suspend operator fun invoke(): RetrofitResult<Long> {
+        return repo.getTodayUsageCount()
+    }
+}
+
+class GetDetailedUsageListUseCase @Inject constructor(
+    private val repo: AdminDashboardRepository
+) {
+    suspend operator fun invoke(): RetrofitResult<List<AdminDashboardModel.StoreUsageStat>> {
+        return repo.getDetailedUsageList()
+    }
+}

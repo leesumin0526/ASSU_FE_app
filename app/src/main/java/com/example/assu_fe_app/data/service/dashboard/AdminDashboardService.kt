@@ -15,9 +15,7 @@ interface AdminDashboardService {
     @GET("/admin/dashBoard/countUser")
     suspend fun getTodayUsageCount(): BaseResponse<CountUsagePersonResponseDTO>
 
-    @GET("/admin/dashBoard/usage/detailed")
+    @GET("/admin/dashBoard/usage")
     suspend fun getDetailedUsageList(): BaseResponse<CountUsageListResponseDTO>
 
-    @GET("/admin/dashBoard/monthlyUsage")
-    suspend fun getMonthlyUsageCount(): BaseResponse<MonthlyUsageCountResponseDTO>
 }

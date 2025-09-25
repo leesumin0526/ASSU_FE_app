@@ -38,17 +38,17 @@ data class CountUsageResponseDTO( // 제휴 업체별 누적 제휴 이용현황
     val adminName: String,
     val storeId: Long,
     val storeName: String,
-    val todayUsageCount: Long,
-    val monthlyUsageCount: Long,
-    val registrationDate: String
+    val todayUsageCount: Long? = null,
+    val monthlyUsageCount: Long? = null,
+    val registrationDate: String? = null
 ) {
     fun toStoreUsageStat() = AdminDashboardModel.StoreUsageStat(
         storeId = storeId,
         storeName = storeName,
         usageCount = usageCount,
-        todayUsageCount = todayUsageCount.toInt(),
-        monthlyUsageCount = monthlyUsageCount.toInt(),
-        registrationDate = registrationDate
+        todayUsageCount = (todayUsageCount ?: 0L).toInt(),
+        monthlyUsageCount = (monthlyUsageCount ?: 0L).toInt(),
+        registrationDate = registrationDate ?: "정보 없음"
     )
 }
 

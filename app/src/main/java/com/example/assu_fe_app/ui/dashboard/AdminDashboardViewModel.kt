@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.assu_fe_app.domain.model.dashboard.AdminDashboardModel
 import com.example.assu_fe_app.domain.usecase.dashboard.GetDetailedUsageListUseCase
-import com.example.assu_fe_app.domain.usecase.dashboard.GetMonthlyUsageCountUseCase
 import com.example.assu_fe_app.domain.usecase.dashboard.GetNewStudentCountUseCase
 import com.example.assu_fe_app.domain.usecase.dashboard.GetTodayUsageCountUseCase
 import com.example.assu_fe_app.domain.usecase.dashboard.GetTotalStudentCountUseCase
@@ -22,7 +21,6 @@ class AdminDashboardViewModel @Inject constructor(
     private val getTotalStudentCountUseCase: GetTotalStudentCountUseCase,
     private val getNewStudentCountUseCase: GetNewStudentCountUseCase,
     private val getTodayUsageCountUseCase: GetTodayUsageCountUseCase,
-    private val getMonthlyUsageCountUseCase: GetMonthlyUsageCountUseCase,
     private val getDetailedUsageListUseCase: GetDetailedUsageListUseCase
 ) : ViewModel() {
 
@@ -47,28 +45,25 @@ class AdminDashboardViewModel @Inject constructor(
                     val totalStudentsDeferred = async { getTotalStudentCountUseCase() }
                     val newStudentsDeferred = async { getNewStudentCountUseCase() }
                     val todayUsageDeferred = async { getTodayUsageCountUseCase() }
-                    val monthlyUsageDeferred = async { getMonthlyUsageCountUseCase() }
                     val detailedUsageDeferred = async { getDetailedUsageListUseCase() }
 
                     val totalStudentsResult = totalStudentsDeferred.await()
                     val newStudentsResult = newStudentsDeferred.await()
                     val todayUsageResult = todayUsageDeferred.await()
-                    val monthlyUsageResult = monthlyUsageDeferred.await()
                     val detailedUsageResult = detailedUsageDeferred.await()
 
                     // 모든 결과가 성공인지 확인
                     if (totalStudentsResult is RetrofitResult.Success &&
                         newStudentsResult is RetrofitResult.Success &&
                         todayUsageResult is RetrofitResult.Success &&
-                        monthlyUsageResult is RetrofitResult.Success &&
                         detailedUsageResult is RetrofitResult.Success) {
 
                         val adminDashboardModel = AdminDashboardModel(
                             totalStudentCount = totalStudentsResult.data.toInt(),
                             newStudentCount = newStudentsResult.data.toInt(),
                             todayUsagePersonCount = todayUsageResult.data.toInt(),
-                            monthlyUsageCount = monthlyUsageResult.data.toInt(),
-                            storeUsageStats = detailedUsageResult.data
+                            storeUsageStats = detailedUsageResult.data,
+                            monthlyUsageCount = 0
                         )
 
                         _dashboardState.value = DashboardUiState.Success(adminDashboardModel)
@@ -78,7 +73,6 @@ class AdminDashboardViewModel @Inject constructor(
                             totalStudentsResult,
                             newStudentsResult,
                             todayUsageResult,
-                            monthlyUsageResult,
                             detailedUsageResult
                         ).firstOrNull { it is RetrofitResult.Fail } as? RetrofitResult.Fail
 

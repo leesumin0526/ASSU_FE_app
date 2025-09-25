@@ -21,43 +21,52 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import dagger.hilt.android.AndroidEntryPoint
-import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 import android.app.AlertDialog
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AdminDashboardFragment :
     BaseFragment<FragmentAdminDashboardBinding>(R.layout.fragment_admin_dashboard) {
 
-    //private val viewModel: AdminDashboardViewModel by viewModels()
+    private val viewModel: AdminDashboardViewModel by viewModels()
 
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
     override fun initObserver() {
         // 기본 제목 설정
-        binding.tvDashboardTitle.text = "숭실대학교 총학생회"
-
         viewLifecycleOwner.lifecycleScope.launch {
-//            viewModel.dashboardState.collect { state ->
-//                when (state) {
-//                    is AdminDashboardViewModel.DashboardUiState.Idle -> {
-//                        // 초기 상태
-//                    }
-//                    is AdminDashboardViewModel.DashboardUiState.Loading -> {
-//                        showLoading()
-//                    }
-//                    is AdminDashboardViewModel.DashboardUiState.Success -> {
-//                        hideLoading()
-//                        setupUI(state.data)
-//                    }
-//                    is AdminDashboardViewModel.DashboardUiState.Fail -> {
-//                        hideLoading()
-//                        showError("서버 오류: ${state.message}")
-//                    }
-//                    is AdminDashboardViewModel.DashboardUiState.Error -> {
-//                        hideLoading()
-//                        showError(state.message)
-//                    }
-//                }
-//            }
+            val username = authTokenLocalStore.getUserName()
+            binding.tvDashboardTitle.text = if (!username.isNullOrEmpty()) {
+                "${username}"
+            } else {
+                " "
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.dashboardState.collect { state ->
+                when (state) {
+                    is AdminDashboardViewModel.DashboardUiState.Idle -> {
+                        // 초기 상태
+                    }
+                    is AdminDashboardViewModel.DashboardUiState.Loading -> {
+                        showLoading()
+                    }
+                    is AdminDashboardViewModel.DashboardUiState.Success -> {
+                        hideLoading()
+                        setupUI(state.data)
+                    }
+                    is AdminDashboardViewModel.DashboardUiState.Fail -> {
+                        hideLoading()
+                        showError("서버 오류: ${state.message}")
+                    }
+                    is AdminDashboardViewModel.DashboardUiState.Error -> {
+                        hideLoading()
+                        showError(state.message)
+                    }
+                }
+            }
         }
     }
 
@@ -66,8 +75,7 @@ class AdminDashboardFragment :
             Navigation.findNavController(view).navigate(R.id.action_admin_dashboard_to_suggestions)
         }
 
-//        // 통합 API로 대시보드 데이터 로드
-//        viewModel.loadAdminDashboard()
+       viewModel.loadAdminDashboard()
     }
 
     private fun setupUI(data: AdminDashboardModel) {

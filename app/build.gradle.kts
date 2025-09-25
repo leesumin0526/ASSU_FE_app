@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
-    id("com.google.devtools.ksp")
+    id("kotlin-kapt")
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
 }

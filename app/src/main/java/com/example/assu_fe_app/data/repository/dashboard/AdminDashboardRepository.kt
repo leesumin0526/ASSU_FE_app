@@ -7,6 +7,5 @@ interface AdminDashboardRepository {
     suspend fun getTotalStudentCount(): RetrofitResult<Long>
     suspend fun getNewStudentCount(): RetrofitResult<Long>
     suspend fun getTodayUsageCount(): RetrofitResult<Long>
-    suspend fun getMonthlyUsageCount(): RetrofitResult<Long>
     suspend fun getDetailedUsageList(): RetrofitResult<List<AdminDashboardModel.StoreUsageStat>>
 }
