@@ -76,6 +76,10 @@
         android:name="com.example.assu_fe_app.presentation.common.mypage.CustomerServiceDialogFragment"
         tools:layout="@layout/fragment_user_customer_service" />
 
+    <fragment
+        android:id="@+id/chattingRoomListFragment"
+        android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingRoomListFragment"
+        tools:layout="@layout/fragment_chatting_list" />
 
 
     <!-- 제휴업체 알림설정 -->
@@ -88,12 +92,24 @@
     <fragment
         android:id="@+id/notificationAllFragment"
         android:name="com.example.assu_fe_app.presentation.common.notification.NotificationAllFragment"
-        tools:layout="@layout/fragment_notification_all" />
+        tools:layout="@layout/fragment_notification_all" >
+
+        <action
+            android:id="@+id/action_notifications_to_partnerProposalDetail"
+            app:destination="@id/chattingRoomListFragment" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/notificationUnreadFragment"
         android:name="com.example.assu_fe_app.presentation.common.notification.NotificationUnreadFragment"
-        tools:layout="@layout/fragment_notification_unread" />
+        tools:layout="@layout/fragment_notification_unread" >
+
+        <action
+            android:id="@+id/action_notifications_to_partnerProposalDetail_Unread"
+            app:destination="@id/chattingRoomListFragment" />
+
+    </fragment>
 
 
     <!--리뷰 모아보는 페이지-->
@@ -119,6 +135,20 @@
         <action
             android:id="@+id/action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment"
             app:destination="@id/serviceProposalTermWritingFragment" />
+
+        <argument
+            android:name="partnerId"
+            app:argType="long"/>
+        <argument
+            android:name="paperId"
+            app:argType="long"/>
+        <argument
+            android:name="adminName"
+            app:argType="string" />
+        <argument
+            android:name="partnerName"
+            app:argType="string" />
+
         <action
             android:id="@+id/action_serviceProposalWritingFragment_to_locationSearchFragment"
             app:destination="@id/partnerLocationInfoSearchFragment" />
@@ -141,4 +171,27 @@
     <fragment
         android:id="@+id/chattingSentProposalFragment"
         android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingSentProposalFragment" />
+
+    <fragment
+        android:id="@+id/proposalModifyFragment"
+        android:name="com.example.assu_fe_app.presentation.common.contract.ProposalModifyFragment"
+        tools:layout="@layout/fragment_proposal_modify">
+
+        <argument
+            android:name="paperId"
+            app:argType="long"/>
+
+        <argument
+            android:name="adminName"
+            app:argType="string"/>
+
+        <argument
+            android:name="partnerName"
+            app:argType="string"/>
+
+        <argument
+            android:name="viewMode"
+            app:argType="com.example.assu_fe_app.presentation.common.contract.ViewMode"/>
+
+    </fragment>
 </navigation>

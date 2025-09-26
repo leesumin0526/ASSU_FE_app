@@ -1,0 +1,8 @@
+package com.example.assu_fe_app.data.dto.partnership.request
+
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
+data class CreateDraftRequestDto(
+    val partnerId: Long
+)

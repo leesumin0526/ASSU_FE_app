@@ -9,9 +9,9 @@ data class PartnershipOptionResponseDto(
     val criterionType: CriterionType,  // enum이면 String 유지
     val people: Int?,
     val cost: Long?,
-    val category: String?,
-    val discountRate: Long?,      // 서버의 discount와 매핑
-    val goods: List<GoodsResponseDto>?
+    val category: String,
+    val discountRate: Long?,
+    val goods: List<PartnershipGoodsResponseDto>
 ) {
     fun toModel() = PartnershipOptionModel(
         optionType = optionType,
