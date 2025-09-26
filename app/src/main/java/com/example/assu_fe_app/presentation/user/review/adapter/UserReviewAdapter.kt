@@ -6,10 +6,9 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.data.dto.review.Review
 import com.example.assu_fe_app.databinding.ItemReviewBinding
-import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
+import com.example.assu_fe_app.presentation.common.report.OnItemClickListener
 
 class UserReviewAdapter(
     private val showDeleteButton: Boolean = false,

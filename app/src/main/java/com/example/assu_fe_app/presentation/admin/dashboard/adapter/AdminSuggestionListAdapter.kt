@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.databinding.ItemSuggestionListBinding
 import com.example.assu_fe_app.domain.model.suggestion.SuggestionModel
-import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
+import com.example.assu_fe_app.presentation.common.report.OnItemClickListener
 import com.example.assu_fe_app.util.toDepartmentName
 import com.example.assu_fe_app.util.toEnrollmentStatus
 

@@ -15,7 +15,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.review.Review
 import com.example.assu_fe_app.databinding.ItemReviewBinding
-import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
+import com.example.assu_fe_app.presentation.common.report.OnItemClickListener
 import java.time.format.DateTimeFormatter
 
 class UserReviewViewHolder(

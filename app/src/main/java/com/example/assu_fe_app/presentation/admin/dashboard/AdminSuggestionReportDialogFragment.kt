@@ -1,6 +1,5 @@
 package com.example.assu_fe_app.presentation.admin.dashboard
 
-
 import android.content.Context
 import android.os.Bundle
 import com.example.assu_fe_app.R
@@ -9,23 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.assu_fe_app.databinding.FragmentAdminSuggestionReportDialogBinding
-import com.example.assu_fe_app.presentation.partner.dashboard.review.OnReviewReportConfirmedListener
+import com.example.assu_fe_app.presentation.common.report.OnReviewReportConfirmedListener
 
-class AdminSuggestionReportDialogFragment : DialogFragment(){
+class AdminSuggestionReportDialogFragment : DialogFragment() {
     private var _binding: FragmentAdminSuggestionReportDialogBinding? = null
     private val binding get() = _binding!!
 
-    // 1. 리스너를 담을 변수 추가
     private var listener: OnReviewReportConfirmedListener? = null
 
-    // 2. onAttach 콜백에서 리스너 설정
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (parentFragment is OnReviewReportConfirmedListener) {
-            listener = parentFragment as OnReviewReportConfirmedListener
+        // Activity가 리스너를 구현했는지 확인
+        if (context is OnReviewReportConfirmedListener) {
+            listener = context
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +34,11 @@ class AdminSuggestionReportDialogFragment : DialogFragment(){
         return binding.root
     }
 
-    // onResume은 기존 코드와 동일하게 유지
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+    }
+
     override fun onResume() {
         super.onResume()
         val displayMetrics = resources.displayMetrics
@@ -55,9 +56,9 @@ class AdminSuggestionReportDialogFragment : DialogFragment(){
             val position = arguments?.getInt("position") ?: return@setOnClickListener
             val selectedReportReason = getSelectedReportReason()
 
-            // 3. activity 대신 설정된 listener를 호출하도록 변경
+            // Activity의 리스너 호출
             listener?.onReviewReportConfirmed(position, selectedReportReason)
-
+            dismiss() // 이 다이얼로그는 닫고, 완료 다이얼로그는 Activity에서 띄움
         }
     }
 
@@ -70,17 +71,11 @@ class AdminSuggestionReportDialogFragment : DialogFragment(){
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    // onDetach에서 리스너를 null로 만들어 메모리 누수 방지
     override fun onDetach() {
         super.onDetach()
         listener = null

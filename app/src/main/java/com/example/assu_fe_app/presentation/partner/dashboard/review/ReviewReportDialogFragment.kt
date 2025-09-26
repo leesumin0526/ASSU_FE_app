@@ -1,31 +1,51 @@
-// ReviewReportDialogFragment.kt
-
 package com.example.assu_fe_app.presentation.partner.dashboard.review
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentReviewReportDialogBinding
+import com.example.assu_fe_app.presentation.common.report.OnReviewReportConfirmedListener
 
 class ReviewReportDialogFragment : DialogFragment() {
     private var _binding: FragmentReviewReportDialogBinding? = null
     private val binding get() = _binding!!
 
-    // 1. 리스너를 담을 변수 추가
     private var listener: OnReviewReportConfirmedListener? = null
 
-    // 2. onAttach 콜백에서 리스너 설정
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (parentFragment is OnReviewReportConfirmedListener) {
-            listener = parentFragment as OnReviewReportConfirmedListener
+
+
+        // Navigation Component를 사용하는 경우, NavHostFragment의 childFragmentManager에서 현재 활성 Fragment를 찾음
+        val navHostFragment = parentFragment
+        if (navHostFragment != null) {
+            val currentFragment = navHostFragment.childFragmentManager.fragments.firstOrNull()
+
+            if (currentFragment is OnReviewReportConfirmedListener) {
+                listener = currentFragment
+            }
+        }
+
+        // 여전히 리스너가 없다면 다른 방법들 시도
+        if (listener == null) {
+            // 부모 프래그먼트 확인
+            if (parentFragment is OnReviewReportConfirmedListener) {
+                listener = parentFragment as OnReviewReportConfirmedListener
+                Log.d("ReviewReportDialog", "Listener set to parentFragment")
+            }
+            // Activity 확인
+            else if (context is OnReviewReportConfirmedListener) {
+                listener = context
+            } else {
+                Log.e("ReviewReportDialog", "No listener found! Neither currentFragment, parentFragment nor context implements OnReviewReportConfirmedListener")
+            }
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +57,6 @@ class ReviewReportDialogFragment : DialogFragment() {
         return binding.root
     }
 
-    // onResume은 기존 코드와 동일하게 유지
     override fun onResume() {
         super.onResume()
         val displayMetrics = resources.displayMetrics
@@ -54,10 +73,11 @@ class ReviewReportDialogFragment : DialogFragment() {
         binding.btnReportConfirm.setOnClickListener {
             val position = arguments?.getInt("position") ?: return@setOnClickListener
             val selectedReportReason = getSelectedReportReason()
-
-            // 3. activity 대신 설정된 listener를 호출하도록 변경
-            listener?.onReviewReportConfirmed(position, selectedReportReason)
-
+            listener?.let { l ->
+                Log.d("ReviewReportDialog", "Calling onReviewReportConfirmed")
+                l.onReviewReportConfirmed(position, selectedReportReason)
+                dismiss()
+            } ?: Log.e("ReviewReportDialog", "Listener is null!")
         }
     }
 
@@ -80,7 +100,6 @@ class ReviewReportDialogFragment : DialogFragment() {
         _binding = null
     }
 
-    // onDetach에서 리스너를 null로 만들어 메모리 누수 방지
     override fun onDetach() {
         super.onDetach()
         listener = null
@@ -96,9 +115,4 @@ class ReviewReportDialogFragment : DialogFragment() {
             return fragment
         }
     }
-}
-
-// OnReviewReportConfirmedListener 인터페이스는 그대로 둡니다.
-interface OnReviewReportConfirmedListener {
-    fun onReviewReportConfirmed(position: Int, reportReason: String)
 }

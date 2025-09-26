@@ -56,10 +56,6 @@ class ReviewDeleteDialogFragment : DialogFragment() {
 
 }
 
-// 콜백 리스터 선언
-interface OnItemClickListener{
-    fun onClick(position: Int)
-}
 
 // 콜백 리스너 선언
 interface OnReviewDeleteConfirmedListener {

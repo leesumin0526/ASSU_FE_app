@@ -11,7 +11,6 @@ import com.example.assu_fe_app.data.dto.review.Review
 import com.example.assu_fe_app.databinding.FragmentUserReviewStoreDetailBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
-import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
 import com.example.assu_fe_app.ui.review.UserStoreGetReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
