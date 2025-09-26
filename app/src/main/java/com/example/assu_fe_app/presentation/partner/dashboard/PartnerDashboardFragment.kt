@@ -82,36 +82,36 @@ class PartnerDashboardFragment :
         binding.btnViewContract.setOnClickListener {
             findNavController().navigate(R.id.action_partner_dashboard_to_partner_review)
         }
+
+        // API 데이터 로드
+        viewModel.loadPartnerDashboard()
     }
 
     private fun setupUI(data: PartnerDashboardModel) {
         binding.tvGraphUpdateDateAndTime.text = getCurrentDateString()
         binding.tvTodayUpdateDateAndTime.text = getCurrentDateString()
 
-         setupPartnershipLineChart(data.getRankingTrend())
-         setupClientBarChart(data.getUsageTrend())
-         setupRankingGrid(data.todayBest)
+        // API 데이터 사용
+        setupPartnershipLineChart(data.getRankingTrend())
+        setupClientBarChart(data.getUsageTrend())
+        setupRankingGrid(data.todayBest) // API에서 받은 인기매장 데이터 사용
 
         // 분석 텍스트 초기 설정
         updateAnalysisText()
     }
 
-    // 하드코딩된 인기매장 데이터 생성 (숭실대 앞 가게들)
-    private fun createHardcodedPopularStores(): List<PopularStoreModel> {
-        return listOf(
-            PopularStoreModel(rank = 1, storeName = "스타벅스", isHighlight = true),
-            PopularStoreModel(rank = 5, storeName = "먹돼지", isHighlight = false),
-            PopularStoreModel(rank = 2, storeName = "역전할머니맥주", isHighlight = true),
-            PopularStoreModel(rank = 6, storeName = "청운음식점", isHighlight = false),
-            PopularStoreModel(rank = 3, storeName = "커피나무", isHighlight = true),
-            PopularStoreModel(rank = 7, storeName = "샹츠마라", isHighlight = false),
-            PopularStoreModel(rank = 4, storeName = "지지고", isHighlight = false),
-            PopularStoreModel(rank = 8, storeName = "상도로 3가", isHighlight = false)
-        )
-    }
-
     private fun setupPartnershipLineChart(rankings: List<Long>) {
         val lineChart = binding.lineChartPartnership
+
+        // 데이터가 없는 경우 처리
+        if (rankings.isEmpty()) {
+            lineChart.clear()
+            lineChart.setNoDataText("아직 순위 데이터가 없어요")
+            lineChart.setNoDataTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_sub))
+            lineChart.invalidate()
+            return
+        }
+
         val entries = ArrayList<Entry>()
 
         rankings.forEachIndexed { index, ranking ->
@@ -212,6 +212,16 @@ class PartnerDashboardFragment :
 
     private fun setupClientBarChart(usageData: List<Long>) {
         val barChart = binding.barChartClients
+
+        // 데이터가 없는 경우 처리
+        if (usageData.isEmpty()) {
+            barChart.clear()
+            barChart.setNoDataText("아직 이용내역이 없어요")
+            barChart.setNoDataTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_sub))
+            barChart.invalidate()
+            return
+        }
+
         val entries = ArrayList<BarEntry>()
 
         usageData.forEachIndexed { index, usage ->
@@ -254,13 +264,36 @@ class PartnerDashboardFragment :
         barChart.setDrawGridBackground(false)
         barChart.legend.isEnabled = false
         barChart.setFitBars(true)
-        barChart.setViewPortOffsets(30f, 30f, 30f, 30f)
+        barChart.setViewPortOffsets(30f, 30f, 30f, 60f) // 하단 여백 증가
 
+        // X축 설정 - 주차별 라벨 표시
         val xAxis = barChart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.setDrawAxisLine(false)
-        xAxis.setDrawLabels(false)
+        xAxis.setDrawLabels(true) // 라벨 표시 활성화
+        xAxis.granularity = 1f
+        xAxis.isGranularityEnabled = true
+        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.assu_font_sub)
+        xAxis.textSize = 10f
+
+        // 주차별 라벨 설정
+        xAxis.valueFormatter = object : ValueFormatter() {
+            override fun getAxisLabel(value: Float, axis: com.github.mikephil.charting.components.AxisBase?): String {
+                val index = value.toInt()
+                val weeksFromNow = usageData.size - 1 - index
+
+                return when (weeksFromNow) {
+                    0 -> "이번주"
+                    1 -> "지난주"
+                    2 -> "2주전"
+                    3 -> "3주전"
+                    4 -> "4주전"
+                    5 -> "5주전"
+                    else -> "${weeksFromNow}주전"
+                }
+            }
+        }
 
         barChart.axisLeft.isEnabled = false
         barChart.axisRight.isEnabled = false
@@ -285,13 +318,31 @@ class PartnerDashboardFragment :
         val gridLayout = binding.gridRanking
         gridLayout.removeAllViews()
 
-        // 순서대로 추가하면 GridLayout이 2열로 설정되어 있어서 자동으로 1-5, 2-6, 3-7, 4-8 배치
+        // 데이터가 없는 경우 처리
+        if (popularStores.isEmpty()) {
+            val context = requireContext()
+            val noDataTextView = TextView(context).apply {
+                text = "아직 인기매장 데이터가 없어요"
+                textSize = 14f
+                setTextColor(ContextCompat.getColor(context, R.color.assu_font_sub))
+                gravity = android.view.Gravity.CENTER
+                layoutParams = androidx.gridlayout.widget.GridLayout.LayoutParams().apply {
+                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    columnSpec = androidx.gridlayout.widget.GridLayout.spec(0, 2) // 2열에 걸쳐 표시
+                    setMargins(0, (20 * resources.displayMetrics.density).toInt(), 0, 0)
+                }
+            }
+            gridLayout.addView(noDataTextView)
+            return
+        }
+
+        // API에서 받은 인기매장 데이터 사용 (최대 8개)
         popularStores.take(8).forEach { store ->
             val itemView = createRankingItem(store)
             gridLayout.addView(itemView)
         }
     }
-
 
     private fun createRankingItem(store: PopularStoreModel): LinearLayout {
         val context = requireContext()
@@ -335,14 +386,51 @@ class PartnerDashboardFragment :
     }
 
     private fun updateAnalysisText() {
-        // 하드코딩된 막대그래프 데이터
-        val hardcodedUsageData = listOf(120L, 150L, 180L, 220L, 195L, 250L)
+        // API 데이터에서 현재 대시보드 데이터 가져오기
+        val currentDashboardData = viewModel.dashboardState.value
+        if (currentDashboardData !is PartnerDashboardViewModel.DashboardUiState.Success) {
+            // 데이터가 없는 경우 기본 메시지 표시
+            binding.tvDashboardClientAnalysis.text = "아직 이용내역이 없어요.\n첫 번째 이용자를 기다리고 있어요!"
+            return
+        }
+
+        val usageData = currentDashboardData.data.getUsageTrend()
+
+        // 사용량 데이터가 없는 경우 처리
+        if (usageData.isEmpty()) {
+            binding.tvDashboardClientAnalysis.text = "아직 이용내역이 없어요.\n첫 번째 이용자를 기다리고 있어요!"
+            return
+        }
 
         // 현재 선택된 주차의 사용량 (기본값: 마지막 주차)
-        val selectedWeekIndex = viewModel.selectedWeekIndex.value ?: (hardcodedUsageData.size - 1)
-        val usageCount = hardcodedUsageData.getOrNull(selectedWeekIndex) ?: hardcodedUsageData.last()
+        val selectedWeekIndex = viewModel.selectedWeekIndex.value ?: (usageData.size - 1)
+        val usageCount = usageData.getOrNull(selectedWeekIndex) ?: usageData.lastOrNull() ?: 0L
 
-        val analysisText = "이번 주에 숭실대학교 학생\n${usageCount}명이 매장에서 제휴 서비스를 이용했어요"
+        // 사용량이 0인 경우 처리
+        if (usageCount == 0L) {
+            val weeksFromNow = usageData.size - 1 - selectedWeekIndex
+            val timeText = when (weeksFromNow) {
+                0 -> "이번 주"
+                1 -> "지난주"
+                else -> "${weeksFromNow}주 전"
+            }
+            binding.tvDashboardClientAnalysis.text = "${timeText}에는 아직 이용내역이 없어요.\n다음을 기대해보세요!"
+            return
+        }
+
+        // 선택된 주차에 따른 시간 표현
+        val weeksFromNow = usageData.size - 1 - selectedWeekIndex
+        val timeText = when (weeksFromNow) {
+            0 -> "이번 주에"
+            1 -> "지난주에"
+            2 -> "2주 전에"
+            3 -> "3주 전에"
+            4 -> "4주 전에"
+            5 -> "5주 전에"
+            else -> "${weeksFromNow}주 전에"
+        }
+
+        val analysisText = "${timeText} 숭실대학교 학생\n${usageCount}명이 매장에서 제휴 서비스를 이용했어요"
         val highlightText = "${usageCount}명"
 
         setClientAnalysisText(analysisText, highlightText)
