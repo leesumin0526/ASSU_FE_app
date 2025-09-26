@@ -7,16 +7,56 @@ import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentUserSignUpStudentBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
+import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
+import kotlinx.coroutines.launch
 
 class UserSignUpStudentFragment :
     BaseFragment<FragmentUserSignUpStudentBinding>(R.layout.fragment_user_sign_up_student) {
 
-    override fun initObserver() {}
+    private val signUpViewModel: SignUpViewModel by activityViewModels()
+
+    override fun initObserver() {
+        // 학생 토큰 검증 결과 관찰
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                signUpViewModel.studentVerifyResult.collect { result ->
+                    result?.let {
+                        // 검증 성공 시 다음 화면으로 이동
+                        findNavController().navigate(R.id.action_user_student_to_student_check)
+                    }
+                }
+            }
+        }
+
+        // 에러 메시지 관찰
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                signUpViewModel.errorMessage.collect { error ->
+                    error?.let {
+                        // 서버 에러 메시지는 토스트로 표시하지 않음
+                        // 사용자에게는 간단한 안내 메시지만 표시
+                        val userMessage = when {
+                            it.contains("MEMBER_4007") || it.contains("이미 존재하는 회원입니다") -> "이미 가입된 회원입니다. 로그인을 시도해주세요."
+                            it.contains("enrollmentStatus") -> "학생 인증에 실패했습니다. 다시 시도해주세요."
+                            it.contains("Non-null value") -> "학생 인증에 실패했습니다. 다시 시도해주세요."
+                            else -> it
+                        }
+                        android.widget.Toast.makeText(requireContext(), userMessage, android.widget.Toast.LENGTH_SHORT).show()
+                        signUpViewModel.clearError()
+                    }
+                }
+            }
+        }
+    }
 
     override fun initView() {
         binding.ivSignupProgressBar.setProgressBarFillAnimated(
@@ -124,17 +164,19 @@ class UserSignUpStudentFragment :
         // LMS 인증 성공 시 처리
         android.widget.Toast.makeText(requireContext(), "LMS 인증 성공!", android.widget.Toast.LENGTH_SHORT).show()
         
-        // 토큰이 있다면 로그 (디버깅용)
+        // 토큰이 있다면 ViewModel에 저장하고 검증 API 호출
         if (sToken != null && sIdno != null) {
             android.util.Log.d("UserSignUpStudentFragment", "Token: $sToken, ID: $sIdno")
+            signUpViewModel.setStudentToken(sToken, sIdno)
+            signUpViewModel.verifyStudentToken()
+        } else {
+            // 토큰이 없는 경우 에러 처리
+            android.widget.Toast.makeText(requireContext(), "인증 정보를 가져올 수 없습니다.", android.widget.Toast.LENGTH_SHORT).show()
         }
         
         // WebView 숨기고 기본 컨텐츠 복원
         binding.webviewLmsAuth.visibility = View.GONE
         binding.llDefaultContent.visibility = View.VISIBLE
-        
-        // LMS 인증 성공 후 학생 정보 확인 화면으로 이동
-        findNavController().navigate(R.id.action_user_student_to_student_check)
     }
 
     // 유세인트 인증 로직 추가 예정

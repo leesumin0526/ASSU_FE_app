@@ -24,12 +24,12 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.getValue
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.layout.fragment_chatting_list){
 
-    private val viewModel: ChattingListViewModel by viewModels()
-
+    private val viewModel: ChattingViewModel by viewModels()
     private val authTokenLocalStoreImpl by lazy {
         AuthTokenLocalStoreImpl(requireContext())
     }
@@ -46,6 +46,7 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
     }
 
     override fun initView() {
+        // RecyclerView 세팅
         binding.rvChattingRoomList.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@ChattingRoomListFragment.adapter
@@ -102,13 +103,30 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
             item.opponentProfileImage
         }
 
-        val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
-            putExtra("roomId", item.roomId)
-            putExtra("opponentId", item.opponentId)
-            putExtra("opponentName", safeName)
-            putExtra("opponentProfileImage", opponentProfile)
+        // 코루틴 스코프에서 비동기 작업 실행
+        viewLifecycleOwner.lifecycleScope.launch {
+            // 로딩 UI 표시 (예: Toast)
+            Toast.makeText(requireContext(), "제휴 정보 확인 중...", Toast.LENGTH_SHORT).show()
+
+            // ViewModel의 suspend 함수를 호출하고 결과를 기다림
+            val status = viewModel.checkPartnershipStatus(authTokenLocalStoreImpl.getUserRole(), item.opponentId)
+
+            // API 호출 결과에 따라 분기 처리
+            if (status != null) {
+                // 성공: Intent에 모든 정보를 담아 Activity 시작
+                val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
+                    putExtra("roomId", item.roomId)
+                    putExtra("opponentName", item.opponentName)
+                    putExtra("opponentProfileImage", item.opponentProfileImage)
+                    putExtra("partnershipStatus", status)
+                    putExtra("opponentId", item.opponentId)
+                }
+                startActivity(intent)
+            } else {
+                // 실패: 에러 메시지 표시
+                Toast.makeText(requireContext(), "제휴 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
-        startActivity(intent)
     }
 
 }

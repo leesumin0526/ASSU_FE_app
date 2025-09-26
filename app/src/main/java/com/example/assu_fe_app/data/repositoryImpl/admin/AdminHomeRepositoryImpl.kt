@@ -19,7 +19,8 @@ class AdminHomeRepositoryImpl @Inject constructor(
                     partnerId = dto.partnerId,
                     partnerName = dto.partnerName,
                     partnerAddress = dto.partnerAddress,
-                    partnerDetailAddress = dto.partnerDetailAddress
+                    partnerDetailAddress = dto.partnerDetailAddress,
+                    partnerUrl = dto.partnerUrl
                 )
             }
         )

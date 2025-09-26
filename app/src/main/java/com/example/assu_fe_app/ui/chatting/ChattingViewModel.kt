@@ -24,12 +24,22 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.example.assu_fe_app.data.dto.chatting.WsMessageDto
 import com.example.assu_fe_app.data.dto.chatting.request.BlockRequestDto
+import com.example.assu_fe_app.data.dto.partnership.request.CreateDraftRequestDto
 import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
 import com.example.assu_fe_app.domain.model.chatting.ReadChattingModel
+import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
 import com.example.assu_fe_app.domain.usecase.chatting.LeaveChattingRoomUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.ReadChattingUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.BlockOpponentUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.CheckBlockOpponentUseCase
+import com.example.assu_fe_app.domain.usecase.partnership.CheckPartnershipUseCase
+import com.example.assu_fe_app.domain.usecase.partnership.CreateDraftPartnershipUseCase
+import com.example.assu_fe_app.ui.partnership.BoxType
+import com.example.assu_fe_app.ui.partnership.ChattingBoxUiState
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 
 @HiltViewModel
@@ -43,6 +53,8 @@ class ChattingViewModel @Inject constructor(
     private val blockOpponentUseCase: BlockOpponentUseCase,
 
     private val chatSocket: ChatSocketClient,
+    private val checkPartnershipUseCase: CheckPartnershipUseCase,
+    private val createDraftPartnershipUseCase: CreateDraftPartnershipUseCase
     ) : ViewModel() {
 
     // ------------------------- 채팅방 생성-------------------------
@@ -330,4 +342,136 @@ class ChattingViewModel @Inject constructor(
         super.onCleared()
     }
 
+    private fun nowHHmm(): String {
+        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+        return sdf.format(java.util.Date())
+    }
+
+    suspend fun checkPartnershipStatus(role: String?, opponentId: Long): PartnershipStatusModel? {
+        var statusModel: PartnershipStatusModel? = null
+        checkPartnershipUseCase(role, opponentId)
+            .onSuccess { status ->
+                statusModel = status
+            }
+            .onFail { code->
+                Log.e("ChattingVM", "Check partnership failed: $code")
+                statusModel = null
+            }
+            .onError { e ->
+                Log.e("ChattingVM", "Check partnership error", e)
+                statusModel = null
+            }
+        return statusModel
+    }
+
+    // ------------------------- 채팅방 하단 박스 UI -------------------------
+    private var currentUserRole: String? = null
+    private var currentPartnershipStatus: PartnershipStatusModel? = null
+    private val _chattingBoxState = MutableStateFlow(ChattingBoxUiState())
+    val chattingBoxState: StateFlow<ChattingBoxUiState> = _chattingBoxState.asStateFlow()
+    private val _toastEvent = MutableSharedFlow<String>()
+    val toastEvent: SharedFlow<String> = _toastEvent.asSharedFlow()
+
+    fun updateChattingBoxState(role: String?, status: PartnershipStatusModel?) {
+        if (role == null || status == null) {
+            _chattingBoxState.value = ChattingBoxUiState(isVisible = false)
+            return
+        }
+        this.currentUserRole = role
+        this.currentPartnershipStatus = status
+
+        val opponentName = status.opponentName ?: ""
+        val opponentAddress = status.opponentAddress ?: ""
+
+        val newState = if (role.equals("PARTNER", ignoreCase = true)) {
+            // --- 파트너로 로그인한 경우 ---
+            when (status.status) {
+                "NONE" -> ChattingBoxUiState(isVisible = false)
+                "BLANK" -> ChattingBoxUiState(
+                    isVisible = true,
+                    boxType = BoxType.PARTNER,
+                    title = opponentName,
+                    subtitle = opponentAddress,
+                    buttonText = "제안서 작성하기"
+                )
+                "SUSPEND" -> ChattingBoxUiState(
+                    isVisible = true,
+                    boxType = BoxType.PARTNER,
+                    title = opponentName,
+                    subtitle = opponentAddress,
+                    buttonText = "제안서 확인하기"
+                )
+                "ACTIVE" -> ChattingBoxUiState(
+                    isVisible = true,
+                    boxType = BoxType.PARTNER,
+                    title = "제휴 체결완료",
+                    subtitle = "${opponentName}과의 제휴가 무사히 체결되었어요!",
+                    buttonText = "제휴 계약서 확인하기"
+                )
+                else -> ChattingBoxUiState(isVisible = false)
+            }
+        } else {
+            // --- 관리자로 로그인한 경우 ---
+            when (status.status) {
+                "NONE" -> ChattingBoxUiState(
+                    isVisible = true,
+                    boxType = BoxType.ADMIN,
+                    title = opponentName,
+                    subtitle = opponentAddress,
+                    buttonText = "제안서 초안 전송"
+                )
+                "BLANK", "SUSPEND" -> ChattingBoxUiState(
+                    isVisible = true,
+                    boxType = BoxType.ADMIN,
+                    title = opponentName,
+                    subtitle = opponentAddress,
+                    buttonText = "제안서 확인하기"
+                )
+                "ACTIVE" -> ChattingBoxUiState(
+                    isVisible = true,
+                    boxType = BoxType.ADMIN,
+                    title = "제휴 체결 완료",
+                    subtitle = "${opponentName}과의 제휴가 무사히 체결되었어요!",
+                    buttonText = "제휴 계약서 확인하기"
+                )
+                else -> ChattingBoxUiState(isVisible = false)
+            }
+        }
+        Log.d("ChattingViewModel", "Updating chattingBoxState to: $newState")
+        _chattingBoxState.value = newState
+    }
+
+    fun onProposalButtonClick() {
+        viewModelScope.launch {
+            val role = currentUserRole
+            val status = currentPartnershipStatus
+
+            if (role == null || status == null) return@launch
+
+            // 관리자이고 NONE 상태일 때만 초안 생성 API 호출
+            if (role.equals("ADMIN", ignoreCase = true) && status.status == "NONE") {
+                val partnerId = status.opponentId ?: return@launch
+                val request = CreateDraftRequestDto(partnerId = partnerId)
+
+                createDraftPartnershipUseCase(request)
+                    .onSuccess { response ->
+                        // ✅ 성공 시 현재 상태를 업데이트하고 UI 갱신
+                        val updatedStatus = status.copy(
+                            paperId = response.paperId,
+                            status = "BLANK"
+                        )
+                        // 내부 상태 업데이트
+                        currentPartnershipStatus = updatedStatus
+                        updateChattingBoxState(role, updatedStatus)
+                        _toastEvent.emit("제안서 초안이 생성되었습니다.")
+                    }
+                    .onFail { code ->
+                        _toastEvent.emit("초안 생성 실패: $code")
+                    }
+                    .onError {
+                        _toastEvent.emit("오류가 발생했습니다.")
+                    }
+            }
+        }
+    }
 }

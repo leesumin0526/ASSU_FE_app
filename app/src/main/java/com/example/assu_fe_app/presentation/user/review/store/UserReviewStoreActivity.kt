@@ -10,13 +10,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.dto.review.Review
-import com.example.assu_fe_app.data.dto.review.ReviewStoreItem
 import com.example.assu_fe_app.databinding.ActivityUserReviewStoreBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewStoreAdapter
-import com.example.assu_fe_app.presentation.user.review.mypage.OnItemClickListener
 import com.example.assu_fe_app.ui.review.UserStoreGetReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Long.getLong
@@ -135,7 +132,9 @@ class UserReviewStoreActivity :
     private fun initStoreReviewAdapter(){
         userReviewAdapter = UserReviewAdapter(
             showDeleteButton = false,
-            listener = null
+            listener = null,
+            showReportButton = false,
+            reportListener = null
         )
         binding.fcvReviewStoreRank.layoutManager = LinearLayoutManager(this)
         binding.fcvReviewStoreRank.adapter = userReviewAdapter

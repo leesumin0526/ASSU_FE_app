@@ -23,12 +23,9 @@ import java.time.LocalDateTime
 class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragment_dashboard) {
 
     private lateinit var serviceRecordAdapter: ServiceRecordAdapter
-
     private val usageViewModel: MonthUsageViewModel by activityViewModels()
-    private val today = LocalDate.now()
 
-    private var selectedMonth = today.monthValue
-    private var selectedYear = today.year
+    private val today = LocalDate.now()
     private val currentYear = today.year
     private val currentMonth = today.monthValue
 
@@ -39,40 +36,53 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragme
         }
 
         // 초기 UI 설정 로직
-        updateMonthUI()
         initAdapter()
+
+        // 초기 날짜 설정 (처음 실행시에만)
+        if (usageViewModel.getCurrentYear() == 2025 && usageViewModel.getCurrentMonth() == 9) {
+            usageViewModel.updateSelectedDate(currentYear, currentMonth)
+        }
 
         // 초기 데이터 로딩
         usageViewModel.getMonthUsage()
 
-
         binding.ivDashBackArrow.setOnClickListener {
-            if (selectedMonth == 1) {
-                selectedMonth = 12
-                selectedYear -= 1
+            val currentSelectedYear = usageViewModel.getCurrentYear()
+            val currentSelectedMonth = usageViewModel.getCurrentMonth()
+
+            val newYear: Int
+            val newMonth: Int
+
+            if (currentSelectedMonth == 1) {
+                newMonth = 12
+                newYear = currentSelectedYear - 1
             } else {
-                selectedMonth -= 1
+                newMonth = currentSelectedMonth - 1
+                newYear = currentSelectedYear
             }
-            updateMonthUI()
-            // 월 변경 시에만 API 호출
-            usageViewModel.year = selectedYear
-            usageViewModel.month = selectedMonth
+
+            usageViewModel.updateSelectedDate(newYear, newMonth)
             usageViewModel.getMonthUsage()
         }
 
         binding.ivDashNextArrow.setOnClickListener {
-            val isMaxMonth = selectedYear == currentYear && selectedMonth == currentMonth
+            val currentSelectedYear = usageViewModel.getCurrentYear()
+            val currentSelectedMonth = usageViewModel.getCurrentMonth()
+
+            val isMaxMonth = currentSelectedYear == currentYear && currentSelectedMonth == currentMonth
             if (!isMaxMonth) {
-                if (selectedMonth == 12) {
-                    selectedMonth = 1
-                    selectedYear += 1
+                val newYear: Int
+                val newMonth: Int
+
+                if (currentSelectedMonth == 12) {
+                    newMonth = 1
+                    newYear = currentSelectedYear + 1
                 } else {
-                    selectedMonth += 1
+                    newMonth = currentSelectedMonth + 1
+                    newYear = currentSelectedYear
                 }
-                updateMonthUI()
-                // 월 변경 시에만 API 호출
-                usageViewModel.year = selectedYear
-                usageViewModel.month = selectedMonth
+
+                usageViewModel.updateSelectedDate(newYear, newMonth)
                 usageViewModel.getMonthUsage()
             }
         }
@@ -83,16 +93,36 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragme
     }
 
     override fun initObserver() {
-        usageViewModel.recordList.observe(viewLifecycleOwner) { records ->
-            // 최대 3개의 레코드만 가져와 어댑터에 설정
-            val limitedRecords = if (records.size > 3) records.take(3) else records
-            serviceRecordAdapter.setData(limitedRecords)
-
-            // UI 업데이트: 총 서비스 이용 건수 및 '전체 보기' 버튼 가시성
-            binding.tvServiceCount.text = records.size.toString()
-            updateUI(records.size)
+        // 월/연도 변경 관찰
+        usageViewModel.selectedYear.observe(viewLifecycleOwner) { year ->
+            updateMonthUI()
         }
 
+        usageViewModel.selectedMonth.observe(viewLifecycleOwner) { month ->
+            updateMonthUI()
+        }
+
+        usageViewModel.recordList.observe(viewLifecycleOwner) { records ->
+            // records 리스트가 비어있는지 확인
+            if (records.isNullOrEmpty()) {
+                // 1. 데이터가 없을 때 UI 처리
+                binding.flBenefit.visibility = View.GONE         // RecyclerView 숨기기
+                binding.flNoneBenefit.visibility = View.VISIBLE   // '받은 혜택 없음' 레이아웃 보이기
+                binding.tvServiceCount.text = "0"                 // 서비스 카운트 0으로 설정
+                updateUI(0)                                     // '전체 보기' 버튼 숨기기
+            } else {
+                // 2. 데이터가 있을 때 UI 처리
+                binding.flBenefit.visibility = View.VISIBLE      // RecyclerView 보이기
+                binding.flNoneBenefit.visibility = View.GONE     // '받은 혜택 없음' 레이아웃 숨기기
+
+                // 기존 로직 수행
+                val limitedRecords = if (records.size > 3) records.take(3) else records
+                serviceRecordAdapter.setData(limitedRecords)
+
+                binding.tvServiceCount.text = records.size.toString()
+                updateUI(records.size) // '전체 보기' 버튼 상태 업데이트
+            }
+        }
     }
 
     private fun initAdapter() {
@@ -109,10 +139,27 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragme
     }
 
     private fun updateMonthUI() {
-        // ViewModel에 있는 월/연도 데이터를 UI에 반영
+        val selectedYear = usageViewModel.getCurrentYear()
+        val selectedMonth = usageViewModel.getCurrentMonth()
+
         binding.tvDashMonth.text = selectedMonth.toString()
-        val isMaxMonth = selectedYear == currentYear && selectedMonth == currentMonth
-        binding.ivDashNextArrow.isEnabled = !isMaxMonth
+        binding.tvServiceBenefitMonth.text = selectedMonth.toString()
+
+        // 현재 달인지 확인
+        val isCurrentMonth = selectedYear == currentYear && selectedMonth == currentMonth
+
+        // 다음 화살표 상태 업데이트
+        binding.ivDashNextArrow.isEnabled = !isCurrentMonth
+
+        // 화살표 색상 변경 (활성화: 검정색, 비활성화: 회색)
+        if (isCurrentMonth) {
+            binding.ivDashNextArrow.alpha = 0.3f // 회색처리
+        } else {
+            binding.ivDashNextArrow.alpha = 1.0f // 검정색 (활성화)
+        }
+
+        // 이전 화살표는 항상 활성화 (과거로는 언제든 이동 가능)
+        binding.ivDashBackArrow.isEnabled = true
+        binding.ivDashBackArrow.alpha = 1.0f
     }
 }
-

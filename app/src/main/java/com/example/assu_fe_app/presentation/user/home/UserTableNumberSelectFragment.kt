@@ -32,6 +32,12 @@ class UserTableNumberSelectFragment :
     }
 
     override fun initView() {
+
+        binding.btnBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
+
         arguments?.let {
             storeId = it.getLong("storeId")
             if (storeId != null) {

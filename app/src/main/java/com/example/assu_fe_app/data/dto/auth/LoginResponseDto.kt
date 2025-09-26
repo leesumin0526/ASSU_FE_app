@@ -24,8 +24,3 @@ data class StudentLoginResponseDto(
     )
 }
 
-@JsonClass(generateAdapter = true)
-data class TokenDto(
-    val accessToken: String,
-    val refreshToken: String
-)

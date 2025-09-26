@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
+import com.example.assu_fe_app.data.dto.converter.LocalDateTimeAdapter
 import com.example.assu_fe_app.data.remote.AuthInterceptor
 import com.example.assu_fe_app.data.service.AuthService
 import com.example.assu_fe_app.data.service.admin.AdminHomeService
@@ -37,6 +38,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -94,6 +96,7 @@ object ServiceModule {
             .add(KotlinJsonAdapterFactory())
             .add(LocalDate::class.java, LocalDateMoshiAdapter()) // LocalDate Adapter 추가
             .add(LocalDateAdapter)
+            .add(LocalDateTimeAdapter)
             .add(KotlinJsonAdapterFactory())  // ← 추가
             .build()
 
@@ -198,12 +201,12 @@ object ServiceModule {
 
     @Provides
     @Singleton
-    fun provideAdminHomeApiService(@NoAuth retrofit: Retrofit): AdminHomeService =
+    fun provideAdminHomeApiService(@Auth retrofit: Retrofit): AdminHomeService =
         retrofit.create(AdminHomeService::class.java)
 
     @Provides
     @Singleton
-    fun providePartnerHomeService(@NoAuth retrofit: Retrofit): PartnerHomeService =
+    fun providePartnerHomeService(@Auth retrofit: Retrofit): PartnerHomeService =
         retrofit.create(PartnerHomeService::class.java)
 
 

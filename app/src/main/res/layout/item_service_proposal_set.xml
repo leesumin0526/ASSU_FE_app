@@ -295,7 +295,6 @@
         </LinearLayout>
 
 
-
         <View
             android:id="@+id/view_main_line"
             android:layout_width="match_parent"
@@ -305,6 +304,57 @@
             android:layout_marginTop="16dp"
             android:layout_marginStart="28.5dp"
             android:layout_marginEnd="28.5dp"/>
+
+        <LinearLayout
+            android:id="@+id/layout_proposal_provide_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="28.5dp"
+            android:layout_marginEnd="28.5dp"
+            app:layout_constraintStart_toStartOf="@id/tv_proposal_condition"
+            app:layout_constraintTop_toBottomOf="@id/view_main_line"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tv_proposal_provide_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="카테고리 입력"
+                android:textColor="@color/assu_font_main"
+                android:fontFamily="@font/pretendard_regular"
+                android:textSize="15sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="31dp"
+                android:orientation="vertical"
+                android:layout_marginStart="20dp">
+
+                <EditText
+                    android:id="@+id/et_proposal_provide_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="카테고리를 입력해주세요"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/pretendard_regular"
+                    android:textColor="@color/assu_font_main"
+                    android:background="@android:color/transparent" />
+
+                <View
+                    android:id="@+id/view_fragment_service_proposal_mg19"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"/>
+
+                <View
+                    android:id="@+id/view_fragment_service_proposal_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/assu_main"/>
+            </LinearLayout>
+
+        </LinearLayout>
 
 
         <TextView
@@ -317,7 +367,7 @@
             android:textSize="15sp"
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="@id/tv_proposal_condition"
-            app:layout_constraintTop_toBottomOf="@id/view_main_line"/>
+            app:layout_constraintTop_toBottomOf="@id/layout_proposal_provide_category"/>
 
 
 
@@ -333,7 +383,7 @@
             android:paddingBottom="8dp"
             app:layout_constraintStart_toEndOf="@id/tv_proposal_provide"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_main_line">
+            app:layout_constraintTop_toBottomOf="@id/layout_proposal_provide_category">
 
 
             <EditText

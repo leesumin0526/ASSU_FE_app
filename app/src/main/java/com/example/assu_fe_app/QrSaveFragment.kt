@@ -30,8 +30,26 @@ class QrSaveFragment : Fragment() {
     private var _binding: ActivityPartnerQrSaveBinding? = null
     private val binding get() = _binding!!
 
-    private val sessionId = 12345L
-    private val adminId = 9L
+    private var storeId: Long = -1L
+
+    companion object {
+        private const val ARG_STORE_ID = "store_id"
+        fun newInstance(storeId: Long): QrSaveFragment {
+            return QrSaveFragment().apply {
+                arguments = Bundle().apply {
+                    putLong(ARG_STORE_ID, storeId)
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // ✅ arguments에서 storeId 꺼내기
+        arguments?.let {
+            storeId = it.getLong(ARG_STORE_ID, -1L)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +68,12 @@ class QrSaveFragment : Fragment() {
     }
 
     private fun initViews() {
-        val content = buildQrContent(sessionId, adminId)
+        if (storeId == -1L) {
+            Toast.makeText(requireContext(), "가게 정보가 없어 QR코드를 생성할 수 없습니다.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val content = buildQrContent(storeId)
 
         binding.ivQrImage.post {
             val boxSize = min(binding.ivQrImage.width, binding.ivQrImage.height)
@@ -72,7 +95,9 @@ class QrSaveFragment : Fragment() {
 
         // "QR 저장하기" 영역 클릭 -> 고해상도 생성 후 갤러리 저장
         binding.layoutSaveQrImage.setOnClickListener {
-            val content = buildQrContent(sessionId, adminId)
+            if (storeId == -1L) return@setOnClickListener
+
+            val content = buildQrContent(storeId)
             val hi = createQrBitmap(
                 contents = content,
                 sizePx = 2048,               // 인쇄 고려 고해상도
@@ -90,15 +115,15 @@ class QrSaveFragment : Fragment() {
         }
     }
 
-    private fun buildQrContent(sessionId: Long, adminId: Long): String {
-        return "assu://certify?sid=$sessionId&aid=$adminId"
+    private fun buildQrContent(storeId: Long): String {
+        return "https://assu.com/verify?storeId=$storeId"
     }
 
     private fun createQrBitmap(
         contents: String,
         sizePx: Int,
-        margin: Int,
-        ecLevel: ErrorCorrectionLevel
+        margin: Int = 1,
+        ecLevel: ErrorCorrectionLevel = ErrorCorrectionLevel.H
     ): Bitmap {
         val hints = hashMapOf<EncodeHintType, Any>(
             EncodeHintType.CHARACTER_SET to "UTF-8",

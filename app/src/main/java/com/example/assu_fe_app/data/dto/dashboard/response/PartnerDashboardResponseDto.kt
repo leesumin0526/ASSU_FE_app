@@ -10,14 +10,12 @@ import com.squareup.moshi.JsonClass
 data class PartnerDashboardResponseDto(
     val storeInfo: StoreInfoDto,
     val weeklyRanks: List<WeeklyRankResponseDto>,
-    val todayBest: TodayBestResponseDto,
-    val adminStats: AdminDashboardResponseDto? = null
+    val todayBest: TodayBestResponseDto
 ) {
     fun toModel() = PartnerDashboardModel(
         storeInfo = storeInfo.toModel(),
         weeklyRanks = weeklyRanks.map { it.toModel() },
-        todayBest = todayBest.toPopularStoreModels(),
-        adminStats = adminStats?.toModel()
+        todayBest = todayBest.toPopularStoreModels()
     )
 }
 

@@ -5,13 +5,13 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
+import com.bumptech.glide.Glide
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
@@ -29,9 +29,10 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import com.example.assu_fe_app.domain.model.admin.RecommendedPartnerModel
 import com.example.assu_fe_app.ui.admin.PartnerRecommendViewModel
-import javax.inject.Inject
+
 
 
 @AndroidEntryPoint
@@ -67,11 +68,7 @@ class AdminHomeFragment :
                             }
 
                             startActivity(intent)
-                            Toast.makeText(
-                                requireContext(),
-                                "채팅방 생성 성공: ${state}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Log.d("AdminHomeFragment","채팅방 생성 성공")
 
                             // 한 번 처리 후 상태 리셋
                             chattingViewModel.resetCreateState()
@@ -79,22 +76,14 @@ class AdminHomeFragment :
 
                         is ChattingViewModel.CreateRoomUiState.Fail -> {
                             binding.btnRecommendInquiry.isEnabled = true
-                            Toast.makeText(
-                                requireContext(),
-                                "채팅방 생성 실패: ${state.code}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Log.d("AdminHomeFragment","채팅방 생성 실패")
                              Log.e("AdminHomeFragment", "Fail code=${state.code}, msg=${state.message}")
                             chattingViewModel.resetCreateState()
                         }
 
                         is ChattingViewModel.CreateRoomUiState.Error -> {
                             binding.btnRecommendInquiry.isEnabled = true
-                            Toast.makeText(
-                                requireContext(),
-                                "에러: ${state.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Log.d("AdminHomeFragment","채팅방 생성 에러")
                             chattingViewModel.resetCreateState()
                         }
 
@@ -155,7 +144,6 @@ class AdminHomeFragment :
                         }
 
                         is PartnershipViewModel.PartnershipPartnerListUiState.Fail -> {
-                            Toast.makeText(requireContext(), "서버 실패: ${state.message}", Toast.LENGTH_SHORT).show()
                             Log.e("PartnerHomeFragment", "Fail code=${state.code}, message=${state.message}")
                             binding.adminHomeListItem1.isVisible = false
                             binding.adminHomeListItem2.isVisible = false
@@ -163,7 +151,6 @@ class AdminHomeFragment :
                         }
 
                         is PartnershipViewModel.PartnershipPartnerListUiState.Error -> {
-                            Toast.makeText(requireContext(), "에러: ${state.message}", Toast.LENGTH_SHORT).show()
                             Log.e("PartnerHomeFragment", "Error message=${state.message}")
                             binding.adminHomeListItem1.isVisible = false
                             binding.adminHomeListItem2.isVisible = false
@@ -235,16 +222,26 @@ class AdminHomeFragment :
         binding.tvContractPassiveRegister.setOnClickListener { view ->
             Navigation.findNavController(view).navigate(R.id.action_admin_home_to_contract_passive_register)
         }
+    }
 
-        binding.btnRecommendInquiry.setOnClickListener {
-            val req = CreateChatRoomRequestDto(
-                //TODO : 유저 정보 받아오기
-                adminId = authTokenLocalStore.getUserId(),
-                //TODO: 성주 api 연결 후 수정하기
-                partnerId = 11L
-            )
-            chattingViewModel.createRoom(req)
+    private fun updateRecommendCard(partner: RecommendedPartnerModel) {
+        binding.tvAdminHomeRecommendShopName.text = partner.partnerName
+        binding.tvAdminHomeRecommendShopAddress.text = partner.partnerAddress
+
+        val url = partner.partnerUrl
+        if (url.isNullOrEmpty()) {
+            // 기본 이미지 리소스
+            binding.ivAdminHomeRecommendShopImg.setImageResource(R.drawable.img_student)
+        } else {
+            Glide.with(this)
+                .load(url)
+                .into(binding.ivAdminHomeRecommendShopImg)
         }
+
+        // 문의 버튼 상태
+        binding.btnRecommendInquiry.isEnabled = true
+
+        // 카드 클릭 시 상세로 이동하고 싶다면
         binding.btnRecommendInquiry.setOnClickListener {
             currentRecommendedPartner?.let { partner ->
                 val req = CreateChatRoomRequestDto(
@@ -255,8 +252,6 @@ class AdminHomeFragment :
             }
         }
     }
-
-    private fun updateRecommendCard(partner: RecommendedPartnerModel) {}
 
     private fun bindAdminItem(
         bindingItem: ViewGroup,

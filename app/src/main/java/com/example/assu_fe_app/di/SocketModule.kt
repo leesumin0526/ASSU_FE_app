@@ -2,6 +2,7 @@ package com.example.assu_fe_app.di
 
 import com.example.assu_fe_app.data.local.AccessTokenProvider
 import com.example.assu_fe_app.data.socket.ChatSocketClient
+import com.example.assu_fe_app.util.CertificationWebSocketClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,14 @@ object SocketModule {
         // TODO:  로컬서버용
         val wsUrl = "ws://10.0.2.2:8080/ws" // 서버 설정에 맞춰 변경
         return ChatSocketClient(wsUrl = wsUrl, accessTokenProvider = accessTokenProvider)
-//        val wsUrl = "ws://10.0.2.2:8080/ws/chat-native" // 서버 설정에 맞춰 변경
-//        return ChatSocketClient(wsUrl = wsUrl, tokenProvider = tokenProvider)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCertificationClient(
+        accessTokenProvider : AccessTokenProvider
+    ) : CertificationWebSocketClient {
+        val wsUrl = "wss://assu.shop/ws-certify"
+        return CertificationWebSocketClient(wsUrl = wsUrl, tokenProvider = accessTokenProvider)
     }
 }

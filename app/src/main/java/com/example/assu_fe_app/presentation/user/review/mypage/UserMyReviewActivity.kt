@@ -11,9 +11,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assu_fe_app.R
-import com.example.assu_fe_app.data.dto.review.Review
 import com.example.assu_fe_app.databinding.ActivityUserMyReviewBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
+import com.example.assu_fe_app.presentation.common.report.OnItemClickListener
 import com.example.assu_fe_app.presentation.user.review.adapter.UserReviewAdapter
 import com.example.assu_fe_app.ui.review.GetReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,7 +78,8 @@ class UserMyReviewActivity :
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initAdapter() {
         //adapter초기화
-        userReviewAdapter = UserReviewAdapter(showDeleteButton = true, listener = this)
+        userReviewAdapter = UserReviewAdapter(showDeleteButton = true, listener = this
+            , showReportButton = false, reportListener = null)
 
         binding.rvManageReview.apply {
             layoutManager = LinearLayoutManager(this@UserMyReviewActivity)

@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.common.chatting.proposal.ServiceProposalWritingFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/assu_background"
+        android:id="@+id/fragment_service_proposal">
+
+        <View
+            android:id="@+id/view_fragment_service_proposal_title"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/assu_background"
+            app:layout_constraintHeight_percent="0.0914"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_service_proposal_mg1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.0157"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_service_proposal_mg2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_fragment_service_proposal_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.01816" />
+
+        <ImageView
+            android:id="@+id/iv_fragment_service_proposal_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_location_search_left_arrow"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_service_proposal_mg2"
+            app:layout_constraintTop_toTopOf="@id/view_fragment_service_proposal_title"
+            app:layout_constraintBottom_toBottomOf="@id/view_fragment_service_proposal_title" />
+
+        <TextView
+            android:id="@+id/tv_fragment_service_proposal_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/pretendard_semibold"
+            android:text="제휴 제안서"
+            android:textColor="@color/assu_font_main"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/view_fragment_service_proposal_mg4"
+            app:layout_constraintEnd_toStartOf="@id/view_fragment_service_proposal_mg3"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_service_proposal_mg2"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg1" />
+
+        <View
+            android:id="@+id/view_fragment_service_proposal_mg3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_fragment_service_proposal_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.03816" />
+
+        <View
+            android:id="@+id/view_fragment_service_proposal_mg4"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_fragment_service_proposal_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.01712"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_service_proposal_mg5"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.0329"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_service_proposal_mg6"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintWidth_percent="0.06106870229"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/view_fragment_service_proposal_mg7"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintWidth_percent="0.06106870229"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested_scroll_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg5"
+            app:layout_constraintBottom_toTopOf="@+id/cl_fixed"
+            app:layout_constraintEnd_toStartOf="@id/view_fragment_service_proposal_mg7"
+            app:layout_constraintStart_toEndOf="@id/view_fragment_service_proposal_mg6"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_fragment_service_proposal_partner_guide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제휴 제안업체"
+                android:textSize="13sp"
+                android:fontFamily="@font/pretendard_regular"
+                android:textColor="@color/assu_font_sub"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="15dp"/>
+
+            <View
+                android:id="@+id/view_fragment_service_proposal_mg8"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_fragment_service_proposal_partner_guide"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHeight_percent="0.0263" />
+
+            <TextView
+                android:id="@+id/tv_fragment_service_proposal_partner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="제휴 업체 상호명을 입력해주세요"
+                android:textSize="17sp"
+                android:fontFamily="@font/pretendard_regular"
+                android:textColor="@color/assu_font_main"
+                android:background="@android:color/transparent"
+                app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg8"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="15dp"/>
+
+            <ImageView
+                android:id="@+id/iv_fragment_service_proposal_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_search"
+                app:layout_constraintEnd_toEndOf="@id/view_fragment_service_proposal_line"
+                app:layout_constraintTop_toTopOf="@id/tv_fragment_service_proposal_partner"
+                app:layout_constraintBottom_toBottomOf="@id/tv_fragment_service_proposal_partner"/>
+
+            <View
+                android:id="@+id/view_fragment_service_proposal_mg9"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_fragment_service_proposal_partner"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.0197"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <View
+                android:id="@+id/view_fragment_service_proposal_line"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="#DCDFDF"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg9"
+                android:visibility="visible"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"/>
+
+            <View
+                android:id="@+id/view_fragment_service_proposal_mg12"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_line"
+                app:layout_constraintHeight_percent="0.0263"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_fragment_service_proposal_admin_guide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제휴 제안인"
+                android:textSize="13sp"
+                android:fontFamily="@font/pretendard_regular"
+                android:textColor="@color/assu_font_sub"
+                app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg12"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="15dp"/>
+
+            <View
+                android:id="@+id/view_fragment_service_proposal_mg10"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_fragment_service_proposal_admin_guide"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.0263"/>
+
+            <EditText
+                android:id="@+id/et_fragment_service_proposal_admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="숭실대학교 총학생회"
+                android:textSize="17sp"
+                android:fontFamily="@font/pretendard_regular"
+                android:textColor="@color/assu_font_main"
+                android:background="@android:color/transparent"
+                app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg10"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="15dp"/>
+
+            <View
+                android:id="@+id/view_fragment_service_proposal_mg11"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/et_fragment_service_proposal_admin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.0197" />
+
+            <View
+                android:id="@+id/view_fragment_service_proposal_line2"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="#DCDFDF"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg11"
+                android:visibility="visible"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"/>
+
+            <View
+                android:id="@+id/view_fragment_service_proposal_mg11_2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_line2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.03521126761" />
+
+            <TextView
+                android:id="@+id/tv_add_proposal_item"
+                android:layout_width="match_parent"
+                android:layout_height="31dp"
+                android:text="혜택 추가하기"
+                android:textColor="@color/assu_sub"
+                android:textSize="11sp"
+                android:fontFamily="@font/pretendard_regular"
+                android:background="@drawable/bg_box_sub3_rounded"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg11_2"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <View
+                android:id="@+id/view_fragment_service_proposal_mg11_3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_add_proposal_item"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.0234741784" />
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_fragment_service_proposal_item_set"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/view_fragment_service_proposal_mg11_3"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_service_proposal_set" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/cl_fixed">
+
+            <ImageView
+                android:id="@+id/iv_fragment_service_proposal_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_info_cricle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/btn_completed"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/tv_fragment_service_proposal_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:text="인원 제한이 없을 경우 0 을 입력해주세요"
+                android:textColor="@color/assu_font_sub"
+                android:fontFamily="@font/pretendard_regular"
+                android:layout_gravity="center"
+                android:layout_marginBottom="15dp"
+                app:layout_constraintBottom_toTopOf="@id/btn_completed"
+                android:layout_marginStart="4dp"
+                app:layout_constraintStart_toEndOf="@id/iv_fragment_service_proposal_info"/>
+
+            <!-- 인증 완료 버튼 (하단 고정) -->
+            <ImageButton
+                android:id="@+id/btn_completed"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginBottom="46dp"
+                android:textColor="@android:color/white"
+                android:background="@drawable/btn_basic_unselected"
+                android:fontFamily="@font/pretendard_semibold"
+                android:backgroundTint="@color/assu_main"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_completed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="다음"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/pretendard_bold"
+                app:layout_constraintStart_toStartOf="@id/btn_completed"
+                app:layout_constraintEnd_toEndOf="@id/btn_completed"
+                app:layout_constraintTop_toTopOf="@id/btn_completed"
+                app:layout_constraintBottom_toBottomOf="@id/btn_completed"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

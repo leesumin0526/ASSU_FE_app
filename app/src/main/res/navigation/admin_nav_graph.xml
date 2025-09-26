@@ -74,6 +74,12 @@
             app:destination="@id/customerServiceDialogFragment" />
     </fragment>
 
+
+    <dialog
+        android:id="@+id/adminMypagePendingPartnershipDialogFragment"
+        android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminMypagePendingPartnershipDialogFragment"
+        android:label="AdminMypagePendingPartnershipDialogFragment"/>
+
     <fragment
         android:id="@+id/mypageAccountFragment"
         android:name="com.example.assu_fe_app.presentation.common.mypage.MypageAccountFragment"
@@ -106,7 +112,7 @@
 
     <fragment
         android:id="@+id/adminContractPassiveRegisterFragment"
-        android:name="com.example.assu_fe_app.ContractPassiveRegisterFragment">
+        android:name="com.example.assu_fe_app.presentation.admin.home.ContractPassivityRegisterFragment">
 
         <action
             android:id="@+id/action_contract_passive_register_to_contract_passive_register_finish"
@@ -115,15 +121,18 @@
 
     <fragment
         android:id="@+id/adminPassiveRegisterFinishFragment"
-        android:name="com.example.assu_fe_app.AdminPassiveRegisterFinishFragment">
+        android:name="com.example.assu_fe_app.presentation.admin.home.AdminPassivityRegisterFinishFragment">
         <action
             android:id="@+id/action_admin_passive_register_finish_to_admin_home"
             app:destination="@id/adminHomeFragment"/>
+        <action
+            android:id="@+id/action_finish_to_pending_partnership_dialog"
+            app:destination="@id/adminMypagePendingPartnershipDialogFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/adminServiceProposalWritingFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalWritingFragment"
+        android:name="com.example.assu_fe_app.presentation.admin.home.ServicePassivityProposalWritingFragment"
         android:label="제휴 수동등록">
         <action
             android:id="@+id/action_serviceProposalWritingFragment_to_locationSearchFragment"

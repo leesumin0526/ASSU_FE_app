@@ -2,5 +2,5 @@
     android:shape="rectangle">
 
     <solid android:color="@color/assu_background" /> <!-- 배경색: 흰색 -->
-    <corners android:radius="7dp" />
+    <corners android:radius="8dp" />
 </shape>

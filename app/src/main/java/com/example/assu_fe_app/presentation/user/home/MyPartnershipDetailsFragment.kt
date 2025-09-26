@@ -1,9 +1,12 @@
 package com.example.assu_fe_app.presentation.user.home
 
 import android.os.Build
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +17,9 @@ import com.example.assu_fe_app.presentation.user.home.adapter.HomeMyPartnershipD
 import com.example.assu_fe_app.data.dto.user.home.HomeMyPartnershipDetailsReviewItem
 import com.example.assu_fe_app.presentation.user.dashboard.adapter.ServiceRecordAdapter
 import com.example.assu_fe_app.ui.usage.UnreviewedUsageViewModel
+import com.example.assu_fe_app.ui.user.UserHomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -23,11 +28,31 @@ class MyPartnershipDetailsFragment :
 
     private lateinit var serviceRecordAdapter: ServiceRecordAdapter
     private val viewModel : UnreviewedUsageViewModel by viewModels()
+    private val stampViewModel: UserHomeViewModel by activityViewModels()
+
+
+    private lateinit var stampViews: List<ImageView>
 
     override fun initObserver() {
         viewModel.usageList.observe(viewLifecycleOwner) { records ->
             serviceRecordAdapter.setData(records)
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            stampViewModel.stampState.collect { state ->
+                when (state) {
+                    is UserHomeViewModel.StampUiState.Success -> {
+                        updateStampDisplay(state.stampCount)
+                    }
+                    is UserHomeViewModel.StampUiState.Error -> {
+                        updateStampDisplay(0) // 에러 시 0개로 표시
+                    }
+                    // Loading, Idle 상태는 필요에 따라 처리
+                    else -> {}
+                }
+            }
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -37,26 +62,20 @@ class MyPartnershipDetailsFragment :
         }
         initAdapter()
         initScrollListener()
+        initializeStampViews()
         viewModel.getUnreviewedUsage()
+        stampViewModel.loadStampCount()
 
 
-//        val dummyList = listOf(
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57"),
-//            HomeMyPartnershipDetailsReviewItem("역전할머니맥주 숭실대점","역전할머니맥주에서 음료 한 병을 제공받았어요!","2025-03-15 18:57")
-//        )
-//        adapter = HomeMyPartnershipDetailsReviewAdapter(dummyList)
-//        binding.rvHomeMyPartnershipDetailsList.layoutManager = LinearLayoutManager(requireContext())
-//        binding.rvHomeMyPartnershipDetailsList.adapter = adapter
+    }
+
+    private fun initializeStampViews() {
+        stampViews = listOf(
+            binding.ivHomeStamp1, binding.ivHomeStamp2, binding.ivHomeStamp3,
+            binding.ivHomeStamp4, binding.ivHomeStamp5, binding.ivHomeStamp6,
+            binding.ivHomeStamp7, binding.ivHomeStamp8, binding.ivHomeStamp9,
+            binding.ivHomeStamp10
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -65,6 +84,24 @@ class MyPartnershipDetailsFragment :
         binding.rvHomeMyPartnershipDetailsList.apply {
             adapter = serviceRecordAdapter
             layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun updateStampDisplay(stampCount: Int) {
+        // 이 로직은 의도에 따라 선택하세요. (10개 넘으면 2개로 보이는 로직)
+        var realCount = stampCount % 10
+        if (realCount == 0 && stampCount != 0) {
+            realCount = 10
+        }
+
+        stampViews.forEachIndexed { index, imageView ->
+            if (index < realCount) {
+                // 채워진 스탬프 이미지
+                imageView.setImageResource(R.drawable.ic_home_stamp_filled)
+            } else {
+                // 비어있는 스탬프 이미지 (ic_home_stamp가 비어있는 것이 맞는지 확인 필요)
+                imageView.setImageResource(R.drawable.ic_home_stamp)
+            }
         }
     }
 

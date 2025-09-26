@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.Global.putString
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.camera.core.*
@@ -16,9 +17,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.ActivityUserQrVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
-import com.example.assu_fe_app.presentation.user.home.UserTableNumberSelectFragment
 import com.example.assu_fe_app.ui.certification.CertifyViewModel
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
@@ -26,17 +27,23 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import javax.inject.Inject
 import kotlin.getValue
 
 @AndroidEntryPoint
 class UserQRVerifyActivity :
     BaseActivity<ActivityUserQrVerifyBinding>(R.layout.activity_user_qr_verify) {
-
     private lateinit var cameraExecutor: ExecutorService
     private var qrCodeScannedSuccessfully = false // TODO QR 인식 성공 여부 플래그 ( 에뮬레이터에는 임시로 true 로 두기)
     private var isAnalyzing = true // 분석 상태를 제어하는 플래그
     private val CAMERA_PERMISSION_CODE = 100
     private var qrCodeData: String? = null
+
+    @Inject
+    lateinit var infoManager : AuthTokenLocalStore
+
+    @Inject
+    lateinit var tokenProvider : AuthTokenLocalStore
     private val certifyViewModel: CertifyViewModel by viewModels()
 
     override fun initView() {
@@ -54,26 +61,20 @@ class UserQRVerifyActivity :
         setConfirmButtonState(false) // 초기에는 비활성화
 
         binding.btnConfirm.setOnClickListener { // 이미지뷰 클릭 리스너
+            Log.d("UserQRVerifyActivity","클릭했음.")
             if (qrCodeScannedSuccessfully) {
                 // QR 인식이 성공했을 때만 다음으로 넘어감
                 Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
 
+                Log.d("UserQRVerifyActivity", "showNextFragment() 가 호출됩니다. ")
                 // 다음 프래그먼트로 전환
                 showNextFragment()
             }
         }
 
-        binding.tvConfirm.setOnClickListener { // 텍스트뷰 클릭 리스너
-            if (qrCodeScannedSuccessfully) {
-                Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
 
-                // 다음 프래그먼트로 전환
-                showNextFragment()
-            }
-        }
-
-        binding.tvUniversity.text = "숭실대학교 학생"
-        binding.tvDepartment.text = "IT대학"
+        binding.tvUniversity.text = infoManager.getBasicInfoUniversity()
+        binding.tvDepartment.text = infoManager.getBasicInfoDepartment()
 // TODO 나중에 주석해제
         cameraExecutor = Executors.newSingleThreadExecutor()
         checkCameraPermission()
@@ -85,14 +86,16 @@ class UserQRVerifyActivity :
     }
 
     private fun onEmulatorScanSuccess() {
-        qrCodeData = "https://assu.com/verify?storeId=2" // TODO 여기 ...
+        qrCodeData = "https://assu.com/verify?storeId=7" // TODO 여기 ...
         Log.d("QR 인식 성공", "에뮬레이터 테스트용 데이터 사용: $qrCodeData")
         binding.tvQrInstruction.text = "QR 코드를 성공적으로 인식했습니다."
         setConfirmButtonState(true)
+        binding.fragmentContainerView.visibility = View.VISIBLE
         qrCodeScannedSuccessfully = true
+
+        showNextFragment()
     }
 
-    // 에뮬레이터 테스트 시 임의로 주석처리 TODO 나중에 주석해제
     private fun checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED) {
@@ -134,6 +137,8 @@ class UserQRVerifyActivity :
 
                                 // 카메라 즉시 해제
                                 cameraProvider.unbindAll()
+
+                                showNextFragment()
                             }
                         }
                     })
@@ -200,6 +205,7 @@ class UserQRVerifyActivity :
     }
 
     private fun showNextFragment() {
+        Log.d("UserQRVerifyActivity", "showNextFragment() 가 호출되었습니다.")
         // QR 코드 데이터 파싱 수정
         val result = qrCodeData?.let { data ->
             when {
@@ -222,6 +228,7 @@ class UserQRVerifyActivity :
         when (type) {
             "storeId" -> {
                 // 대표자 역할: 매장 선택으로 이동
+                Log.d("UserQRVerifyActivity"," 대표자 역할인 것을 확인하였습니다.")
                 handleStoreOwnerFlow(idValue as Long)
             }
             "sessionIdAndAdminId" -> {
@@ -255,11 +262,13 @@ class UserQRVerifyActivity :
 
     // 대표자 플로우: 매장 정보로 이동 (수정 없음)
     private fun handleStoreOwnerFlow(storeId: Long) {
+        Log.d("UserQRVerifyActivity", "곧 테이블 화면으로 전환됩니다. ")
         val fragment = UserTableNumberSelectFragment().apply {
             arguments = Bundle().apply {
                 putLong("storeId", storeId)
             }
         }
+        binding.fragmentContainerView.visibility = View.VISIBLE
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container_view, fragment)
@@ -271,18 +280,10 @@ class UserQRVerifyActivity :
     private fun handleCertificationRequesterFlow(sessionId: Long, adminId: Long) {
         // 로딩 상태 표시
         showCertificationLoadingState()
-
-        // 토큰 확인
-        val authToken = getAuthToken()
-        Log.d("authToken🫵", authToken)
-        if (authToken.isEmpty()) {
-            showAuthTokenError()
-            return
-        }
-
         // TODO : WebSocket 연결 및 인증 요청 - 임시 주석 처리
-//        certifyViewModel.subscribeToProgress(sessionId, authToken) // TODO 이거는 인증자 과정에서 필요없는데 테스트 용임
-        certifyViewModel.connectAndCertify(sessionId, adminId, authToken)
+        certifyViewModel.connectAndCertify(sessionId, adminId){
+            onCertificationCompleted(sessionId)
+        }
 
     }
 
@@ -338,6 +339,9 @@ class UserQRVerifyActivity :
             }
         }
 
+        binding.fragmentContainerView.visibility = View.VISIBLE
+
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container_view, fragment)
             .addToBackStack(null)
@@ -348,8 +352,6 @@ class UserQRVerifyActivity :
     private fun showCertificationLoadingState() {
         binding.tvQrInstruction.text = "그룹 인증을 시작합니다..."
         setConfirmButtonState(false)
-        // ProgressBar가 있다면 표시
-        // binding.progressBar.visibility = View.VISIBLE
     }
 
     private fun updateLoadingMessage(message: String) {
@@ -423,12 +425,6 @@ class UserQRVerifyActivity :
         Toast.makeText(this, "유효하지 않은 QR 코드입니다. 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
         finish()
         startActivity(intent)
-    }
-
-    private fun getAuthToken(): String {
-//        val sharedPref = getSharedPreferences("auth", Context.MODE_PRIVATE)
-//        return sharedPref.getString("token", "") ?: ""
-        return "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoUmVhbG0iOiJTU1UiLCJyb2xlIjoiU1RVREVOVCIsInVzZXJJZCI6NiwidXNlcm5hbWUiOiIyMDI0MTY5MyIsImp0aSI6IjdmNTNlYmJjLWI0Y2EtNDIwMi1hODFjLWMwYzFjYWFjNjg5YiIsImlhdCI6MTc1Nzc2Nzg5NiwiZXhwIjoxNzU3NzcxNDk2fQ.K-0x5tuz1EXqaqrP79V8RgD6ZQYr7aTuOHb5ymOX0i8"
     }
 
     // Activity 종료 시 WebSocket 연결 해제

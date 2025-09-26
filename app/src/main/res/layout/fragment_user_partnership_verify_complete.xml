@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".AdminPassiveRegisterFinishFragment">
+    tools:context=".presentation.admin.home.AdminPassivityRegisterFinishFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:background="@color/assu_background"
