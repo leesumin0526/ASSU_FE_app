@@ -45,7 +45,7 @@
             android:id="@+id/tvMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="차단하실 경우 대화 내용은 삭제되고,\n채팅 목록도 제거 됩니다."
+            android:text="차단하실 경우, 채팅을 할 수 없습니다.\n마이페이지에서 차단 관리를 해주세요."
             android:textSize="14sp"
             android:fontFamily="@font/pretendard_regular"
             android:textColor="@color/assu_font_sub"
@@ -67,7 +67,7 @@
                 android:textColor="@color/assu_main" />
 
             <TextView
-                android:id="@+id/btnLeave"
+                android:id="@+id/btnBlock"
                 android:layout_width="148dp"
                 android:layout_height="41dp"
                 android:layout_gravity="end"

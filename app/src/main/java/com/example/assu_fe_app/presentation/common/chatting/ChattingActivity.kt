@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.assu_fe_app.BlockOpponentDialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.ChattingMessageItem
 import com.example.assu_fe_app.databinding.ActivityChattingBinding
@@ -107,6 +108,12 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             LeaveChatRoomDialog.newInstance(roomId).show(supportFragmentManager, "LeaveChattingDialog")
         }
 
+        binding.ivBlockOpponent.setOnClickListener {
+            val opponentId = intent.getLongExtra("opponentId",-1L)
+            Log.d("ChattingActivityOpponentId", "opponentId=$opponentId")
+            BlockOpponentDialogFragment.newInstance(opponentId,).show(supportFragmentManager, "BlockOpponentDialog")
+        }
+
         supportFragmentManager.setFragmentResultListener("return_reason", this) { _, bundle ->
             val reason = bundle.getString("reason")
             if (reason != null) {
@@ -136,6 +143,28 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                     viewModel.socketConnected.collect { connected ->
                         binding.btnChattingSend.isEnabled = connected
                         binding.btnChattingSend.alpha = if (connected) 1.0f else 0.4f
+                    }
+                }
+
+                launch {
+                    viewModel.checkBlockOpponentState.collect { state ->
+                        when (state) {
+                            is ChattingViewModel.CheckBlockOpponentUiState.Success -> {
+                                if (state.data) {
+                                    // 차단됨 → 입력창 숨김
+                                    binding.layoutChattingInputBox.visibility = View.GONE
+                                } else {
+                                    // 차단 안 됨 → 입력창 표시
+                                    binding.layoutChattingInputBox.visibility = View.VISIBLE
+                                }
+                            }
+                            is ChattingViewModel.CheckBlockOpponentUiState.Fail,
+                            is ChattingViewModel.CheckBlockOpponentUiState.Error -> {
+                                // 에러 발생 시 기본적으로 입력창은 보이도록
+                                binding.layoutChattingInputBox.visibility = View.VISIBLE
+                            }
+                            else -> Unit
+                        }
                     }
                 }
 

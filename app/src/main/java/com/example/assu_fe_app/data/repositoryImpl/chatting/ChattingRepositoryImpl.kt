@@ -1,8 +1,11 @@
 package com.example.assu_fe_app.data.repositoryImpl.chatting
 
+import com.example.assu_fe_app.data.dto.chatting.request.BlockRequestDto
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.repository.chatting.ChattingRepository
 import com.example.assu_fe_app.data.service.chatting.ChattingService
+import com.example.assu_fe_app.domain.model.chatting.BlockOpponentModel
+import com.example.assu_fe_app.domain.model.chatting.CheckBlockModel
 import com.example.assu_fe_app.domain.model.chatting.CreateChatRoomModel
 import com.example.assu_fe_app.domain.model.chatting.GetChatHistoryModel
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
@@ -58,6 +61,24 @@ class ChattingRepositoryImpl @Inject constructor(
         return apiHandler(
             {api.readChatMessage(roomId)},
             {dto -> dto.toModel()}
+        )
+    }
+
+    override suspend fun blockOpponent(
+        request: BlockRequestDto
+    ): RetrofitResult<BlockOpponentModel> {
+        return apiHandler(
+            {api.blockOpponent(request)},
+            {dto -> dto.toModel()}
+        )
+    }
+
+    override suspend fun checkBlockOpponent(
+        opponentId: Long
+    ): RetrofitResult<CheckBlockModel> {
+        return apiHandler(
+        {api.checkBlockOpponent(opponentId)},
+        {dto -> dto.toModel()}
         )
     }
 }

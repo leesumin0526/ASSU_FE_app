@@ -53,6 +53,7 @@
             android:exported="false" />
         <activity
             android:name=".presentation.common.chatting.ChattingActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible"
             android:exported="false">
         </activity>
 

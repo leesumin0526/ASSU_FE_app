@@ -23,10 +23,13 @@ import javax.inject.Inject
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.example.assu_fe_app.data.dto.chatting.WsMessageDto
+import com.example.assu_fe_app.data.dto.chatting.request.BlockRequestDto
 import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
 import com.example.assu_fe_app.domain.model.chatting.ReadChattingModel
 import com.example.assu_fe_app.domain.usecase.chatting.LeaveChattingRoomUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.ReadChattingUseCase
+import com.example.assu_fe_app.domain.usecase.chatting.BlockOpponentUseCase
+import com.example.assu_fe_app.domain.usecase.chatting.CheckBlockOpponentUseCase
 
 
 @HiltViewModel
@@ -35,7 +38,10 @@ class ChattingViewModel @Inject constructor(
     private val getChattingRoomListUseCase: GetChattingRoomListUseCase,
     private val getChatHistoryUseCase: GetChatHistoryUseCase,
     private val leaveChattingRoomUseCase: LeaveChattingRoomUseCase,
+    private val checkBlockOpponentUseCase: CheckBlockOpponentUseCase,
     private val readChattingUseCase: ReadChattingUseCase,
+    private val blockOpponentUseCase: BlockOpponentUseCase,
+
     private val chatSocket: ChatSocketClient,
     ) : ViewModel() {
 
@@ -61,6 +67,50 @@ class ChattingViewModel @Inject constructor(
     }
 
     fun resetCreateState() { _createRoomState.value = CreateRoomUiState.Idle }
+
+
+    // ------------------------- 상대방 차단 -------------------------
+    sealed interface BlockOpponentUiState {
+        data object Idle : BlockOpponentUiState
+        data object Loading : BlockOpponentUiState
+        data class Success(val data: Boolean) : BlockOpponentUiState
+        data class Fail(val code: Int, val message: String?) : BlockOpponentUiState
+        data class Error(val message: String) : BlockOpponentUiState
+    }
+    private val _blockOpponentState = MutableStateFlow<BlockOpponentUiState>(BlockOpponentUiState.Idle)
+    val blockOpponentState: StateFlow<BlockOpponentUiState> = _blockOpponentState
+
+    fun blockOpponent(req: BlockRequestDto) {
+        viewModelScope.launch {
+            _blockOpponentState.value = BlockOpponentUiState.Loading
+            blockOpponentUseCase(req)
+                .onSuccess { _blockOpponentState.value = BlockOpponentUiState.Success(true) }
+                .onFail    { code -> _blockOpponentState.value = BlockOpponentUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e -> _blockOpponentState.value = BlockOpponentUiState.Error(e.message ?: "Unknown Error") }
+        }
+    }
+
+    // ------------------------- 상대방 차단 조회 -------------------------
+    sealed interface CheckBlockOpponentUiState {
+        data object Idle : CheckBlockOpponentUiState
+        data object Loading : CheckBlockOpponentUiState
+        data class Success(val data: Boolean) : CheckBlockOpponentUiState
+        data class Fail(val code: Int, val message: String?) : CheckBlockOpponentUiState
+        data class Error(val message: String) : CheckBlockOpponentUiState
+    }
+    private val _checkBlockOpponentState = MutableStateFlow<CheckBlockOpponentUiState>(CheckBlockOpponentUiState.Idle)
+    val checkBlockOpponentState: StateFlow<CheckBlockOpponentUiState> = _checkBlockOpponentState
+
+    fun checkBlockOpponent(opponentId: Long) {
+        viewModelScope.launch {
+            _checkBlockOpponentState.value = CheckBlockOpponentUiState.Loading
+            checkBlockOpponentUseCase(opponentId)
+                .onSuccess { _checkBlockOpponentState.value = CheckBlockOpponentUiState.Success(it) }
+                .onFail    { code -> _checkBlockOpponentState.value = CheckBlockOpponentUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e -> _checkBlockOpponentState.value = CheckBlockOpponentUiState.Error(e.message ?: "Unknown Error") }
+        }
+    }
+
 
 
     // ------------------------- 채팅방 리스트 조회-------------------------

@@ -1,6 +1,10 @@
 package com.example.assu_fe_app.data.repository.chatting
 
+import com.example.assu_fe_app.data.dto.chatting.request.BlockRequestDto
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
+import com.example.assu_fe_app.data.dto.chatting.response.BlockResponseDto
+import com.example.assu_fe_app.domain.model.chatting.BlockOpponentModel
+import com.example.assu_fe_app.domain.model.chatting.CheckBlockModel
 import com.example.assu_fe_app.domain.model.chatting.CreateChatRoomModel
 import com.example.assu_fe_app.domain.model.chatting.GetChatHistoryModel
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
@@ -14,4 +18,6 @@ interface ChattingRepository {
     suspend fun getChatHistory(roomId: Long): RetrofitResult<GetChatHistoryModel>
     suspend fun leaveChattingRoom(roomId: Long): RetrofitResult<LeaveChattingRoomModel>
     suspend fun readChatting(roomId: Long): RetrofitResult<ReadChattingModel>
+    suspend fun blockOpponent(request: BlockRequestDto): RetrofitResult<BlockOpponentModel>
+    suspend fun checkBlockOpponent(opponentId: Long): RetrofitResult<CheckBlockModel>
 }
