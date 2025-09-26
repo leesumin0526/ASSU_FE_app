@@ -103,13 +103,25 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragme
         }
 
         usageViewModel.recordList.observe(viewLifecycleOwner) { records ->
-            // 최대 3개의 레코드만 가져와 어댑터에 설정
-            val limitedRecords = if (records.size > 3) records.take(3) else records
-            serviceRecordAdapter.setData(limitedRecords)
+            // records 리스트가 비어있는지 확인
+            if (records.isNullOrEmpty()) {
+                // 1. 데이터가 없을 때 UI 처리
+                binding.flBenefit.visibility = View.GONE         // RecyclerView 숨기기
+                binding.flNoneBenefit.visibility = View.VISIBLE   // '받은 혜택 없음' 레이아웃 보이기
+                binding.tvServiceCount.text = "0"                 // 서비스 카운트 0으로 설정
+                updateUI(0)                                     // '전체 보기' 버튼 숨기기
+            } else {
+                // 2. 데이터가 있을 때 UI 처리
+                binding.flBenefit.visibility = View.VISIBLE      // RecyclerView 보이기
+                binding.flNoneBenefit.visibility = View.GONE     // '받은 혜택 없음' 레이아웃 숨기기
 
-            // UI 업데이트: 총 서비스 이용 건수 및 '전체 보기' 버튼 가시성
-            binding.tvServiceCount.text = records.size.toString()
-            updateUI(records.size)
+                // 기존 로직 수행
+                val limitedRecords = if (records.size > 3) records.take(3) else records
+                serviceRecordAdapter.setData(limitedRecords)
+
+                binding.tvServiceCount.text = records.size.toString()
+                updateUI(records.size) // '전체 보기' 버튼 상태 업데이트
+            }
         }
     }
 
@@ -131,6 +143,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragme
         val selectedMonth = usageViewModel.getCurrentMonth()
 
         binding.tvDashMonth.text = selectedMonth.toString()
+        binding.tvServiceBenefitMonth.text = selectedMonth.toString()
 
         // 현재 달인지 확인
         val isCurrentMonth = selectedYear == currentYear && selectedMonth == currentMonth
