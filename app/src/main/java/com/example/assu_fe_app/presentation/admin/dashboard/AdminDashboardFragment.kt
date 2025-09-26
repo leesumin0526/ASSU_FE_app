@@ -23,6 +23,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import android.app.AlertDialog
+import android.widget.Toast
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import javax.inject.Inject
 
@@ -32,18 +33,23 @@ class AdminDashboardFragment :
 
     private val viewModel: AdminDashboardViewModel by viewModels()
 
+    // 현재 매장 데이터를 저장할 변수
+    private var currentStoreUsageStats: List<AdminDashboardModel.StoreUsageStat> = emptyList()
+
     @Inject
     lateinit var authTokenLocalStore: AuthTokenLocalStore
+
     override fun initObserver() {
         // 기본 제목 설정
         viewLifecycleOwner.lifecycleScope.launch {
             val username = authTokenLocalStore.getUserName()
             binding.tvDashboardTitle.text = if (!username.isNullOrEmpty()) {
-                "${username}"
+                username
             } else {
                 " "
             }
         }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.dashboardState.collect { state ->
                 when (state) {
@@ -75,7 +81,7 @@ class AdminDashboardFragment :
             Navigation.findNavController(view).navigate(R.id.action_admin_dashboard_to_suggestions)
         }
 
-       viewModel.loadAdminDashboard()
+        viewModel.loadAdminDashboard()
     }
 
     private fun setupUI(data: AdminDashboardModel) {
@@ -89,6 +95,9 @@ class AdminDashboardFragment :
         binding.tvTotalStudents?.text = "+ ${adminStats.totalStudentCount}"
         binding.tvNewStudents?.text = "+ ${adminStats.newStudentCount}"
         binding.tvTodayUsers?.text = "+ ${adminStats.todayUsagePersonCount}"
+
+        // 현재 데이터 저장
+        currentStoreUsageStats = adminStats.storeUsageStats
 
         // 바차트 설정
         setupPartnersBarChart(adminStats.storeUsageStats)
@@ -116,10 +125,33 @@ class AdminDashboardFragment :
             return
         }
 
+        // 상위 6개만 선택 (이미 사용량 내림차순으로 정렬되어 있음)
+        val topStores = storeUsageStats.take(6)
+
+        // 빈 데이터 체크
+        if (topStores.isEmpty()) {
+            barChart.clear()
+            barChart.setNoDataText("표시할 데이터가 없습니다")
+            barChart.setNoDataTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_sub))
+            barChart.invalidate()
+            return
+        }
+
         val entries = ArrayList<BarEntry>()
 
-        storeUsageStats.forEachIndexed { index, store ->
-            entries.add(BarEntry(index.toFloat(), store.usageCount.toFloat()))
+        topStores.forEachIndexed { index, store ->
+            // usageCount가 null이거나 음수가 아닌지 확인
+            val count = store.usageCount?.takeIf { it >= 0 } ?: 0
+            entries.add(BarEntry(index.toFloat(), count.toFloat()))
+        }
+
+        // entries가 비어있지 않은지 확인
+        if (entries.isEmpty()) {
+            barChart.clear()
+            barChart.setNoDataText("차트 데이터를 생성할 수 없습니다")
+            barChart.setNoDataTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_sub))
+            barChart.invalidate()
+            return
         }
 
         val dataSet = BarDataSet(entries, "제휴 이용 현황")
@@ -129,15 +161,28 @@ class AdminDashboardFragment :
         dataSet.setDrawValues(true)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.assu_main)
         dataSet.valueTextSize = 10f
+
+        // null 체크가 포함된 ValueFormatter
         dataSet.valueFormatter = object : ValueFormatter() {
             override fun getBarLabel(barEntry: BarEntry?): String {
-                return barEntry?.y?.toInt().toString()
+                return barEntry?.y?.toInt()?.toString() ?: "0"
+            }
+
+            override fun getFormattedValue(value: Float): String {
+                return value.toInt().toString()
             }
         }
 
         val barData = BarData(dataSet)
         barData.barWidth = 0.7f
+
+        // 차트에 데이터 설정하기 전에 차트 초기화
+        barChart.clear()
         barChart.data = barData
+
+        // 기본 렌더러 사용 (둥근 모서리는 나중에 추가)
+        // val customRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
+        // barChart.renderer = customRenderer
 
         // 차트 기본 설정
         barChart.description.isEnabled = false
@@ -147,12 +192,20 @@ class AdminDashboardFragment :
         barChart.setFitBars(true)
         barChart.setViewPortOffsets(30f, 30f, 30f, 30f)
 
+        // 차트 새로고침 설정
+        barChart.setMaxVisibleValueCount(6) // 최대 6개만 표시
+        barChart.setPinchZoom(false)
+        barChart.setDrawBarShadow(false)
+        barChart.setDrawValueAboveBar(true)
+
         // X축 설정
         val xAxis = barChart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.setDrawAxisLine(false)
         xAxis.setDrawLabels(false)
+        xAxis.granularity = 1f
+        xAxis.isGranularityEnabled = true
 
         // Y축 설정
         barChart.axisLeft.isEnabled = false
@@ -163,41 +216,60 @@ class AdminDashboardFragment :
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 e?.let { entry ->
                     val selectedIndex = entry.x.toInt()
-                    if (selectedIndex < storeUsageStats.size) {
-                        val selectedStore = storeUsageStats[selectedIndex]
+                    // topStores 리스트의 인덱스를 사용
+                    if (selectedIndex >= 0 && selectedIndex < topStores.size) {
+                        val selectedStore = topStores[selectedIndex]
                         showStoreUsageDialog(selectedStore)
+                        // 분석 텍스트 업데이트
+                        updateAnalysisText(selectedStore)
                     }
                 }
             }
 
             override fun onNothingSelected() {
-                // 아무것도 선택되지 않았을 때
+                // 아무것도 선택되지 않았을 때 - 원래 최고 이용률 매장으로 되돌리기
+                if (currentStoreUsageStats.isNotEmpty()) {
+                    val topStore = currentStoreUsageStats.first()
+                    binding.tvDashboardAnalysis?.text = "${topStore.storeName}의\n제휴 누적이용률이 가장 높아요!"
+                }
             }
         })
 
-        barChart.animateY(1000)
-        barChart.invalidate()
+        // 차트 새로고침 및 애니메이션
+        try {
+            barChart.animateY(1000)
+            barChart.invalidate()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // 애니메이션 실패 시 기본 차트만 표시
+            barChart.invalidate()
+        }
     }
 
-    // 제휴 업체 이용현황 다이얼로그 표시
+    // 선택된 매장에 따라 분석 텍스트 업데이트
+    private fun updateAnalysisText(selectedStore: AdminDashboardModel.StoreUsageStat) {
+        val storeName = selectedStore.storeName ?: "알 수 없는 매장"
+        val usageCount = selectedStore.usageCount ?: 0
+        binding.tvDashboardAnalysis?.text = "${storeName}의\n제휴 이용건수는 ${usageCount}건이에요!"
+    }
+
+    // 매장 이용현황 다이얼로그 표시
     private fun showStoreUsageDialog(store: AdminDashboardModel.StoreUsageStat) {
-        val dialogBuilder = AlertDialog.Builder(requireContext())
+        val storeName = store.storeName ?: "알 수 없는 매장"
+        val usageCount = store.usageCount ?: 0
 
-        val message = """
-            업체명: ${store.storeName}
-            총 이용 횟수: ${store.usageCount}건
-            오늘 이용 횟수: ${store.todayUsageCount}건
-            이번 달 이용 횟수: ${store.monthlyUsageCount}건
-            등록일: ${store.registrationDate}
-        """.trimIndent()
-
-        dialogBuilder.setTitle("제휴 업체 이용현황")
-            .setMessage(message)
-            .setPositiveButton("확인") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-            .show()
+        try {
+            AlertDialog.Builder(requireContext())
+                .setTitle("제휴 이용현황")
+                .setMessage("${storeName}\n이용건수: ${usageCount}건")
+                .setPositiveButton("확인") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            showError("다이얼로그 표시 중 오류가 발생했습니다")
+        }
     }
 
     // 이번달 이용현황 텍스트 설정
@@ -231,6 +303,6 @@ class AdminDashboardFragment :
 
     private fun showError(message: String) {
         // 에러 메시지 표시
-        android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
