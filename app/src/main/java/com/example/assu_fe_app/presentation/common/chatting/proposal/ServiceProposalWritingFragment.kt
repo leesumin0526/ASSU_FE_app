@@ -7,104 +7,213 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentServiceProposalWritingBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.chatting.proposal.adapter.ServiceProposalAdapter
+import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-//엥
+@AndroidEntryPoint
 class ServiceProposalWritingFragment
     : BaseFragment<FragmentServiceProposalWritingBinding>(R.layout.fragment_service_proposal_writing) {
 
-    val adapter = ServiceProposalAdapter {
-        onItemOptionSelected()
-        checkAllFieldsFilled()
-    }
+    private val viewModel: PartnershipViewModel by activityViewModels()
+    private lateinit var adapter: ServiceProposalAdapter
+
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
+
+    private var isEditMode: Boolean = false
 
     override fun initView() {
+        binding.lifecycleOwner = viewLifecycleOwner
 
-        parentFragmentManager.setFragmentResultListener("result", this) { _, bundle ->
-            val resultData = bundle.getString("selectedPlace")
-            Log.d("SignupInfoFragment", "받은 데이터: $resultData")
-
-            binding.tvFragmentServiceProposalPartner.text = resultData
+        // ✅ arguments에서 수정 모드 여부 확인
+        arguments?.let { bundle ->
+            isEditMode = bundle.getBoolean("isEditMode", false)
+            Log.d("ServiceProposalWritingFragment", "Edit mode: $isEditMode")
         }
-        binding.rvFragmentServiceProposalItemSet.adapter = adapter
-        binding.rvFragmentServiceProposalItemSet.layoutManager = LinearLayoutManager(requireContext())
 
-        if (adapter.getItems().isEmpty()) {
-            adapter.addItem()
+        adapter = ServiceProposalAdapter(onItemEvent = viewModel::onBenefitEvent)
+        binding.rvFragmentServiceProposalItemSet.adapter = adapter
+        binding.rvFragmentServiceProposalItemSet.layoutManager =
+            LinearLayoutManager(requireContext())
+
+        val userRole = authTokenLocalStore.getUserRole()
+        Log.d("RoleCheck", "Current user role is: $userRole")
+
+        if (userRole.equals("ADMIN", ignoreCase = true)) {
+            setupAdminMode()
+        } else {
+            setupPartnerMode()
         }
 
         binding.tvAddProposalItem.setOnClickListener {
-            adapter.addItem()
-            checkAllFieldsFilled()
-            Log.d("addItem", "writingFragment2")
+            viewModel.addBenefitItem()
         }
 
         binding.btnCompleted.setOnClickListener {
-//            parentFragmentManager.beginTransaction()
-//                .replace(R.id.chatting_fragment_container, ServiceProposalTermWritingFragment())
-//                .addToBackStack(null) // 뒤로가기 가능하게
-//                .commit()
-
-
-            findNavController().navigate(
-                R.id.action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment)
+            if (isEditMode) {
+                // ✅ 수정 모드일 때는 바로 TermWritingFragment로 이동
+                navigateToTermWriting()
+            } else {
+                // ✅ 일반 모드일 때는 기존 로직
+                try {
+                    if (findNavController().currentDestination?.id == R.id.serviceProposalWritingFragment) {
+                        findNavController().navigate(
+                            R.id.action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment
+                        )
+                    } else {
+                        navigateToTermWriting()
+                    }
+                } catch (e: Exception) {
+                    Log.e("ServiceProposalWritingFragment", "Navigation error", e)
+                    navigateToTermWriting()
+                }
+            }
         }
 
         binding.ivFragmentServiceProposalBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+    }
 
+    // ✅ TermWritingFragment로 이동하는 공통 함수
+    private fun navigateToTermWriting() {
+        val fragment = if (isEditMode) {
+            ServiceProposalTermWritingFragment.newInstanceForEdit()
+        } else {
+            ServiceProposalTermWritingFragment()
+        }
+
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.chatting_fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun setupAdminMode() {
+        viewModel.adminName.value = authTokenLocalStore.getUserName() ?: ""
+        binding.tvFragmentServiceProposalAdmin.isEnabled = false
+
+        binding.tvFragmentServiceProposalPartner.hint = "업체명을 입력해주세요"
         binding.tvFragmentServiceProposalPartner.setOnClickListener {
-            val bundle = Bundle().apply{
-                putString("type", "passive")
+            try {
+                findNavController().navigate(
+                    R.id.action_serviceProposalWritingFragment_to_locationSearchFragment,
+                    Bundle().apply { putString("type", "passive") }
+                )
+            } catch (e: Exception) {
+                Log.e("ServiceProposalWritingFragment", "Location search navigation error", e)
             }
-
-            findNavController().navigate(
-                R.id.action_serviceProposalWritingFragment_to_locationSearchFragment, bundle)
         }
-
-
-        setUpFragmentEditTextWatchers()
-        checkAllFieldsFilled()
     }
 
-    private fun onItemOptionSelected() {
-        binding.tvAddProposalItem.visibility = View.VISIBLE
-    }
+    private fun setupPartnerMode() {
+        arguments?.let { bundle ->
+            val partnerId = bundle.getLong("partnerId", -1L)
+            val paperId = bundle.getLong("paperId", -1L)
+            val adminName = bundle.getString("adminName", "")
+            val partnerName = authTokenLocalStore.getUserName() ?: "-"
 
-    override fun initObserver() {}
+            Log.d("BundleCheck", "partnerName: '$partnerName', adminName: '$adminName'")
 
-    private fun setUpFragmentEditTextWatchers() {
-        val watcher = object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) = checkAllFieldsFilled()
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            if (partnerId != -1L && paperId != -1L) {
+                viewModel.initProposalData(partnerId, paperId)
+                viewModel.adminName.value = adminName
+                viewModel.partnerName.value = partnerName
+            }
         }
 
-
-        binding.etFragmentServiceProposalAdmin.addTextChangedListener(watcher)
+        binding.tvFragmentServiceProposalAdmin.isEnabled = false
+        binding.tvFragmentServiceProposalPartner.isEnabled = false
     }
 
-    private fun checkAllFieldsFilled() {
-        val partnerFilled = binding.tvFragmentServiceProposalPartner.text?.isNotBlank() == true
-        val adminFilled = binding.etFragmentServiceProposalAdmin.text?.isNotBlank() == true
-        val itemFieldsFilled = adapter.getItems().all { item ->
-            item.contents.all{it.isNotBlank()}
+    override fun initObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.benefitItems.collect { items ->
+                        adapter.submitList(items)
+                    }
+                }
+                launch {
+                    viewModel.isNextButtonEnabled.collect { isEnabled ->
+                        binding.btnCompleted.isEnabled = isEnabled
+                        val colorRes = if (isEnabled) R.color.assu_main else R.color.assu_sub
+                        binding.btnCompleted.backgroundTintList =
+                            ContextCompat.getColorStateList(requireContext(), colorRes)
+                    }
+                }
+                launch {
+                    viewModel.adminName.collect { name ->
+                        if (binding.tvFragmentServiceProposalAdmin.text.toString() != name) {
+                            binding.tvFragmentServiceProposalAdmin.setText(name)
+                        }
+                    }
+                }
+                launch {
+                    viewModel.partnerName.collect { name ->
+                        if (binding.tvFragmentServiceProposalPartner.text.toString() != name) {
+                            binding.tvFragmentServiceProposalPartner.setText(name)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    companion object {
+        // ✅ 기존 newInstance (일반 모드)
+        fun newInstance(
+            partnerId: Long,
+            paperId: Long,
+            adminName: String,
+            partnerName: String
+        ): ServiceProposalWritingFragment {
+            return ServiceProposalWritingFragment().apply {
+                arguments = Bundle().apply {
+                    putLong("partnerId", partnerId)
+                    putLong("paperId", paperId)
+                    putString("adminName", adminName)
+                    putString("partnerName", partnerName)
+                    putBoolean("isEditMode", false)
+                }
+            }
         }
 
-        val allFilled = partnerFilled && adminFilled && itemFieldsFilled
-
-        val colorRes = if (allFilled) R.color.assu_main else R.color.assu_sub
-        binding.btnCompleted.backgroundTintList = ContextCompat.getColorStateList(requireContext(), colorRes)
-
-        binding.btnCompleted.isEnabled = allFilled
+        // ✅ 수정 모드용 newInstance
+        fun newInstanceForEdit(
+            partnerId: Long,
+            paperId: Long,
+            isEditMode: Boolean = true,
+            adminName: String,
+            partnerName: String
+        ): ServiceProposalWritingFragment {
+            return ServiceProposalWritingFragment().apply {
+                arguments = Bundle().apply {
+                    putLong("partnerId", partnerId)
+                    putLong("paperId", paperId)
+                    putString("adminName", adminName)
+                    putString("partnerName", partnerName)
+                    putBoolean("isEditMode", isEditMode)
+                }
+            }
+        }
     }
 }
