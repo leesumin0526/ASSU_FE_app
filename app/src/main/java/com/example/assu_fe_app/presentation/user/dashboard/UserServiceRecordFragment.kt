@@ -108,6 +108,7 @@ class UserServiceRecordFragment : BaseFragment<ActivityUserServiceRecordBinding>
         val selectedMonth = usageViewModel.getCurrentMonth()
 
         binding.tvServiceRecordMonth.text = selectedMonth.toString()
+        binding.tvRecordBenefitMonth.text= selectedMonth.toString()
 
         // 현재 달인지 확인
         val isCurrentMonth = selectedYear == currentYear && selectedMonth == currentMonth

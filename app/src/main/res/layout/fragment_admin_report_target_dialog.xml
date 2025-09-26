@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="15dp"
+    android:layout_marginEnd="15dp"
+    android:padding="15dp"
+    android:background="@drawable/bg_review_delete_dialog">
+
+    <TextView
+        android:id="@+id/tv_question_target_review"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="신고하고자 하는 대상을\n선택해주세요"
+        android:includeFontPadding="false"
+        android:fontFamily="@font/pretendard_semibold"
+        android:textColor="@color/assu_font_main"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_select_report_target"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:text="작성자를 신고할 경우 해당 사용자가 작성한  모든\n건의글이 비공개 처리됩니다 "
+        android:textColor="@color/assu_font_sub"
+        android:fontFamily="@font/pretendard_regular"
+        android:textSize="14sp"
+        android:layout_marginTop="7dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_question_target_review"/>
+
+
+    <ImageView
+        android:id="@+id/btn_admin_report_target_cross"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_cross"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="6dp"
+        app:layout_constraintEnd_toEndOf="@id/tv_admin_report_review_writer"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+
+    <TextView
+        android:id="@+id/tv_admin_report_review_writer"
+        android:layout_width="0dp"
+        android:layout_height="41dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_select_report_target"
+        android:text="제휴 건의 사용자"
+        android:gravity="center"
+        android:textColor="@color/assu_font_sub"
+        android:fontFamily="@font/pretendard_semibold"
+        android:textSize="11sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="5dp"
+        android:background="@drawable/btn_service_box_selector"/>
+
+    <TextView
+        android:id="@+id/tv_admin_report_review"
+        android:layout_width="0dp"
+        android:layout_height="41dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_admin_report_review_writer"
+        android:text="제휴 건의 글"
+        android:gravity="center"
+        android:textColor="@color/assu_font_sub"
+        android:fontFamily="@font/pretendard_semibold"
+        android:textSize="11sp"
+        android:layout_marginTop="7dp"
+        android:layout_marginHorizontal="5dp"
+        android:background="@drawable/btn_service_box_selector"/>
+
+
+    <TextView
+        android:id="@+id/btn_admin_report_target_cancel"
+        android:layout_width="0dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_btn_dialog_cancel"
+        android:text="취소"
+        android:gravity="center"
+        android:textColor="@color/assu_main"
+        android:textSize="11sp"
+        android:fontFamily="@font/pretendard_semibold"
+        app:layout_constraintTop_toBottomOf="@id/tv_admin_report_review"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_admin_report_target_confirm"
+        app:layout_constraintHorizontal_weight="1" />
+
+    <TextView
+        android:id="@+id/btn_admin_report_target_confirm"
+        android:layout_width="0dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_btn_dialog_select"
+        android:text="신고하기"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:fontFamily="@font/pretendard_semibold"
+        app:layout_constraintTop_toTopOf="@id/btn_admin_report_target_cancel"
+        app:layout_constraintBottom_toBottomOf="@id/btn_admin_report_target_cancel"
+        app:layout_constraintStart_toEndOf="@id/btn_admin_report_target_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1.5" />
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
