@@ -88,14 +88,9 @@ class PartnerDashboardFragment :
         binding.tvGraphUpdateDateAndTime.text = getCurrentDateString()
         binding.tvTodayUpdateDateAndTime.text = getCurrentDateString()
 
-        // 차트 설정 - 하드코딩된 데이터 사용
-        // setupPartnershipLineChart(data.getRankingTrend())
-        // setupClientBarChart(data.getUsageTrend())
-        // setupRankingGrid(data.todayBest)
-
-        setupPartnershipLineChart(listOf(5L, 3L, 7L, 2L, 4L, 1L)) // 하드코딩된 순위 데이터
-        setupClientBarChart(listOf(120L, 150L, 180L, 220L, 195L, 250L)) // 하드코딩된 사용량 데이터
-        setupRankingGrid(createHardcodedPopularStores()) // 하드코딩된 인기매장 데이터
+         setupPartnershipLineChart(data.getRankingTrend())
+         setupClientBarChart(data.getUsageTrend())
+         setupRankingGrid(data.todayBest)
 
         // 분석 텍스트 초기 설정
         updateAnalysisText()
