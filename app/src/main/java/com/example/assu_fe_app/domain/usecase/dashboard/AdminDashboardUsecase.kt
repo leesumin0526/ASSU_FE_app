@@ -1,8 +1,10 @@
 package com.example.assu_fe_app.domain.usecase.dashboard
 
 import com.example.assu_fe_app.data.repository.dashboard.AdminDashboardRepository
-import com.example.assu_fe_app.domain.model.dashboard.StoreUsageModel
+import com.example.assu_fe_app.domain.model.dashboard.AdminDashboardModel
 import com.example.assu_fe_app.util.RetrofitResult
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 class GetTotalStudentCountUseCase @Inject constructor(
@@ -29,10 +31,10 @@ class GetTodayUsageCountUseCase @Inject constructor(
     }
 }
 
-class GetStoreUsageListUseCase @Inject constructor(
+class GetDetailedUsageListUseCase @Inject constructor(
     private val repo: AdminDashboardRepository
 ) {
-    suspend operator fun invoke(): RetrofitResult<List<StoreUsageModel>> {
-        return repo.getStoreUsageList()
+    suspend operator fun invoke(): RetrofitResult<List<AdminDashboardModel.StoreUsageStat>> {
+        return repo.getDetailedUsageList()
     }
 }
