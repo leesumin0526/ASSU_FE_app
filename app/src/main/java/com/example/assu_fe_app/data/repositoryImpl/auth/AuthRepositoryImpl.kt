@@ -9,6 +9,7 @@ import com.example.assu_fe_app.data.dto.auth.PartnerSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyResponseDto
+import com.example.assu_fe_app.data.dto.auth.EmailVerificationRequestDto
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -54,9 +55,9 @@ class AuthRepositoryImpl @Inject constructor(
         )
     }
     
-    override suspend fun sendPhoneVerification(request: PhoneVerificationSendRequestDto): RetrofitResult<Unit> {
+    override suspend fun checkAndSendPhoneVerification(request: PhoneVerificationSendRequestDto): RetrofitResult<Unit> {
         return apiHandlerForUnit(
-            execute = { noAuthService.sendPhoneVerification(request) },
+            execute = { noAuthService.checkAndSendPhoneVerification(request) },
             mapper = { Unit }
         )
     }
@@ -103,6 +104,13 @@ class AuthRepositoryImpl @Inject constructor(
         return apiHandler(
             execute = { noAuthService.partnerSignUp(requestPart, licenseImage) },
             mapper = { response -> response.toModel() }
+        )
+    }
+
+    override suspend fun checkEmailVerification(request: EmailVerificationRequestDto): RetrofitResult<Unit> {
+        return apiHandlerForUnit(
+            execute = { noAuthService.checkEmailVerification(request) },
+            mapper = { Unit }
         )
     }
 }

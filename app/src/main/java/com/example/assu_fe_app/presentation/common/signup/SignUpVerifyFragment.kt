@@ -18,10 +18,10 @@ import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentSignUpVerifyBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
-import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel
 import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel.SendPhoneVerificationUiState
 import com.example.assu_fe_app.ui.auth.SignUpVerifyViewModel.VerifyPhoneVerificationUiState
+import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,19 +52,21 @@ class SignUpVerifyFragment :
                     Log.d("SignUpVerifyFragment", "전화번호 인증 실패: code=${state.code}, message=${state.message}")
                     // 버튼 재활성화
                     binding.tvUserVerifyPhone.isEnabled = true
-                    // 서버 에러 메시지는 토스트로 표시하지 않음
-                    // 사용자에게는 간단한 안내 메시지만 표시
-                    val errorMessage = when {
-                        state.code == 400 -> "전화번호 형식이 올바르지 않습니다."
-                        else -> "인증번호 발송에 실패했습니다. 다시 시도해주세요."
+                    
+                    // ViewModel에서 전달된 메시지 사용
+                    Toast.makeText(requireContext(), state.message ?: "인증번호 발송에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    
+                    // 400, 409 에러 시 UI 업데이트 (빨간색 표시)
+                    if (state.code == 400 || state.code == 409) {
+                        showPhoneNumberError(state.message)
                     }
-                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                 }
                 is SendPhoneVerificationUiState.Error -> {
                     Log.d("SignUpVerifyViewModel", "네트워크 에러: ${state.message}")
                     // 버튼 재활성화
                     binding.tvUserVerifyPhone.isEnabled = true
-                    Toast.makeText(requireContext(), "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                    // 네트워크 에러 메시지 표시
+                    Toast.makeText(requireContext(), state.message ?: "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
                 }
                 is SendPhoneVerificationUiState.Idle -> {
                     // 버튼 활성화
@@ -124,6 +126,16 @@ class SignUpVerifyFragment :
             duration = 500L
         )
 
+        // 전화번호 입력 필드 텍스트 변경 감지
+        binding.etUserVerifyPhone.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                // 전화번호가 변경되면 에러 상태 초기화
+                resetPhoneNumberError()
+            }
+        })
+
         // 인증번호 받기
         binding.tvUserVerifyPhone.setOnClickListener {
 //            findNavController().navigate(R.id.action_verify_to_info)
@@ -131,7 +143,7 @@ class SignUpVerifyFragment :
             Log.d("SignUpVerifyFragment", "인증번호 받기 버튼 클릭됨, 입력된 전화번호: $inputPhone")
             if (inputPhone.isNotEmpty()) {
                 Log.d("SignUpVerifyFragment", "ViewModel에 전화번호 전송 요청")
-                viewModel.sendPhoneVerification(inputPhone)
+                viewModel.checkAndSendPhoneVerification(inputPhone)
             } else {
                 Log.w("SignUpVerifyFragment", "전화번호가 비어있음")
                 Toast.makeText(requireContext(), "전화번호를 입력해주세요", Toast.LENGTH_SHORT).show()
@@ -202,9 +214,11 @@ class SignUpVerifyFragment :
         // 전화번호 필드 비활성화
         binding.etUserVerifyPhone.isEnabled = false
 
-        // UI 변경
+        // UI 변경 - 성공시와 동일한 위치에 체크 아이콘 표시
         binding.ivUserVerifyCheckIcon.isVisible = true
         binding.tvUserVerifyPhone.text = "전송완료"
+        binding.tvUserVerifyPhone.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_main))
+        binding.etUserVerifyPhone.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_signup_input_bar)
 
         binding.clUserVerifyCode.visibility = View.VISIBLE
         binding.llQuestionCodeIsNotComing.visibility = View.VISIBLE
@@ -309,6 +323,28 @@ class SignUpVerifyFragment :
         )
     }
 
+    private fun showPhoneNumberError(message: String? = null) {
+        // 전화번호 입력 필드 빨간색 표시
+        binding.tvUserVerifyPhone.text = message ?: "전화번호 오류"
+        binding.tvUserVerifyPhone.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_error))
+        binding.ivUserVerifyCheckIcon.setImageResource(R.drawable.ic_signup_verified_failed)
+        binding.ivUserVerifyCheckIcon.visibility = View.VISIBLE
+        binding.clUserVerifyPhone.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_signup_input_bar_error)
+
+        // 버튼 비활성화
+        setButtonEnabled(false)
+    }
+
+    private fun resetPhoneNumberError() {
+        // 전화번호 입력 필드 상태 초기화
+        binding.etUserVerifyPhone.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_signup_input_bar)
+        binding.clUserVerifyPhone.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_signup_input_bar)
+        binding.tvUserVerifyPhone.text = "인증번호 받기"
+        binding.ivUserVerifyCheckIcon.setImageResource(R.drawable.ic_signup_verified)
+        binding.ivUserVerifyCheckIcon.visibility = View.GONE
+        binding.tvUserVerifyPhone.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_main))
+    }
+
     private fun resetUI() {
         isVerified = false
         binding.etUserVerifyPhone.isEnabled = true
@@ -319,6 +355,10 @@ class SignUpVerifyFragment :
         binding.clUserVerifyCode.visibility = View.GONE
         binding.llQuestionCodeIsNotComing.visibility = View.GONE
         setButtonEnabled(false)
+        
+        // 전화번호 입력 필드 상태 초기화
+        binding.etUserVerifyPhone.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_signup_input_bar)
+        binding.tvUserVerifyPhone.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_main))
     }
 
 
