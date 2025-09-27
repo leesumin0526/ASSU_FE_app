@@ -29,7 +29,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.layout.fragment_chatting_list){
 
-    private val viewModel: ChattingViewModel by viewModels()
+    private val viewModel: ChattingListViewModel by viewModels()
+    private val chattingViewModel: ChattingViewModel by viewModels()
     private val authTokenLocalStoreImpl by lazy {
         AuthTokenLocalStoreImpl(requireContext())
     }
@@ -109,7 +110,7 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
             Toast.makeText(requireContext(), "제휴 정보 확인 중...", Toast.LENGTH_SHORT).show()
 
             // ViewModel의 suspend 함수를 호출하고 결과를 기다림
-            val status = viewModel.checkPartnershipStatus(authTokenLocalStoreImpl.getUserRole(), item.opponentId)
+            val status = chattingViewModel.checkPartnershipStatus(authTokenLocalStoreImpl.getUserRole(), item.opponentId)
 
             // API 호출 결과에 따라 분기 처리
             if (status != null) {
