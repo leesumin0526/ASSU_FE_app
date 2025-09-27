@@ -36,6 +36,7 @@ import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
 import com.example.assu_fe_app.presentation.common.contract.ProposalAgreeFragment
 import com.example.assu_fe_app.presentation.common.contract.ProposalModifyFragment
 import com.example.assu_fe_app.presentation.common.contract.ViewMode
+import com.example.assu_fe_app.presentation.partner.PartnerMainActivity
 import com.example.assu_fe_app.ui.partnership.BoxType
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import javax.inject.Inject
@@ -198,27 +199,29 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                     }
                 }
 
-                launch {
-                    viewModel.checkBlockOpponentState.collect { state ->
-                        when (state) {
-                            is ChattingViewModel.CheckBlockOpponentUiState.Success -> {
-                                if (state.data) {
-                                    // 차단됨 → 입력창 숨김
-                                    binding.layoutChattingInputBox.visibility = View.GONE
-                                } else {
-                                    // 차단 안 됨 → 입력창 표시
-                                    binding.layoutChattingInputBox.visibility = View.VISIBLE
-                                }
-                            }
-                            is ChattingViewModel.CheckBlockOpponentUiState.Fail,
-                            is ChattingViewModel.CheckBlockOpponentUiState.Error -> {
-                                // 에러 발생 시 기본적으로 입력창은 보이도록
-                                binding.layoutChattingInputBox.visibility = View.VISIBLE
-                            }
-                            else -> Unit
-                        }
-                    }
-                }
+                //TODO 상대방 차단
+
+//                launch {
+//                    viewModel.checkBlockOpponentState.collect { state ->
+//                        when (state) {
+//                            is ChattingViewModel.CheckBlockOpponentUiState.Success -> {
+//                                if (state.data) {
+//                                    // 차단됨 → 입력창 숨김
+//                                    binding.layoutChattingInputBox.visibility = View.GONE
+//                                } else {
+//                                    // 차단 안 됨 → 입력창 표시
+//                                    binding.layoutChattingInputBox.visibility = View.VISIBLE
+//                                }
+//                            }
+//                            is ChattingViewModel.CheckBlockOpponentUiState.Fail,
+//                            is ChattingViewModel.CheckBlockOpponentUiState.Error -> {
+//                                // 에러 발생 시 기본적으로 입력창은 보이도록
+//                                binding.layoutChattingInputBox.visibility = View.VISIBLE
+//                            }
+//                            else -> Unit
+//                        }
+//                    }
+//                }
 
                 // ✅ ViewModel에서 로딩/에러 상태를 처리하기 위해 유지합니다.
                 // 단, 더 이상 리스트를 그리는 데 사용하지 않습니다.
@@ -454,13 +457,23 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     }
 
     fun navigateToChatting() {
-        val intent = Intent(this, AdminMainActivity::class.java).apply {
-            // 기존 Task 스택 위로 올라가서 중복 생성 방지
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            // BottomNavigationView에 전달할 목적지 ID
-            putExtra("nav_dest_id", R.id.adminChattingFragment)
+        val userRole = authTokenLocalStore.getUserRole()
+        if (userRole == "ADMIN") {
+            val intent = Intent(this, AdminMainActivity::class.java).apply {
+                // 기존 Task 스택 위로 올라가서 중복 생성 방지
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                // BottomNavigationView에 전달할 목적지 ID
+                putExtra("nav_dest_id", R.id.adminChattingFragment)
+            }
+            startActivity(intent)
+        } else {
+            val intent = Intent(this, PartnerMainActivity::class.java).apply {
+                // 기존 Task 스택 위로 올라가서 중복 생성 방지
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                // BottomNavigationView에 전달할 목적지 ID
+                putExtra("nav_dest_id", R.id.partnerChattingFragment)
+            }
         }
-        startActivity(intent)
         finish() // FinishReviewActivity 종료
     }
 
