@@ -107,7 +107,7 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
         // 코루틴 스코프에서 비동기 작업 실행
         viewLifecycleOwner.lifecycleScope.launch {
             // 로딩 UI 표시 (예: Toast)
-            Toast.makeText(requireContext(), "제휴 정보 확인 중...", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(), "제휴 정보 확인 중...", Toast.LENGTH_SHORT).show()
 
             // ViewModel의 suspend 함수를 호출하고 결과를 기다림
             val status = chattingViewModel.checkPartnershipStatus(authTokenLocalStoreImpl.getUserRole(), item.opponentId)

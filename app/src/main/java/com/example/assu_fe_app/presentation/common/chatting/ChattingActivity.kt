@@ -9,8 +9,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
@@ -73,6 +71,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
         val roomId = intent.getLongExtra("roomId", -1L)
         val opponentName = intent.getStringExtra("opponentName") ?: ""
+        val opponentId = intent.getLongExtra("opponentId",-1)
         opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
 
         Log.d("ChattingActivity", "roomId=$roomId, name=$opponentName")
@@ -105,6 +104,9 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             (itemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)
                 ?.supportsChangeAnimations = false
         }
+
+        viewModel.checkBlockOpponent(opponentId)
+
 
 
         binding.etChattingInput.setOnFocusChangeListener { v, hasFocus ->
@@ -143,6 +145,15 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             val opponentId = intent.getLongExtra("opponentId",-1L)
             Log.d("ChattingActivityOpponentId", "opponentId=$opponentId")
             BlockOpponentDialogFragment.newInstance(opponentId,).show(supportFragmentManager, "BlockOpponentDialog")
+        }
+
+        supportFragmentManager.setFragmentResultListener("block_complete", this) { requestKey, bundle ->
+            val isBlocked = bundle.getBoolean("isBlocked")
+            if (isBlocked) {
+                // 차단이 성공했으므로, ViewModel에 차단 상태를 다시 확인하도록 요청합니다.
+                // initView 상단에서 이미 opponentId 변수를 가져왔으므로 그대로 사용합니다.
+                viewModel.checkBlockOpponent(opponentId)
+            }
         }
 
         supportFragmentManager.setFragmentResultListener("return_reason", this) { _, bundle ->
@@ -200,28 +211,27 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                 }
 
                 //TODO 상대방 차단
-
-//                launch {
-//                    viewModel.checkBlockOpponentState.collect { state ->
-//                        when (state) {
-//                            is ChattingViewModel.CheckBlockOpponentUiState.Success -> {
-//                                if (state.data) {
-//                                    // 차단됨 → 입력창 숨김
-//                                    binding.layoutChattingInputBox.visibility = View.GONE
-//                                } else {
-//                                    // 차단 안 됨 → 입력창 표시
-//                                    binding.layoutChattingInputBox.visibility = View.VISIBLE
-//                                }
-//                            }
-//                            is ChattingViewModel.CheckBlockOpponentUiState.Fail,
-//                            is ChattingViewModel.CheckBlockOpponentUiState.Error -> {
-//                                // 에러 발생 시 기본적으로 입력창은 보이도록
-//                                binding.layoutChattingInputBox.visibility = View.VISIBLE
-//                            }
-//                            else -> Unit
-//                        }
-//                    }
-//                }
+                launch {
+                    viewModel.checkBlockOpponentState.collect { state ->
+                        when (state) {
+                            is ChattingViewModel.CheckBlockOpponentUiState.Success -> {
+                                if (state.data.blocked) {
+                                    // 차단됨 → 입력창 숨김
+                                    binding.layoutChattingInputBox.visibility = View.GONE
+                                } else {
+                                    // 차단 안 됨 → 입력창 표시
+                                    binding.layoutChattingInputBox.visibility = View.VISIBLE
+                                }
+                            }
+                            is ChattingViewModel.CheckBlockOpponentUiState.Fail,
+                            is ChattingViewModel.CheckBlockOpponentUiState.Error -> {
+                                // 에러 발생 시 기본적으로 입력창은 보이도록
+                                binding.layoutChattingInputBox.visibility = View.VISIBLE
+                            }
+                            else -> Unit
+                        }
+                    }
+                }
 
                 // ✅ ViewModel에서 로딩/에러 상태를 처리하기 위해 유지합니다.
                 // 단, 더 이상 리스트를 그리는 데 사용하지 않습니다.

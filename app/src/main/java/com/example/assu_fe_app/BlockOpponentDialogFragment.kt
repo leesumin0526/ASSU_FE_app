@@ -5,11 +5,16 @@ import android.app.Dialog
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.lifecycleScope
 import com.example.assu_fe_app.data.dto.chatting.request.BlockRequestDto
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
+import kotlinx.coroutines.launch
 import kotlin.getValue
 
 
@@ -29,12 +34,30 @@ class BlockOpponentDialogFragment : DialogFragment() {
         cancelBtn.setOnClickListener { dismiss() }
         cross.setOnClickListener { dismiss() }
         blockBtn.setOnClickListener {
-            //TODO 여기 수정하기
             viewModel.blockOpponent(BlockRequestDto(opponentId))
-//            viewModel.leaveChattingRoom(roomId)
-//            viewModel.getChattingRoomList()
-//            (activity as? ChattingActivity)?.navigateToChatting()
-            dismiss()
+//            dismiss()
+        }
+
+        // ViewModel의 차단 상태를 관찰
+        lifecycleScope.launch {
+            viewModel.blockOpponentState.collect { state ->
+                when (state) {
+                    is ChattingViewModel.BlockOpponentUiState.Success -> {
+                        Toast.makeText(requireContext(), "상대방을 차단했습니다.", Toast.LENGTH_SHORT).show()
+
+                        // ▼▼▼ [핵심 코드] Activity로 차단 성공 신호를 보냄 ▼▼▼
+                        setFragmentResult("block_complete", bundleOf("isBlocked" to true))
+                        // ▲▲▲ [핵심 코드] ▲▲▲
+
+                        dismiss() // 다이얼로그 닫기
+                    }
+                    is ChattingViewModel.BlockOpponentUiState.Fail -> {
+                        Toast.makeText(requireContext(), "차단에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        dismiss()
+                    }
+                    else -> Unit
+                }
+            }
         }
 
         return AlertDialog.Builder(requireContext())

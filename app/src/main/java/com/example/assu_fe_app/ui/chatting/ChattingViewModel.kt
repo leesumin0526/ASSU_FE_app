@@ -25,6 +25,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.example.assu_fe_app.data.dto.chatting.WsMessageDto
 import com.example.assu_fe_app.data.dto.chatting.request.BlockRequestDto
 import com.example.assu_fe_app.data.dto.partnership.request.CreateDraftRequestDto
+import com.example.assu_fe_app.domain.model.chatting.CheckBlockModel
 import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
 import com.example.assu_fe_app.domain.model.chatting.ReadChattingModel
 import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
@@ -106,7 +107,7 @@ class ChattingViewModel @Inject constructor(
     sealed interface CheckBlockOpponentUiState {
         data object Idle : CheckBlockOpponentUiState
         data object Loading : CheckBlockOpponentUiState
-        data class Success(val data: Boolean) : CheckBlockOpponentUiState
+        data class Success(val data: CheckBlockModel) : CheckBlockOpponentUiState
         data class Fail(val code: Int, val message: String?) : CheckBlockOpponentUiState
         data class Error(val message: String) : CheckBlockOpponentUiState
     }

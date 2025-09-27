@@ -2,7 +2,6 @@ package com.example.assu_fe_app.data.repository.chatting
 
 import com.example.assu_fe_app.data.dto.chatting.request.BlockRequestDto
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
-import com.example.assu_fe_app.data.dto.chatting.response.BlockResponseDto
 import com.example.assu_fe_app.domain.model.chatting.BlockOpponentModel
 import com.example.assu_fe_app.domain.model.chatting.CheckBlockModel
 import com.example.assu_fe_app.domain.model.chatting.CreateChatRoomModel

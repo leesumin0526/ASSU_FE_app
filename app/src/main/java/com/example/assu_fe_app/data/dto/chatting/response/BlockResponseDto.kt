@@ -5,11 +5,11 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class BlockResponseDto(
-    val opponentId: Long,
-    val opponentName: String
+    val memberId: Long,
+    val name: String
 ) {
     fun toModel() = BlockOpponentModel(
-        opponentId = this.opponentId,
-        opponentName = this.opponentName
+        memberId = this.memberId,
+        name = this.name
     )
 }

@@ -5,9 +5,13 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class CheckBlockResponseDto(
+    val memberId: Long,
+    val name: String,
     val blocked: Boolean
 ) {
     fun toModel() = CheckBlockModel(
+        memberId = this.memberId,
+        name = this.name,
         blocked = this.blocked
     )
 }
