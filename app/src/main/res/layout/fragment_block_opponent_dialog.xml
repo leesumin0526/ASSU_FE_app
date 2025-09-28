@@ -31,7 +31,7 @@
             <ImageView
                 android:id="@+id/ivCross"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="20dp"
                 android:src="@drawable/ic_cross_gray"
                 android:layout_gravity="end"
                 android:layout_marginStart="50dp"/>
@@ -71,7 +71,7 @@
                 android:layout_width="148dp"
                 android:layout_height="41dp"
                 android:layout_gravity="end"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="8dp"
                 android:background="@drawable/bg_assu_main_color_box_radius_8"
                 android:gravity="center"
                 android:text="차단하기"
