@@ -6,6 +6,7 @@ sealed class ChattingMessageItem {
         val message: String,
         val sentAt: String,
         val isRead: Boolean,
+        val unreadCountForSender: Int = 0
     ) : ChattingMessageItem()
 
     data class OtherMessage(

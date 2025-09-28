@@ -11,5 +11,6 @@ data class ChatMessageModel(
     val sendTime: String,
     val isRead: Boolean,
     val isMyMessage: Boolean,
-    val profileImageUrl: String
+    val profileImageUrl: String,
+    val unreadCountForSender: Int ? =0
 )

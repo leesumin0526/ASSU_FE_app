@@ -70,10 +70,11 @@ class PartnershipContractDialogFragment() : DialogFragment( ) {
 
             val summaryText = buildString {
                 append("위와 같이 ")
-                append(data.partnerName ?: "-")
+                append(data.adminName ?: "-")
                 append("와의\n 제휴를 제안합니다.\n\n")
-                append(data.periodStart ?: "")
-                append("\n대표 (인)")
+                append(data.periodStart?: "")
+                append("\n")
+                append(data.partnerName + "(인)")
             }
             binding.tvPartnershipContentSummary.text = summaryText
 

@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="310dp"
     android:layout_height="174dp"
-    tools:context=".presentation.common.chatting.dialog.LeaveChatRoomDialog">
+    tools:context=".BlockOpponentDialogFragment">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +23,7 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="채팅방 나가기"
+                android:text="정말로 차단하시겠습니까?"
                 android:textSize="20sp"
                 android:textColor="@color/assu_font_main"
                 android:fontFamily="@font/pretendard_semibold" />
@@ -33,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_cross_gray"
                 android:layout_gravity="end"
-                android:layout_marginStart="140dp"/>
+                android:layout_marginStart="50dp"/>
 
 
         </LinearLayout>
@@ -44,7 +45,7 @@
             android:id="@+id/tvMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="채팅방을 나가면 대화내용은 삭제되고,\n채팅 목록도 제거 됩니다"
+            android:text="차단하실 경우, 채팅을 할 수 없습니다.\n마이페이지에서 차단 관리를 해주세요."
             android:textSize="14sp"
             android:fontFamily="@font/pretendard_regular"
             android:textColor="@color/assu_font_sub"
@@ -73,9 +74,11 @@
                 android:layout_marginStart="12dp"
                 android:background="@drawable/bg_assu_main_color_box_radius_8"
                 android:gravity="center"
-                android:text="나가기"
+                android:text="차단하기"
                 android:textColor="@color/white" />
         </LinearLayout>
     </LinearLayout>
+
+
 
 </FrameLayout>

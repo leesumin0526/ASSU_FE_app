@@ -7,5 +7,5 @@ data class GetChattingRoomListModel(
     val unreadMessagesCount: Long,
     val opponentId: Long,
     val opponentName: String,
-    val opponentProfileImage: String
+    val opponentProfileImage: String,
 )

@@ -6,16 +6,16 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.assu_fe_app.BlockOpponentDialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.ChattingMessageItem
 import com.example.assu_fe_app.databinding.ActivityChattingBinding
@@ -27,13 +27,14 @@ import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.getValue
-import com.example.assu_fe_app.LeaveChatRoomDialog
+import com.example.assu_fe_app.presentation.common.chatting.dialog.LeaveChatRoomDialog
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.data.local.AuthTokenLocalStoreImpl
 import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
 import com.example.assu_fe_app.presentation.common.contract.ProposalAgreeFragment
 import com.example.assu_fe_app.presentation.common.contract.ProposalModifyFragment
 import com.example.assu_fe_app.presentation.common.contract.ViewMode
+import com.example.assu_fe_app.presentation.partner.PartnerMainActivity
 import com.example.assu_fe_app.ui.partnership.BoxType
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import javax.inject.Inject
@@ -70,6 +71,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
         val roomId = intent.getLongExtra("roomId", -1L)
         val opponentName = intent.getStringExtra("opponentName") ?: ""
+        val opponentId = intent.getLongExtra("opponentId",-1)
         opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
 
         Log.d("ChattingActivity", "roomId=$roomId, name=$opponentName")
@@ -103,6 +105,17 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                 ?.supportsChangeAnimations = false
         }
 
+        viewModel.checkBlockOpponent(opponentId)
+
+
+
+        binding.etChattingInput.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                val inputMethodManager = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.showSoftInput(v, InputMethodManager.SHOW_FORCED)
+            }
+        }
+
         // 메시지 전송
         binding.btnChattingSend.setOnClickListener {
             val text = binding.etChattingInput.text.toString()
@@ -126,6 +139,21 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         // 채팅방 나가기
         binding.ivLeaveChatting.setOnClickListener {
             LeaveChatRoomDialog.newInstance(roomId).show(supportFragmentManager, "LeaveChattingDialog")
+        }
+
+        binding.ivBlockOpponent.setOnClickListener {
+            val opponentId = intent.getLongExtra("opponentId",-1L)
+            Log.d("ChattingActivityOpponentId", "opponentId=$opponentId")
+            BlockOpponentDialogFragment.newInstance(opponentId,).show(supportFragmentManager, "BlockOpponentDialog")
+        }
+
+        supportFragmentManager.setFragmentResultListener("block_complete", this) { requestKey, bundle ->
+            val isBlocked = bundle.getBoolean("isBlocked")
+            if (isBlocked) {
+                // 차단이 성공했으므로, ViewModel에 차단 상태를 다시 확인하도록 요청합니다.
+                // initView 상단에서 이미 opponentId 변수를 가져왔으므로 그대로 사용합니다.
+                viewModel.checkBlockOpponent(opponentId)
+            }
         }
 
         supportFragmentManager.setFragmentResultListener("return_reason", this) { _, bundle ->
@@ -182,50 +210,47 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                     }
                 }
 
-                // ✅ 유지: 히스토리 API 상태 수집 (최초 진입 시 한 번 내려옴)
+                //TODO 상대방 차단
+                launch {
+                    viewModel.checkBlockOpponentState.collect { state ->
+                        when (state) {
+                            is ChattingViewModel.CheckBlockOpponentUiState.Success -> {
+                                if (state.data.blocked) {
+                                    // 차단됨 → 입력창 숨김
+                                    binding.layoutChattingInputBox.visibility = View.GONE
+                                } else {
+                                    // 차단 안 됨 → 입력창 표시
+                                    binding.layoutChattingInputBox.visibility = View.VISIBLE
+                                }
+                            }
+                            is ChattingViewModel.CheckBlockOpponentUiState.Fail,
+                            is ChattingViewModel.CheckBlockOpponentUiState.Error -> {
+                                // 에러 발생 시 기본적으로 입력창은 보이도록
+                                binding.layoutChattingInputBox.visibility = View.VISIBLE
+                            }
+                            else -> Unit
+                        }
+                    }
+                }
+
+                // ✅ ViewModel에서 로딩/에러 상태를 처리하기 위해 유지합니다.
+                // 단, 더 이상 리스트를 그리는 데 사용하지 않습니다.
                 launch {
                     viewModel.getChatHistoryState.collect { state ->
                         when (state) {
-                            is ChattingViewModel.GetChatHistoryUiState.Loading -> { /* 필요시 로딩 */ }
+                            is ChattingViewModel.GetChatHistoryUiState.Loading -> {
+                                // TODO: 필요 시 프로그레스 바 표시
+                            }
                             is ChattingViewModel.GetChatHistoryUiState.Success -> {
-                                val uiItems = state.data.messages.map { m ->
-                                    if (m.isMyMessage) {
-                                        ChattingMessageItem.MyMessage(
-                                            messageId = m.messageId,
-                                            message = m.message ?: "",
-                                            sentAt = formatTime(m.sendTime),
-                                            isRead = m.isRead
-                                        )
-                                    } else {
-                                        ChattingMessageItem.OtherMessage(
-                                            messageId = m.messageId,
-                                            profileImageUrl = opponentProfileImage,
-                                            message = m.message ?: "",
-                                            sentAt = formatTime(m.sendTime),
-                                            isRead = m.isRead
-                                        )
-                                    }
-                                }
-                                messageAdapter.submitList(uiItems)
-                                if (uiItems.isNotEmpty()) {
-                                    binding.rvChattingMessageList.post {
-                                        binding.rvChattingMessageList.scrollToPosition(uiItems.size - 1)
-                                    }
-                                }
+                                // TODO: 프로그레스 바 숨김
                             }
                             is ChattingViewModel.GetChatHistoryUiState.Fail -> {
-                                Toast.makeText(
-                                    this@ChattingActivity,
-                                    "조회 실패(${state.code})",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                // TODO: 프로그레스 바 숨김
+                                Toast.makeText(this@ChattingActivity, "조회 실패(${state.code})", Toast.LENGTH_SHORT).show()
                             }
                             is ChattingViewModel.GetChatHistoryUiState.Error -> {
-                                Toast.makeText(
-                                    this@ChattingActivity,
-                                    "오류: ${state.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                // TODO: 프로그레스 바 숨김
+                                Toast.makeText(this@ChattingActivity, "오류: ${state.message}", Toast.LENGTH_SHORT).show()
                             }
                             else -> Unit
                         }
@@ -262,8 +287,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                     }
                 }
 
-                // ✅ 추가: 실시간 소켓 메시지 스트림 수집
-                // (ViewModel에서 _messages(StateFlow<List<ChatMessageModel>>) 노출한다고 가정)
+                // ✅✅✅ 이제 messages Flow 하나만 구독하여 모든 리스트 업데이트를 처리합니다. ✅✅✅
                 launch {
                     viewModel.messages.collect { list ->
                         // Domain → UI 변환(증분 반영을 위해 간단히 전체 다시 맵핑)
@@ -273,20 +297,24 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                                     messageId = m.messageId,
                                     message = m.message ?: "",
                                     sentAt = formatTime(m.sendTime),
-                                    isRead = m.isRead
+                                    isRead = m.isRead,
+                                    unreadCountForSender = m.unreadCountForSender ?: 0
                                 )
                             } else {
+                                // ✅ 상대방 프로필 이미지는 ViewModel에서 내려주는 값을 사용하는 것이 더 안정적입니다.
+                                //     (현재는 Intent에서 받은 값을 임시로 사용)
                                 ChattingMessageItem.OtherMessage(
                                     messageId = m.messageId,
-                                    profileImageUrl = m.profileImageUrl,
+                                    profileImageUrl = if (m.profileImageUrl.isNullOrBlank()) opponentProfileImage else m.profileImageUrl,
                                     message = m.message ?: "",
                                     sentAt = formatTime(m.sendTime),
                                     isRead = m.isRead
                                 )
                             }
                         }
-                        // ✅ DiffUtil + Payload 반영: 실시간 업데이트
+                        Log.d("ADAPTER_FLOW", "messages submitList called with size=${uiItems.size}")
                         messageAdapter.submitList(uiItems) {
+                            // 리스트가 업데이트 된 후, 마지막으로 스크롤
                             if (uiItems.isNotEmpty()) {
                                 binding.rvChattingMessageList.scrollToPosition(uiItems.size - 1)
                             }
@@ -439,13 +467,23 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     }
 
     fun navigateToChatting() {
-        val intent = Intent(this, AdminMainActivity::class.java).apply {
-            // 기존 Task 스택 위로 올라가서 중복 생성 방지
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            // BottomNavigationView에 전달할 목적지 ID
-            putExtra("nav_dest_id", R.id.adminChattingFragment)
+        val userRole = authTokenLocalStore.getUserRole()
+        if (userRole == "ADMIN") {
+            val intent = Intent(this, AdminMainActivity::class.java).apply {
+                // 기존 Task 스택 위로 올라가서 중복 생성 방지
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                // BottomNavigationView에 전달할 목적지 ID
+                putExtra("nav_dest_id", R.id.adminChattingFragment)
+            }
+            startActivity(intent)
+        } else {
+            val intent = Intent(this, PartnerMainActivity::class.java).apply {
+                // 기존 Task 스택 위로 올라가서 중복 생성 방지
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                // BottomNavigationView에 전달할 목적지 ID
+                putExtra("nav_dest_id", R.id.partnerChattingFragment)
+            }
         }
-        startActivity(intent)
         finish() // FinishReviewActivity 종료
     }
 
@@ -493,7 +531,6 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         }
 
         val myId = authTokenLocalStore.getUserId()
-//        val opponentId = viewModel.findOpponentId(roomId) ?: -1L
         Log.d("VM","roomId = $roomId, myId=$myId, opponentId=$opponentId")
         // ✅ 변경: 입장 시 히스토리 + 소켓 연결(뷰모델 내부에서 처리)
         viewModel.enterRoom(roomId, myId, opponentId)
