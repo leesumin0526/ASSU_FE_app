@@ -11,8 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.Navigation
-import com.bumptech.glide.Glide
 import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
@@ -23,8 +21,6 @@ import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentPartnerHomeBinding
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
-import com.example.assu_fe_app.domain.model.admin.RecommendedPartnerModel
-import com.example.assu_fe_app.presentation.admin.home.AdminHomeViewPartnerListActivity
 import com.example.assu_fe_app.domain.model.partner.RecommendedAdminModel
 import com.example.assu_fe_app.presentation.admin.home.HomeViewModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -35,6 +31,8 @@ import com.example.assu_fe_app.ui.partner.AdminRecommendViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.getValue
 import kotlin.jvm.java
@@ -281,15 +279,17 @@ class PartnerHomeFragment :
 
         // 옵션 설명 만들기
         val option = item.options.firstOrNull()
+        val cost = changeLongToMoney(option?.cost)
         descView.text = if (option != null) {
+
             when (option.optionType) {
                 OptionType.SERVICE -> when (option.criterionType) {
                     CriterionType.HEADCOUNT -> "${option.people}명당 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
-                    CriterionType.PRICE -> "${option.cost}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
+                    CriterionType.PRICE -> "${cost}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
                 }
                 OptionType.DISCOUNT -> when (option.criterionType) {
                     CriterionType.HEADCOUNT -> "${option.people}명 이상 ${option.discountRate}% 할인"
-                    CriterionType.PRICE -> "${option.cost}원 이상 주문 시 ${option.discountRate}% 할인"
+                    CriterionType.PRICE -> "${cost}원 이상 주문 시 ${option.discountRate}% 할인"
                 }
             }
         } else {
@@ -312,7 +312,7 @@ class PartnerHomeFragment :
                             )
 
                             CriterionType.PRICE -> PartnershipContractItem.Service.ByAmount(
-                                (opt.cost ?: 0L).toInt(),
+                                cost,
                                 opt.goods.firstOrNull()?.goodsName ?: "상품"
                             )
                         }
@@ -324,7 +324,7 @@ class PartnerHomeFragment :
                             )
 
                             CriterionType.PRICE -> PartnershipContractItem.Discount.ByAmount(
-                                (opt.cost ?: 0L).toInt(),
+                                cost,
                                 (opt.discountRate ?: 0L).toInt()
                             )
                         }
@@ -385,5 +385,10 @@ class PartnerHomeFragment :
         } ?: run {
             binding.flRecommendInquiry2.isEnabled = false
         }
+    }
+
+    private fun changeLongToMoney(cost: Long?): String {
+        val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+        return formatter.format(cost)
     }
 }

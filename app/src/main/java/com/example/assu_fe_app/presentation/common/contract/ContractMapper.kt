@@ -6,6 +6,8 @@ import com.example.assu_fe_app.domain.model.partnership.PartnershipOptionModel
 import com.example.assu_fe_app.data.dto.partnership.response.CriterionType
 import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsModel
+import java.text.NumberFormat
+import java.util.Locale
 
 fun ProposalPartnerDetailsModel.toContractData(
     partnerNameFallback: String? = "업체",
@@ -36,6 +38,7 @@ private fun PartnershipOptionModel.toContractItem(): PartnershipContractItem? {
         category.isNotBlank() -> category
         else -> ""
     }
+    val cost = changeLongToMoney(cost)
 
     return when (optionType) {
         OptionType.SERVICE -> when (criterionType) {
@@ -46,7 +49,7 @@ private fun PartnershipOptionModel.toContractItem(): PartnershipContractItem? {
                 )
             CriterionType.PRICE ->
                 PartnershipContractItem.Service.ByAmount(
-                    minAmount = cost.toInt(),
+                    minAmount = cost,
                     items = itemsText
                 )
         }
@@ -59,9 +62,14 @@ private fun PartnershipOptionModel.toContractItem(): PartnershipContractItem? {
                 )
             CriterionType.PRICE ->
                 PartnershipContractItem.Discount.ByAmount(
-                    minAmount = cost.toInt(),
+                    minAmount = cost,
                     percent = discountRate.toInt()
                 )
         }
     }
+}
+
+private fun changeLongToMoney(cost: Long?): String {
+    val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+    return formatter.format(cost)
 }
