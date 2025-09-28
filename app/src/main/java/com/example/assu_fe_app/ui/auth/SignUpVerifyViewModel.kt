@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.ui.auth
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,7 +32,7 @@ class SignUpVerifyViewModel @Inject constructor(
     private val _sendPhoneVerificationState = MutableLiveData<SendPhoneVerificationUiState>()
     val sendPhoneVerificationState: LiveData<SendPhoneVerificationUiState> = _sendPhoneVerificationState
 
-    fun sendPhoneVerification(phoneNumber: String) {
+    fun checkAndSendPhoneVerification(phoneNumber: String) {
         // 이미 로딩 중이면 중복 요청 방지
         if (_sendPhoneVerificationState.value is SendPhoneVerificationUiState.Loading) {
             return
@@ -41,10 +42,24 @@ class SignUpVerifyViewModel @Inject constructor(
             _sendPhoneVerificationState.value = SendPhoneVerificationUiState.Loading
             
             val request = PhoneVerificationSendRequestDto(phoneNumber = phoneNumber)
-            authRepository.sendPhoneVerification(request)
+            authRepository.checkAndSendPhoneVerification(request)
                 .onSuccess { _sendPhoneVerificationState.value = SendPhoneVerificationUiState.Success }
-                .onFail { code -> _sendPhoneVerificationState.value = SendPhoneVerificationUiState.Fail(code, "인증번호 발송 실패") }
-                .onError { e -> _sendPhoneVerificationState.value = SendPhoneVerificationUiState.Error(e.message ?: "Unknown Error") }
+                .onFail { code -> 
+                    val message = when (code) {
+                        400 -> "전화번호 형식이 올바르지 않습니다."
+                        409 -> "이미 가입된 전화번호입니다."
+                        else -> "인증번호 발송에 실패했습니다. 다시 시도해주세요."
+                    }
+                    _sendPhoneVerificationState.value = SendPhoneVerificationUiState.Fail(code, message)
+                }
+                .onError { e -> 
+                    // 에러 메시지 로그 출력
+                    Log.d("SignUpVerifyViewModel", "onError 발생: ${e.message}")
+                    // 400, 409 에러가 아닌 경우에만 Error 상태로 처리
+                    if (e.message?.contains("400") != true && e.message?.contains("409") != true) {
+                        _sendPhoneVerificationState.value = SendPhoneVerificationUiState.Error("네트워크 연결을 확인해주세요.")
+                    }
+                }
         }
     }
 

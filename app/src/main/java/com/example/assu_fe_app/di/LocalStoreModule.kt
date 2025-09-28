@@ -6,6 +6,7 @@ import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.data.local.AuthTokenLocalStoreImpl
 import com.example.assu_fe_app.data.local.DeviceTokenLocalStore
 import com.example.assu_fe_app.data.local.DeviceTokenLocalStoreImpl
+import com.example.assu_fe_app.data.repository.TokenRefreshRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

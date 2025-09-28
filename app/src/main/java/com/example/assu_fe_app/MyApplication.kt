@@ -1,68 +1,89 @@
-package com.example.assu_fe_app;
+package com.example.assu_fe_app
 
-import android.app.Application;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.os.Build;
-
-import com.kakao.vectormap.KakaoMapSdk;
-
-import dagger.hilt.android.HiltAndroidApp;
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.os.Build
+import android.util.Log
+import com.example.assu_fe_app.data.service.TokenManagementService
+import com.example.assu_fe_app.data.service.PeriodicLoginPromptService
+import com.kakao.vectormap.KakaoMapSdk
+import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltAndroidApp
-public class MyApplication extends Application {
+class MyApplication : Application() {
 
-    private static Context appContext;
+    @Inject
+    lateinit var tokenManagementService: TokenManagementService
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        appContext = getApplicationContext();
+    @Inject
+    lateinit var periodicLoginPromptService: PeriodicLoginPromptService
 
-        if (isArmDevice() && BuildConfig.KAKAO_MAP_KEY != null && !BuildConfig.KAKAO_MAP_KEY.isEmpty()) {
-            KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY);
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    companion object {
+        private var appContext: Context? = null
+
+        fun isOnline(): Boolean {
+            val cm = appContext?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return false
+
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val network = cm.activeNetwork ?: return false
+                val caps = cm.getNetworkCapabilities(network) ?: return false
+
+                val hasWifi = caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                val hasCellular = caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                val hasEthernet = caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+                val hasVpn = caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
+
+                hasWifi || hasCellular || hasEthernet || hasVpn
+            } else {
+                // deprecated이지만 하위 호환용
+                @Suppress("DEPRECATION")
+                val activeNetwork = cm.activeNetworkInfo
+                activeNetwork?.isConnectedOrConnecting == true
+            }
         }
     }
-    private boolean isArmDevice() {
-        String abi = Build.SUPPORTED_ABIS != null && Build.SUPPORTED_ABIS.length > 0
-                ? Build.SUPPORTED_ABIS[0]
-                : "";
-        return abi.contains("arm");
-    }
 
-    public static boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+    override fun onCreate() {
+        super.onCreate()
+        appContext = applicationContext
 
-        if (cm == null) {
-            return false;
+        // 카카오맵 초기화
+        if (isArmDevice() && BuildConfig.KAKAO_MAP_KEY != null && BuildConfig.KAKAO_MAP_KEY.isNotEmpty()) {
+            KakaoMapSdk.init(this, BuildConfig.KAKAO_MAP_KEY)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network network = cm.getActiveNetwork();
-            if (network == null) {
-                return false;
+        // 앱 시작 시 토큰 상태 확인 및 필요시 갱신
+        applicationScope.launch {
+            try {
+                tokenManagementService.checkAndRefreshTokenOnAppStart(applicationScope)
+                Log.d("MyApplication", "Token check completed on app start")
+                
+                // 학생 사용자의 경우 주기적 로그인 유도 확인
+                periodicLoginPromptService.checkAndPromptForReLogin(this@MyApplication)
+                Log.d("MyApplication", "Periodic login check completed on app start")
+            } catch (e: Exception) {
+                Log.e("MyApplication", "Error during token check on app start: ${e.message}")
             }
-            NetworkCapabilities caps = cm.getNetworkCapabilities(network);
-            if (caps == null) {
-                return false;
-            }
+        }
+    }
 
-            boolean hasWifi = caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
-            boolean hasCellular = caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
-            boolean hasEthernet = caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
-            boolean hasVpn = caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
-
-            boolean isOnline = hasWifi || hasCellular || hasEthernet || hasVpn;
-
-            return isOnline;
+    private fun isArmDevice(): Boolean {
+        val abi = if (Build.SUPPORTED_ABIS.isNotEmpty()) {
+            Build.SUPPORTED_ABIS[0]
         } else {
-            // deprecated이지만 하위 호환용
-            // noinspection deprecation
-            boolean isConnected = cm.getActiveNetworkInfo() != null
-                    && cm.getActiveNetworkInfo().isConnectedOrConnecting();
-            return isConnected;
+            ""
         }
+        return abi.contains("arm")
     }
 }

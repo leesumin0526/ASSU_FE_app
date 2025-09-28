@@ -26,8 +26,8 @@ interface AuthService {
     @POST("auth/logout")
     suspend fun logout(): BaseResponse<Any>
     
-    @POST("auth/phone-verification/send")
-    suspend fun sendPhoneVerification(
+    @POST("auth/phone-verification/check-and-send")
+    suspend fun checkAndSendPhoneVerification(
         @Body request: PhoneVerificationSendRequestDto
     ): BaseResponse<Any>
     

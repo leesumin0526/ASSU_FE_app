@@ -9,6 +9,8 @@ interface AuthTokenLocalStore {
     // 저장 메소드
     fun saveLoginData(loginModel: LoginModel)
     fun updateAccessToken(newAccessToken: String)
+    fun updateRefreshToken(newRefreshToken: String)
+    fun updateTokens(accessToken: String, refreshToken: String)
 
     // 초기화 메소드
     fun clearTokens()
@@ -37,4 +39,11 @@ interface AuthTokenLocalStore {
     // 상태 관련 메소드
     fun isLoggedIn(): Boolean
     fun isAccessTokenExpired(): Boolean
+    fun isAccessTokenExpiringSoon(): Boolean
+    
+    // 주기적 로그인 유도 관련 메소드
+    fun getLastLoginTime(): Long
+    fun updateLastLoginTime()
+    fun shouldPromptForReLogin(): Boolean
+    fun shouldPromptForReLoginByUserRole(): Boolean
 }
