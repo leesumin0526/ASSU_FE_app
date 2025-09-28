@@ -63,8 +63,6 @@ class UserQRVerifyActivity :
         binding.btnConfirm.setOnClickListener { // 이미지뷰 클릭 리스너
             Log.d("UserQRVerifyActivity","클릭했음.")
             if (qrCodeScannedSuccessfully) {
-                // QR 인식이 성공했을 때만 다음으로 넘어감
-                Toast.makeText(this, "인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
 
                 Log.d("UserQRVerifyActivity", "showNextFragment() 가 호출됩니다. ")
                 // 다음 프래그먼트로 전환
@@ -127,7 +125,6 @@ class UserQRVerifyActivity :
                         if (!qrCodeScannedSuccessfully && isAnalyzing) { // isAnalyzing 플래그 추가
                             runOnUiThread {
                                 isAnalyzing = false // 분석 중단
-                                Toast.makeText(this, "QR 코드 인식 성공!", Toast.LENGTH_SHORT).show()
                                 qrCodeData = qrCode
 //                                qrCodeData = "https://assu.com/verify?sessionId=7&adminId=2"
                                 Log.d("QR 인식 성공", "성공했다네요? $qrCode")
@@ -165,7 +162,6 @@ class UserQRVerifyActivity :
             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
-            Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
@@ -329,9 +325,6 @@ class UserQRVerifyActivity :
     private fun onCertificationCompleted(sessionId: Long) {
         hideCertificationLoadingState()
 
-        // 성공 메시지 표시
-        Toast.makeText(this, "그룹 인증이 완료되었습니다!", Toast.LENGTH_SHORT).show()
-
         // 완료 화면으로 이동
         val fragment = UserPartnershipVerifyCompleteFragment().apply {
             arguments = Bundle().apply {
@@ -392,20 +385,13 @@ class UserQRVerifyActivity :
             binding.tvConfirm.text = "확인"
             handleCertificationRequesterFlow(sessionId, qrResult)
         } else {
-            Toast.makeText(this, "QR 데이터를 다시 읽어주세요.", Toast.LENGTH_SHORT).show()
             finish()
             startActivity(intent) // 액티비티 재시작
         }
     }
 
-    private fun showAuthTokenError() {
-        Toast.makeText(this, "로그인이 필요합니다. 다시 로그인해주세요.", Toast.LENGTH_LONG).show()
-        // 로그인 화면으로 이동하는 로직 추가 가능
-        finish()
-    }
 
     private fun showCertificationError(error: String) {
-        Toast.makeText(this, "인증 오류: $error", Toast.LENGTH_LONG).show()
         hideCertificationLoadingState()
 
         // 재시도 옵션 제공
@@ -422,7 +408,6 @@ class UserQRVerifyActivity :
     }
 
     private fun showInvalidQrError() {
-        Toast.makeText(this, "유효하지 않은 QR 코드입니다. 다시 시도해 주세요.", Toast.LENGTH_LONG).show()
         finish()
         startActivity(intent)
     }
