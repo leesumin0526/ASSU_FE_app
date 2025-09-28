@@ -6,11 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.example.assu_fe_app.databinding.FragmentReviewReportCompleteDialogBinding
+import com.example.assu_fe_app.databinding.FragmentAdminSuggestionReportCompleteDialogBinding
 
 class AdminSuggestionReportCompleteDialogFragment : DialogFragment() {
 
-    private var _binding: FragmentReviewReportCompleteDialogBinding? = null
+    private var _binding: FragmentAdminSuggestionReportCompleteDialogBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,7 +18,7 @@ class AdminSuggestionReportCompleteDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentReviewReportCompleteDialogBinding.inflate(inflater, container, false)
+        _binding = FragmentAdminSuggestionReportCompleteDialogBinding.inflate(inflater, container, false)
         return binding.root
     }
 
