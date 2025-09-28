@@ -54,6 +54,13 @@ class LocationSearchSuccessFragment :
                 binding.tvLocationSearchSuccessTitle.visibility = View.GONE
                 binding.tvLocationSearchSuccessCount.visibility= View.GONE
                 binding.rvLocationSearchSuccess.visibility = View.GONE
+
+                val userRole = authTokenLocalStore.getUserRole()
+                if (userRole.equals("PARTNER", ignoreCase = true)) {
+                    binding.tvSearchErrorMessage.text="관리자를 찾지 못해 페이지를 표시할 수 없어요\n이용에 불편을 드려 죄송합니다."
+                } else {
+                    binding.tvSearchErrorMessage.text="매장을 찾지 못해 페이지를 표시할 수 없어요\n이용에 불편을 드려 죄송합니다."
+                }
                 binding.llLocationAdminPartnerItemEmpty.visibility=  View.VISIBLE
             }
             else {

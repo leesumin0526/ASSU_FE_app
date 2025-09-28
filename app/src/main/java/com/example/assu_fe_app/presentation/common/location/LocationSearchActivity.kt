@@ -16,17 +16,21 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.ActivityLocationSearchBinding
 import com.example.assu_fe_app.presentation.base.BaseActivity
 import com.example.assu_fe_app.presentation.common.location.adapter.LocationSharedViewModel
 import com.example.assu_fe_app.ui.map.AdminPartnerKeyWordSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.getValue
 
 @AndroidEntryPoint
 class LocationSearchActivity :
     BaseActivity<ActivityLocationSearchBinding>(R.layout.activity_location_search) {
 
+    @Inject
+    lateinit var tokenLocalStore : AuthTokenLocalStore
     companion object {
         const val EXTRA_SELECTED_ADDRESS = "selected_address"
         const val RESULT_CODE_ADDRESS_SELECTED = 1001
@@ -34,6 +38,12 @@ class LocationSearchActivity :
 
     private val searchViewModel : AdminPartnerKeyWordSearchViewModel by viewModels()
     override fun initView() {
+        if(tokenLocalStore.getUserRole().equals("PARTNER", ignoreCase = true)){
+            binding.etLocationSearch.hint = "찾으시는 관리자가 없나요?"
+        } else{
+            binding.etLocationSearch.hint="찾으시는 제휴 가게가 없나요?"
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val extraPaddingTop = 3
@@ -55,7 +65,7 @@ class LocationSearchActivity :
         binding.etLocationSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 binding.ivLocationSearchCancle.visibility =
-                    if (s.isNullOrEmpty()) android.view.View.GONE else android.view.View.VISIBLE
+                    if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -70,8 +80,8 @@ class LocationSearchActivity :
                 val keyword = keyword.text.toString().trim()
                 searchViewModel.search(keyword)
                 hideKeyboard()
-                binding.fvLocationSearchRank.visibility = android.view.View.INVISIBLE
-                binding.fvLocationSearchSuccess.visibility = android.view.View.VISIBLE
+                binding.fvLocationSearchRank.visibility = View.INVISIBLE
+                binding.fvLocationSearchSuccess.visibility = View.VISIBLE
                 true
             } else {
                 false
@@ -84,8 +94,65 @@ class LocationSearchActivity :
         }
     }
 
-    override fun initObserver() {}
 
+    override fun initObserver() {
+        // state만 관찰하여 UI 상태 관리
+        searchViewModel.state.observe(this) { state ->
+            when (state) {
+                "loading" -> {
+                    showLoading()
+                }
+                "success" -> {
+                    hideLoading()
+                    showSuccessState()
+                }
+                "fail" -> {
+                    hideLoading()
+                    showFailState()
+                }
+            }
+        }
+    }
+
+    private fun showLoading() {
+
+        binding.tvLoadingText.text = "로딩 중..."
+
+        // 로딩 오버레이만 표시, 나머지 숨김
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.fvLocationSearchRank.visibility = View.INVISIBLE
+        binding.fvLocationSearchSuccess.visibility = View.INVISIBLE
+        binding.clLocationSearchFail.visibility = View.INVISIBLE
+    }
+
+    private fun hideLoading() {
+        // 로딩 오버레이 숨김
+        binding.loadingOverlay.visibility = View.GONE
+    }
+
+    private fun showSuccessState() {
+        // 검색 성공 시 success fragment 표시
+        binding.fvLocationSearchSuccess.visibility = View.VISIBLE
+        binding.fvLocationSearchRank.visibility = View.INVISIBLE
+        binding.clLocationSearchFail.visibility = View.INVISIBLE
+    }
+
+    private fun showFailState() {
+        // 사용자 역할에 따른 실패 메시지 설정
+        val userRole = tokenLocalStore.getUserRole()
+        if (userRole.equals("PARTNER", ignoreCase = true)) {
+            binding.tvLocationSearchFailTitle.text = "관리자를 찾지 못했어요!"
+            binding.tvLocationSearchFailSubtitle.text = "관리자를 찾지 못해 페이지를 표시할 수 없어요.\n이용에 불편을 드려 죄송합니다."
+        } else {
+            binding.tvLocationSearchFailTitle.text = "검색결과를 찾지 못했어요!"
+            binding.tvLocationSearchFailSubtitle.text = "매장을 찾지 못해 페이지를 표시할 수 없어요.\n이용에 불편을 드려 죄송합니다."
+        }
+
+        // 실패 상태 UI 표시
+        binding.clLocationSearchFail.visibility = View.VISIBLE
+        binding.fvLocationSearchRank.visibility = View.INVISIBLE
+        binding.fvLocationSearchSuccess.visibility = View.INVISIBLE
+    }
     private fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }

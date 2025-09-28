@@ -100,6 +100,13 @@ class LocationFragment :
     private val DEFAULT_ZOOM = 17
 
     override fun initView() {
+
+        val userRole = authTokenLocalStore.getUserRole()
+        if (userRole.equals("PARTNER", ignoreCase = true)) {
+            binding.tvLocationHint.text="찾으시는 관리자가 없나요?"
+        } else {
+            binding.tvLocationHint.text="찾으시는 제휴 가게가 없나요?"
+        }
         binding.viewLocationSearchBar.setOnClickListener { navigateToSearch() }
         binding.ivLocationSearchIc.setOnClickListener { navigateToSearch() }
         binding.tvLocationHint.setOnClickListener { navigateToSearch() }
