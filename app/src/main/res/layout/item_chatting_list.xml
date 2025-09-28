@@ -30,10 +30,12 @@
 
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/view_admin_chatting_item_mg1"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_unread_message_count"
             android:orientation="vertical">
 
             <TextView
@@ -41,6 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="인쌩맥주 숭실대점"
+                android:maxLines="1"
                 android:fontFamily="@font/pretendard_semibold"
                 android:textSize="16sp"
                 android:textColor="@color/assu_font_main"/>
@@ -49,6 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="제휴 가능할까요?"
+                android:maxLines="1"
                 android:fontFamily="@font/pretendard_regular"
                 android:textSize="13sp"
                 android:textColor="@color/assu_font_sub"/>
@@ -61,6 +65,7 @@
             android:background="@drawable/ic_chatting_unread"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="19dp"
+            android:layout_marginStart="10dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:gravity="center"
