@@ -31,11 +31,11 @@
             android:id="@+id/partnership_content_mg2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="26"/>
+            android:layout_weight="30"/>
 
         <ImageView
             android:id="@+id/iv_partnership_content_cross"
-            android:layout_width="0dp"
+            android:layout_width="5dp"
             android:layout_height="match_parent"
             android:src="@drawable/ic_cross"
             android:layout_gravity="center"
@@ -95,7 +95,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="제휴 제안업체"
+            android:text="제휴 업체"
             android:fontFamily="@font/pretendard_regular"
             android:textSize="13sp"
             android:textColor="@color/assu_font_sub"
@@ -148,7 +148,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="제휴 제안인"
+            android:text="제휴 관리자"
             android:fontFamily="@font/pretendard_regular"
             android:textSize="13sp"
             android:textColor="@color/assu_font_sub"
@@ -345,6 +345,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="30"/>
+
 
 
         <TextView

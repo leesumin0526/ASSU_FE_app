@@ -2,10 +2,10 @@ package com.example.assu_fe_app.data.repositoryImpl.dashboard
 
 import com.example.assu_fe_app.data.repository.dashboard.AdminDashboardRepository
 import com.example.assu_fe_app.data.service.dashboard.AdminDashboardService
-import com.example.assu_fe_app.domain.model.dashboard.StoreUsageModel
+import com.example.assu_fe_app.domain.model.dashboard.AdminDashboardModel
 import com.example.assu_fe_app.util.RetrofitResult
-import com.example.assu_fe_app.util.apiHandler
 import javax.inject.Inject
+import com.example.assu_fe_app.util.apiHandler
 
 class AdminDashboardRepositoryImpl @Inject constructor(
     private val api: AdminDashboardService
@@ -13,37 +13,29 @@ class AdminDashboardRepositoryImpl @Inject constructor(
 
     override suspend fun getTotalStudentCount(): RetrofitResult<Long> {
         return apiHandler(
-            { api.getTotalStudentCount() },
-            { dto -> dto.studentCount }
+            execute = { api.getTotalStudentCount() },
+            mapper = { dto -> dto.studentCount }
         )
     }
 
     override suspend fun getNewStudentCount(): RetrofitResult<Long> {
         return apiHandler(
-            { api.getNewStudentCount() },
-            { dto -> dto.newStudentCount }
+            execute = { api.getNewStudentCount() },
+            mapper = { dto -> dto.newStudentCount }
         )
     }
 
     override suspend fun getTodayUsageCount(): RetrofitResult<Long> {
         return apiHandler(
-            { api.getTodayUsageCount() },
-            { dto -> dto.usagePersonCount }
+            execute = { api.getTodayUsageCount() },
+            mapper = { dto -> dto.usagePersonCount }
         )
     }
 
-    override suspend fun getStoreUsageList(): RetrofitResult<List<StoreUsageModel>> {
+    override suspend fun getDetailedUsageList(): RetrofitResult<List<AdminDashboardModel.StoreUsageStat>> {
         return apiHandler(
-            { api.getStoreUsageList() },
-            { dto ->
-                dto.items.map { item ->
-                    StoreUsageModel(
-                        storeId = item.storeId,
-                        storeName = item.storeName,
-                        usageCount = item.usageCount
-                    )
-                }
-            }
+            execute = { api.getDetailedUsageList() },
+            mapper = { dto -> dto.items.map { it.toStoreUsageStat() } }
         )
     }
 }

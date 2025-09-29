@@ -9,7 +9,8 @@ data class WsMessageDto(
     val senderId: Long,
     val receiverId: Long,
     val message: String,
-    val sentAt: String   // "2025-09-08 21:33:00" 형태
+    val sentAt: String,   // "2025-09-08 21:33:00" 형태
+    val unreadCountForSender: Int ?= 0
 )
 
 fun WsMessageDto.toUiItem(myId: Long): ChattingMessageItem {
@@ -18,7 +19,8 @@ fun WsMessageDto.toUiItem(myId: Long): ChattingMessageItem {
             messageId = messageId,
             message = message,
             sentAt = sentAt,
-            isRead = true
+            isRead = (unreadCountForSender == 0),
+            unreadCountForSender = unreadCountForSender ?: 0
         )
     } else {
         ChattingMessageItem.OtherMessage(

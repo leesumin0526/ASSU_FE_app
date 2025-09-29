@@ -5,7 +5,8 @@
     <FrameLayout
         android:id="@+id/chatting_fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_chatting_container"
@@ -43,8 +44,8 @@
 
         <ImageView
             android:id="@+id/iv_chatting_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
             android:background="@drawable/ic_location_search_left_arrow"
             app:layout_constraintStart_toEndOf="@id/view_chatting_mg2"
             app:layout_constraintTop_toTopOf="@id/view_chatting_title"
@@ -66,12 +67,23 @@
         <ImageView
             android:id="@+id/iv_leave_chatting"
             android:layout_width="21dp"
-            android:layout_height="22dp"
+            android:layout_height="21dp"
             android:src="@drawable/ic_leave_chatting_room"
-            app:layout_constraintEnd_toStartOf="@id/view_chatting_mg3"
+            app:layout_constraintEnd_toStartOf="@id/iv_block_opponent"
             app:layout_constraintTop_toTopOf="@id/view_chatting_title"
             app:layout_constraintBottom_toBottomOf="@id/view_chatting_title"
+            android:layout_marginEnd="9dp"
             android:clickable="true"/>
+
+        <ImageView
+            android:id="@+id/iv_block_opponent"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:src="@drawable/ic_block_opponent"
+
+            app:layout_constraintEnd_toStartOf="@id/view_chatting_mg3"
+            app:layout_constraintTop_toTopOf="@id/view_chatting_title"
+            app:layout_constraintBottom_toBottomOf="@id/view_chatting_title" />
 
 
         <View
@@ -81,7 +93,7 @@
             app:layout_constraintBottom_toBottomOf="@id/view_chatting_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.03816" />
+            app:layout_constraintWidth_percent="0.01816" />
 
         <View
             android:id="@+id/view_chatting_mg4"
@@ -303,6 +315,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintWidth_percent="0.8778625954"
             android:orientation="horizontal"
+            android:clipToPadding="false"
             android:layout_alignParentBottom="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -324,6 +337,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
+                android:clickable="true"
                 android:padding="10dp"
                 android:maxLines="3"
                 android:inputType="text"

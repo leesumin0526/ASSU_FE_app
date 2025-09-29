@@ -1,12 +1,9 @@
 package com.example.assu_fe_app.presentation.user.review.mypage
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.DataBindingUtil.setContentView
 import androidx.fragment.app.DialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentReviewDeleteDialogBinding
@@ -59,10 +56,6 @@ class ReviewDeleteDialogFragment : DialogFragment() {
 
 }
 
-// 콜백 리스터 선언
-interface OnItemClickListener{
-    fun onClick(position: Int)
-}
 
 // 콜백 리스너 선언
 interface OnReviewDeleteConfirmedListener {

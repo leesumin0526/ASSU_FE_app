@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.data.socket
 
+import android.util.Log
 import com.example.assu_fe_app.data.local.AccessTokenProvider
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -18,7 +19,9 @@ class ChatSocketClient(
 
     @Volatile private var connected = false
     private val pendingQueue = ArrayDeque<String>() // 연결 전 보낼 메시지 큐
-    private var topicDisposable: io.reactivex.disposables.Disposable? = null
+
+    private var roomTopicDisposable: io.reactivex.disposables.Disposable? = null
+    private var userQueueDisposable: io.reactivex.disposables.Disposable? = null
 
     private val moshi = com.squareup.moshi.Moshi.Builder()
         .addLast(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
@@ -68,8 +71,9 @@ class ChatSocketClient(
                         connected = true
                         retry = 0
                         // ★ 이전 구독 정리 후 새로 구독
-                        topicDisposable?.dispose()
-                        topicDisposable = stomp.topic("/sub/chat/$roomId").subscribe { msg ->
+                        roomTopicDisposable?.dispose()
+                        roomTopicDisposable = stomp.topic("/sub/chat/$roomId").subscribe { msg ->
+                            Log.d("WS", "받은 메시지: ${msg.payload}")   // 꼭 확인
                             onMessageJson(msg.payload)
                         }
                         flushQueue()
@@ -77,14 +81,14 @@ class ChatSocketClient(
                     }
                     LifecycleEvent.Type.CLOSED -> {
                         connected = false
-                        topicDisposable?.dispose()
-                        topicDisposable = null
+                        roomTopicDisposable?.dispose()
+                        roomTopicDisposable = null
                         scheduleReconnect(roomId, onConnected, onMessageJson, onError)
                     }
                     LifecycleEvent.Type.ERROR -> {
                         connected = false
-                        topicDisposable?.dispose()
-                        topicDisposable = null
+                        roomTopicDisposable?.dispose()
+                        roomTopicDisposable = null
                         onError(ev.exception ?: Exception("WS error"))
                         scheduleReconnect(roomId, onConnected, onMessageJson, onError)
                     }
@@ -93,6 +97,34 @@ class ChatSocketClient(
             }
         )
         stomp.connect(headers)
+    }
+
+    fun subscribeToUserQueue(onUpdateReceived: (String) -> Unit) {
+        if (!connected || !this::stomp.isInitialized || !stomp.isConnected) {
+            Log.w("WS", "Stomp is not connected. Cannot subscribe to user queue.")
+            // TODO: 연결 후 구독을 재시도하는 로직을 추가할 수도 있습니다.
+            return
+        }
+
+        // 기존 구독이 있다면 해제
+        userQueueDisposable?.dispose()
+
+        userQueueDisposable = stomp.topic("/user/queue/updates").subscribe(
+            { msg ->
+                Log.d("WS_USER", "개인 알림 수신: ${msg.payload}")
+                onUpdateReceived(msg.payload)
+            },
+            { throwable ->
+                Log.e("WS_USER", "개인 알림 구독 오류", throwable)
+            }
+        )
+        disposables.add(userQueueDisposable!!)
+    }
+
+    // ▼▼▼▼▼ [추가 2] 개인 큐 구독 해제 함수 ▼▼▼▼▼
+    fun unsubscribeFromUserUpdates() {
+        userQueueDisposable?.dispose()
+        userQueueDisposable = null
     }
 
 
@@ -138,8 +170,10 @@ class ChatSocketClient(
     // 중단
     private var reconnectHandler: android.os.Handler? = null
     fun disconnect() {
-        topicDisposable?.dispose()
-        topicDisposable = null
+        roomTopicDisposable?.dispose()
+        userQueueDisposable?.dispose()
+        roomTopicDisposable = null
+        userQueueDisposable = null
         if (this::stomp.isInitialized) {
             stomp.disconnect()
         }

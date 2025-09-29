@@ -1,14 +1,13 @@
-package com.example.assu_fe_app
+package com.example.assu_fe_app.presentation.common.chatting.dialog
 
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.example.assu_fe_app.R
 import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +28,7 @@ class LeaveChatRoomDialog : DialogFragment() {
 
         val cancelBtn = view.findViewById<TextView>(R.id.btnCancel)
         val cross = view.findViewById<ImageView>(R.id.ivCross)
-        val leaveBtn = view.findViewById<TextView>(R.id.btnLeave)
+        val leaveBtn = view.findViewById<TextView>(R.id.btnBlock)
 
         cancelBtn.setOnClickListener { dismiss() }
         cross.setOnClickListener { dismiss() }

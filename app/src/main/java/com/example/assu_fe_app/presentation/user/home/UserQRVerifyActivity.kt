@@ -76,9 +76,9 @@ class UserQRVerifyActivity :
         binding.tvUniversity.text = infoManager.getBasicInfoUniversity()
         binding.tvDepartment.text = infoManager.getBasicInfoDepartment()
 // TODO 나중에 주석해제
-//        cameraExecutor = Executors.newSingleThreadExecutor()
-//        checkCameraPermission()
-        onEmulatorScanSuccess() // 에뮬레이터 용
+        cameraExecutor = Executors.newSingleThreadExecutor()
+        checkCameraPermission()
+//        onEmulatorScanSuccess() // 에뮬레이터 용
     }
 
     override fun initObserver() {

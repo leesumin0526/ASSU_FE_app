@@ -13,6 +13,7 @@ import com.example.assu_fe_app.data.dto.auth.StudentTokenSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenSignUpResponseDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyResponseDto
+import com.example.assu_fe_app.data.dto.auth.EmailVerificationRequestDto
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.Multipart
@@ -32,8 +33,8 @@ interface NoAuthService {
         @Body request: CommonLoginRequestDto
     ): BaseResponse<CommonLoginResponseDto>
     
-    @POST("auth/phone-verification/send")
-    suspend fun sendPhoneVerification(
+    @POST("auth/phone-verification/check-and-send")
+    suspend fun checkAndSendPhoneVerification(
         @Body request: PhoneVerificationSendRequestDto
     ): BaseResponse<Any>
     
@@ -65,4 +66,9 @@ interface NoAuthService {
         @Part request: MultipartBody.Part,
         @Part licenseImage: MultipartBody.Part
     ): BaseResponse<PartnerSignUpResponseDto>
+    
+    @POST("auth/email-verification/check")
+    suspend fun checkEmailVerification(
+        @Body request: EmailVerificationRequestDto
+    ): BaseResponse<Any>
 }
