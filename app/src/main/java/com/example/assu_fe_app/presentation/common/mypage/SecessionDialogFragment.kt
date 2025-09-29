@@ -100,6 +100,8 @@ class SecessionDialogFragment : DialogFragment() {
         // 바깥 영역 클릭 닫기
         binding.backgroundOverlay.setOnClickListener { dismiss() }
 
+        binding.ivSecessionCancle.setOnClickListener { dismiss() }
+
         // 취소
         binding.btnCancel.setOnClickListener { dismiss() }
 

@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.UserRole
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
+import com.example.assu_fe_app.data.dto.location.LocationAdminPartnerSearchResultItem
+import com.example.assu_fe_app.data.dto.location.LocationSearchItem
 import com.example.assu_fe_app.data.dto.partnership.OpenContractArgs
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentLocationSearchSuccessBinding
@@ -36,12 +38,60 @@ class LocationSearchSuccessFragment :
     private val searchViewModel : AdminPartnerKeyWordSearchViewModel by activityViewModels()
     private val chatVm: ChattingViewModel by activityViewModels()
 
-
+    private var lastItem: LocationAdminPartnerSearchResultItem? = null
     private lateinit var adapter: AdminPartnerLocationAdapter
     private lateinit var role: UserRole
 
+    private var phoneNum: String? = null
+    private var navigated = false
+
+    override fun onResume() {
+        super.onResume()
+        navigated = false
+    }
 
     override fun initObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                chatVm.createRoomState.collect { state ->
+                    when (state) {
+                        is ChattingViewModel.CreateRoomUiState.Loading -> Unit
+                        is ChattingViewModel.CreateRoomUiState.Success -> {
+                            val roomId = state.data.roomId
+                            val displayName = when (role) {
+                                UserRole.ADMIN   -> state.data.adminViewName
+                                UserRole.PARTNER -> state.data.partnerViewName
+                                else             -> state.data.adminViewName
+                            }
+                            val opponentId = lastItem?.id ?: -1L
+
+                            if (!navigated) {
+                                navigated = true
+                                val intent = Intent(
+                                    requireContext(),
+                                    com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java
+                                ).apply {
+                                    putExtra("roomId", roomId)
+                                    putExtra("opponentName", displayName)
+                                    putExtra("opponentId", opponentId)
+                                    putExtra("entryMessage", "'문의하기' 버튼을 통해 이동했습니다.")
+                                    putExtra("phoneNumber", phoneNum)
+                                }
+                                startActivity(intent)
+                            }
+                            chatVm.resetCreateState()
+                            phoneNum = null
+                        }
+                        is ChattingViewModel.CreateRoomUiState.Fail,
+                        is ChattingViewModel.CreateRoomUiState.Error -> {
+                            chatVm.resetCreateState()
+                            phoneNum = null
+                        }
+                        else -> Unit
+                    }
+                }
+            }
+        }
 
         searchViewModel.contentList.observe(viewLifecycleOwner){ contentList ->
             adapter.submitList(contentList)
@@ -78,22 +128,23 @@ class LocationSearchSuccessFragment :
                                 UserRole.PARTNER -> state.data.partnerViewName
                                 else             -> state.data.adminViewName
                             }
+                            val opponentId = lastItem?.id ?: -1L
 
-                            val intent = android.content.Intent(requireContext(), com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java).apply {
+                            val intent = Intent(requireContext(), com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java).apply {
                                 putExtra("roomId", roomId)
                                 putExtra("opponentName", displayName)
+                                putExtra("opponentId", opponentId)
                                 putExtra("entryMessage", "'문의하기' 버튼을 통해 이동했습니다.")
+                                putExtra("phoneNum", phoneNum)
                             }
                             startActivity(intent)
 
                             chatVm.resetCreateState()
                         }
-                        is com.example.assu_fe_app.ui.chatting.ChattingViewModel.CreateRoomUiState.Fail -> {
-                            android.widget.Toast.makeText(requireContext(), "채팅방 생성 실패(${state.code}) ${state.message ?: ""}", android.widget.Toast.LENGTH_SHORT).show()
+                        is ChattingViewModel.CreateRoomUiState.Fail -> {
                             chatVm.resetCreateState()
                         }
-                        is com.example.assu_fe_app.ui.chatting.ChattingViewModel.CreateRoomUiState.Error -> {
-                            android.widget.Toast.makeText(requireContext(), "오류: ${state.message}", android.widget.Toast.LENGTH_SHORT).show()
+                        is ChattingViewModel.CreateRoomUiState.Error -> {
                             chatVm.resetCreateState()
                         }
                     }
@@ -119,20 +170,20 @@ class LocationSearchSuccessFragment :
             myName = myName,
             onOpenContract = { args ->
                 // 제휴 중: 계약서 보기 → 결과 반환해서 현재 검색 액티비티 종료
-                val data = android.content.Intent().apply {
+                val data = Intent().apply {
                     putExtra("open_contract_args", args) // Serializable/Parcelable
                 }
                 requireActivity().setResult(android.app.Activity.RESULT_OK, data)
                 requireActivity().finish()
             },
             onAskChat = { item ->
+                lastItem = item
                 // 제휴 아님: 문의하기 → 채팅방 생성
                 val opponentId = item.id ?: run {
-                    android.widget.Toast
-                        .makeText(requireContext(), "상대 정보를 찾을 수 없어요.", android.widget.Toast.LENGTH_SHORT)
-                        .show()
                     return@AdminPartnerLocationAdapter
                 }
+
+                phoneNum = item.phoneNumber
 
                 val req = when (role) {
                     UserRole.ADMIN -> {
@@ -158,7 +209,7 @@ class LocationSearchSuccessFragment :
         )
 
         binding.rvLocationSearchSuccess.apply {
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+            layoutManager = LinearLayoutManager(requireContext())
             adapter = this@LocationSearchSuccessFragment.adapter
         }
 

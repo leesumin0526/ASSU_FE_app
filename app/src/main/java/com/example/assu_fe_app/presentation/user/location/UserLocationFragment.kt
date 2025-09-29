@@ -57,7 +57,7 @@ class UserLocationFragment :
     private var myLocStyles: LabelStyles? = null
     private var myLocLabel: Label? = null
 
-    private val SEOUL_CITY_HALL = LatLng.from(37.4947, 126.9576)
+    //private val SEOUL_CITY_HALL = LatLng.from(37.4947, 126.9576)
 
     // 마지막으로 성공한 현재 위치(재진입 / 되돌아가기용 캐시)
     private var lastMyLatLng: LatLng? = null
@@ -145,22 +145,15 @@ class UserLocationFragment :
                             return true
                         }
                     })
-
+1
                     kakaoMap?.setOnMapClickListener { _, _, _, _ ->
                         hideCapsuleAndBubble()
                     }
-                    kakaoMap?.setOnCameraMoveStartListener { _, _ ->
-                        hideCapsuleAndBubble()
-                    }
-
-                    kakaoMap?.setOnCameraMoveEndListener { _, _, _ ->
-                        requestNearbyFromCurrentViewport()
-                    }
 
                     // 카메라 이동 종료 시 재조회
-                    // map.setOnCameraMoveEndListener { _, _, _ -> requestNearbyFromCurrentViewport() }
-                    //goToMyLocation()
-                    moveCameraAndQuery(SEOUL_CITY_HALL.latitude, SEOUL_CITY_HALL.longitude)
+                    map.setOnCameraMoveEndListener { _, _, _ -> requestNearbyFromCurrentViewport() }
+                    goToMyLocation()
+                    //moveCameraAndQuery(SEOUL_CITY_HALL.latitude, SEOUL_CITY_HALL.longitude)
                     requestLocationPermissionsIfNeeded()
                 }
             }
@@ -201,35 +194,7 @@ class UserLocationFragment :
             permLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
         } else {
             Log.d("Permission", "already granted (keeping City Hall view)")
-            // 나중에 현재 위치로 바꿀 때 fetchLocationAndQuery() 호출 예정
         }
-    }
-
-    // ===== 현재 위치로 바꾸는 함수(지금은 호출 안 함) =====
-    @SuppressLint("MissingPermission")
-    private fun fetchLocationAndQuery() {
-        fused.lastLocation
-            .addOnSuccessListener { loc ->
-                if (loc != null) {
-                    moveCameraAndQuery(loc.latitude, loc.longitude)
-                    showCurrentLocation(loc.latitude, loc.longitude)
-                } else {
-                    val cts = CancellationTokenSource()
-                    fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token)
-                        .addOnSuccessListener { cur ->
-                            if (cur != null) {
-                                moveCameraAndQuery(cur.latitude, cur.longitude)
-                                showCurrentLocation(cur.latitude, cur.longitude)
-                            }
-                        }
-                        .addOnFailureListener {
-                            Log.e("Location", "getCurrentLocation failed", it)
-                        }
-                }
-            }
-            .addOnFailureListener {
-                Log.e("Location", "lastLocation failed", it)
-            }
     }
 
     private fun moveCameraAndQuery(lat: Double, lng: Double) {

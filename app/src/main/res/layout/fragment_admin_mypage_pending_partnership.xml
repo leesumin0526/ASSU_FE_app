@@ -194,5 +194,44 @@
 
            </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- 로딩 오버레이 -->
+    <FrameLayout
+        android:id="@+id/loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/assu_background"
+        app:layout_constraintTop_toBottomOf="@id/pending_mg4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp">
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:indeterminateTint="#007AFF" />
+
+            <TextView
+                android:id="@+id/tv_loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="로딩 중..."
+                android:textColor="@color/assu_main"
+                android:textSize="16sp"
+                android:fontFamily="@font/pretendard_bold" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
