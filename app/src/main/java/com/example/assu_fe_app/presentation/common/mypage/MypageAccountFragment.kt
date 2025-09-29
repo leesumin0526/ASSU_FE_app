@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.databinding.FragmentMypageAccountBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -64,15 +65,18 @@ class MypageAccountFragment
         binding.btnPendingBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-
-
         binding.clAdmAccountComponent1.setOnClickListener {
+            findNavController().navigate(R.id.action_my_page_account_to_block_manage_fragment)
+        }
+
+
+        binding.clAdmAccountComponent2.setOnClickListener {
             Log.d("MypageAccount", "Logout button clicked")
             // 통합된 로그아웃 함수 호출
             viewModel.logoutAndUnregisterFCMToken()
         }
 
-        binding.clAdmAccountComponent2.setOnClickListener {
+        binding.clAdmAccountComponent3.setOnClickListener {
             Log.d("MypageAccount", "Secession button clicked")
             try {
                 val dialog = SecessionDialogFragment.newInstance()

@@ -1,4 +1,4 @@
-package com.example.assu_fe_app
+package com.example.assu_fe_app.presentation.common.chatting.dialog
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -8,6 +8,7 @@ import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,12 +18,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
+import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.BlockRequestDto
-import com.example.assu_fe_app.presentation.common.chatting.ChattingActivity
 import com.example.assu_fe_app.ui.chatting.ChattingViewModel
 import kotlinx.coroutines.launch
-import kotlin.getValue
-
 
 class BlockOpponentDialogFragment : DialogFragment() {
 
@@ -78,7 +77,7 @@ class BlockOpponentDialogFragment : DialogFragment() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics = windowManager.currentWindowMetrics
-            val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(android.view.WindowInsets.Type.systemBars())
+            val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
             val width = windowMetrics.bounds.width() - insets.left - insets.right
 
             // 화면 가로 너비의 85% 정도로 설정 (원하는 비율로 조절)
