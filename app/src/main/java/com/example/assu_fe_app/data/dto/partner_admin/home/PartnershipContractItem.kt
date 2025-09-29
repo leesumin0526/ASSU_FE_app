@@ -5,10 +5,13 @@ sealed class PartnershipContractItem {
         data class ByPeople(
             val minPeople: Int,
             val items: String,
+            val category: String? = null
             ) : Service()
         data class ByAmount(
             val minAmount: Int,
-            val items: String,) : Service()
+            val items: String,
+            val category: String? = null
+            ) : Service()
     }
     sealed class Discount : PartnershipContractItem() {
         data class ByPeople(

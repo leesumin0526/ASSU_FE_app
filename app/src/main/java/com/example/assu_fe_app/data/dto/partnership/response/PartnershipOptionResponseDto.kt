@@ -9,7 +9,7 @@ data class PartnershipOptionResponseDto(
     val criterionType: CriterionType,  // enum이면 String 유지
     val people: Int?,
     val cost: Long?,
-    val category: String,
+    val category: String?,
     val discountRate: Long?,
     val goods: List<PartnershipGoodsResponseDto>
 ) {
@@ -20,6 +20,6 @@ data class PartnershipOptionResponseDto(
         cost = cost ?: 0,
         category = category.orEmpty(),
         discountRate = discountRate ?: 0,
-        goods = (goods ?: emptyList()).map { it.toModel() }
+        goods = goods.map { it.toModel() }
     )
 }

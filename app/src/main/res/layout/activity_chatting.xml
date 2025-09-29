@@ -206,9 +206,10 @@
                     android:clickable="true">
 
                     <ImageView
+                        android:id="@+id/iv_chatting_sent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_chatting_proposal"/>
+                        android:src="@drawable/ic_chatting_proposal" />
 
                     <View
                         android:id="@+id/view_chatting_mg7"

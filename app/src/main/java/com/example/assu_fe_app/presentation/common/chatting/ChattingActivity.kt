@@ -1,6 +1,7 @@
 package com.example.assu_fe_app.presentation.common.chatting
 
 
+import android.app.FragmentManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -134,6 +135,8 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                 Log.d("ChattingActivity", "되돌아온 이유: $reason")
                 // reason 값: "ivCross", "btnText", "bgImage" 등
             }
+
+            supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
 
         // 하단 + 버튼 클릭
@@ -301,6 +304,19 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
                             binding.tvChattingRestaurantName.text = state.title
                             binding.tvChattingRestaurantAddress.text = state.subtitle
                             binding.tvChattingSent.text = state.buttonText
+
+                            // BLANK 상태일 때 버튼 비활성화
+                            val isBlankStatus = currentPartnershipStatus?.status == "BLANK"
+                            binding.llChattingSent.isEnabled = !isBlankStatus
+                            binding.llChattingSent.alpha = if (isBlankStatus) 0.5f else 1.0f
+
+                            if (currentPartnershipStatus?.status == "NONE") {
+                                binding.ivChattingSent.visibility = View.VISIBLE
+                                binding.viewChattingMg7.visibility = View.VISIBLE
+                            } else {
+                                binding.ivChattingSent.visibility = View.GONE
+                                binding.viewChattingMg7.visibility = View.GONE
+                            }
                         } else if (state.boxType == BoxType.PARTNER) {
                             binding.tvChattingPartnerName.text = state.title
                             binding.tvChattingPartnerAddress.text = state.subtitle
@@ -326,7 +342,8 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             role.equals("ADMIN", ignoreCase = true) -> {
                 when (status.status) {
                     "NONE" -> { viewModel.onProposalButtonClick() }
-                    "BLANK", "SUSPEND" -> { navigateToProposalView(status, isEditable = false) }
+                    "BLANK" -> { return }
+                    "SUSPEND" -> { navigateToProposalView(status, isEditable = false) }
                     "ACTIVE" -> { navigateToProposalView(status, isEditable = true) }
                 }
             }

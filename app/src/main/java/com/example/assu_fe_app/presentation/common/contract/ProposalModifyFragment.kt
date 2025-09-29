@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.common.contract
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -39,7 +40,6 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
     private var entryType: ViewMode = ViewMode.MODIFY
     private var paperId: Long = -1L
     private var storeId: Long = -1L
-    private var partnershipId: Long? = null
     private var adminName: String = ""
     private var partnerName: String = ""
 
@@ -71,11 +71,11 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
 
     override fun initObserver() {
         initializeUI()
+        setupObservers()
 
         if (contractData != null) {
             displayContractData(contractData!!)
         } else {
-            setupObservers()
             loadProposalData()
         }
     }
@@ -103,6 +103,8 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
                 partnershipViewModel.updatePartnerName(partnerName)
             }
         }
+
+        initObserver()
     }
 
     private fun initializeUI() {
@@ -143,14 +145,10 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
 
     private fun displayContractData(data: PartnershipContractData) {
         // 상단 텍스트 설정
-        binding.etFragmentServiceProposalPartner.setText(data.partnerName ?: "")
-        binding.etFragmentServiceProposalAdmin.setText(data.adminName ?: "")
+        binding.etFragmentServiceProposalPartner.setText(data.partnerName ?: "-")
+        binding.etFragmentServiceProposalAdmin.setText(data.adminName ?: "-")
         binding.tvPartnershipContentStartDate.text = formatDate(data.periodStart ?: "")
         binding.tvPartnershipContentEndDate.text = formatDate(data.periodEnd ?: "")
-
-        val signDateText = partnershipViewModel.signDate.value.ifEmpty {
-            formatDateToKorean(data.periodStart ?: "")
-        }
 
         // RecyclerView 어댑터 설정
         proposalAdapter = ProposalModifyAdapter(data.options ?: emptyList())
@@ -158,16 +156,6 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
             layoutManager = LinearLayoutManager(requireContext())
             adapter = proposalAdapter
         }
-
-        val summaryText = buildString {
-            append("위와 같이 ")
-            append(data.adminName ?: "-")
-            append("와의\n 제휴를 제안합니다.\n\n")
-            append(signDateText)
-            append("\n대표 ")
-            append(data.partnerName ?: "-")
-        }
-        binding.tvPartnershipContentSign.text = summaryText
 
         saveDataToViewModel(data)
     }
@@ -195,16 +183,16 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
                 option.optionType == OptionType.SERVICE && option.criterionType == CriterionType.HEADCOUNT -> {
                     PartnershipContractItem.Service.ByPeople(
                         minPeople = option.people ?: 0,
-                        items = option.goods?.joinToString(", ") { it.goodsName ?: "" }
-                            ?: option.category ?: ""
+                        items = option.goods?.joinToString(", ") { it.goodsName ?: "" } ?: "",
+                        category = option.category
                     )
                 }
 
                 option.optionType == OptionType.SERVICE && option.criterionType == CriterionType.PRICE -> {
                     PartnershipContractItem.Service.ByAmount(
                         minAmount = option.cost?.toInt() ?: 0,
-                        items = option.goods?.joinToString(", ") { it.goodsName ?: "" }
-                            ?: option.category ?: ""
+                        items = option.goods?.joinToString(", ") { it.goodsName ?: "" } ?: "",
+                        category = option.category
                     )
                 }
 
@@ -292,10 +280,17 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
             }
         } ?: emptyList()
 
-         partnershipViewModel.updateBenefitItems(benefitItems)
+        partnershipViewModel.updateBenefitItems(benefitItems)
     }
 
     private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            partnershipViewModel.summaryText.collect { text ->
+                if (text.isNotEmpty()) {
+                    binding.tvPartnershipContentSign.text = text
+                }
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             partnershipViewModel.getPartnershipDetailUiState.collect { state ->
                 when (state) {
@@ -317,9 +312,8 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
     }
 
     private fun loadProposalData() {
-        val idToUse = partnershipId ?: paperId.takeIf { it != -1L }
-        if (idToUse != null && idToUse > 0) {
-            partnershipViewModel.getPartnershipDetail(idToUse)
+        if (paperId > 0) {
+            partnershipViewModel.getPartnershipDetail(paperId)
         }
     }
 
@@ -365,23 +359,6 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
     private fun formatDate(date: String): String {
         // 2025-05-05 형식을 2025 - 05 - 05로 변환
         return date.replace("-", " - ")
-    }
-
-    private fun formatDateToKorean(date: String): String {
-        return try {
-            if (date.contains("-")) {
-                val parts = date.split("-")
-                if (parts.size == 3) {
-                    "${parts[0]}년 ${parts[1]}월 ${parts[2]}일"
-                } else {
-                    date
-                }
-            } else {
-                date
-            }
-        } catch (e: Exception) {
-            date
-        }
     }
 
     private fun showToast(message: String) {
