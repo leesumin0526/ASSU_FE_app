@@ -167,9 +167,6 @@ class ServicePassiveProposalAdapter(
                 onItemChanged()
             }
 
-            // ✅ 기준값(가격/인원) 입력 → item.num 에 "숫자만" 저장
-            //  - 재바인딩 시에도 깨지지 않게 현재 item.num 기준으로 표시 복원
-            //  - setText 할 때 watcher가 다시 불지 않도록 '임시로 제거 후 복귀'는 replaceTextWatcher가 처리
             replaceTextWatcher(
                 binding.etFragmentServiceProposalContent,
                 object : TextWatcher {
@@ -193,7 +190,6 @@ class ServicePassiveProposalAdapter(
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 }
             )
-            // ✅ 여기서 현재 저장된 item.num을 화면에 복구 (재바인딩 시 금액이 안 깨지게)
             run {
                 val want = formatWon(item.num)
                 val has  = binding.etFragmentServiceProposalContent.text?.toString().orEmpty()
@@ -218,6 +214,9 @@ class ServicePassiveProposalAdapter(
                 binding.clDropdownMenu.visibility = View.GONE
                 onItemChanged()
                 notifyItemChanged(bindingAdapterPosition)
+
+                binding.layoutProposalProvideCategory.visibility =
+                    if (item.contents.size >= 2) View.VISIBLE else View.GONE
             }
 
             // 할인 선택
@@ -242,6 +241,7 @@ class ServicePassiveProposalAdapter(
                 binding.clDropdownMenu.visibility = View.GONE
                 onItemChanged()
                 notifyItemChanged(bindingAdapterPosition)
+                binding.layoutProposalProvideCategory.visibility = View.GONE
             }
 
             // ====== 옵션 입력칸 렌더링 ======
@@ -302,12 +302,18 @@ class ServicePassiveProposalAdapter(
                             item.contents.removeAt(idx)
                             notifyItemChanged(bindingAdapterPosition)
                             onItemChanged()
+
+                            binding.layoutProposalProvideCategory.visibility =
+                                if (item.offerType == OfferType.SERVICE && item.contents.size >= 2)
+                                    View.VISIBLE else View.GONE
                         }
                     }
                 }
 
                 container.addView(optionView)
             }
+
+            container.addView(addBtn)
 
             // 항상 컨테이너 맨 아래에 버튼 붙이기
             ensureInContainer(addBtn, container)
@@ -320,9 +326,45 @@ class ServicePassiveProposalAdapter(
                 item.contents.add("")
                 notifyItemChanged(bindingAdapterPosition)  // 재바인딩 → 금액은 위 복구 로직으로 유지
                 onItemChanged()
+
+                binding.layoutProposalProvideCategory.visibility =
+                    if (item.contents.size >= 2) View.VISIBLE else View.GONE
             }
 
+            // ===== 카테고리 UI 바인딩 =====
+            fun updateCategoryVisibility() {
+                val show = item.offerType == OfferType.SERVICE && item.contents.size >= 2
+                binding.layoutProposalProvideCategory.visibility = if (show) View.VISIBLE else View.GONE
+            }
+
+            // 값 복원(재바인딩 대비)
+            val wantCat = item.category.orEmpty()
+            val hasCat  = binding.etProposalProvideCategory.text?.toString().orEmpty()
+            if (wantCat != hasCat) binding.etProposalProvideCategory.setText(wantCat)
+
+            // EditText ↔ 상태 동기화
+            replaceTextWatcher(
+                binding.etProposalProvideCategory,
+                object : TextWatcher {
+                    override fun afterTextChanged(s: Editable?) {
+                        val v = s?.toString()?.trim().orEmpty()
+                        if (item.category != v) {
+                            item.category = v
+                            onItemChanged()
+                        }
+                    }
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                }
+            )
+
+            // 현재 표시 상태 반영
+            updateCategoryVisibility()
+
             applyConditionUI()
+
         }
     }
+
+
 }

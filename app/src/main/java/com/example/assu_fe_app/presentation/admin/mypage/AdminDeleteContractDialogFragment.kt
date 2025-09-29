@@ -55,6 +55,7 @@ class AdminDeleteContractDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         contract?.let { binding.tvDialogStoreName.text = it.partnerName }
 
+        binding.ivDeleteContractCancle.setOnClickListener { dismiss() }
         binding.backgroundOverlay.setOnClickListener { dismiss() }
         binding.btnCancel.setOnClickListener { dismiss() }
         binding.btnConfirm.setOnClickListener {

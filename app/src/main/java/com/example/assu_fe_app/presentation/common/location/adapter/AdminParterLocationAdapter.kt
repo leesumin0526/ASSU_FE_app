@@ -48,7 +48,7 @@ class AdminPartnerLocationAdapter(
                 onAddressSelected?.invoke(item.address)
             }
 
-            binding.tvItemAdminPartnerLocationSearchResultItemContact.setOnClickListener {
+            binding.clItemAdminPartnerLocationSearchResultItemContact.setOnClickListener {
                 val itemIsPartnered = item.partnered
 
                 if (itemIsPartnered) {

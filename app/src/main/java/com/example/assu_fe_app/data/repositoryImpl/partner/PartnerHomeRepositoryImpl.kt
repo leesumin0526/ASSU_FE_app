@@ -21,7 +21,8 @@ class PartnerHomeRepositoryImpl @Inject constructor(
                         adminName = admin.adminName,
                         adminAddress = admin.adminAddress,
                         adminDetailAddress = admin.adminDetailAddress,
-                        adminUrl = admin.adminUrl
+                        adminUrl = admin.adminUrl,
+                        adminPhone = admin.adminPhone
                     )
                 }
             }

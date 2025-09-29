@@ -15,5 +15,6 @@ data class StoreOnMap(
     val hasPartner: Boolean,
     val latitude: Double,
     val longitude: Double,
-    val profileUrl: String?
+    val profileUrl: String?,
+    val phoneNum: String?
 )

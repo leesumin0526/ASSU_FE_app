@@ -1,5 +1,6 @@
 package com.example.assu_fe_app.presentation.common.location
 
+import android.Manifest
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
@@ -85,7 +86,7 @@ class LocationFragment :
     private val labelToAdmin   = mutableMapOf<Label, AdminOnMap>()
 
     // Test
-    // private val SEOUL_CITY_HALL = LatLng.from(37.5665, 126.9780)
+    //private val SEOUL_CITY_HALL = LatLng.from(37.4947, 126.9576)
 
     @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
     private val role: UserRole by lazy {
@@ -135,15 +136,6 @@ class LocationFragment :
                         )
                     )
 
-                    kakaoMap?.setOnMapClickListener { _: KakaoMap, _: LatLng, _: PointF, _: Poi? ->
-                        // 마커가 아닌 지도 임의 영역을 탭하면 아래 카드와 말풍선 숨김
-                        hideItem()
-                    }
-
-                    kakaoMap?.setOnCameraMoveStartListener { _, _ ->
-                        hideItem()
-                    }
-
                     // 마커 스타일 (벡터 → 비트맵, 크기 24dp)
                     val partnerBmp = vectorToBitmap(R.drawable.ic_marker, 24)
                     partnerStyles = kakaoMap.labelManager?.addLabelStyles(
@@ -158,64 +150,18 @@ class LocationFragment :
 
                     kakaoMap.setOnCameraMoveEndListener { _, _, _ -> requestNearbyFromCurrentViewport() }
 
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                            vm.state.collect { s ->
-                                when (s) {
-                                    is AdminPartnerLocationViewModel.UiState.Idle -> Unit
-                                    is AdminPartnerLocationViewModel.UiState.Loading -> Log.d("UIState", "Loading…")
-                                    is AdminPartnerLocationViewModel.UiState.PartnerSuccess -> drawMarkersPartners(s.items)
-                                    is AdminPartnerLocationViewModel.UiState.AdminSuccess -> drawMarkersAdmins(s.items)
-                                    is AdminPartnerLocationViewModel.UiState.Fail ->
-                                        Log.e("UIState", "Fail: ${s.code}, ${s.message}")
-                                    is AdminPartnerLocationViewModel.UiState.Error ->
-                                        Log.e("UIState", "Error", s.t)
-                                }
-                            }
-                        }
+                    kakaoMap.setOnCameraMoveStartListener { _, _ ->
+                        hideItem()
                     }
+
                     goToMyLocation()
+                    requestLocationPermissionsIfNeeded()
 
                     //Test
                     //moveCameraAndQuery(SEOUL_CITY_HALL.latitude, SEOUL_CITY_HALL.longitude)
                 }
             }
         )
-
-        // 채팅 상태 수집
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                chatVm.createRoomState.collect { state ->
-                    when (state) {
-                        is ChattingViewModel.CreateRoomUiState.Idle -> setCreateLoading(false)
-                        is ChattingViewModel.CreateRoomUiState.Loading -> setCreateLoading(true)
-                        is ChattingViewModel.CreateRoomUiState.Success -> {
-                            setCreateLoading(false)
-                            val intent = android.content.Intent(requireContext(), com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java).apply {
-                                putExtra("roomId", state.data.roomId)
-                                (binding.root.tag as? String)?.let { putExtra("entryMessage", it) }
-                            }
-                            startActivity(intent)
-                            chatVm.resetCreateState()
-                        }
-                        is ChattingViewModel.CreateRoomUiState.Fail -> {
-                            setCreateLoading(false)
-                            Log.e(
-                                "CreateRoom",
-                                "채팅방 생성 실패(code=${state.code}) message=${state.message ?: ""}"
-                            )
-                        }
-                        is ChattingViewModel.CreateRoomUiState.Error -> {
-                            setCreateLoading(false)
-                            Log.e(
-                                "CreateRoom",
-                                "오류 발생: ${state.message}"
-                            )
-                        }
-                    }
-                }
-            }
-        }
 
         // 목록 상태 수집 + 마커 표시 (지도 준비 안 됐으면 스킵)
         viewLifecycleOwner.lifecycleScope.launch {
@@ -282,67 +228,6 @@ class LocationFragment :
             val fragment = childFragmentManager
                 .findFragmentById(R.id.fv_location_item) as? LocationItemFragment
             fragment?.showCapsuleInfo(item)
-        }
-
-        // 2) 채팅방 생성 상태 수집 → 성공 시 ChattingActivity 이동
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                chatVm.createRoomState.collect { state ->
-                    when (state) {
-                        is ChattingViewModel.CreateRoomUiState.Idle -> {
-                            setCreateLoading(false)
-                        }
-                        is ChattingViewModel.CreateRoomUiState.Loading -> {
-                            setCreateLoading(true)
-                        }
-                        is ChattingViewModel.CreateRoomUiState.Success -> {
-                            setCreateLoading(false)
-
-                            Log.d("CreateRoom", "roomId=${state.data.roomId}, adminView=${state.data.adminViewName}, partnerView=${state.data.partnerViewName}")
-
-                            // 서버 응답: roomId, adminViewName, partnerViewName 사용
-                            val roomId = state.data.roomId
-                            // TODO: 거꾸로 되어있는 것 같음 
-                            val displayName = when (role) {
-                                UserRole.ADMIN   -> state.data.adminViewName
-                                UserRole.PARTNER -> state.data.partnerViewName
-                                else             -> state.data.adminViewName
-                            }
-
-                            val intent = android.content.Intent(
-                                requireContext(),
-                                com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java
-                            ).apply {
-                                putExtra("roomId", roomId)
-                                putExtra("opponentName", displayName)
-                                // 캡슐 클릭 시 넣어둔 안내 메시지 (optional)
-                                (binding.root.tag as? String)?.let { putExtra("entryMessage", it) }
-                            }
-                            startActivity(intent)
-
-                            chatVm.resetCreateState()
-                        }
-                        is ChattingViewModel.CreateRoomUiState.Fail -> {
-                            setCreateLoading(false)
-                            android.widget.Toast.makeText(
-                                requireContext(),
-                                "채팅방 생성 실패(${state.code}) ${state.message ?: ""}",
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
-                            chatVm.resetCreateState()
-                        }
-                        is ChattingViewModel.CreateRoomUiState.Error -> {
-                            setCreateLoading(false)
-                            android.widget.Toast.makeText(
-                                requireContext(),
-                                "오류: ${state.message}",
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
-                            chatVm.resetCreateState()
-                        }
-                    }
-                }
-            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -512,6 +397,7 @@ class LocationFragment :
                         longitude = p.longitude,
                         paperId = null,
                         profileUrl = p.profileUrl,
+                        phoneNumber = p.phoneNum,
                         term = if (!p.partnershipStartDate.isNullOrBlank() && !p.partnershipEndDate.isNullOrBlank())
                             "${p.partnershipStartDate} ~ ${p.partnershipEndDate}"
                         else null
@@ -535,6 +421,7 @@ class LocationFragment :
                         longitude = a.longitude,
                         paperId = null,
                         profileUrl = a.profileUrl,
+                        phoneNumber = a.phoneNum,
                         term = if (!a.partnershipStartDate.isNullOrBlank() && !a.partnershipEndDate.isNullOrBlank())
                             "${a.partnershipStartDate} ~ ${a.partnershipEndDate}"
                         else null
@@ -567,7 +454,7 @@ class LocationFragment :
         mapReady = false
         if (::mapView.isInitialized) mapView.removeAllViews()
     }
-    override fun onResume() { super.onResume(); if (::mapView.isInitialized) mapView.resume() }
+    override fun onResume() { super.onResume() ;if (::mapView.isInitialized) mapView.resume() }
     override fun onPause() { super.onPause(); if (::mapView.isInitialized) mapView.pause() }
 
     // ===== 벡터 → 비트맵 =====
@@ -617,6 +504,17 @@ class LocationFragment :
             .show(parentFragmentManager, "contractDialog")
     }
 
+    // ===== Permission (요청만; 현재 위치 이동/표시는 하지 않음) =====
+    private fun requestLocationPermissionsIfNeeded() {
+        val fine = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val coarse = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (!fine && !coarse) {
+            permLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+        } else {
+            Log.d("Permission", "already granted (keeping City Hall view)")
+        }
+    }
+
     private val searchLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == android.app.Activity.RESULT_OK) {
@@ -627,7 +525,7 @@ class LocationFragment :
                     moveCameraAndQuery(args.latitude, args.longitude)
                 }
 
-                // ✅ fallback 저장 + 상세조회 호출
+                //  fallback 저장 + 상세조회 호출
                 contractFallback = args
                 pendingPartnershipId = args.partnershipId
                 partnershipVm.getPartnershipDetail(args.partnershipId)

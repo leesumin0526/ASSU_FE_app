@@ -20,6 +20,7 @@ import com.example.assu_fe_app.presentation.common.contract.toContractData
 import com.example.assu_fe_app.ui.partnership.AdminPendingPartnershipViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -86,6 +87,7 @@ class AdminMypagePendingPartnershipDialogFragment : DialogFragment() {
         setupRecyclerView()
         bindViewModel()
         bindPartnershipDetail()
+        bindLoading()
 
         pendingVm.load() // 서버 호출
     }
@@ -113,19 +115,6 @@ class AdminMypagePendingPartnershipDialogFragment : DialogFragment() {
                 binding.tvPendingCount.text = list.size.toString()
                 updateUIForEmptyState(list.isEmpty())
                 maybeAutoOpen(list)
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            pendingVm.loading.collect { isLoading ->
-                Log.d("AdminMypagePendingPartnershipDialogFragment","Loading")
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            pendingVm.toast.collect { msg ->
-                msg?.let {
-                    // Toast/Snackbar 등
-                    pendingVm.consumeToast()
-                }
             }
         }
     }
@@ -159,9 +148,11 @@ class AdminMypagePendingPartnershipDialogFragment : DialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             partnershipVm.getPartnershipDetailUiState.collect { state ->
                 when (state) {
-                    is PartnershipViewModel.PartnershipDetailUiState.Loading -> { /* 로딩 표시 필요시 */ }
-
+                    is PartnershipViewModel.PartnershipDetailUiState.Loading -> {
+                        showLoading("로딩 중...")
+                    }
                     is PartnershipViewModel.PartnershipDetailUiState.Success -> {
+                        hideLoading()
                         val wanted = pendingPartnershipId
                         if (wanted == null || state.data.partnershipId != wanted) return@collect
                         pendingPartnershipId = null
@@ -169,17 +160,12 @@ class AdminMypagePendingPartnershipDialogFragment : DialogFragment() {
                         val adminNameFb   = authTokenLocalStore.getUserName() ?: "관리자"
                         val partnerNameFb = lastClickedItem?.partnerName ?: "-"
 
-                        // 기간은 상세 응답의 값을 우선 사용 (없으면 null 그대로 두면 toContractData에서 처리)
                         val data = state.data.toContractData(
                             partnerNameFallback = partnerNameFb,
                             adminNameFallback   = adminNameFb,
-                            fallbackStart = state.data.periodStart, // null 가능
-                            fallbackEnd   = state.data.periodEnd    // null 가능
+                            fallbackStart = state.data.periodStart,
+                            fallbackEnd   = state.data.periodEnd
                         )
-
-                        /*PartnershipContractDialogFragment
-                            .newInstance(data)
-                            .show(childFragmentManager, "PartnershipContractDialog")*/
 
                         PartnershipContractDialogFragment
                             .newInstance(data)
@@ -188,18 +174,17 @@ class AdminMypagePendingPartnershipDialogFragment : DialogFragment() {
                             }
                             .show(childFragmentManager, "PartnershipContractDialog")
                     }
-
                     is PartnershipViewModel.PartnershipDetailUiState.Fail,
                     is PartnershipViewModel.PartnershipDetailUiState.Error -> {
+                        hideLoading()
                         pendingPartnershipId = null
-                        // TODO: 토스트/스낵바 등 에러 안내
                     }
-
                     PartnershipViewModel.PartnershipDetailUiState.Idle -> Unit
                 }
             }
         }
     }
+
 
     private fun maybeAutoOpen(list: List<SuspendedPaperModel>) {
         if (autoOpenConsumed) return
@@ -215,6 +200,45 @@ class AdminMypagePendingPartnershipDialogFragment : DialogFragment() {
 
         pendingContractAdapter.selectById(target.paperId)
         partnershipVm.getPartnershipDetail(target.paperId)
+    }
+
+    private fun bindLoading() {
+        // 기존의 pendingVm.loading / pendingVm.busy 각각 collect 하던 코드 삭제하세요.
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            kotlinx.coroutines.flow.combine(
+                pendingVm.loading,
+                pendingVm.busy,
+                partnershipVm.getPartnershipDetailUiState
+            ) { listLoading, busy, detailState ->
+                val detailLoading = detailState is PartnershipViewModel.PartnershipDetailUiState.Loading
+
+                // 어떤 로딩을 보여줄지 우선순위 결정
+                val show = listLoading || busy || detailLoading
+                val message = when {
+                    busy -> "삭제 중..."
+                    detailLoading -> "로딩 중..."
+                    listLoading -> "로딩 중..."
+                    else -> null
+                }
+                show to message
+            }
+                .distinctUntilChanged() // 같은 상태 연속 호출 방지
+                .collect { (show, message) ->
+                    if (show) {
+                        showLoading(message ?: "로딩 중...")
+                    } else {
+                        hideLoading()
+                    }
+                }
+        }
+    }
+
+    private fun showLoading(message: String) {
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.tvLoadingText.text = message
+    }
+    private fun hideLoading() {
+        binding.loadingOverlay.visibility = View.GONE
     }
 
 }

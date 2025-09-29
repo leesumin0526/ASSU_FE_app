@@ -12,5 +12,6 @@ data class LocationAdminPartnerSearchResultItem(
     val latitude: Double,
     val longitude: Double,
     val partnershipId: Long? = null,
-    val profileUrl: String? = null
+    val profileUrl: String? = null,
+    val phoneNumber: String? = null
 )
