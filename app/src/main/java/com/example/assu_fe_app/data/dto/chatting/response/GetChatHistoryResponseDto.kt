@@ -22,7 +22,8 @@ data class ChatMessageResponseDto(
     val sendTime: String,        // "2025-08-22T14:30:00" 같은 ISO 문자열 그대로
     val isRead: Boolean ?= false,
     val isMyMessage: Boolean ?= false ,
-    val profileImageUrl: String ?= null
+    val profileImageUrl: String ?= null,
+    val unreadCountForSender: Int ?= 0
 ) {
     fun toModel() = ChatMessageModel(
         messageId = this.messageId,
@@ -30,6 +31,7 @@ data class ChatMessageResponseDto(
         sendTime = this.sendTime,
         isRead = this.isRead ?: false,
         isMyMessage = this.isMyMessage ?: false,
-        profileImageUrl = this.profileImageUrl ?: ""
+        profileImageUrl = this.profileImageUrl ?: "",
+        unreadCountForSender = this.unreadCountForSender ?: 0
     )
 }

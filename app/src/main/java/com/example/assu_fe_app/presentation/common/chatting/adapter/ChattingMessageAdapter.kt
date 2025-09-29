@@ -1,6 +1,6 @@
 package com.example.assu_fe_app.presentation.common.chatting.adapter
 
-
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +15,7 @@ import com.example.assu_fe_app.databinding.ItemChatMineBinding
 import com.example.assu_fe_app.databinding.ItemChatOtherBinding
 
 class ChattingMessageAdapter
- : ListAdapter<ChattingMessageItem, RecyclerView.ViewHolder>(DIFF) {
+    : ListAdapter<ChattingMessageItem, RecyclerView.ViewHolder>(DIFF) {
 
     companion object {
         private const val TYPE_ME = 0
@@ -40,27 +40,42 @@ class ChattingMessageAdapter
             override fun areContentsTheSame(
                 old: ChattingMessageItem,
                 new: ChattingMessageItem
-            ): Boolean = old == new
+            ): Boolean {
+                return when {
+                    old is ChattingMessageItem.MyMessage && new is ChattingMessageItem.MyMessage -> {
+                        old.messageId == new.messageId &&
+                                old.message == new.message &&
+                                old.sentAt == new.sentAt &&
+                                // ↓↓↓ 이 조건을 추가하세요! ↓↓↓
+                                old.unreadCountForSender == new.unreadCountForSender
+                    }
+                    old is ChattingMessageItem.OtherMessage && new is ChattingMessageItem.OtherMessage -> {
+                        old.messageId == new.messageId &&
+                                old.message == new.message &&
+                                old.sentAt == new.sentAt
+                    }
+                    else -> false
+                }
+            }
 
-            // 읽음 상태만 바뀐 경우에 부분 갱신 신호 주기
+            // 읽음/안읽음 뱃지 값이 바뀐 경우만 부분 갱신
             override fun getChangePayload(
                 oldItem: ChattingMessageItem,
                 newItem: ChattingMessageItem
             ): Any? {
                 return when {
                     oldItem is ChattingMessageItem.MyMessage && newItem is ChattingMessageItem.MyMessage ->
-                        if (oldItem.isRead != newItem.isRead) Payload.ReadChanged(newItem.isRead) else null
-
-                    oldItem is ChattingMessageItem.OtherMessage && newItem is ChattingMessageItem.OtherMessage ->
-                        if (oldItem.isRead != newItem.isRead) Payload.ReadChanged(newItem.isRead) else null
-
+                        if (oldItem.unreadCountForSender != newItem.unreadCountForSender) {
+                            Payload.UnreadCountChanged(newItem.unreadCountForSender)
+                        } else null
                     else -> null
                 }
             }
         }
 
+        // Payload는 명확히 이름을 맞춰줌
         private sealed interface Payload {
-            data class ReadChanged(val isRead: Boolean) : Payload
+            data class UnreadCountChanged(val unreadCount: Int) : Payload
         }
     }
 
@@ -83,12 +98,9 @@ class ChattingMessageAdapter
         payloads: MutableList<Any>
     ) {
         if (payloads.isNotEmpty()) {
-            val p = payloads.firstOrNull { it is Payload.ReadChanged } as? Payload.ReadChanged
-            if (p != null) {
-                when (holder) {
-                    is MyMessageViewHolder -> holder.setUnread(p.isRead)
-//                    is OtherMessageViewHolder -> holder.setUnread(p.isRead)
-                }
+            val p = payloads.firstOrNull { it is Payload.UnreadCountChanged } as? Payload.UnreadCountChanged
+            if (p != null && holder is MyMessageViewHolder) {
+                holder.setUnread(p.unreadCount)
                 return
             }
         }
@@ -104,17 +116,19 @@ class ChattingMessageAdapter
 
     inner class MyMessageViewHolder(private val binding: ItemChatMineBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun bind(item: ChattingMessageItem.MyMessage) {
+            Log.d("ADAPTER", "bind MyMessage id=${item.messageId}, unread=${item.unreadCountForSender}")
             binding.tvMyMessage.text = item.message
             binding.tvMyMessageTime.text = item.sentAt
-            setUnread(item.isRead)
+            setUnread(item.unreadCountForSender)
         }
 
-        fun setUnread(isRead: Boolean) {
+        fun setUnread(unreadCount: Int) {
+            Log.d("ADAPTER", "setUnread called with $unreadCount")
             binding.tvUnreadBadge.apply {
-                // invisible로 해야 레이아웃 흔들리지 않음
-                visibility = if (isRead) View.INVISIBLE else View.VISIBLE
-                text = if (isRead) "" else "1"
+                visibility = if (unreadCount > 0) View.VISIBLE else View.INVISIBLE
+                text = if (unreadCount > 0) unreadCount.toString() else ""
             }
         }
     }
@@ -122,22 +136,13 @@ class ChattingMessageAdapter
     inner class OtherMessageViewHolder(private val binding: ItemChatOtherBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ChattingMessageItem.OtherMessage) {
-            // 레이아웃 id는 네 xml에 맞게 사용 (예: tvOtherMessage, tvOtherMessageTime 등)
             binding.tvOtherMessage.text = item.message
             binding.tvOtherMessageTime.text = item.sentAt
-            // 프로필 이미지 로딩 필요하면 여기에 Glide 등 사용
             binding.ivRestaurantProfileImage.load(item.profileImageUrl) {
-                placeholder(R.drawable.img_partner) // 여기서 디폴트 처리
+                placeholder(R.drawable.img_partner)
                 error(R.drawable.img_partner)
                 transformations(CircleCropTransformation())
             }
         }
-
-//        fun setUnread(isRead: Boolean) {
-//            binding.tvUnreadBadge.apply {
-//                visibility = if (isRead) View.INVISIBLE else View.VISIBLE
-//                text = if (isRead) "" else "1"
-//            }
-//        }
     }
 }

@@ -20,7 +20,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="6dp"/>
+            android:layout_marginTop="9dp"/>
 
         <LinearLayout
             android:id="@+id/layout_admin_chatting_no_history_info"
