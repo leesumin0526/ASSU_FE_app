@@ -3,32 +3,36 @@ package com.example.assu_fe_app.presentation.user.location
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.location.LocationSearchItem
 import com.example.assu_fe_app.databinding.FragmentUserLocationSearchRankBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.user.location.adapter.UserLocationSearchRankAdapter
+import com.example.assu_fe_app.ui.map.UserLocationSearchViewModel
+import kotlin.getValue
 
 class UserLocationSearchRankFragment :
     BaseFragment<FragmentUserLocationSearchRankBinding>(R.layout.fragment_user_location_search_rank) {
     private lateinit var adapter: UserLocationSearchRankAdapter
+    private val searchViewModel: UserLocationSearchViewModel by activityViewModels()
 
-    override fun initObserver() {}
+    override fun initObserver() {
+        searchViewModel.bestStores.observe(this) { bestStores ->
+            val locationSearchItems = bestStores.mapIndexed { index, storeName ->
+                LocationSearchItem(storeName, index + 1)
+            }
+            adapter = UserLocationSearchRankAdapter(locationSearchItems)
+            binding.rvLocationSearchRank.adapter = adapter
+        }
+    }
 
     override fun initView() {
-        val dummyList = listOf(
-            LocationSearchItem("역전할머니맥주 강남점", 1),
-            LocationSearchItem("스타벅스 합정점", 2),
-            LocationSearchItem("교촌치킨 신촌점", 3),
-            LocationSearchItem("세븐일레븐 사당점", 4),
-            LocationSearchItem("GS25 홍대입구점", 5)
-        )
-
-        adapter = UserLocationSearchRankAdapter(dummyList)
+        searchViewModel.getPopularSearch()
         binding.rvLocationSearchRank.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvLocationSearchRank.adapter = adapter
 
         // 텍스트 스타일 설정
         val fullText = "🔥 지금 많이 찾는 제휴 매장"
@@ -46,7 +50,4 @@ class UserLocationSearchRankFragment :
 
         binding.tvLocationSearchRankTitle.text = spannable
     }
-
-
-
 }
