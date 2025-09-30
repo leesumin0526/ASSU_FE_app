@@ -128,7 +128,6 @@ class AdminDashboardFragment :
         if (topStores.isEmpty()) {
             barChart.clear()
             barChart.setNoDataText("표시할 데이터가 없습니다")
-            barChart.setNoDataTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_sub))
             barChart.invalidate()
             return
         }
@@ -136,7 +135,7 @@ class AdminDashboardFragment :
         // 초기 차트 업데이트 (1위 업체 선택)
         updatePartnersBarChart(barChart, topStores, 0)
 
-        // 바 클릭 리스너 추가
+        // 바 클릭 리스너
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 if (e is BarEntry) {
@@ -147,13 +146,7 @@ class AdminDashboardFragment :
                 }
             }
             override fun onNothingSelected() {
-                // 선택 해제 시 1위 업체로 돌아가기
                 updatePartnersBarChart(barChart, topStores, 0)
-
-                if (currentStoreUsageStats.isNotEmpty()) {
-                    val topStore = currentStoreUsageStats.first()
-                    binding.tvDashboardAnalysis?.text = "\"${topStore.storeName}\"의\n제휴 누적이용률이 가장 높아요!"
-                }
             }
         })
 
@@ -163,7 +156,7 @@ class AdminDashboardFragment :
         barChart.setDrawGridBackground(false)
         barChart.legend.isEnabled = false
         barChart.setFitBars(true)
-        barChart.setViewPortOffsets(20f, 80f, 20f, 40f)
+        barChart.setViewPortOffsets(20f, 100f, 20f, 40f)
 
         // X축 설정
         val xAxis = barChart.xAxis
@@ -171,11 +164,15 @@ class AdminDashboardFragment :
         xAxis.setDrawGridLines(false)
         xAxis.setDrawAxisLine(false)
         xAxis.setDrawLabels(false)
-        xAxis.granularity = 1f
-        xAxis.isGranularityEnabled = true
 
-        // Y축 설정
-        barChart.axisLeft.isEnabled = false
+        // Y축 설정 - 중요: 활성화 필요
+        val axisLeft = barChart.axisLeft
+        axisLeft.isEnabled = true
+        axisLeft.setDrawGridLines(false)
+        axisLeft.setDrawAxisLine(false)
+        axisLeft.setDrawLabels(false)
+        axisLeft.axisMinimum = 0f
+
         barChart.axisRight.isEnabled = false
     }
 
@@ -184,9 +181,10 @@ class AdminDashboardFragment :
         topStores: List<AdminDashboardModel.StoreUsageStat>,
         selectedIndex: Int
     ) {
-        val dataSets = ArrayList<BarDataSet>()
         val mainColor = ContextCompat.getColor(requireContext(), R.color.assu_main)
         val defaultColor = ContextCompat.getColor(requireContext(), R.color.assu_font_sub)
+
+        val dataSets = ArrayList<BarDataSet>()
 
         topStores.forEachIndexed { index, store ->
             val count = store.usageCount?.takeIf { it >= 0 } ?: 0
@@ -194,7 +192,7 @@ class AdminDashboardFragment :
             val dataSet = BarDataSet(arrayListOf(entry), "")
 
             dataSet.setDrawValues(true)
-            dataSet.valueTextSize = 12f
+            dataSet.valueTextSize = 14f
 
             if (index == selectedIndex) {
                 dataSet.color = mainColor
@@ -205,8 +203,8 @@ class AdminDashboardFragment :
             }
 
             dataSet.valueFormatter = object : ValueFormatter() {
-                override fun getBarLabel(barEntry: BarEntry?): String {
-                    return barEntry?.y?.toInt()?.toString() ?: "0"
+                override fun getFormattedValue(value: Float): String {
+                    return value.toInt().toString()
                 }
             }
 
@@ -215,7 +213,13 @@ class AdminDashboardFragment :
 
         val barData = BarData(dataSets as List<com.github.mikephil.charting.interfaces.datasets.IBarDataSet>)
         barData.barWidth = 0.6f
+
+        // Y축 최대값 설정
+        val maxValue = topStores.maxOfOrNull { it.usageCount ?: 0 } ?: 100
+        barChart.axisLeft.axisMaximum = maxValue * 1.8f
+
         barChart.data = barData
+        barChart.notifyDataSetChanged()
         barChart.invalidate()
 
         // 분석 텍스트 업데이트
