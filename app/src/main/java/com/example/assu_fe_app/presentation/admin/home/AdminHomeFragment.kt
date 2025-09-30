@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import com.example.assu_fe_app.R
+import com.example.assu_fe_app.data.dto.UserRole
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
 import com.example.assu_fe_app.data.dto.partnership.PartnershipContractData
@@ -44,6 +45,9 @@ class AdminHomeFragment :
     private val partnerRecommendViewModel: PartnerRecommendViewModel by viewModels()
     private var currentRecommendedPartner: RecommendedPartnerModel? = null
 
+    private var phoneNumber: String? = null
+    private var opponentId: Long? = null
+
     @Inject
     lateinit var authTokenLocalStore: AuthTokenLocalStore
 
@@ -62,9 +66,14 @@ class AdminHomeFragment :
                             binding.btnRecommendInquiry.isEnabled = true
 
                             val roomId = state.data.roomId
+                            val opponentName = state.data.adminViewName
 
                             val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
                                 putExtra("roomId", roomId)
+                                putExtra("opponentName", opponentName)
+                                putExtra("entryMessage", "추천 파트너 카드에서 이동했습니다.")
+                                putExtra("phoneNumber", phoneNumber)
+                                putExtra("opponentId", opponentId ?: -1L)
                             }
 
                             startActivity(intent)
@@ -197,7 +206,7 @@ class AdminHomeFragment :
             "안녕하세요, 사용자님!"
         }
 
-        // 🔽 전체 조회 버튼
+        // 전체 조회 버튼
         binding.btnAdminHomeViewAll.setOnClickListener {
             //TODO 원래 intent로 보냄
             val intent = Intent(requireContext(), AdminHomeViewPartnerListActivity::class.java)
@@ -244,6 +253,9 @@ class AdminHomeFragment :
         // 카드 클릭 시 상세로 이동하고 싶다면
         binding.btnRecommendInquiry.setOnClickListener {
             currentRecommendedPartner?.let { partner ->
+                phoneNumber = partner.partnerPhone
+                opponentId = partner.partnerId
+
                 val req = CreateChatRoomRequestDto(
                     adminId = authTokenLocalStore.getUserId() ?: 1L,
                     partnerId = partner.partnerId

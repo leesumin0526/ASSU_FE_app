@@ -24,26 +24,40 @@ class AdminPendingPartnershipViewModel @Inject constructor(
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
-    private val _toast   = MutableStateFlow<String?>(null)
-    val toast: StateFlow<String?> = _toast
+    private val _busy = MutableStateFlow(false)
+    val busy: StateFlow<Boolean> = _busy
 
     fun load() = viewModelScope.launch {
         _loading.value = true
         when (val res = getSuspended()) {
-            is RetrofitResult.Success     -> _items.value = res.data
-            is RetrofitResult.Fail     -> _toast.value = res.message ?: "불러오기 실패"
-            is RetrofitResult.Error-> _toast.value = "네트워크 오류"
+            is RetrofitResult.Success -> {
+                _items.value = res.data
+                android.util.Log.d("AdminPendingVM", "목록 불러오기 성공: ${res.data.size}건")
+            }
+            is RetrofitResult.Fail -> {
+                android.util.Log.d("AdminPendingVM", "불러오기 실패: ${res.message}")
+            }
+            is RetrofitResult.Error -> {
+                android.util.Log.d("AdminPendingVM", "네트워크 오류 발생")
+            }
         }
         _loading.value = false
     }
 
     fun delete(paperId: Long) = viewModelScope.launch {
+        _busy.value = true
         when (val res = deletePaper(paperId)) {
-            is RetrofitResult.Success     -> _items.value = _items.value.filterNot { it.paperId == paperId }
-            is RetrofitResult.Fail     -> _toast.value = res.message ?: "삭제 실패"
-            is RetrofitResult.Error-> _toast.value = "네트워크 오류"
+            is RetrofitResult.Success -> {
+                _items.value = _items.value.filterNot { it.paperId == paperId }
+                android.util.Log.d("AdminPendingVM", "삭제 성공: paperId=$paperId")
+            }
+            is RetrofitResult.Fail -> {
+                android.util.Log.d("AdminPendingVM", "삭제 실패: ${res.message}")
+            }
+            is RetrofitResult.Error -> {
+                android.util.Log.d("AdminPendingVM", "네트워크 오류 발생 (삭제)")
+            }
         }
+        _busy.value = false
     }
-
-    fun consumeToast() { _toast.value = null }
 }

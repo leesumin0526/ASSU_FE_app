@@ -101,6 +101,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_dash_small_before"
                 android:layout_marginStart="9dp"
+                android:padding="7dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tv_serviceRecord_month"
                 app:layout_constraintTop_toTopOf="@id/tv_serviceRecord_month"/>
@@ -131,6 +132,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_dash_small_next_disable"
                 android:layout_marginStart="13dp"
+                android:padding="7dp"
                 app:layout_constraintStart_toEndOf="@id/tv_serviceRecord_month_text"
                 app:layout_constraintTop_toTopOf="@id/iv_serviceRecord_back_arrow"/>
         </androidx.constraintlayout.widget.ConstraintLayout>

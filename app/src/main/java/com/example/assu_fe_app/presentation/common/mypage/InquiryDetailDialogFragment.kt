@@ -54,11 +54,11 @@ class InquiryDetailDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.btnCsDetailBack.setOnClickListener { dismiss() }
 
+        bindLoading()
+
         val id = requireArguments().getLong(ARG_ID)
-        // 상세 호출
         vm.loadDetail(id)
 
         // 상세 관찰 → UI 바인딩
@@ -106,5 +106,23 @@ class InquiryDetailDialogFragment : DialogFragment() {
         fun newInstance(id: Long) = InquiryDetailDialogFragment().apply {
             arguments = Bundle().apply { putLong(ARG_ID, id) }
         }
+    }
+
+    private fun bindLoading() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.detailLoading.collectLatest { loading ->
+                    if (loading) showLoading("로딩 중...") else hideLoading()
+                }
+            }
+        }
+    }
+
+    private fun showLoading(message: String = "로딩 중...") {
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.tvLoadingText.text = message
+    }
+    private fun hideLoading() {
+        binding.loadingOverlay.visibility = View.GONE
     }
 }

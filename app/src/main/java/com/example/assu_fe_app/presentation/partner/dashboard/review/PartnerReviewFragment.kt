@@ -30,8 +30,7 @@ class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layou
     override fun initView() {
 
         binding.btnCustomerReviewBack.setOnClickListener {
-            (requireActivity() as PartnerMainActivity).showBottomNavigation()
-            requireActivity().onBackPressed()
+            findNavController().popBackStack()
         }
         (requireActivity() as PartnerMainActivity).hideBottomNavigation()
 

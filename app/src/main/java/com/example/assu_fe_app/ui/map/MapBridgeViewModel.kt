@@ -13,7 +13,8 @@ sealed interface MapEvent {
         val partnerName: String? = null,
         val adminName: String? = null,
         val term : String? = null,
-        val profileUrl : String? = null
+        val profileUrl : String? = null,
+        val phoneNum : String? = null
     ) : MapEvent
 }
 
@@ -30,8 +31,8 @@ class MapBridgeViewModel : ViewModel() {
         partnerName: String? = null,
         adminName: String? = null,
         term: String? = null,
-        profileUrl: String? = null
-
+        profileUrl: String? = null,
+        phoneNum: String? = null
     ) {
         _events.tryEmit(MapEvent.ShowContract(partnershipId, latitude, longitude, partnerName, adminName, term, profileUrl))
     }
