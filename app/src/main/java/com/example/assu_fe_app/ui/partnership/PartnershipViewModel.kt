@@ -326,6 +326,9 @@ class PartnershipViewModel @Inject constructor(
     val getPartnershipDetailUiState: StateFlow<PartnershipDetailUiState> =
         _getPartnershipDetailUiState
 
+    private val _partnershipDetailLiveData = MutableLiveData<PartnershipDetailUiState>()
+    val partnershipDetailLiveData: MutableLiveData<PartnershipDetailUiState> get() = _partnershipDetailLiveData
+
     private val _summaryText = MutableStateFlow("")
     val summaryText: StateFlow<String> = _summaryText.asStateFlow()
 
@@ -334,19 +337,23 @@ class PartnershipViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d("PartnershipViewModel", "Setting Loading state")
             _getPartnershipDetailUiState.value = PartnershipDetailUiState.Loading
+            _partnershipDetailLiveData.value = PartnershipDetailUiState.Loading
             getPartnershipUseCase(partnershipId)
                 .onSuccess { data ->
                     processPartnershipDetailData(data)
                     _getPartnershipDetailUiState.value =
                         PartnershipDetailUiState.Success(data)
+                    _partnershipDetailLiveData.value = PartnershipDetailUiState.Success(data)
                 }
                 .onFail { code ->
-                    _getPartnershipDetailUiState.value =
-                        PartnershipDetailUiState.Fail(code, "서버 처리 실패")
+                    val failState = PartnershipDetailUiState.Fail(code, "서버 처리 실패")
+                    _getPartnershipDetailUiState.value = failState
+                    _partnershipDetailLiveData.value = failState
                 }
                 .onError { e ->
-                    _getPartnershipDetailUiState.value =
-                        PartnershipDetailUiState.Error(e.message ?: "네트워크 연결을 확인해주세요.")
+                    val errorState = PartnershipDetailUiState.Error(e.message ?: "네트워크 연결을 확인해주세요.")
+                    _getPartnershipDetailUiState.value = errorState
+                    _partnershipDetailLiveData.value = errorState
                 }
         }
     }

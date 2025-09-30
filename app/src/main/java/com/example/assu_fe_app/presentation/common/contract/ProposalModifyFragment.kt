@@ -293,14 +293,18 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
         }
         viewLifecycleOwner.lifecycleScope.launch {
             partnershipViewModel.getPartnershipDetailUiState.collect { state ->
+                Log.d("ProposalModifyFragment", "State collected: ${state::class.simpleName}")
+                Log.d("ProposalModifyFragment", "State is Loading? ${state is PartnershipViewModel.PartnershipDetailUiState.Loading}")
                 when (state) {
                     is PartnershipViewModel.PartnershipDetailUiState.Idle -> {
                         hideLoading()
                     }
                     is PartnershipViewModel.PartnershipDetailUiState.Loading -> {
+                        Log.d("ProposalModifyFragment", "Matched: Loading - calling showLoading")
                         showLoading("로딩 중...")
                     }
                     is PartnershipViewModel.PartnershipDetailUiState.Success -> {
+                        Log.d("ProposalModifyFragment", "Matched: Success")
                         hideLoading()
                         displayProposalData(state.data)
                     }
