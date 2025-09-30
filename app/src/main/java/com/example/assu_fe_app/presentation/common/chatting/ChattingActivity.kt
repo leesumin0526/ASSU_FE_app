@@ -16,6 +16,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
 import com.example.assu_fe_app.BlockOpponentDialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.ChattingMessageItem
@@ -179,6 +180,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             if (currentUserRole.equals("PARTNER", ignoreCase = true) &&
                 currentPartnershipStatus?.status == "NONE") {
                 Log.d("ChattingPlusButton", "Partner's partnership status is NONE. No action taken.")
+                Toast.makeText(this, "학생회가 제안서를 먼저 보내야합니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

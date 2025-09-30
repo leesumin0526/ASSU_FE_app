@@ -330,7 +330,9 @@ class PartnershipViewModel @Inject constructor(
     val summaryText: StateFlow<String> = _summaryText.asStateFlow()
 
     fun getPartnershipDetail(partnershipId: Long) {
+        Log.d("PartnershipViewModel", "getPartnershipDetail called with id: $partnershipId")
         viewModelScope.launch {
+            Log.d("PartnershipViewModel", "Setting Loading state")
             _getPartnershipDetailUiState.value = PartnershipDetailUiState.Loading
             getPartnershipUseCase(partnershipId)
                 .onSuccess { data ->

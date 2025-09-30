@@ -294,21 +294,36 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
         viewLifecycleOwner.lifecycleScope.launch {
             partnershipViewModel.getPartnershipDetailUiState.collect { state ->
                 when (state) {
+                    is PartnershipViewModel.PartnershipDetailUiState.Idle -> {
+                        hideLoading()
+                    }
                     is PartnershipViewModel.PartnershipDetailUiState.Loading -> {
+                        showLoading("로딩 중...")
                     }
                     is PartnershipViewModel.PartnershipDetailUiState.Success -> {
+                        hideLoading()
                         displayProposalData(state.data)
                     }
                     is PartnershipViewModel.PartnershipDetailUiState.Fail -> {
+                        hideLoading()
                         showToast("제안서 조회 실패: ${state.message}")
                     }
                     is PartnershipViewModel.PartnershipDetailUiState.Error -> {
+                        hideLoading()
                         showToast("오류가 발생했습니다: ${state.message}")
                     }
-                    else -> Unit
                 }
             }
         }
+    }
+
+    private fun showLoading(message: String = "로딩 중...") {
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.tvLoadingText.text = message
+    }
+
+    private fun hideLoading() {
+        binding.loadingOverlay.visibility = android.view.View.GONE
     }
 
     private fun loadProposalData() {

@@ -2,12 +2,15 @@ package com.example.assu_fe_app.presentation.common.contract
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.partner_admin.home.PartnershipContractItem
@@ -20,6 +23,7 @@ import com.example.assu_fe_app.presentation.common.chatting.ChattingSentProposal
 import com.example.assu_fe_app.presentation.common.chatting.proposal.adapter.ProposalModifyAdapter
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.internal.format
 import kotlin.text.ifEmpty
@@ -34,52 +38,84 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
 
     override fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
-            partnershipViewModel.summaryText.collect { text ->
-                if (text.isNotEmpty()) {
-                    binding.tvPartnershipContentSignBox.text = text
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    partnershipViewModel.summaryText.collectLatest { text ->
+                        if (text.isNotEmpty()) {
+                            binding.tvPartnershipContentSignBox.text = text
+                        }
+                    }
                 }
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            partnershipViewModel.getPartnershipDetailUiState.collect { state ->
-                when (state) {
-                    is PartnershipViewModel.PartnershipDetailUiState.Loading -> {
-                        // 로딩 표시
-                    }
-                    is PartnershipViewModel.PartnershipDetailUiState.Success -> {
-                        displayProposalData(state.data)
-                    }
-                    is PartnershipViewModel.PartnershipDetailUiState.Fail -> {
-                        Toast.makeText(requireContext(), "조회 실패", Toast.LENGTH_SHORT).show()
-                    }
-                    is PartnershipViewModel.PartnershipDetailUiState.Error -> {
-                        Toast.makeText(requireContext(), "오류 발생", Toast.LENGTH_SHORT).show()
-                    }
-                    else -> Unit
-                }
-            }
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            partnershipViewModel.updatePartnershipStatusUiState.collect { state ->
-                when (state) {
-                    is PartnershipViewModel.UpdatePartnershipStatusUiState.Loading -> {
-                        // 로딩 표시
-                        binding.btnModify.isEnabled = false
+                launch {
+                    partnershipViewModel.getPartnershipDetailUiState.collect { state ->
+                        Log.d("ProposalAgreeFragment", "State changed to: $state")
+                        when (state) {
+                            is PartnershipViewModel.PartnershipDetailUiState.Idle -> {
+                                hideLoading()
+                            }
+
+                            is PartnershipViewModel.PartnershipDetailUiState.Loading -> {
+                                showLoading("로딩 중...")
+                            }
+
+                            is PartnershipViewModel.PartnershipDetailUiState.Success -> {
+                                hideLoading()
+                                displayProposalData(state.data)
+                            }
+
+                            is PartnershipViewModel.PartnershipDetailUiState.Fail -> {
+                                hideLoading()
+                                Toast.makeText(requireContext(), "조회 실패", Toast.LENGTH_SHORT).show()
+                            }
+
+                            is PartnershipViewModel.PartnershipDetailUiState.Error -> {
+                                hideLoading()
+                                Toast.makeText(requireContext(), "오류 발생", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
-                    is PartnershipViewModel.UpdatePartnershipStatusUiState.Success -> {
-                        // 성공 시 체결 완료 화면으로 이동
-                        navigateToSuccessScreen()
+                }
+
+                launch {
+                    partnershipViewModel.updatePartnershipStatusUiState.collect { state ->
+                        when (state) {
+                            is PartnershipViewModel.UpdatePartnershipStatusUiState.Idle -> {
+                                hideLoading()
+                            }
+
+                            is PartnershipViewModel.UpdatePartnershipStatusUiState.Loading -> {
+                                showLoading("로딩 중...")
+                                binding.btnModify.isEnabled = false
+                            }
+
+                            is PartnershipViewModel.UpdatePartnershipStatusUiState.Success -> {
+                                hideLoading()
+                                // 성공 시 체결 완료 화면으로 이동
+                                navigateToSuccessScreen()
+                            }
+
+                            is PartnershipViewModel.UpdatePartnershipStatusUiState.Fail -> {
+                                hideLoading()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "제휴 체결 실패: ${state.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                binding.btnModify.isEnabled = true
+                            }
+
+                            is PartnershipViewModel.UpdatePartnershipStatusUiState.Error -> {
+                                hideLoading()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "오류 발생: ${state.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                binding.btnModify.isEnabled = true
+                            }
+                        }
                     }
-                    is PartnershipViewModel.UpdatePartnershipStatusUiState.Fail -> {
-                        Toast.makeText(requireContext(), "제휴 체결 실패: ${state.message}", Toast.LENGTH_SHORT).show()
-                        binding.btnModify.isEnabled = true
-                    }
-                    is PartnershipViewModel.UpdatePartnershipStatusUiState.Error -> {
-                        Toast.makeText(requireContext(), "오류 발생: ${state.message}", Toast.LENGTH_SHORT).show()
-                        binding.btnModify.isEnabled = true
-                    }
-                    else -> Unit
                 }
             }
         }
@@ -88,7 +124,7 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
     override fun initView() {
         extractArguments()
         initializeUI()
-        initObserver()
+
         loadProposalData()
     }
 
@@ -117,6 +153,16 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
             handleAgreeButtonClick()
         }
     }
+
+    private fun showLoading(message: String = "로딩 중...") {
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.tvLoadingText.text = message
+    }
+
+    private fun hideLoading() {
+        binding.loadingOverlay.visibility = View.GONE
+    }
+
     private fun loadProposalData() {
         if (paperId > 0) {
             partnershipViewModel.getPartnershipDetail(paperId)
