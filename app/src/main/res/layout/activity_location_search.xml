@@ -149,7 +149,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="로그인 중..."
+                    android:text="로딩 중..."
                     android:textColor="@color/assu_main"
                     android:textSize="16sp"
                     android:fontFamily="@font/pretendard_bold" />
