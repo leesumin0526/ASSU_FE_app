@@ -3,6 +3,7 @@ package com.example.assu_fe_app.presentation.common.chatting
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -29,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlin.getValue
 import com.example.assu_fe_app.presentation.common.chatting.dialog.LeaveChatRoomDialog
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
-import com.example.assu_fe_app.data.local.AuthTokenLocalStoreImpl
 import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
 import com.example.assu_fe_app.presentation.common.contract.ProposalAgreeFragment
 import com.example.assu_fe_app.presentation.common.contract.ProposalModifyFragment
@@ -72,6 +72,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         val roomId = intent.getLongExtra("roomId", -1L)
         val opponentName = intent.getStringExtra("opponentName") ?: ""
         val opponentId = intent.getLongExtra("opponentId",-1)
+        val phoneNumber = intent.getStringExtra("phoneNumber")
         opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
 
         Log.d("ChattingActivity", "roomId=$roomId, name=$opponentName")
@@ -195,6 +196,15 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
             binding.flChattingOverlay.visibility = View.GONE
             binding.layoutChattingLocationBoxAdmin.visibility = View.GONE
             binding.layoutChattingLocationBoxPartner.visibility = View.GONE
+        }
+
+        binding.llChattingCall.setOnClickListener {
+            println("PHONENUMBER>>>>>>>: $phoneNumber")
+            var intent = Intent(Intent.ACTION_DIAL)
+            intent.data = Uri.parse("tel:$phoneNumber")
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent)
+            }
         }
 
     }

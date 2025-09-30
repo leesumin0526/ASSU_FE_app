@@ -11,7 +11,8 @@ data class GetChattingRoomListResponseDto(
     val unreadMessagesCount: Long ?= 0,
     val opponentId: Long,
     val opponentName: String,
-    val opponentProfileImage: String? = null
+    val opponentProfileImage: String? = null,
+    val phoneNumber: String?=null,
 ) {
     fun toModel() = GetChattingRoomListModel(
         roomId = this.roomId,
@@ -20,6 +21,7 @@ data class GetChattingRoomListResponseDto(
         unreadMessagesCount = this.unreadMessagesCount ?: 0,
         opponentId = this.opponentId,
         opponentName = this.opponentName,
-        opponentProfileImage = this.opponentProfileImage ?: ""
+        opponentProfileImage = this.opponentProfileImage ?: "",
+        phoneNumber = this.phoneNumber ?:""
     )
 }

@@ -176,36 +176,37 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:weightSum="1">
-<!--                <LinearLayout-->
-<!--                    android:id="@+id/ll_chatting_call"-->
-<!--                    android:layout_width="143.5dp"-->
-<!--                    android:layout_height="41dp"-->
-<!--                    android:background="@drawable/bg_chatting_call_box"-->
-<!--                    android:gravity="center"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:clickable="true">-->
 
-<!--                    <ImageView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:src="@drawable/ic_chatting_call"/>-->
+                <LinearLayout
+                    android:id="@+id/ll_chatting_call"
+                    android:layout_width="143.5dp"
+                    android:layout_height="41dp"
+                    android:background="@drawable/bg_chatting_call_box"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:clickable="true">
 
-<!--                    <View-->
-<!--                        android:id="@+id/view_chatting_mg6"-->
-<!--                        android:layout_width="30.5dp"-->
-<!--                        android:layout_height="10dp"-->
-<!--                        app:layout_constraintBottom_toBottomOf="@id/view_chatting_title"-->
-<!--                        app:layout_constraintEnd_toEndOf="parent"-->
-<!--                        app:layout_constraintStart_toStartOf="parent" />-->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_chatting_call"/>
 
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="전화하기"-->
-<!--                        android:fontFamily="@font/pretendard_semibold"-->
-<!--                        android:textSize="11sp"-->
-<!--                        android:textColor="@color/assu_font_main"/>-->
-<!--                </LinearLayout>-->
+                    <View
+                        android:id="@+id/view_chatting_mg6"
+                        android:layout_width="30.5dp"
+                        android:layout_height="10dp"
+                        app:layout_constraintBottom_toBottomOf="@id/view_chatting_title"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="전화하기"
+                        android:fontFamily="@font/pretendard_semibold"
+                        android:textSize="11sp"
+                        android:textColor="@color/assu_font_main"/>
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_chatting_sent"

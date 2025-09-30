@@ -121,6 +121,7 @@ class ChattingRoomListFragment :BaseFragment<FragmentChattingListBinding> (R.lay
                     putExtra("opponentProfileImage", item.opponentProfileImage)
                     putExtra("partnershipStatus", status)
                     putExtra("opponentId", item.opponentId)
+                    putExtra("phoneNumber", item.phoneNumber)
                 }
                 startActivity(intent)
             } else {
