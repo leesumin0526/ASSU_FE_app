@@ -2,7 +2,12 @@ package com.example.assu_fe_app.util
 
 sealed class RetrofitResult<out T> {
     data class Success<T>(val data: T) : RetrofitResult<T>()
-    data class Fail(val statusCode: Int, val message: String) : RetrofitResult<Nothing>()
+    data class Fail(
+        val statusCode: Int,
+        val code: String,
+        val message: String,
+        val result: String? = null
+    ) : RetrofitResult<Nothing>()
     data class Error(val exception: Exception) : RetrofitResult<Nothing>()
 }
 
@@ -22,7 +27,7 @@ inline fun <T> RetrofitResult<T>.onFail(resultCode: (Int) -> Unit): RetrofitResu
 
 inline fun <T> RetrofitResult<T>.onError(action: (Exception) -> Unit): RetrofitResult<T> {
     if (this is RetrofitResult.Fail) {
-        action(IllegalArgumentException("code : ${this.statusCode}, message : ${this.message}"))
+        action(IllegalArgumentException("statusCode: ${this.statusCode}, code: ${this.code}, message: ${this.message}"))
     } else if (this is RetrofitResult.Error) {
         action(this.exception)
     }

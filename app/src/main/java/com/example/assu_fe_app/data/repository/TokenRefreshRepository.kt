@@ -33,14 +33,14 @@ class TokenRefreshRepository @Inject constructor(
             },
             mapper = { refreshResponse ->
                 Log.d("TokenRefreshRepository", "✅ Received new tokens from server")
-                Log.d("TokenRefreshRepository", "New access token (first 20 chars): ${refreshResponse.accessToken.take(20)}...")
-                Log.d("TokenRefreshRepository", "New refresh token (first 20 chars): ${refreshResponse.refreshToken.take(20)}...")
-                Log.d("TokenRefreshRepository", "Token expires at: ${refreshResponse.expiresAt}")
+                Log.d("TokenRefreshRepository", "Member ID: ${refreshResponse.memberId}")
+                Log.d("TokenRefreshRepository", "New access token (first 20 chars): ${refreshResponse.newAccess.take(20)}...")
+                Log.d("TokenRefreshRepository", "New refresh token (first 20 chars): ${refreshResponse.newRefresh.take(20)}...")
                 
                 // 새로운 토큰들을 저장
                 authTokenLocalStore.updateTokens(
-                    accessToken = refreshResponse.accessToken,
-                    refreshToken = refreshResponse.refreshToken
+                    accessToken = refreshResponse.newAccess,
+                    refreshToken = refreshResponse.newRefresh
                 )
                 
                 Log.i("TokenRefreshRepository", "✅ Tokens updated successfully in local storage")

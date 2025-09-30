@@ -15,6 +15,7 @@ import com.example.assu_fe_app.ui.common.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MypageAccountFragment
@@ -82,7 +83,9 @@ class MypageAccountFragment
                 Log.e("MypageAccount", "Error showing dialog: ${e.message}", e)
             }
         }
+
     }
+
 
     private fun navigateToLoginAndClear() {
         Log.d("MypageAccount", "Navigating to LoginActivity and clearing task stack")

@@ -17,6 +17,7 @@ import com.example.assu_fe_app.databinding.FragmentUserSignUpStudentBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
+import com.example.assu_fe_app.util.showErrorToast
 import kotlinx.coroutines.launch
 
 class UserSignUpStudentFragment :
@@ -42,15 +43,13 @@ class UserSignUpStudentFragment :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 signUpViewModel.errorMessage.collect { error ->
                     error?.let {
-                        // 서버 에러 메시지는 토스트로 표시하지 않음
-                        // 사용자에게는 간단한 안내 메시지만 표시
-                        val userMessage = when {
-                            it.contains("MEMBER_4007") || it.contains("이미 존재하는 회원입니다") -> "이미 가입된 회원입니다. 로그인을 시도해주세요."
-                            it.contains("enrollmentStatus") -> "학생 인증에 실패했습니다. 다시 시도해주세요."
-                            it.contains("Non-null value") -> "학생 인증에 실패했습니다. 다시 시도해주세요."
-                            else -> it
-                        }
-                        android.widget.Toast.makeText(requireContext(), userMessage, android.widget.Toast.LENGTH_SHORT).show()
+                        // String을 Fail 객체로 변환하여 표시
+                        val fail = com.example.assu_fe_app.util.RetrofitResult.Fail(
+                            statusCode = -1,
+                            code = "SIGNUP_ERROR",
+                            message = it
+                        )
+                        requireContext().showErrorToast(fail)
                         signUpViewModel.clearError()
                     }
                 }

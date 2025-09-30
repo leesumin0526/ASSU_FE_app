@@ -75,23 +75,44 @@ class SignUpVerifyViewModel @Inject constructor(
     private val _verifyPhoneVerificationState = MutableLiveData<VerifyPhoneVerificationUiState>()
     val verifyPhoneVerificationState: LiveData<VerifyPhoneVerificationUiState> = _verifyPhoneVerificationState
 
+    fun resetVerificationState() {
+        Log.d("SignUpVerifyViewModel", "Resetting verification state to Idle")
+        _verifyPhoneVerificationState.value = VerifyPhoneVerificationUiState.Idle
+    }
+
     fun verifyPhoneVerification(phoneNumber: String, authNumber: String) {
+        Log.d("SignUpVerifyViewModel", "=== verifyPhoneVerification() called ===")
+        Log.d("SignUpVerifyViewModel", "phoneNumber: '$phoneNumber'")
+        Log.d("SignUpVerifyViewModel", "authNumber: '$authNumber'")
+        
         // 이미 로딩 중이면 중복 요청 방지
         if (_verifyPhoneVerificationState.value is VerifyPhoneVerificationUiState.Loading) {
+            Log.d("SignUpVerifyViewModel", "Already loading, skipping request")
             return
         }
         
         viewModelScope.launch {
+            Log.d("SignUpVerifyViewModel", "Setting loading state")
             _verifyPhoneVerificationState.value = VerifyPhoneVerificationUiState.Loading
             
             val request = PhoneVerificationVerifyRequestDto(
                 phoneNumber = phoneNumber,
                 authNumber = authNumber
             )
+            Log.d("SignUpVerifyViewModel", "Calling authRepository.verifyPhoneVerification()")
             authRepository.verifyPhoneVerification(request)
-                .onSuccess { _verifyPhoneVerificationState.value = VerifyPhoneVerificationUiState.Success }
-                .onFail { code -> _verifyPhoneVerificationState.value = VerifyPhoneVerificationUiState.Fail(code, "인증번호 검증 실패") }
-                .onError { e -> _verifyPhoneVerificationState.value = VerifyPhoneVerificationUiState.Error(e.message ?: "Unknown Error") }
+                .onSuccess { 
+                    Log.d("SignUpVerifyViewModel", "Verification success")
+                    _verifyPhoneVerificationState.value = VerifyPhoneVerificationUiState.Success 
+                }
+                .onFail { code -> 
+                    Log.d("SignUpVerifyViewModel", "Verification failed with code: $code")
+                    _verifyPhoneVerificationState.value = VerifyPhoneVerificationUiState.Fail(code, "인증번호 검증 실패") 
+                }
+                .onError { e -> 
+                    Log.d("SignUpVerifyViewModel", "Verification error: ${e.message}")
+                    _verifyPhoneVerificationState.value = VerifyPhoneVerificationUiState.Error(e.message ?: "Unknown Error") 
+                }
         }
     }
 }
