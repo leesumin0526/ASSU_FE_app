@@ -35,6 +35,8 @@ class LocationItemFragment :
         authTokenLocalStore.getUserRoleEnum() ?: UserRole.ADMIN
     }
 
+    private var phoneNum: String? = null
+
     override fun initView() = Unit
 
     override fun initObserver() {
@@ -88,6 +90,46 @@ class LocationItemFragment :
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            chatVm.createRoomState.collect { state ->
+                when (state) {
+                    is ChattingViewModel.CreateRoomUiState.Success -> {
+                        val roomId = state.data.roomId
+                        val displayName = when (role) {
+                            UserRole.ADMIN   -> state.data.adminViewName
+                            UserRole.PARTNER -> state.data.partnerViewName
+                            else             -> state.data.adminViewName
+                        }
+                        val opponentId = lastItem?.id ?: -1L
+
+                        val intent = android.content.Intent(
+                            requireContext(),
+                            com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java
+                        ).apply {
+                            putExtra("roomId", roomId)
+                            putExtra("opponentName", displayName)
+                            putExtra("opponentId", opponentId)
+                            putExtra("entryMessage", "'문의하기' 버튼을 통해 이동했습니다.")
+                            putExtra("phoneNumber", phoneNum)
+                        }
+                        startActivity(intent)
+
+                        chatVm.resetCreateState()
+                        phoneNum = null
+                    }
+                    is ChattingViewModel.CreateRoomUiState.Fail -> {
+                        chatVm.resetCreateState()
+                        phoneNum = null
+                    }
+                    is ChattingViewModel.CreateRoomUiState.Error -> {
+                        chatVm.resetCreateState()
+                        phoneNum = null
+                    }
+                    else -> Unit
+                }
+            }
+        }
     }
 
     fun showCapsuleInfo(item: LocationAdminPartnerSearchResultItem) {
@@ -114,6 +156,7 @@ class LocationItemFragment :
             val current = lastItem ?: return@OnClickListener
 
             if (!current.partnered) {
+                phoneNum = current.phoneNumber
                 // 채팅방 생성
                 val req = when (role) {
                     UserRole.ADMIN -> {

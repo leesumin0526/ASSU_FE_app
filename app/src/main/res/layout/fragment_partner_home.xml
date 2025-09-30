@@ -403,8 +403,10 @@
                             android:id="@+id/tv_partner_home_recommend_admin_name"
                             android:layout_width="124dp"
                             android:layout_height="wrap_content"
-                            android:text="숭실대학교\n경영학부 학생회"
+                            android:text="숭실대 법학과"
                             android:textSize="17sp"
+                            android:maxLength="15"
+                            android:lines="2"
                             android:fontFamily="@font/pretendard_medium"
                             android:textColor="@color/assu_font_main" />
 
@@ -468,8 +470,7 @@
                         android:background="@drawable/bg_recommend_card"
                         android:paddingTop="18dp"
                         android:paddingBottom="18dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp">
+                        android:gravity="center">
 
                         <TextView
                             android:id="@+id/tv_partner_home_recommend_admin_name2"
@@ -477,6 +478,8 @@
                             android:layout_height="wrap_content"
                             android:text="숭실대학교\n스포츠학부 학생회"
                             android:textSize="17sp"
+                            android:maxLength="15"
+                            android:lines="2"
                             android:fontFamily="@font/pretendard_medium"
                             android:textColor="@color/assu_font_main" />
 
@@ -490,24 +493,36 @@
                             android:layout_marginTop="10dp"
                             android:fontFamily="@font/pretendard_regular" />
 
-                        <FrameLayout
-                            android:id="@+id/fl_recommend_inquiry2"
-                            android:layout_width="match_parent"
-                            android:layout_height="32dp"
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/cl_recommend_inquiry2"
                             android:layout_marginTop="10dp"
-                            android:background="@drawable/btn_recommend_inquiry"
-                            android:clickable="true">
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <View
+                                android:id="@+id/view_partner_home_card_bg2"
+                                android:layout_width="124dp"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_common_home_card"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
 
                             <TextView
-                                android:id="@+id/tv_recommend_inquiry2"
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:gravity="center"
                                 android:text="문의하기"
                                 android:textColor="@android:color/white"
                                 android:textSize="11sp"
+                                android:textAlignment="center"
+                                app:layout_constraintEnd_toEndOf="@id/view_partner_home_card_bg2"
+                                app:layout_constraintStart_toStartOf="@id/view_partner_home_card_bg2"
+                                app:layout_constraintBottom_toBottomOf="@id/view_partner_home_card_bg2"
+                                app:layout_constraintTop_toTopOf="@+id/view_partner_home_card_bg2"
                                 android:fontFamily="@font/pretendard_regular" />
-                        </FrameLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>

@@ -81,7 +81,7 @@ class ServicePassivityProposalWritingFragment
         binding.btnCompleted.setOnClickListener {
             // 1) 옵션 수집(실패 시 즉시 중단)
             val options = try {
-                adapter.getItems().map { it.toOptionDtoOrThrow() }   // ✅ mapNotNull 금지
+                adapter.getItems().map { it.toOptionDtoOrThrow() }   // mapNotNull 금지
             } catch (e: IllegalArgumentException) {
                 Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -97,7 +97,7 @@ class ServicePassivityProposalWritingFragment
             val selectedPlace = SelectedPlaceDto(
                 roadAddress = selectedPlaceRoadAddress,
                 address = selectedPlaceAddress,
-                placeId = selectedPlaceId,          // ⚠️ 여기 타입이 Long/Int라면 아래 put도 Long/Int로!
+                placeId = selectedPlaceId,          // 여기 타입이 Long/Int라면 아래 put도 Long/Int로!
                 name = storeName,
                 latitude = selectedPlaceLatitude,
                 longitude = selectedPlaceLongitude
@@ -108,7 +108,7 @@ class ServicePassivityProposalWritingFragment
                 try { optionListAdapter.toJson(options) }
                 catch (_: Throwable) { com.google.gson.Gson().toJson(options) }  // fallback
 
-            // 4) 번들 구성 (⭐ storeId 타입 주의)
+            // 4) 번들 구성 (storeId 타입 주의)
             val bundle = Bundle().apply {
                 // 🔧 storeId: 수신부가 Long을 기대한다면 putLong 사용
                 when (selectedPlace.placeId) {

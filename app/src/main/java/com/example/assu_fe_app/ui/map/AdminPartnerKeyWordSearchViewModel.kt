@@ -23,6 +23,9 @@ constructor(
     private val authTokenLocalStore: AuthTokenLocalStore
 ) : ViewModel() {
 
+    private val _state = MutableLiveData<String>()
+    val state : LiveData<String> = _state
+
     val role = authTokenLocalStore.getUserRoleEnum()
         ?: com.example.assu_fe_app.data.dto.UserRole.ADMIN
 
@@ -33,14 +36,23 @@ constructor(
     val contentList: LiveData<List<LocationAdminPartnerSearchResultItem>> = _contentList
 
     fun search(keyword: String) = viewModelScope.launch {
+        _state.value = "loading"
         val result = when (role) {
             com.example.assu_fe_app.data.dto.UserRole.ADMIN   -> adminSearchPartnerCase(keyword)
             com.example.assu_fe_app.data.dto.UserRole.PARTNER -> partnerSearchAdminCase(keyword)
             else                                              -> adminSearchPartnerCase(keyword)
         }
         when (result) {
-            is RetrofitResult.Success -> { _contentList.value = result.data; _isEmptyList.value = result.data.isEmpty() }
-            is RetrofitResult.Fail, is RetrofitResult.Error -> { _contentList.value = emptyList(); _isEmptyList.value = true }
+            is RetrofitResult.Success -> {
+                _contentList.value = result.data
+                _isEmptyList.value = result.data.isEmpty()
+                _state.value = "success"
+            }
+            is RetrofitResult.Fail, is RetrofitResult.Error -> {
+                _contentList.value = emptyList()
+                _isEmptyList.value = true
+                _state.value = "error"  // 이 부분이 누락되어 있었음!
+            }
         }
     }
 

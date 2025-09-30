@@ -28,12 +28,13 @@ class CustomerServiceDialogFragment :
 
     override fun initObserver() { /* 필요 시 */ }
 
-    // ✅ BaseFragment가 이미 DataBinding inflate → 여기서 바로 binding 사용
+    // BaseFragment가 이미 DataBinding inflate → 여기서 바로 binding 사용
     override fun initView() {
         setupTabs()
         setupInquirySubmit()
         setupHistoryList()
         showInquiryTab()
+        bindLoading()
     }
 
     /** 문의하기 탭 - 제출 */
@@ -46,6 +47,7 @@ class CustomerServiceDialogFragment :
             if (title.isEmpty() || content.isEmpty() || email.isEmpty()) {
                 return@setOnClickListener
             }
+            showLoading("등록 중...")
             vm.create(title, content, email)
         }
 
@@ -119,5 +121,39 @@ class CustomerServiceDialogFragment :
         tvTabHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_font_main))
         tabInquiryBottomLine.visibility = View.GONE
         tabHistoryBottomLine.visibility = View.VISIBLE
+    }
+
+    private fun bindLoading() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // creating, list.loading 동시에 관찰
+                launch {
+                    vm.creating.collectLatest { creating ->
+                        if (creating) showLoading("등록 중...") else hideLoading()
+                    }
+                }
+                launch {
+                    vm.list.collectLatest { st ->
+                        // "등록 중"일 땐 creating 수집기가 우선 처리하므로 여기선 등록 중이 아닐 때만 동작
+                        if (!vm.creating.value) {
+                            if (st.loading) {
+                                showLoading("로딩 중...")
+                            } else {
+                                hideLoading()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showLoading(message: String = "등록 중...") {
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.tvLoadingText.text = message
+    }
+
+    private fun hideLoading() {
+        binding.loadingOverlay.visibility = View.GONE
     }
 }
