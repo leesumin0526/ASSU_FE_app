@@ -92,9 +92,9 @@ class AdminDashboardFragment :
 
     private fun setupAdminSpecificUI(adminStats: AdminDashboardModel) {
         // 통합 API에서 받은 모든 데이터 설정
-        binding.tvTotalStudents?.text = "+ ${adminStats.totalStudentCount}"
-        binding.tvNewStudents?.text = "+ ${adminStats.newStudentCount}"
-        binding.tvTodayUsers?.text = "+ ${adminStats.todayUsagePersonCount}"
+        binding.tvTotalStudents?.text = "++ ${adminStats.totalStudentCount}"
+        binding.tvNewStudents?.text = "++ ${adminStats.newStudentCount}"
+        binding.tvTodayUsers?.text = "++ ${adminStats.todayUsagePersonCount}"
 
         // 현재 데이터 저장
         currentStoreUsageStats = adminStats.storeUsageStats
@@ -105,7 +105,7 @@ class AdminDashboardFragment :
         // 분석 텍스트 설정
         if (adminStats.storeUsageStats.isNotEmpty()) {
             val topStore = adminStats.storeUsageStats.first() // 이미 사용량 내림차순으로 정렬됨
-            binding.tvDashboardAnalysis?.text = "${topStore.storeName}의\n제휴 누적이용률이 가장 높아요!"
+            binding.tvDashboardAnalysis?.text = "&quot;${topStore.storeName}&quot; 의\n제휴 누적이용률이 가장 높아요!"
         } else {
             // 제휴 이용내역이 없는 경우
             binding.tvDashboardAnalysis?.text = "아직 제휴 이용내역이 없어요.\n첫 번째 이용자를 기다리고 있어요!"
@@ -219,7 +219,7 @@ class AdminDashboardFragment :
                     // topStores 리스트의 인덱스를 사용
                     if (selectedIndex >= 0 && selectedIndex < topStores.size) {
                         val selectedStore = topStores[selectedIndex]
-                        showStoreUsageDialog(selectedStore)
+                        //showStoreUsageDialog(selectedStore)
                         // 분석 텍스트 업데이트
                         updateAnalysisText(selectedStore)
                     }
@@ -254,23 +254,23 @@ class AdminDashboardFragment :
     }
 
     // 매장 이용현황 다이얼로그 표시
-    private fun showStoreUsageDialog(store: AdminDashboardModel.StoreUsageStat) {
-        val storeName = store.storeName ?: "알 수 없는 매장"
-        val usageCount = store.usageCount ?: 0
-
-        try {
-            AlertDialog.Builder(requireContext())
-                .setTitle("제휴 이용현황")
-                .setMessage("${storeName}\n이용건수: ${usageCount}건")
-                .setPositiveButton("확인") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            showError("다이얼로그 표시 중 오류가 발생했습니다")
-        }
-    }
+//    private fun showStoreUsageDialog(store: AdminDashboardModel.StoreUsageStat) {
+//        val storeName = store.storeName ?: "알 수 없는 매장"
+//        val usageCount = store.usageCount ?: 0
+//
+//        try {
+//            AlertDialog.Builder(requireContext())
+//                .setTitle("제휴 이용현황")
+//                .setMessage("${storeName}\n이용건수: ${usageCount}건")
+//                .setPositiveButton("확인") { dialog, _ ->
+//                    dialog.dismiss()
+//                }
+//                .show()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            showError("다이얼로그 표시 중 오류가 발생했습니다")
+//        }
+//    }
 
     // 이번달 이용현황 텍스트 설정
     private fun setMonthlyUsageText(monthlyCount: Int) {
