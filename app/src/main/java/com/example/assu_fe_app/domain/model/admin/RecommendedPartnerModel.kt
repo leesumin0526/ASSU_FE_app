@@ -5,7 +5,8 @@ package com.example.assu_fe_app.domain.model.admin
         val partnerName: String,
         val partnerAddress: String,
         val partnerDetailAddress: String,
-        val partnerUrl: String? = null
+        val partnerUrl: String? = null,
+        val partnerPhone: String? = null,
     ) {
         val fullAddress: String
             get() = "$partnerAddress $partnerDetailAddress"

@@ -13,5 +13,6 @@ data class AdminLiteDto(
     val adminAddress: String,
     val adminDetailAddress: String,
     val adminName: String,
-    val adminUrl: String? = null
+    val adminUrl: String? = null,
+    val adminPhone: String? = null
 )

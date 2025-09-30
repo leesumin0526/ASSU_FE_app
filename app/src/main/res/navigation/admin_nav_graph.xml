@@ -83,7 +83,16 @@
     <fragment
         android:id="@+id/mypageAccountFragment"
         android:name="com.example.assu_fe_app.presentation.common.mypage.MypageAccountFragment"
-        tools:layout="@layout/fragment_mypage_account" />
+        tools:layout="@layout/fragment_mypage_account">
+        <action
+            android:id="@+id/action_my_page_account_to_block_manage_fragment"
+            app:destination="@id/blockManageFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/blockManageFragment"
+        android:name="com.example.assu_fe_app.presentation.common.mypage.BlockManageFragment"
+        tools:layout="@layout/fragment_block_manage" />
 
     <fragment
         android:id="@+id/customerServiceDialogFragment"

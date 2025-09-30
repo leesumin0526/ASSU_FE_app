@@ -5,14 +5,11 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.Navigation
-import com.bumptech.glide.Glide
 import com.example.assu_fe_app.presentation.common.contract.PartnershipContractDialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDto
@@ -23,8 +20,6 @@ import com.example.assu_fe_app.data.dto.partnership.response.OptionType
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.databinding.FragmentPartnerHomeBinding
 import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
-import com.example.assu_fe_app.domain.model.admin.RecommendedPartnerModel
-import com.example.assu_fe_app.presentation.admin.home.AdminHomeViewPartnerListActivity
 import com.example.assu_fe_app.domain.model.partner.RecommendedAdminModel
 import com.example.assu_fe_app.presentation.admin.home.HomeViewModel
 import com.example.assu_fe_app.presentation.base.BaseFragment
@@ -35,6 +30,8 @@ import com.example.assu_fe_app.ui.partner.AdminRecommendViewModel
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.getValue
 import kotlin.jvm.java
@@ -49,6 +46,9 @@ class PartnerHomeFragment :
 
     private val adminRecommendViewModel: AdminRecommendViewModel by viewModels()
     private var recommendedAdmins: List<RecommendedAdminModel> = emptyList()
+    private var phoneNumber: String? = null
+    private var opponentId: Long? = null
+
     @Inject
     lateinit var authTokenLocalStore: AuthTokenLocalStore
 
@@ -65,30 +65,23 @@ class PartnerHomeFragment :
                         is ChattingViewModel.CreateRoomUiState.Success -> {
                             binding.viewPartnerHomeCardBg.isEnabled = true
                             val roomId = state.data.roomId
+                            val opponentName = state.data.partnerViewName
 
-                            val intent =
-                                Intent(requireContext(), ChattingActivity::class.java).apply {
-                                    putExtra("roomId", roomId)
-                                }
+                            val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
+                                putExtra("roomId", roomId)
+                                putExtra("opponentName", opponentName)
+                                putExtra("entryMessage", "추천 파트너 카드에서 이동했습니다.")
+                                putExtra("phoneNumber", phoneNumber)
+                                putExtra("opponentId", opponentId ?: -1L)
+                            }
 
                             startActivity(intent)
-                            Toast.makeText(
-                                requireContext(),
-                                "채팅방 생성 성공: ${state}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
                             // 한 번 처리 후 상태 리셋
                             chattingViewModel.resetCreateState()
                         }
 
                         is ChattingViewModel.CreateRoomUiState.Fail -> {
                             binding.viewPartnerHomeCardBg.isEnabled = true
-                            Toast.makeText(
-                                requireContext(),
-                                "채팅방 생성 실패: ${state.code}",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             Log.e(
                                 "AdminHomeFragment",
                                 "Fail code=${state.code}, msg=${state.message}"
@@ -98,11 +91,6 @@ class PartnerHomeFragment :
 
                         is ChattingViewModel.CreateRoomUiState.Error -> {
                             binding.viewPartnerHomeCardBg.isEnabled = true
-                            Toast.makeText(
-                                requireContext(),
-                                "에러: ${state.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             chattingViewModel.resetCreateState()
                         }
 
@@ -164,7 +152,6 @@ class PartnerHomeFragment :
                         }
 
                         is PartnershipViewModel.PartnershipAdminListUiState.Fail -> {
-                            Toast.makeText(requireContext(), "서버 실패: ${state.message}", Toast.LENGTH_SHORT).show()
                             Log.e("PartnerHomeFragment", "Fail code=${state.code}, message=${state.message}")
                             binding.partnerHomeListItem1.isVisible = false
                             binding.partnerHomeListItem2.isVisible = false
@@ -172,7 +159,6 @@ class PartnerHomeFragment :
                         }
 
                         is PartnershipViewModel.PartnershipAdminListUiState.Error -> {
-                            Toast.makeText(requireContext(), "에러: ${state.message}", Toast.LENGTH_SHORT).show()
                             Log.e("PartnerHomeFragment", "Error message=${state.message}")
                             binding.partnerHomeListItem1.isVisible = false
                             binding.partnerHomeListItem2.isVisible = false
@@ -196,11 +182,11 @@ class PartnerHomeFragment :
                         }
                         is AdminRecommendViewModel.RecommendUiState.Loading -> {
                             binding.clRecommendInquiry1.isEnabled = false
-                            binding.flRecommendInquiry2.isEnabled = false
+                            binding.clRecommendInquiry2.isEnabled = false
                         }
                         is AdminRecommendViewModel.RecommendUiState.Error -> {
                             binding.clRecommendInquiry1.isEnabled = false
-                            binding.flRecommendInquiry2.isEnabled = false
+                            binding.clRecommendInquiry2.isEnabled = false
                         }
                         else -> Unit
                     }
@@ -245,28 +231,6 @@ class PartnerHomeFragment :
                 }
             }
         }
-
-        // 첫 번째 추천 카드 문의하기 버튼
-        binding.clRecommendInquiry1.setOnClickListener {
-            recommendedAdmins.getOrNull(0)?.let { admin ->
-                val req = CreateChatRoomRequestDto(
-                    adminId = admin.adminId,
-                    partnerId = authTokenLocalStore.getUserId() ?: 5L
-                )
-                chattingViewModel.createRoom(req)
-            }
-        }
-
-        // 두 번째 추천 카드 문의하기 버튼
-        binding.flRecommendInquiry2.setOnClickListener {
-            recommendedAdmins.getOrNull(1)?.let { admin ->
-                val req = CreateChatRoomRequestDto(
-                    adminId = admin.adminId,
-                    partnerId = authTokenLocalStore.getUserId() ?: 5L
-                )
-                chattingViewModel.createRoom(req)
-            }
-        }
     }
 
     private fun bindAdminItem(
@@ -281,15 +245,17 @@ class PartnerHomeFragment :
 
         // 옵션 설명 만들기
         val option = item.options.firstOrNull()
+        val cost = changeLongToMoney(option?.cost)
         descView.text = if (option != null) {
+
             when (option.optionType) {
                 OptionType.SERVICE -> when (option.criterionType) {
                     CriterionType.HEADCOUNT -> "${option.people}명당 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
-                    CriterionType.PRICE -> "${option.cost}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
+                    CriterionType.PRICE -> "${cost}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
                 }
                 OptionType.DISCOUNT -> when (option.criterionType) {
                     CriterionType.HEADCOUNT -> "${option.people}명 이상 ${option.discountRate}% 할인"
-                    CriterionType.PRICE -> "${option.cost}원 이상 주문 시 ${option.discountRate}% 할인"
+                    CriterionType.PRICE -> "${cost}원 이상 주문 시 ${option.discountRate}% 할인"
                 }
             }
         } else {
@@ -312,7 +278,7 @@ class PartnerHomeFragment :
                             )
 
                             CriterionType.PRICE -> PartnershipContractItem.Service.ByAmount(
-                                (opt.cost ?: 0L).toInt(),
+                                cost,
                                 opt.goods.firstOrNull()?.goodsName ?: "상품"
                             )
                         }
@@ -324,7 +290,7 @@ class PartnerHomeFragment :
                             )
 
                             CriterionType.PRICE -> PartnershipContractItem.Discount.ByAmount(
-                                (opt.cost ?: 0L).toInt(),
+                                cost,
                                 (opt.discountRate ?: 0L).toInt()
                             )
                         }
@@ -349,9 +315,11 @@ class PartnerHomeFragment :
             // 문의 버튼 활성화 & 클릭
             binding.clRecommendInquiry1.isEnabled = true
             binding.clRecommendInquiry1.setOnClickListener {
+                phoneNumber = a.adminPhone
+                opponentId = a.adminId
+
                 val myPartnerId = authTokenLocalStore.getUserId()
                 if (myPartnerId == null) {
-                    Toast.makeText(requireContext(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
                 val req = CreateChatRoomRequestDto(
@@ -369,11 +337,13 @@ class PartnerHomeFragment :
             binding.tvPartnerHomeRecommendAdminName2.text = a.adminName
             binding.tvPartnerHomeRecommendAdminAddress2.text = a.fullAddress
 
-            binding.flRecommendInquiry2.isEnabled = true
-            binding.flRecommendInquiry2.setOnClickListener {
+            binding.clRecommendInquiry2.isEnabled = true
+            binding.clRecommendInquiry2.setOnClickListener {
+                phoneNumber = a.adminPhone
+                opponentId = a.adminId
+
                 val myPartnerId = authTokenLocalStore.getUserId()
                 if (myPartnerId == null) {
-                    Toast.makeText(requireContext(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
                 val req = CreateChatRoomRequestDto(
@@ -383,7 +353,12 @@ class PartnerHomeFragment :
                 chattingViewModel.createRoom(req)
             }
         } ?: run {
-            binding.flRecommendInquiry2.isEnabled = false
+            binding.clRecommendInquiry2.isEnabled = false
         }
+    }
+
+    private fun changeLongToMoney(cost: Long?): String {
+        val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+        return formatter.format(cost)
     }
 }

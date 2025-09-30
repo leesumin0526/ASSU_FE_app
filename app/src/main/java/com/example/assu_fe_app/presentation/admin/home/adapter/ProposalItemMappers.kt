@@ -14,7 +14,7 @@ fun ProposalItem.toOptionDtoOrThrow(): OptionDto {
         else -> error("조건(가격/인원)을 선택해 주세요.")
     }
 
-    // ✅ 기준값은 num(문자열)에 입력 → 숫자만 추출
+    //  기준값은 num(문자열)에 입력 → 숫자만 추출
     val numDigits = num.digits()
     val people: Int? = if (criterionType == "HEADCOUNT")
         numDigits.toIntOrNull() ?: error("인원 기준값을 입력해 주세요.")
@@ -26,7 +26,7 @@ fun ProposalItem.toOptionDtoOrThrow(): OptionDto {
 
     return when (offerType) {
         OfferType.SERVICE -> {
-            // ✅ 서비스: contents = [품목들...]
+            // 서비스: contents = [품목들...]
             val goods = contents.map { it.trim() }
                 .filter { it.isNotEmpty() }
                 .map { GoodsRequestDto(goodsName = it) }
@@ -38,13 +38,13 @@ fun ProposalItem.toOptionDtoOrThrow(): OptionDto {
                 criterionType = criterionType,
                 people = people,
                 cost = cost,
-                category = null,
+                category = category,
                 discountRate = null,
                 goods = goods
             )
         }
         OfferType.DISCOUNT -> {
-            // ✅ 할인: contents[0] = 할인율(%), 1칸만 사용
+            // 할인: contents[0] = 할인율(%), 1칸만 사용
             val discountRate = contents.getOrNull(0)?.trim()?.digits()?.toIntOrNull()
                 ?: error("할인율(%)을 입력해 주세요.")
 
@@ -53,7 +53,7 @@ fun ProposalItem.toOptionDtoOrThrow(): OptionDto {
                 criterionType = criterionType,
                 people = people,
                 cost = cost,
-                category = null,
+                category = category,
                 discountRate = discountRate,
                 goods = null
             )

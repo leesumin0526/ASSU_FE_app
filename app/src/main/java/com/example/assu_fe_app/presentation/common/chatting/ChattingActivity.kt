@@ -15,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.assu_fe_app.BlockOpponentDialogFragment
+import com.example.assu_fe_app.presentation.common.chatting.dialog.BlockOpponentDialogFragment
 import com.example.assu_fe_app.R
 import com.example.assu_fe_app.data.dto.chatting.ChattingMessageItem
 import com.example.assu_fe_app.databinding.ActivityChattingBinding

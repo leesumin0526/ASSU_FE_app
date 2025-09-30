@@ -421,9 +421,10 @@
                                 android:id="@+id/tv_admin_home_recommend_shop_name"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="역전할머니맥주 숭실대점"
+                                android:text="역전할머니맥주 숭실대입구역점"
                                 android:fontFamily="@font/pretendard_medium"
                                 android:textColor="@color/assu_font_main"
+                                android:maxLength="13"
                                 android:textSize="17sp" />
 
                             <TextView
@@ -450,7 +451,7 @@
                                     android:gravity="center"
                                     android:text="문의하기"
                                     android:fontFamily="@font/pretendard_regular"
-                                    android:textColor="@android:color/white"
+                                    android:textColor="@color/assu_main"
                                     android:textSize="11sp" />
                             </FrameLayout>
                         </LinearLayout>

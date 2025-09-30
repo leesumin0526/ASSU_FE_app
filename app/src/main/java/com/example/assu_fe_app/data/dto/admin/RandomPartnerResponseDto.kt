@@ -8,5 +8,6 @@ data class RandomPartnerResponseDto(
     val partnerAddress: String,
     val partnerDetailAddress: String,
     val partnerName: String,
-    val partnerUrl: String? = null
+    val partnerUrl: String? = null,
+    val partnerPhone: String? = null
 )

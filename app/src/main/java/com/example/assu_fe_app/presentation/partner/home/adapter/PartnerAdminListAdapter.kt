@@ -16,6 +16,8 @@ import com.example.assu_fe_app.domain.model.admin.GetProposalAdminListModel
 import com.example.assu_fe_app.domain.model.admin.GetProposalPartnerListModel
 import com.example.assu_fe_app.domain.model.partnership.PartnershipOptionModel
 import com.example.assu_fe_app.domain.model.partnership.ProposalPartnerDetailsModel
+import java.text.NumberFormat
+import java.util.Locale
 
 
 class PartnerAdminListAdapter(
@@ -30,6 +32,7 @@ class PartnerAdminListAdapter(
         fun bind(item: GetProposalAdminListModel) {
             binding.tvAssociationName.text = item.adminName
             val option = item.options.firstOrNull()
+            val cost = changeLongToMoney(option?.cost)
             binding.tvBenefitDescription.text = if (option != null) {
                 when (option.optionType) {
                     OptionType.SERVICE -> when (option.criterionType) {
@@ -37,7 +40,7 @@ class PartnerAdminListAdapter(
                             "${option.people ?: 0}명 이상 인증 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
 
                         CriterionType.PRICE ->
-                            "${option.cost ?: 0}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
+                            "${cost}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
                     }
 
                     OptionType.DISCOUNT -> when (option.criterionType) {
@@ -45,7 +48,7 @@ class PartnerAdminListAdapter(
                             "${option.people ?: 0}명 이상 인증 시${option.discountRate ?: 0}% 할인"
 
                         CriterionType.PRICE ->
-                            "${option.cost ?: 0}원 이상 주문 시 ${option.discountRate ?: 0}% 할인"
+                            "${cost}원 이상 주문 시 ${option.discountRate ?: 0}% 할인"
                     }
                 }
             } else {
@@ -75,7 +78,7 @@ class PartnerAdminListAdapter(
         // goods를 보기 좋게 합침 (없으면 "상품")
         val goodsText = opt.goods.firstOrNull()?.goodsName ?: "상품"
         val people = opt.people ?: 0
-        val cost = (opt.cost ?: 0L)
+        val cost = changeLongToMoney(opt.cost)
         val discount = (opt.discountRate ?: 0L)
 
         return when (opt.optionType) {
@@ -87,7 +90,7 @@ class PartnerAdminListAdapter(
                     )
                 CriterionType.PRICE ->
                     PartnershipContractItem.Service.ByAmount(
-                        minAmount = cost.toInt(),   // ByAmount가 Int면 toInt(), Long이면 그대로 사용
+                        minAmount = cost,   // ByAmount가 Int면 toInt(), Long이면 그대로 사용
                         items = goodsText
                     )
             }
@@ -100,7 +103,7 @@ class PartnerAdminListAdapter(
                     )
                 CriterionType.PRICE ->
                     PartnershipContractItem.Discount.ByAmount(
-                        minAmount = cost.toInt(),
+                        minAmount = cost,
                         percent = discount.toInt()
                     )
             }
@@ -124,5 +127,10 @@ class PartnerAdminListAdapter(
         (items as MutableList).clear()
         (items as MutableList).addAll(newItems)
         notifyDataSetChanged()
+    }
+
+    private fun changeLongToMoney(cost: Long?): String {
+        val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+        return formatter.format(cost)
     }
 }
