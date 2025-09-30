@@ -19,7 +19,7 @@ class ReviewDeleteDialogFragment : DialogFragment() {
     ): View {
         _binding = FragmentReviewDeleteDialogBinding.inflate(inflater, container, false)
 
-        binding.btnDeleteCancel.setOnClickListener {
+        binding.ivCloseButton.setOnClickListener {
             dismiss()
         }
 
@@ -31,6 +31,14 @@ class ReviewDeleteDialogFragment : DialogFragment() {
         return binding.root
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val displayMetrics = resources.displayMetrics
+        val width = displayMetrics.widthPixels
+        val dialogWidth = (width * 0.8369f).toInt()
+        dialog?.window?.setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

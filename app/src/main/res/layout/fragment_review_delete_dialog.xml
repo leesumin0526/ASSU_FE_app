@@ -3,27 +3,32 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="15dp"
+    android:layout_marginEnd="15dp"
+    android:padding="24dp"
+    android:background="@drawable/bg_review_delete_dialog"
     tools:context=".presentation.user.review.mypage.ReviewDeleteDialogFragment">
 
 
     <ImageView
         android:id="@+id/iv_review_delete_container"
-        android:layout_width="280dp"
-        android:layout_height="170dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/bg_review_delete_dialog"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
 
-    <View
-        android:id="@+id/delete_mg1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.1242"
-        app:layout_constraintStart_toStartOf="@id/iv_review_delete_container"
-        app:layout_constraintTop_toTopOf="@id/iv_review_delete_container"/>
+    <ImageView
+        android:id="@+id/iv_close_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_cross"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
     <TextView
         android:id="@+id/tv_delete_myReview"
@@ -34,7 +39,7 @@
         android:fontFamily="@font/pretendard_semibold"
         app:layout_constraintStart_toStartOf="@id/iv_review_delete_container"
         app:layout_constraintEnd_toEndOf="@id/iv_review_delete_container"
-        app:layout_constraintTop_toBottomOf="@id/delete_mg1"
+        app:layout_constraintTop_toTopOf="parent"
         android:text="내가 작성한 리뷰 삭제"/>
     
     <View
@@ -60,7 +65,7 @@
         app:layout_constraintTop_toBottomOf="@id/delete_mg2"/>
 
     <View
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/delete_mg3"
         app:layout_constraintHeight_percent="0.0847"
@@ -82,30 +87,15 @@
         app:layout_constraintWidth_percent="0.06"
         app:layout_constraintEnd_toEndOf="@id/iv_review_delete_container"
         app:layout_constraintTop_toTopOf="@id/iv_review_delete_container"/>
-    
-    <TextView
-        android:id="@+id/btn_delete_cancel"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_btn_dialog_cancel"
-        app:layout_constraintHeight_percent="0.232"
-        app:layout_constraintWidth_percent="0.417"
-        app:layout_constraintStart_toEndOf="@id/delete_mg_left"
-        android:text="취소"
-        android:gravity="center"
-        android:textColor="@color/assu_main"
-        android:textSize="11sp"
-        android:fontFamily="@font/pretendard_semibold"
-        app:layout_constraintTop_toBottomOf="@id/delete_mg3"/>
+
 
     <TextView
         android:id="@+id/btn_delete_confirm"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="41dp"
         android:background="@drawable/bg_btn_dialog_select"
-        app:layout_constraintHeight_percent="0.232"
-        app:layout_constraintWidth_percent="0.417"
-        app:layout_constraintEnd_toStartOf="@id/delete_mg_right"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:text="확인"
         android:gravity="center"
         android:textColor="@color/white"
