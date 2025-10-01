@@ -116,7 +116,7 @@ class LocationSearchActivity :
 
     private fun showLoading() {
 
-        binding.tvLoadingText.text = "로딩 중..."
+        binding.tvLoadingText.text = "검색 중..."
 
         // 로딩 오버레이만 표시, 나머지 숨김
         binding.loadingOverlay.visibility = View.VISIBLE
