@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_delete"
+        app:layout_constraintEnd_toStartOf="@id/btn_unblock"
         android:layout_marginEnd="24dp">
 
         <!-- 매장명 -->
@@ -66,7 +66,7 @@
 
     <!-- 삭제 버튼 -->
     <TextView
-        android:id="@+id/btn_delete"
+        android:id="@+id/btn_unblock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="차단 해제하기"

@@ -6,11 +6,11 @@ import com.example.assu_fe_app.data.dto.chatting.request.CreateChatRoomRequestDt
 import com.example.assu_fe_app.data.dto.chatting.response.BlockResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.CheckBlockResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.CreateChatRoomResponseDto
+import com.example.assu_fe_app.data.dto.chatting.response.GetBlockListResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.GetChatHistoryResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.GetChattingRoomListResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.LeaveChattingRoomResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.ReadChattingResponseDto
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -57,4 +57,8 @@ interface ChattingService {
     suspend fun checkBlockOpponent(
         @Path("opponentId") opponentId: Long
     ): BaseResponse<CheckBlockResponseDto>
+
+    @GET("chat/blockList")
+    suspend fun getBlockList(
+    ): BaseResponse<List<GetBlockListResponseDto>>
 }

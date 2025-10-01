@@ -159,7 +159,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                tools:listitem="@layout/item_blcok_list"
+                tools:listitem="@layout/item_block_list"
                 android:visibility="visible"/>
 
             <!-- 빈 상태 UI -->
