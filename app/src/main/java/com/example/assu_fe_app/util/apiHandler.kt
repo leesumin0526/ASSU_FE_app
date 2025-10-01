@@ -31,6 +31,7 @@ suspend fun <T : Any, R : Any> apiHandler(
                 // 성공인데 result가 비어 있는 경우를 방어
                 RetrofitResult.Fail(
                     statusCode = base.code.toIntOrNull() ?: -1,
+                    code = base.code,
                     message = "Empty result"
                 )
             } else {
@@ -41,17 +42,19 @@ suspend fun <T : Any, R : Any> apiHandler(
                 RetrofitResult.Success(mappedData)
             }
         } else {
-            Log.e("apiHandler", "API 실패: code=${base.code}, message=${base.message}")
+            Log.e("apiHandler", "API 실패: code=${base.code}, message=${base.message}, result=${base.result}")
             RetrofitResult.Fail(
                 statusCode = base.code.toIntOrNull() ?: -1,
-                message = base.message
+                code = base.code,
+                message = base.message,
+                result = if (base.result is String) base.result as String else null
             )
         }
     } catch (e: HttpException) {
         Log.e("apiHandler", "HttpException 발생: ${e.code()}, ${e.message()}")
         val code = e.code()
         val msg = try { e.response()?.errorBody()?.string() } catch (_: Exception) { e.message() }
-        RetrofitResult.Fail(statusCode = code, message = msg ?: "HttpException")
+        RetrofitResult.Fail(statusCode = code, code = code.toString(), message = msg ?: "HttpException")
     } catch (e: IOException) {
         Log.e("apiHandler", "IOException 발생: ${e.message}", e)
         RetrofitResult.Error(e) // 네트워크/타임아웃
@@ -88,17 +91,19 @@ suspend fun <R : Any> apiHandlerForUnit(
             Log.d("apiHandler", "매핑된 데이터: $mappedData")
             RetrofitResult.Success(mappedData)
         } else {
-            Log.e("apiHandler", "API 실패: code=${base.code}, message=${base.message}")
+            Log.e("apiHandler", "API 실패: code=${base.code}, message=${base.message}, result=${base.result}")
             RetrofitResult.Fail(
                 statusCode = base.code.toIntOrNull() ?: -1,
-                message = base.message
+                code = base.code,
+                message = base.message,
+                result = if (base.result is String) base.result as String else null
             )
         }
     } catch (e: HttpException) {
         Log.e("apiHandler", "HttpException 발생: ${e.code()}, ${e.message()}")
         val code = e.code()
         val msg = try { e.response()?.errorBody()?.string() } catch (_: Exception) { e.message() }
-        RetrofitResult.Fail(statusCode = code, message = msg ?: "HttpException")
+        RetrofitResult.Fail(statusCode = code, code = code.toString(), message = msg ?: "HttpException")
     } catch (e: IOException) {
         Log.e("apiHandler", "IOException 발생: ${e.message}", e)
         RetrofitResult.Error(e) // 네트워크/타임아웃

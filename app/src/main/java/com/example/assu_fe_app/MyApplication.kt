@@ -31,6 +31,10 @@ class MyApplication : Application() {
     companion object {
         private var appContext: Context? = null
 
+        fun getApplicationContext(): Context? {
+            return appContext
+        }
+
         fun isOnline(): Boolean {
             val cm = appContext?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
                 ?: return false

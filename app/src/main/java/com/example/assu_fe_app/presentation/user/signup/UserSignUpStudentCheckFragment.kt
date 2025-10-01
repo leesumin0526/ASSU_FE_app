@@ -82,7 +82,8 @@ class UserSignUpStudentCheckFragment :
     private fun updateButtonState() {
         val isPrivacyAgreed = binding.cbPrivacyAgree.isChecked
 
-        // 필수 약관(개인정보 처리방침, 서비스 이용약관)만 체크되어야 버튼 활성화
+        // 필수 약관(개인정보 처리방침 + 서비스 이용약관)이 체크되어야 버튼 활성화
+        // 선택 약관(cbMarketingAgree)은 체크 여부와 관계없이 진행 가능
         val isButtonEnabled = isPrivacyAgreed
         
         binding.btnCompleted.isEnabled = isButtonEnabled
@@ -114,8 +115,8 @@ class UserSignUpStudentCheckFragment :
         binding.cbMarketingAgree.isChecked = isChecked
 
         // ViewModel에 상태 저장
-        signUpViewModel.setPrivacyAgree(isChecked)
-        signUpViewModel.setMarketingAgree(isChecked)
+        signUpViewModel.setPrivacyAgree(isChecked) // 필수 약관 (UI 검증용)
+        signUpViewModel.setMarketingAgree(isChecked) // 선택 약관 (마케팅 + 위치정보 동시 설정)
 
         // 리스너 재설정
         setupCheckboxListeners()
@@ -147,13 +148,13 @@ class UserSignUpStudentCheckFragment :
 
         // 개별 약관 체크박스 리스너 설정
         binding.cbPrivacyAgree.setOnCheckedChangeListener { _, isChecked ->
-            signUpViewModel.setPrivacyAgree(isChecked)
+            signUpViewModel.setPrivacyAgree(isChecked) // 필수 약관 (UI 검증용, 서버 미전송)
             updateAllAgreeState()
             updateButtonState()
         }
 
         binding.cbMarketingAgree.setOnCheckedChangeListener { _, isChecked ->
-            signUpViewModel.setMarketingAgree(isChecked)
+            signUpViewModel.setMarketingAgree(isChecked) // 선택 약관 (마케팅 + 위치정보 동시 설정)
             updateAllAgreeState()
             updateButtonState()
         }

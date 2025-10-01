@@ -56,10 +56,16 @@ class LoginViewModel @Inject constructor(
                     _loginState.value = LoginState.Success(result.data)
                 }
                 is RetrofitResult.Fail -> {
-                    _loginState.value = LoginState.Error(result.message)
+                    _loginState.value = LoginState.Error(result)
                 }
                 is RetrofitResult.Error -> {
-                    _loginState.value = LoginState.Error("네트워크 연결을 확인해주세요.")
+                    _loginState.value = LoginState.Error(
+                        RetrofitResult.Fail(
+                            statusCode = -1,
+                            code = "NETWORK_ERROR",
+                            message = "네트워크 연결을 확인해주세요."
+                        )
+                    )
                 }
             }
         }
@@ -97,10 +103,16 @@ class LoginViewModel @Inject constructor(
                     _loginState.value = LoginState.Success(result.data)
                 }
                 is RetrofitResult.Fail -> {
-                    _loginState.value = LoginState.Error(result.message)
+                    _loginState.value = LoginState.Error(result)
                 }
                 is RetrofitResult.Error -> {
-                    _loginState.value = LoginState.Error("네트워크 연결을 확인해주세요.")
+                    _loginState.value = LoginState.Error(
+                        RetrofitResult.Fail(
+                            statusCode = -1,
+                            code = "NETWORK_ERROR",
+                            message = "네트워크 연결을 확인해주세요."
+                        )
+                    )
                 }
             }
         }
@@ -118,7 +130,7 @@ class LoginViewModel @Inject constructor(
         object Idle : LoginState()
         object Loading : LoginState()
         data class Success(val loginData: LoginModel) : LoginState()
-        data class Error(val message: String) : LoginState()
+        data class Error(val fail: RetrofitResult.Fail) : LoginState()
         data class PendingApproval(val message: String) : LoginState()
     }
 }

@@ -6,6 +6,7 @@ import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
 import com.example.assu_fe_app.data.dto.converter.LocalDateTimeAdapter
 import com.example.assu_fe_app.data.remote.AuthInterceptor
+import com.example.assu_fe_app.data.remote.TokenRefreshInterceptor
 import com.example.assu_fe_app.data.service.AuthService
 import com.example.assu_fe_app.data.service.TokenRefreshAuthService
 import com.example.assu_fe_app.data.service.admin.AdminHomeService
@@ -95,8 +96,9 @@ object ServiceModule {
             .build()
 
     @Provides @Singleton @TokenRefresh
-    fun provideOkHttpForTokenRefresh(): OkHttpClient =
+    fun provideOkHttpForTokenRefresh(tokenRefreshInterceptor: TokenRefreshInterceptor): OkHttpClient =
         OkHttpClient.Builder()
+            .addInterceptor(tokenRefreshInterceptor)
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY // 개발에서만
             })
