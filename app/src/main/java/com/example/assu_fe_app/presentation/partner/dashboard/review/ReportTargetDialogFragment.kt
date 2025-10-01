@@ -110,10 +110,11 @@ class ReportTargetDialogFragment : DialogFragment() {
 
         // 신고하기 버튼 - 리스너 호출
         binding.btnReviewReportTargetConfirm.setOnClickListener {
-
             selectedTarget?.let { target ->
                 listener?.let { l ->
-                    l.onReportTargetSelected(target)
+                    // 선택된 대상이 "작성자" 또는 "리뷰 작성자"인지 확인
+                    val isStudentReport = target.contains("작성자")
+                    l.onReportTargetSelected(target, isStudentReport)
                     dismiss()
                 } ?: Log.e("ReportTargetDialog", "Listener is null!")
             } ?: Log.e("ReportTargetDialog", "selectedTarget is null!")
