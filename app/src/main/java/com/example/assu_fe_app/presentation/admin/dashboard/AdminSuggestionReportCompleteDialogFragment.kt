@@ -25,18 +25,25 @@ class AdminSuggestionReportCompleteDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 배경을 투명하게 설정
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         val position = arguments?.getInt("position") ?: -1
+        val isStudentReport = arguments?.getBoolean("isStudentReport", false) ?: false
 
-        // 확인 버튼 클릭 시 Activity의 메서드 호출하고 다이얼로그 닫기
+        // 텍스트 변경
+        if (isStudentReport) {
+            binding.tvCompleteTitle.text = "제휴건의 사용자의 신고가\n완료되었습니다!"
+            binding.tvCompleteDescription.text = "신고 직후 해당 사용자가 작성한 모든 제휴건의글은 비공개 처리되며, 해당 사실이 작성자에게 고지되지 않습니다."
+        } else {
+            binding.tvCompleteTitle.text = "제휴건의글의 신고가\n완료되었습니다!"
+            binding.tvCompleteDescription.text = "신고 직후 해당 제휴건의글은 비공개 처리되며, 해당 사실이 작성자에게 고지되지 않습니다."
+        }
+
         binding.btnConfirm.setOnClickListener {
             (activity as? AdminDashboardSuggestionsActivity)?.onReportCompleteConfirmed(position)
             dismiss()
         }
 
-        // 닫기(X) 버튼 클릭 시 Activity의 메서드 호출하고 다이얼로그 닫기
         binding.ivCloseButton.setOnClickListener {
             (activity as? AdminDashboardSuggestionsActivity)?.onReportCompleteConfirmed(position)
             dismiss()
@@ -57,10 +64,11 @@ class AdminSuggestionReportCompleteDialogFragment : DialogFragment() {
     }
 
     companion object {
-        fun newInstance(position: Int): AdminSuggestionReportCompleteDialogFragment {
+        fun newInstance(position: Int, isStudentReport: Boolean = false): AdminSuggestionReportCompleteDialogFragment {
             val fragment = AdminSuggestionReportCompleteDialogFragment()
             val args = Bundle().apply {
                 putInt("position", position)
+                putBoolean("isStudentReport", isStudentReport)
             }
             fragment.arguments = args
             return fragment

@@ -19,6 +19,7 @@ class AdminReportTargetDialogFragment : DialogFragment() {
 
     private var listener: OnReportTargetSelectedListener? = null
     private var selectedTarget: String? = null
+    private var isStudentReport: Boolean? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +32,6 @@ class AdminReportTargetDialogFragment : DialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        // Activity가 리스너를 구현했는지 확인
         if (context is OnReportTargetSelectedListener) {
             listener = context
         }
@@ -72,8 +72,9 @@ class AdminReportTargetDialogFragment : DialogFragment() {
                 clicked.isSelected = true
                 (clicked as TextView).setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_main))
 
-                // 선택된 값 저장
+                // 선택된 값 저장 (true: 작성자 신고, false: 콘텐츠 신고)
                 selectedTarget = clicked.text.toString()
+                isStudentReport = (clicked.id == binding.tvAdminReportReviewWriter.id)
 
                 // 완료 버튼 활성화
                 binding.btnAdminReportTargetConfirm.isEnabled = true
@@ -88,8 +89,10 @@ class AdminReportTargetDialogFragment : DialogFragment() {
         // 신고하기 버튼 - Activity의 리스너 호출
         binding.btnAdminReportTargetConfirm.setOnClickListener {
             selectedTarget?.let { target ->
-                listener?.onReportTargetSelected(target)
-                dismiss()
+                isStudentReport?.let { isStudent ->
+                    listener?.onReportTargetSelected(target, isStudent)
+                    dismiss()
+                }
             }
         }
     }

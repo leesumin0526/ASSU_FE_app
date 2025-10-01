@@ -22,6 +22,7 @@ import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.example.assu_fe_app.data.service.partner.PartnerHomeService
 import com.example.assu_fe_app.data.service.partnership.PartnershipService
 import com.example.assu_fe_app.data.service.profileService.ProfileService
+import com.example.assu_fe_app.data.service.report.ReportService
 import com.example.assu_fe_app.data.service.review.ReviewService
 import com.example.assu_fe_app.data.service.store.StoreService
 import com.example.assu_fe_app.data.service.suggestion.SuggestionService
@@ -236,6 +237,12 @@ object ServiceModule {
     @Singleton
     fun providePartnerHomeService(@Auth retrofit: Retrofit): PartnerHomeService =
         retrofit.create(PartnerHomeService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideReportService(@Auth retrofit: Retrofit): ReportService {
+        return retrofit.create(ReportService::class.java)
+    }
 
 
 }

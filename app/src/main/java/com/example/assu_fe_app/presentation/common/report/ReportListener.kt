@@ -5,7 +5,7 @@ interface OnItemClickListener{
     fun onClick(position: Int)
 }
 interface OnReportTargetSelectedListener {
-    fun onReportTargetSelected(target: String)
+    fun onReportTargetSelected(target: String, isStudentReport: Boolean)
 }
 
 interface OnReviewReportConfirmedListener {

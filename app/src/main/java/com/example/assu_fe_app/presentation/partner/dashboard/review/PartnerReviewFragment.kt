@@ -114,7 +114,7 @@ class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layou
     }
 
     // 2단계: 신고 대상 선택 후 신고 이유 선택 다이얼로그 표시
-    override fun onReportTargetSelected(selectedTarget: String) {
+    override fun onReportTargetSelected(selectedTarget: String, isStudent: Boolean) {
         // 신고 대상이 선택되면 신고 이유 선택 다이얼로그를 띄움
         val reportDialog = ReviewReportDialogFragment.newInstance(selectedItemPosition)
         reportDialog.show(parentFragmentManager, "ReviewReportDialog")
