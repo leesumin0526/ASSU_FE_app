@@ -59,6 +59,11 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
         activateCompleteButton()
 
         binding.spinnerTarget.setOnClickListener {
+            if (suggestionTargets.isEmpty()) {
+                Toast.makeText(this, "건의 가능한 대상이 없습니다.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (dropdownWindow?.isShowing == true) {
                 dropdownWindow?.dismiss()
             } else {
@@ -141,6 +146,11 @@ class UserServiceSuggestActivity : BaseActivity<ActivityUserServiceSuggestBindin
 
 
     private fun showDropdownMenu(anchor : View, targets: List<SuggestionTargetModel>) {
+
+        if (targets.isEmpty()) {
+            Toast.makeText(this, "건의 가능한 대상이 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val popupBinding = FragmentServiceSuggestDropDownBinding.inflate(layoutInflater)
         val popupWindow = PopupWindow(
