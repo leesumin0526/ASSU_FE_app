@@ -37,6 +37,15 @@ class SignUpVerifyFragment :
     private var isVerified = false
 
     private var lastTimerText: String = "05:00"
+    
+    // 포커스 해제를 위한 Runnable
+    private val focusClearRunnable = Runnable {
+        Log.d("SignUpVerifyFragment", "Auto clearing focus after 2 seconds")
+        binding.etUserVerifyCode.clearFocus()
+    }
+    
+    // 입력 중인지 확인하는 플래그
+    private var isTyping = false
 
     private var timerStartTime: Long = 0L
     private var timerEndTime: Long = 0L
@@ -80,6 +89,7 @@ class SignUpVerifyFragment :
         }
 
         viewModel.verifyPhoneVerificationState.observe(this) { state ->
+            Log.d("SignUpVerifyFragment", "Verification state changed: $state")
             when (state) {
                 is VerifyPhoneVerificationUiState.Success -> {
                     successVerificationUI()
@@ -89,19 +99,15 @@ class SignUpVerifyFragment :
                     errorVerificationUI()
                     // 버튼 재활성화
                     binding.btnCompleted.isEnabled = true
-                    // 서버 에러 메시지는 토스트로 표시하지 않음
-                    // 사용자에게는 간단한 안내 메시지만 표시
-                    val errorMessage = when {
-                        state.code == 400 -> "인증번호가 올바르지 않습니다."
-                        else -> "인증번호가 올바르지 않습니다."
-                    }
-                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                    // 사용자 친화적 메시지 표시 (한 번만)
+                    Toast.makeText(requireContext(), "인증번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
                 }
                 is VerifyPhoneVerificationUiState.Error -> {
                     errorVerificationUI()
                     Log.d("SignUpVerifyViewModel", "네트워크 에러: ${state.message}")
                     // 버튼 재활성화
                     binding.btnCompleted.isEnabled = true
+                    // 네트워크 에러 메시지 표시 (한 번만)
                     Toast.makeText(requireContext(), "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
                 }
                 is VerifyPhoneVerificationUiState.Idle -> {
@@ -125,6 +131,21 @@ class SignUpVerifyFragment :
             toPercent = 0.25f,
             duration = 500L
         )
+
+        // 인증번호 입력 필드 최대 길이 제한 (6자리)
+        binding.etUserVerifyCode.filters = arrayOf(android.text.InputFilter.LengthFilter(6))
+        Log.d("SignUpVerifyFragment", "Set max length to 6 characters")
+
+        // 부모 뷰 클릭 시 EditText 포커스 해제
+        binding.root.setOnClickListener {
+            Log.d("SignUpVerifyFragment", "Root view clicked - clearing focus")
+            binding.etUserVerifyCode.clearFocus()
+            binding.etUserVerifyPhone.clearFocus()
+            
+            // 키보드 숨기기
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
+        }
 
         // 전화번호 입력 필드 텍스트 변경 감지
         binding.etUserVerifyPhone.addTextChangedListener(object : TextWatcher {
@@ -151,19 +172,48 @@ class SignUpVerifyFragment :
         }
 
         binding.etUserVerifyCode.setOnFocusChangeListener { _, hasFocus ->
+            Log.d("SignUpVerifyFragment", "Focus change: hasFocus=$hasFocus, isVerified=$isVerified")
             if (hasFocus) {
                 binding.clUserVerifyCode.background =
                     ContextCompat.getDrawable(requireContext(), R.drawable.bg_signup_input_bar_selected)
             } else {
                 binding.clUserVerifyCode.background =
                     ContextCompat.getDrawable(requireContext(), R.drawable.bg_signup_input_bar)
+                
+                // 포커스를 잃을 때 인증번호가 6자리 이상이고 아직 인증되지 않았다면 검증 API 호출
+                val enteredCode = binding.etUserVerifyCode.text.toString().trim()
+                Log.d("SignUpVerifyFragment", "Focus lost - enteredCode: '$enteredCode', length: ${enteredCode.length}, isVerified: $isVerified, isTyping: $isTyping")
+                
+                // 6자리 이상이고, 타이핑 중이 아니며, 아직 인증되지 않았을 때만 API 호출
+                if (enteredCode.length >= 6 && !isVerified && !isTyping) {
+                    Log.d("SignUpVerifyFragment", "Calling checkVerificationCode() from focus out")
+                    checkVerificationCode()
+                } else {
+                    Log.d("SignUpVerifyFragment", "Skipping verification - code length: ${enteredCode.length}, already verified: $isVerified, or still typing: $isTyping")
+                }
             }
         }
 
+        // EditText 터치 시 포커스 해제를 위한 터치 리스너
+        binding.etUserVerifyCode.setOnTouchListener { _, event ->
+            Log.d("SignUpVerifyFragment", "EditText touched - action: ${event.action}")
+            // 터치 이벤트를 처리하지 않고 부모로 전달하여 포커스 해제 유도
+            false
+        }
+
         binding.etUserVerifyCode.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // 입력 시작 시 타이핑 플래그 설정
+                isTyping = true
+                Log.d("SignUpVerifyFragment", "Typing started - isTyping: $isTyping")
+            }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 입력 중에는 API 호출하지 않음
+                Log.d("SignUpVerifyFragment", "Text changed - isTyping: $isTyping, text: '$s'")
+                
+                // 기존 타이머 제거
+                binding.etUserVerifyCode.removeCallbacks(focusClearRunnable)
                 val errorDrawableState = ContextCompat.getDrawable(
                     requireContext(),
                     R.drawable.bg_signup_input_bar_error
@@ -185,14 +235,45 @@ class SignUpVerifyFragment :
                 }
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) {
+                val text = s?.toString()?.trim() ?: ""
+                Log.d("SignUpVerifyFragment", "afterTextChanged - text: '$text', length: ${text.length}")
+                
+                // 기존 타이머 제거
+                binding.etUserVerifyCode.removeCallbacks(focusClearRunnable)
+                
+                // 6자리 이상일 때만 검증 API 호출
+                if (text.length >= 6) {
+                    Log.d("SignUpVerifyFragment", "Verification code complete - text length: ${text.length}")
+                    isTyping = false
+                    // 6자리 이상 입력 시 검증 API 호출
+                    binding.etUserVerifyCode.postDelayed({
+                        Log.d("SignUpVerifyFragment", "Calling verification for complete code")
+                        checkVerificationCode()
+                    }, 500) // 0.5초 후 검증
+                } else {
+                    // 6자리 미만일 때는 아무것도 하지 않음 (API 호출 안함)
+                    Log.d("SignUpVerifyFragment", "Incomplete code - length: ${text.length}, no API call")
+                    // 타이핑 플래그는 유지하여 focus out에서도 API 호출하지 않도록 함
+                }
+            }
         })
 
         // 엔터 입력 시 인증 처리
         binding.etUserVerifyCode.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
-                checkVerificationCode()
+                val enteredCode = binding.etUserVerifyCode.text.toString().trim()
+                Log.d("SignUpVerifyFragment", "Enter pressed - code length: ${enteredCode.length}")
+                
+                // 6자리 이상일 때만 검증
+                if (enteredCode.length >= 6) {
+                    isTyping = false
+                    Log.d("SignUpVerifyFragment", "Enter pressed - calling verification")
+                    checkVerificationCode()
+                } else {
+                    Log.d("SignUpVerifyFragment", "Enter pressed - code too short, no verification")
+                }
                 true
             } else {
                 false
@@ -274,13 +355,21 @@ class SignUpVerifyFragment :
         val enteredCode = binding.etUserVerifyCode.text.toString().trim()
         val phoneNumber = binding.etUserVerifyPhone.text.toString().trim()
 
+        Log.d("SignUpVerifyFragment", "=== checkVerificationCode() called ===")
+        Log.d("SignUpVerifyFragment", "enteredCode: '$enteredCode'")
+        Log.d("SignUpVerifyFragment", "phoneNumber: '$phoneNumber'")
+
         // 키보드 내리기
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etUserVerifyCode.windowToken, 0)
 
         if (enteredCode.isNotEmpty() && phoneNumber.isNotEmpty()) {
+            Log.d("SignUpVerifyFragment", "Calling viewModel.verifyPhoneVerification()")
+            // 이전 상태 초기화 (중복 토스트 방지)
+            viewModel.resetVerificationState()
             viewModel.verifyPhoneVerification(phoneNumber, enteredCode)
         } else {
+            Log.w("SignUpVerifyFragment", "Verification skipped - missing phone or code")
             Toast.makeText(requireContext(), "인증번호를 입력해주세요", Toast.LENGTH_SHORT).show()
         }
     }
@@ -362,8 +451,17 @@ class SignUpVerifyFragment :
     }
 
 
+    override fun onPause() {
+        super.onPause()
+        // 화면이 일시정지될 때 포커스 해제
+        binding.etUserVerifyCode.clearFocus()
+        binding.etUserVerifyPhone.clearFocus()
+    }
+
     override fun onDestroyView() {
         countDownTimer?.cancel()
+        binding.etUserVerifyCode.removeCallbacks(focusClearRunnable)
+        isTyping = false
         super.onDestroyView()
     }
 }

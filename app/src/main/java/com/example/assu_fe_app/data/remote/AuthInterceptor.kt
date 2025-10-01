@@ -1,8 +1,13 @@
 package com.example.assu_fe_app.data.remote
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import com.example.assu_fe_app.MyApplication
 import com.example.assu_fe_app.data.local.AccessTokenProvider
+import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.data.repository.TokenRefreshRepository
+import com.example.assu_fe_app.presentation.common.login.LmsLoginActivity
 import com.example.assu_fe_app.util.RetrofitResult
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -11,7 +16,8 @@ import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
     private val accessTokenProvider: AccessTokenProvider,
-    private val tokenRefreshRepository: TokenRefreshRepository
+    private val tokenRefreshRepository: TokenRefreshRepository,
+    private val authTokenLocalStore: AuthTokenLocalStore
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -45,8 +51,11 @@ class AuthInterceptor @Inject constructor(
         Log.d("AuthInterceptor", "Response code: ${response.code}")
         Log.d("AuthInterceptor", "Response headers: ${response.headers}")
         
-        // 401 Unauthorized 또는 403 Forbidden 응답이면 토큰 리프레시 시도
-        if (response.code == 401 || response.code == 403) {
+        // 리프레시 토큰 API 호출인지 확인 (무한 루프 방지)
+        val isRefreshTokenApi = original.url.toString().contains("/auth/tokens/refresh")
+        
+        // 401 Unauthorized 또는 403 Forbidden 응답이면 토큰 리프레시 시도 (리프레시 API 제외)
+        if ((response.code == 401 || response.code == 403) && !isRefreshTokenApi) {
             Log.w("AuthInterceptor", "Received ${response.code} - Token may be expired or invalid")
             Log.d("AuthInterceptor", "=== ATTEMPTING TOKEN REFRESH ===")
             
@@ -82,12 +91,23 @@ class AuthInterceptor @Inject constructor(
                 is RetrofitResult.Fail -> {
                     Log.e("AuthInterceptor", "❌ Token refresh FAILED: ${refreshResult.message}")
                     Log.e("AuthInterceptor", "Status code: ${refreshResult.statusCode}")
-                    // 토큰 리프레시 실패 시 원래 응답 반환
+                    
+                    // 리프레시 토큰도 만료된 경우 로그아웃 처리
+                    if (refreshResult.statusCode == 401 || refreshResult.statusCode == 403) {
+                        Log.w("AuthInterceptor", "Refresh token expired - performing logout")
+                        performLogout()
+                    }
                 }
                 is RetrofitResult.Error -> {
                     Log.e("AuthInterceptor", "❌ Token refresh ERROR: ${refreshResult.exception.message}")
                     Log.e("AuthInterceptor", "Exception type: ${refreshResult.exception.javaClass.simpleName}")
-                    // 토큰 리프레시 에러 시 원래 응답 반환
+                    
+                    // 네트워크 오류가 아닌 경우 로그아웃 처리
+                    val isNetworkError = refreshResult.exception.message?.contains("network", ignoreCase = true) ?: false
+                    if (!isNetworkError) {
+                        Log.w("AuthInterceptor", "Token refresh error - performing logout")
+                        performLogout()
+                    }
                 }
             }
         } else {
@@ -96,5 +116,30 @@ class AuthInterceptor @Inject constructor(
         
         Log.d("AuthInterceptor", "=== REQUEST COMPLETED ===")
         return response
+    }
+    
+    private fun performLogout() {
+        try {
+            Log.d("AuthInterceptor", "=== PERFORMING LOGOUT ===")
+            
+            // 로컬 토큰 삭제
+            authTokenLocalStore.clearTokens()
+            Log.d("AuthInterceptor", "✅ Local tokens cleared")
+            
+            // 로그인 액티비티로 이동 (Application Context 사용)
+            val context = MyApplication.getApplicationContext()
+            if (context != null) {
+                val intent = Intent(context, LmsLoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                context.startActivity(intent)
+            } else {
+                Log.e("AuthInterceptor", "❌ Application context is null - cannot start login activity")
+            }
+            Log.d("AuthInterceptor", "✅ Redirected to login activity")
+            
+        } catch (e: Exception) {
+            Log.e("AuthInterceptor", "❌ Error during logout: ${e.message}", e)
+        }
     }
 }

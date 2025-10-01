@@ -16,14 +16,19 @@ class LocationInfoSearchViewModel @Inject constructor(
     private val searchPlaceUseCase: SearchPlaceUseCase
 ) : ViewModel() {
 
+    private val _state = MutableLiveData<String>()
+    val state: MutableLiveData<String> get() = _state
+
     private val _locationInfoList = MutableLiveData<List<LocationInfo>>()
     val locationInfoList: MutableLiveData<List<LocationInfo>> get() = _locationInfoList
 
     fun searchLocationByKakao(keyword: String) {
         viewModelScope.launch {
+            _state.value = "loading"
             when (val result = searchPlaceUseCase(keyword, 5)) {
                 is RetrofitResult.Success -> {
                     _locationInfoList.value = result.data
+                    _state.value = "success"
                 }
                 is RetrofitResult.Error -> {
                     // 에러 처리

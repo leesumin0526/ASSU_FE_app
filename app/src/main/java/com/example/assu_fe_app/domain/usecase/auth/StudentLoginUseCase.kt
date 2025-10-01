@@ -15,11 +15,11 @@ class StudentLoginUseCase @Inject constructor(
         sIdno: String
     ): RetrofitResult<LoginModel> {
         if (sToken.isBlank()) {
-            return RetrofitResult.Fail(statusCode = -1, message = "유세인트 토큰이 없습니다.")
+            return RetrofitResult.Fail(statusCode = -1, code = "VALIDATION_ERROR", message = "유세인트 토큰이 없습니다.")
         }
         
         if (sIdno.isBlank()) {
-            return RetrofitResult.Fail(statusCode = -1, message = "학번이 없습니다.")
+            return RetrofitResult.Fail(statusCode = -1, code = "VALIDATION_ERROR", message = "학번이 없습니다.")
         }
         
         val request = StudentLoginRequestDto(

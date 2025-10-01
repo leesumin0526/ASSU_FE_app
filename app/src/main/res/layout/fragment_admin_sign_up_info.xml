@@ -202,6 +202,14 @@
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- 드롭다운과 버튼 사이의 여백 -->
+        <View
+            android:id="@+id/mg_top_of_complete_btn"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.05"
+            app:layout_constraintBottom_toTopOf="@id/btn_completed"/>
+
         <ImageButton
             android:id="@+id/btn_completed"
             android:layout_width="0dp"

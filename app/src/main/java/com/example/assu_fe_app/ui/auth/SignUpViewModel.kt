@@ -107,14 +107,17 @@ class SignUpViewModel @Inject constructor(
         )
     }
 
-    // 개인정보 처리방침 동의 설정
+    // 필수 약관 동의 설정 (서버에 전송하지 않음, UI 검증용)
     fun setPrivacyAgree(agree: Boolean) {
         _signUpData.value = _signUpData.value.copy(privacyAgree = agree)
     }
 
-    // 마케팅 동의 설정
+    // 선택 약관 동의 설정 (마케팅 + 위치정보 함께 설정)
     fun setMarketingAgree(agree: Boolean) {
-        _signUpData.value = _signUpData.value.copy(termsAgree = agree)
+        _signUpData.value = _signUpData.value.copy(
+            marketingAgree = agree,
+            locationAgree = agree
+        )
     }
 
     // 관리자 회원가입 관련 메서드들
