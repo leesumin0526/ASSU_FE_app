@@ -143,10 +143,9 @@ class ChattingSentProposalFragment : BaseFragment<FragmentChattingSentProposalBi
         }
         parentFragmentManager.setFragmentResult("return_reason", result)
 
-        // 백스택 초기화
-        requireActivity()
-            .supportFragmentManager
-            .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        parentFragmentManager.beginTransaction()
+            .remove(this)
+            .commit()
     }
 
     override fun initObserver() {}

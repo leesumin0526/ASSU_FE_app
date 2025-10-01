@@ -1,6 +1,8 @@
 package com.example.assu_fe_app.presentation.common.contract
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
+import okhttp3.internal.format
 import kotlin.text.ifEmpty
 
 @AndroidEntryPoint
@@ -31,25 +34,34 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
 
     private var paperId: Long = -1L
     private var partnerId: Long = -1L
-    private var partnershipId: Long? = null
 
     override fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
-            partnershipViewModel.getPartnershipDetailUiState.collect { state ->
-                when (state) {
-                    is PartnershipViewModel.PartnershipDetailUiState.Loading -> {
-                        // 로딩 표시
-                    }
-                    is PartnershipViewModel.PartnershipDetailUiState.Success -> {
-                        displayProposalData(state.data)
-                    }
-                    is PartnershipViewModel.PartnershipDetailUiState.Fail -> {
-                        Toast.makeText(requireContext(), "조회 실패", Toast.LENGTH_SHORT).show()
-                    }
-                    is PartnershipViewModel.PartnershipDetailUiState.Error -> {
-                        Toast.makeText(requireContext(), "오류 발생", Toast.LENGTH_SHORT).show()
-                    }
-                    else -> Unit
+            partnershipViewModel.summaryText.collect { text ->
+                if (text.isNotEmpty()) {
+                    binding.tvPartnershipContentSignBox.text = text
+                }
+            }
+        }
+        partnershipViewModel.partnershipDetailLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is PartnershipViewModel.PartnershipDetailUiState.Idle -> {
+                    hideLoading()
+                }
+                is PartnershipViewModel.PartnershipDetailUiState.Loading -> {
+                    showLoading("로딩 중...")
+                }
+                is PartnershipViewModel.PartnershipDetailUiState.Success -> {
+                    hideLoading()
+                    displayProposalData(state.data)
+                }
+                is PartnershipViewModel.PartnershipDetailUiState.Fail -> {
+                    hideLoading()
+                    Toast.makeText(requireContext(), "조회 실패", Toast.LENGTH_SHORT).show()
+                }
+                is PartnershipViewModel.PartnershipDetailUiState.Error -> {
+                    hideLoading()
+                    Toast.makeText(requireContext(), "오류 발생", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -57,8 +69,9 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
         viewLifecycleOwner.lifecycleScope.launch {
             partnershipViewModel.updatePartnershipStatusUiState.collect { state ->
                 when (state) {
+                    is PartnershipViewModel.UpdatePartnershipStatusUiState.Idle -> {
+                    }
                     is PartnershipViewModel.UpdatePartnershipStatusUiState.Loading -> {
-                        // 로딩 표시
                         binding.btnModify.isEnabled = false
                     }
                     is PartnershipViewModel.UpdatePartnershipStatusUiState.Success -> {
@@ -73,7 +86,6 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
                         Toast.makeText(requireContext(), "오류 발생: ${state.message}", Toast.LENGTH_SHORT).show()
                         binding.btnModify.isEnabled = true
                     }
-                    else -> Unit
                 }
             }
         }
@@ -82,7 +94,7 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
     override fun initView() {
         extractArguments()
         initializeUI()
-        initObserver()
+
         loadProposalData()
     }
 
@@ -90,7 +102,6 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
         arguments?.let { bundle ->
             paperId = bundle.getLong("paperId", -1L)
             partnerId = bundle.getLong("partnerId", -1L)
-            partnershipId = bundle.getLong("partnershipId", -1L).takeIf { it != -1L }
         }
     }
 
@@ -104,19 +115,6 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
             activity?.supportFragmentManager?.popBackStack()
         }
 
-        val adminName = partnershipViewModel.adminName.value
-        val partnerName = partnershipViewModel.partnerName.value
-        val signDate = partnershipViewModel.signDate.value
-        val summaryText = buildString {
-            append("위와 같이 ")
-            append(adminName.ifEmpty { "-" })
-            append("와의\n제휴를 제안합니다.\n\n")
-            append(signDate + "\n")
-            append("대표 ")
-            append(partnerName.ifEmpty { "-" })
-        }
-        binding.tvPartnershipContentSignBox.text = summaryText
-
         // 동의하기 버튼
         binding.llAgree.setOnClickListener {
             handleAgreeButtonClick()
@@ -126,10 +124,18 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
         }
     }
 
+    private fun showLoading(message: String = "로딩 중...") {
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.tvLoadingText.text = message
+    }
+
+    private fun hideLoading() {
+        binding.loadingOverlay.visibility = View.GONE
+    }
+
     private fun loadProposalData() {
-        val idToUse = partnershipId ?: paperId.takeIf { it != -1L }
-        if (idToUse != null && idToUse > 0) {
-            partnershipViewModel.getPartnershipDetail(idToUse)
+        if (paperId > 0) {
+            partnershipViewModel.getPartnershipDetail(paperId)
         }
     }
 
@@ -149,22 +155,16 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
                 option.optionType == OptionType.SERVICE && option.criterionType == CriterionType.HEADCOUNT -> {
                     PartnershipContractItem.Service.ByPeople(
                         minPeople = option.people,
-                        items = if (option.goods.isNotEmpty()) {
-                            option.goods.joinToString(", ") { it.goodsName }
-                        } else {
-                            option.category
-                        }
+                        items = option.goods.joinToString(", ") { it.goodsName },
+                        category = option.category.ifEmpty { null }
                     )
                 }
 
                 option.optionType == OptionType.SERVICE && option.criterionType == CriterionType.PRICE -> {
                     PartnershipContractItem.Service.ByAmount(
                         minAmount = changeLongToMoney(option.cost),
-                        items = if (option.goods.isNotEmpty()) {
-                            option.goods.joinToString(", ") { it.goodsName }
-                        } else {
-                            option.category
-                        }
+                        items = option.goods.joinToString(", ") { it.goodsName },
+                        category = option.category.ifEmpty { null }
                     )
                 }
 
@@ -194,10 +194,9 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
 
     private fun handleAgreeButtonClick() {
         // API 호출하여 상태를 ACTIVE로 변경
-        val idToUse = partnershipId ?: paperId.takeIf { it != -1L }
 
-        if (idToUse != null && idToUse > 0) {
-            partnershipViewModel.updatePartnershipStatus(idToUse, "ACTIVE")
+        if (paperId > 0) {
+            partnershipViewModel.updatePartnershipStatus(paperId, "ACTIVE")
         } else {
             Toast.makeText(requireContext(), "제휴 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
         }

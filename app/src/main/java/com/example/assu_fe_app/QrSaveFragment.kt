@@ -73,18 +73,36 @@ class QrSaveFragment : Fragment() {
             return
         }
 
+        showLoading("로딩 중...")
+
         val content = buildQrContent(storeId)
 
         binding.ivQrImage.post {
-            val boxSize = min(binding.ivQrImage.width, binding.ivQrImage.height)
-                .coerceAtLeast(600)
-            val preview = createQrBitmap(
-                contents = content,
-                sizePx = boxSize,
-                margin = 1,
-                ecLevel = ErrorCorrectionLevel.M
-            )
-            binding.ivQrImage.setImageBitmap(preview)
+            lifecycleScope.launch {
+                try {
+                    val boxSize = min(binding.ivQrImage.width, binding.ivQrImage.height)
+                        .coerceAtLeast(600)
+                    val preview = withContext(Dispatchers.Default) {
+                        createQrBitmap(
+                            contents = content,
+                            sizePx = boxSize,
+                            margin = 1,
+                            ecLevel = ErrorCorrectionLevel.M
+                        )
+                    }
+
+                    // ✅ UI 업데이트
+                    binding.ivQrImage.setImageBitmap(preview)
+                    hideLoading()
+                } catch (e: Exception) {
+                    hideLoading()
+                    Toast.makeText(
+                        requireContext(),
+                        "QR 코드 생성에 실패했습니다.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 
@@ -113,6 +131,15 @@ class QrSaveFragment : Fragment() {
                 ).show()
             }
         }
+    }
+
+    private fun showLoading(message: String = "로딩 중...") {
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.tvLoadingText.text = message
+    }
+
+    private fun hideLoading() {
+        binding.loadingOverlay.visibility = View.GONE
     }
 
     private fun buildQrContent(storeId: Long): String {

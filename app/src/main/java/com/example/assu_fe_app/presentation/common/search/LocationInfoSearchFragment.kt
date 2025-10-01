@@ -28,10 +28,20 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
     private lateinit var adapter: LocationInfoSearchListAdapter
 
     override fun initObserver() {
+        // 검색 결과 관찰
         searchViewModel.locationInfoList.observe(viewLifecycleOwner) { locationInfoList ->
             adapter.submitList(locationInfoList)
         }
 
+        // 로딩 상태 관찰
+        searchViewModel.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                "loading" -> showLoading()
+                "success" -> hideLoading()
+                "error" -> hideLoading()
+                else -> hideLoading()
+            }
+        }
     }
 
     override fun initView() {
@@ -48,15 +58,23 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        binding.etLocationInfoSearch.setOnEditorActionListener { keyword: TextView, actionId: Int, event: KeyEvent? ->
-            if (actionId == EditorInfo.IME_ACTION_DONE ||
-                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
-                val keyword = keyword.text.toString().trim()
-
-                searchViewModel.searchLocationByKakao(keyword)
-                true
-            } else {
-                false
+        binding.etLocationInfoSearch.setOnEditorActionListener { v, actionId, event ->
+            when {
+                actionId == EditorInfo.IME_ACTION_DONE -> {
+                    val keyword = v.text.toString().trim()
+                    if (keyword.isNotEmpty()) {
+                        searchViewModel.searchLocationByKakao(keyword)
+                    }
+                    true
+                }
+                event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER -> {
+                    val keyword = v.text.toString().trim()
+                    if (keyword.isNotEmpty()) {
+                        searchViewModel.searchLocationByKakao(keyword)
+                    }
+                    true
+                }
+                else -> false
             }
         }
 
@@ -64,30 +82,33 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
             parentFragmentManager.popBackStack()
         }
 
+        // 취소 버튼 클릭 시 입력 내용 지우기
+        binding.ivLocationInfoSearchCancle.setOnClickListener {
+            binding.etLocationInfoSearch.text.clear()
+        }
+    }
+
+    private fun showLoading(){
+        binding.rvLocationInfoSearchResult.visibility = View.INVISIBLE
+        binding.loadingOverlay.visibility = View.VISIBLE
+        binding.tvLoadingText.text = "검색 중..."
+    }
+
+    private fun hideLoading(){
+        binding.rvLocationInfoSearchResult.visibility = View.VISIBLE
+        binding.loadingOverlay.visibility = View.GONE
     }
 
     private fun initAdapter(){
-        adapter= LocationInfoSearchListAdapter()
-        // authTokenLocalStore는 @Inject로 주입됨
+        adapter = LocationInfoSearchListAdapter()
 
         binding.rvLocationInfoSearchResult.apply{
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@LocationInfoSearchFragment.adapter
         }
+
         adapter.onItemClick = { clickedLocationInfo ->
-            // 선택된 LocationInfo 데이터 상세 로그
-            Log.d("LocationInfoSearchFragment", "=== 선택된 주소 정보 ===")
-            Log.d("LocationInfoSearchFragment", "Name: '${clickedLocationInfo.name}'")
-            Log.d("LocationInfoSearchFragment", "Address: '${clickedLocationInfo.address}'")
-            Log.d("LocationInfoSearchFragment", "ID: '${clickedLocationInfo.id}'")
-            Log.d("LocationInfoSearchFragment", "Latitude: ${clickedLocationInfo.latitude}")
-            Log.d("LocationInfoSearchFragment", "Longitude: ${clickedLocationInfo.longitude}")
-            Log.d("LocationInfoSearchFragment", "Road Address: '${clickedLocationInfo.roadAddress}'")
-            Log.d("LocationInfoSearchFragment", "Type: '${arguments?.getString("type")}'")
-            Log.d("LocationInfoSearchFragment", "=========================")
-            
             if(arguments?.getString("type") == "passive"){
-                Log.d("LocationInfoSearchFragment", "Passive 모드: selectedPlace로 전달")
                 val resultBundle = Bundle().apply {
                     putString("selectedPlace", clickedLocationInfo.name)
                     putString("selectedPlace_placeId",     clickedLocationInfo.id)
@@ -99,8 +120,7 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
                 parentFragmentManager.setFragmentResult("result", resultBundle)
                 parentFragmentManager.popBackStack()
 
-            } else{
-                Log.d("LocationInfoSearchFragment", "일반 모드: selectedAddress로 전달")
+            } else {
                 val resultBundle = Bundle().apply {
                     putString("selectedAddress", clickedLocationInfo.address)
                     // selectedPlace 객체 생성을 위한 모든 데이터 전달
@@ -112,11 +132,7 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
                 }
                 parentFragmentManager.setFragmentResult("result", resultBundle)
                 parentFragmentManager.popBackStack()
-
             }
-
         }
     }
-
-
 }

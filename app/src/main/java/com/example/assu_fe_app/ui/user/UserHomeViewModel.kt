@@ -73,7 +73,7 @@ class UserHomeViewModel @Inject constructor(
             }
         }
     }
-    private suspend fun loadPopularStores() {
+    suspend fun loadPopularStores() {
         _popularStoresState.value = PopularStoresUiState.Loading
 
         when (val result = getTodayBestStoresUseCase()) {

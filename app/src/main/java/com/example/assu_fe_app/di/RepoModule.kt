@@ -22,6 +22,7 @@ import com.example.assu_fe_app.data.repositoryImpl.dashboard.AdminDashboardRepos
 import com.example.assu_fe_app.data.repositoryImpl.dashboard.PartnerDashboardRepositoryImpl
 import com.example.assu_fe_app.data.repository.partnership.PartnershipRepository
 import com.example.assu_fe_app.data.repository.profileImage.ProfileRepository
+import com.example.assu_fe_app.data.repository.report.ReportRepository
 import com.example.assu_fe_app.data.repository.suggestion.SuggestionRepository
 import com.example.assu_fe_app.data.repository.user.UserHomeRepository
 import com.example.assu_fe_app.data.repositoryImpl.AuthRepositoryImpl
@@ -36,6 +37,7 @@ import com.example.assu_fe_app.data.repositoryImpl.notification.NotificationRepo
 import com.example.assu_fe_app.data.repositoryImpl.partner.PartnerHomeRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.partnership.PartnershipRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.profileImage.ProfileRepositoryImpl
+import com.example.assu_fe_app.data.repositoryImpl.report.ReportRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.suggestion.SuggestionRepositoryImpl
 import com.example.assu_fe_app.data.repositoryImpl.user.UserHomeRepositoryImpl
 import dagger.Binds
@@ -149,5 +151,10 @@ abstract class RepoModule {
     abstract fun bindPartnerHomeRepository(
         partnerHomeRepositoryImpl: PartnerHomeRepositoryImpl
     ): PartnerHomeRepository
+
+    @Binds @Singleton
+    abstract fun bindReportRepository(
+        impl: ReportRepositoryImpl
+    ): ReportRepository
 
 }

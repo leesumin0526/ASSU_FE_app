@@ -47,6 +47,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_dash_small_before"
             android:layout_marginStart="9dp"
+            android:padding="7dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/tv_dash_month"
             app:layout_constraintTop_toTopOf="@id/tv_dash_month"/>
@@ -67,6 +68,7 @@
             android:fontFamily="@font/pretendard_medium"
             android:textSize="17sp"
             android:text="월"
+            android:textColor="@color/assu_font_main"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_dash_month"/>
 
@@ -77,6 +79,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_dash_small_next_disable"
             android:layout_marginStart="13dp"
+            android:padding="7dp"
             app:layout_constraintStart_toEndOf="@id/tv_dash_month_korean"
             app:layout_constraintTop_toTopOf="@id/iv_dash_back_arrow"/>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,10 +5,25 @@
     tools:context=".presentation.admin.signup.AdminSignUpInfoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/root_layout"
+        android:id="@+id/real_root_cl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/assu_background">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_completed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <FrameLayout
             android:id="@+id/fl_signup_progress_container"
@@ -201,31 +216,32 @@
                 android:inputType="text"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
 
-        <ImageButton
-            android:id="@+id/btn_completed"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="46dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/btn_basic_unselected"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            <ImageButton
+                android:id="@+id/btn_completed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="46dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/btn_basic_unselected"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-        <TextView
-            android:id="@+id/tv_completed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="입력완료"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="@font/pretendard_bold"
-            app:layout_constraintBottom_toBottomOf="@id/btn_completed"
-            app:layout_constraintStart_toStartOf="@id/btn_completed"
-            app:layout_constraintEnd_toEndOf="@id/btn_completed"
-            app:layout_constraintTop_toTopOf="@id/btn_completed"/>
-
+            <TextView
+                android:id="@+id/tv_completed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="입력완료"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/pretendard_bold"
+                app:layout_constraintBottom_toBottomOf="@id/btn_completed"
+                app:layout_constraintStart_toStartOf="@id/btn_completed"
+                app:layout_constraintEnd_toEndOf="@id/btn_completed"
+                app:layout_constraintTop_toTopOf="@id/btn_completed"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

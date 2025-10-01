@@ -104,7 +104,6 @@ class ServiceProposalTermWritingFragment
 //        } // TODO: (인) 표시 처리에 따라 수정
 
         binding.btnCompleted.setOnClickListener {
-            viewModel.updateSignDate()
             viewModel.onNextButtonClicked()
         }
 

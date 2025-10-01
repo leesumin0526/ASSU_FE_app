@@ -54,12 +54,10 @@ class PartnershipViewModel @Inject constructor(
     // ===== 파트너 제안 리스트 상태 =====
     val partnershipStartDate = MutableStateFlow("")
     val partnershipEndDate = MutableStateFlow("")
-    val signature = MutableStateFlow("")
+    val signature = MutableStateFlow("") // (인)
     val partnerName = MutableStateFlow("")
     val adminName = MutableStateFlow("")
     val signDate = MutableStateFlow("")
-//    private val _signDate = MutableLiveData<String>()
-//    val signDate : LiveData<String> = _signDate
 
     var paperId: Long = -1L
     var partnerId: Long = -1L
@@ -90,12 +88,6 @@ class PartnershipViewModel @Inject constructor(
 
     private val _writePartnershipState = MutableStateFlow<WritePartnershipUiState>(WritePartnershipUiState.Idle)
     val writePartnershipState: StateFlow<WritePartnershipUiState> = _writePartnershipState.asStateFlow()
-
-    fun updateSignDate() {
-        val sdf = java.text.SimpleDateFormat("yyyy년 MM월 dd일", java.util.Locale.getDefault())
-        Log.d("함수", "${sdf}")
-        signDate.value = sdf.format(java.util.Date())
-    }
 
     fun updatePartnerName(name: String) {
         partnerName.value = name
@@ -318,6 +310,7 @@ class PartnershipViewModel @Inject constructor(
         }
     }
 
+    // 제휴 상세 조회
     sealed interface PartnershipDetailUiState {
         object Idle : PartnershipDetailUiState
         object Loading : PartnershipDetailUiState
@@ -333,23 +326,104 @@ class PartnershipViewModel @Inject constructor(
     val getPartnershipDetailUiState: StateFlow<PartnershipDetailUiState> =
         _getPartnershipDetailUiState
 
+    private val _partnershipDetailLiveData = MutableLiveData<PartnershipDetailUiState>()
+    val partnershipDetailLiveData: MutableLiveData<PartnershipDetailUiState> get() = _partnershipDetailLiveData
+
+    private val _summaryText = MutableStateFlow("")
+    val summaryText: StateFlow<String> = _summaryText.asStateFlow()
+
     fun getPartnershipDetail(partnershipId: Long) {
+        Log.d("PartnershipViewModel", "getPartnershipDetail called with id: $partnershipId")
         viewModelScope.launch {
+            Log.d("PartnershipViewModel", "Setting Loading state")
             _getPartnershipDetailUiState.value = PartnershipDetailUiState.Loading
+            _partnershipDetailLiveData.value = PartnershipDetailUiState.Loading
             getPartnershipUseCase(partnershipId)
                 .onSuccess { data ->
+                    processPartnershipDetailData(data)
                     _getPartnershipDetailUiState.value =
                         PartnershipDetailUiState.Success(data)
+                    _partnershipDetailLiveData.value = PartnershipDetailUiState.Success(data)
                 }
                 .onFail { code ->
-                    _getPartnershipDetailUiState.value =
-                        PartnershipDetailUiState.Fail(code, "서버 처리 실패")
+                    val failState = PartnershipDetailUiState.Fail(code, "서버 처리 실패")
+                    _getPartnershipDetailUiState.value = failState
+                    _partnershipDetailLiveData.value = failState
                 }
                 .onError { e ->
-                    _getPartnershipDetailUiState.value =
-                        PartnershipDetailUiState.Error(e.message ?: "네트워크 연결을 확인해주세요.")
+                    val errorState = PartnershipDetailUiState.Error(e.message ?: "네트워크 연결을 확인해주세요.")
+                    _getPartnershipDetailUiState.value = errorState
+                    _partnershipDetailLiveData.value = errorState
                 }
         }
+    }
+
+    private fun processPartnershipDetailData(data: ProposalPartnerDetailsModel) {
+        partnershipStartDate.value = data.periodStart
+        partnershipEndDate.value = data.periodEnd
+
+        signDate.value = data.updatedAt?.let {
+            formatDateToKorean(it.split("T")[0])
+        } ?: "-"
+
+        updateSummaryText()
+
+        val benefitItems = data.options.map { option ->
+            BenefitItem(
+                id = System.currentTimeMillis().toString(),
+                optionType = OptionType.valueOf(option.optionType.name),
+                criterionType = CriterionType.valueOf(option.criterionType.name),
+                criterionValue = when {
+                    option.people > 0 -> option.people.toString()
+                    option.cost > 0 -> option.cost.toString()
+                    else -> ""
+                },
+                category = option.category,
+                goods = option.goods.map { it.goodsName },
+                discountRate = if (option.discountRate > 0) option.discountRate.toString() else ""
+            )
+        }
+        updateBenefitItems(benefitItems)
+
+        Log.d("PartnershipViewModel", """
+        Partnership Detail Data Processed:
+        - partnershipId: ${data.partnershipId}
+        - periodStart: ${data.periodStart}
+        - periodEnd: ${data.periodEnd}
+        - updatedAt: ${data.updatedAt ?: "NULL (using current date)"}
+        - signDate: ${signDate.value}
+        - adminName: ${adminName.value}
+        - partnerName: ${partnerName.value}
+         """.trimIndent())
+    }
+
+    fun formatDateToKorean(date: String): String {
+        return try {
+            // "2024-01-15" -> "2024년 01월 15일"
+            val parts = date.split("-")
+            if (parts.size == 3) {
+                "${parts[0]}년 ${parts[1]}월 ${parts[2]}일"
+            } else {
+                date
+            }
+        } catch (e: Exception) {
+            date
+        }
+    }
+
+    // ✅ Summary 텍스트 생성도 ViewModel에서
+    fun updateSummaryText() {
+        val summaryText = buildString {
+            append("위와 같이 ")
+            append(adminName.value.ifEmpty { "-" })
+            append("와의\n제휴를 제안합니다.\n\n")
+            append(signDate.value)
+            append("\n대표 ")
+            append(partnerName.value.ifEmpty { "-" })
+        }
+        _summaryText.value = summaryText
+
+        Log.d("PartnershipViewModel", "Summary text updated: $summaryText")
     }
 
     fun updateBenefitItems(items: List<BenefitItem>) {

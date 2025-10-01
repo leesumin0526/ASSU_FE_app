@@ -6,6 +6,7 @@ import com.example.assu_fe_app.BuildConfig
 import com.example.assu_fe_app.data.dto.converter.LocalDateAdapter
 import com.example.assu_fe_app.data.dto.converter.LocalDateTimeAdapter
 import com.example.assu_fe_app.data.remote.AuthInterceptor
+import com.example.assu_fe_app.data.remote.TokenRefreshInterceptor
 import com.example.assu_fe_app.data.service.AuthService
 import com.example.assu_fe_app.data.service.TokenRefreshAuthService
 import com.example.assu_fe_app.data.service.admin.AdminHomeService
@@ -22,6 +23,7 @@ import com.example.assu_fe_app.data.service.notification.NotificationService
 import com.example.assu_fe_app.data.service.partner.PartnerHomeService
 import com.example.assu_fe_app.data.service.partnership.PartnershipService
 import com.example.assu_fe_app.data.service.profileService.ProfileService
+import com.example.assu_fe_app.data.service.report.ReportService
 import com.example.assu_fe_app.data.service.review.ReviewService
 import com.example.assu_fe_app.data.service.store.StoreService
 import com.example.assu_fe_app.data.service.suggestion.SuggestionService
@@ -95,8 +97,9 @@ object ServiceModule {
             .build()
 
     @Provides @Singleton @TokenRefresh
-    fun provideOkHttpForTokenRefresh(): OkHttpClient =
+    fun provideOkHttpForTokenRefresh(tokenRefreshInterceptor: TokenRefreshInterceptor): OkHttpClient =
         OkHttpClient.Builder()
+            .addInterceptor(tokenRefreshInterceptor)
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY // 개발에서만
             })
@@ -236,6 +239,12 @@ object ServiceModule {
     @Singleton
     fun providePartnerHomeService(@Auth retrofit: Retrofit): PartnerHomeService =
         retrofit.create(PartnerHomeService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideReportService(@Auth retrofit: Retrofit): ReportService {
+        return retrofit.create(ReportService::class.java)
+    }
 
 
 }

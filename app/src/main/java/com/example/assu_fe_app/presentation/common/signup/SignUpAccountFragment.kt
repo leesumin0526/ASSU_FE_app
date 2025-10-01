@@ -41,10 +41,11 @@ class SignUpAccountFragment : BaseFragment<FragmentSignUpAccountBinding>(R.layou
         lifecycleScope.launch {
             signUpViewModel.emailVerificationMessage.collect { message ->
                 message?.let {
+                    // 이메일 검증 메시지를 직접 표시
                     Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                     
                     // 409 에러 시 이메일 입력 필드 빨간색 표시
-                    if (it.contains("이미 가입된 이메일") || it.contains("이미 사용 중인 이메일")) {
+                    if (it.contains("MEMBER_4002") || it.contains("이미 가입된 이메일") || it.contains("이미 사용 중인 이메일") || it.contains("중복된 이메일")) {
                         showEmailError()
                     }
                 }
