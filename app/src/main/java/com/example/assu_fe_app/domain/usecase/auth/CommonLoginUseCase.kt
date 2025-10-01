@@ -15,19 +15,19 @@ class CommonLoginUseCase @Inject constructor(
         password: String
     ): RetrofitResult<LoginModel> {
         if (email.isBlank()) {
-            return RetrofitResult.Fail(statusCode = -1, message = "이메일을 입력해주세요.")
+            return RetrofitResult.Fail(statusCode = -1, code = "VALIDATION_ERROR", message = "이메일을 입력해주세요.")
         }
         
         if (password.isBlank()) {
-            return RetrofitResult.Fail(statusCode = -1, message = "비밀번호를 입력해주세요.")
+            return RetrofitResult.Fail(statusCode = -1, code = "VALIDATION_ERROR", message = "비밀번호를 입력해주세요.")
         }
         
         if (!isValidEmail(email)) {
-            return RetrofitResult.Fail(statusCode = -1, message = "올바른 이메일 형식을 입력해주세요.")
+            return RetrofitResult.Fail(statusCode = -1, code = "VALIDATION_ERROR", message = "올바른 이메일 형식을 입력해주세요.")
         }
         
         if (password.length < 6) {
-            return RetrofitResult.Fail(statusCode = -1, message = "비밀번호는 6자 이상이어야 합니다.")
+            return RetrofitResult.Fail(statusCode = -1, code = "VALIDATION_ERROR", message = "비밀번호는 6자 이상이어야 합니다.")
         }
         
         val request = CommonLoginRequestDto(

@@ -7,6 +7,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class WritePartnershipResponseDto(
     val partnershipId: Long,
+    val updatedAt: String?,
     val partnershipPeriodStart: String?,
     val partnershipPeriodEnd: String?,
     val adminId: Long?,
@@ -16,6 +17,7 @@ data class WritePartnershipResponseDto(
 ) {
     fun toDetailModel() = ProposalPartnerDetailsModel(
         partnershipId = partnershipId,
+        updatedAt     = updatedAt,
         periodStart   = partnershipPeriodStart.orEmpty(),
         periodEnd     = partnershipPeriodEnd.orEmpty(),
         adminId       = adminId,

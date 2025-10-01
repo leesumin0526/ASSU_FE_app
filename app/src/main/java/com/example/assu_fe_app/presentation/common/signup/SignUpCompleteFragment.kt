@@ -13,6 +13,7 @@ import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
 import com.example.assu_fe_app.presentation.user.UserMainActivity
 import com.example.assu_fe_app.ui.auth.SignUpViewModel
+import com.example.assu_fe_app.util.showErrorToast
 import kotlinx.coroutines.launch
 
 class SignUpCompleteFragment : BaseFragment<FragmentSignUpCompleteBinding>(R.layout.fragment_sign_up_complete){
@@ -66,28 +67,15 @@ class SignUpCompleteFragment : BaseFragment<FragmentSignUpCompleteBinding>(R.lay
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 signUpViewModel.errorMessage.collect { error ->
                     error?.let {
-                        // 서버 에러 메시지 상세 로그 출력
-                        Log.e("SignUpCompleteFragment", "=== 회원가입 에러 발생 ===")
-                        Log.e("SignUpCompleteFragment", "원본 에러 메시지: '$it'")
-                        Log.e("SignUpCompleteFragment", "에러 메시지 길이: ${it.length}")
-                        Log.e("SignUpCompleteFragment", "에러 메시지 타입: ${it::class.java.simpleName}")
+                        Log.e("SignUpCompleteFragment", "회원가입 에러 발생: $it")
                         
-                        // 사용자 친화적인 에러 메시지로 변환
-                        val userMessage = when {
-                            it.contains("MEMBER_4007") || it.contains("이미 존재하는 회원입니다") -> "이미 가입된 회원입니다. 로그인을 시도해주세요."
-                            it.contains("필수정보가 누락되었습니다") -> "필수 정보가 누락되었습니다. 모든 항목을 입력해주세요."
-                            it.contains("400") -> "잘못된 요청입니다. 입력 정보를 확인해주세요."
-                            it.contains("401") -> "인증에 실패했습니다."
-                            it.contains("403") -> "접근 권한이 없습니다."
-                            it.contains("404") -> "요청한 리소스를 찾을 수 없습니다."
-                            it.contains("500") -> "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-                            else -> "회원가입에 실패했습니다: $it"
-                        }
-                        
-                        Log.e("SignUpCompleteFragment", "사용자에게 표시할 메시지: '$userMessage'")
-                        Log.e("SignUpCompleteFragment", "========================")
-                        
-                        Toast.makeText(requireContext(), userMessage, Toast.LENGTH_LONG).show()
+                        // String을 Fail 객체로 변환하여 표시
+                        val fail = com.example.assu_fe_app.util.RetrofitResult.Fail(
+                            statusCode = -1,
+                            code = "SIGNUP_ERROR",
+                            message = it
+                        )
+                        requireContext().showErrorToast(fail, Toast.LENGTH_LONG)
                         signUpViewModel.clearError()
                         // 에러 발생 시 LoginActivity로 돌아가기
                         navigateToLogin()

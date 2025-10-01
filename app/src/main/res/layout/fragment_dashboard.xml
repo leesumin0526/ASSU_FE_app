@@ -68,6 +68,7 @@
             android:fontFamily="@font/pretendard_medium"
             android:textSize="17sp"
             android:text="월"
+            android:textColor="@color/assu_font_main"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_dash_month"/>
 

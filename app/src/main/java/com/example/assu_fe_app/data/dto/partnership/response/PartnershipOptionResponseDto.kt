@@ -20,6 +20,6 @@ data class PartnershipOptionResponseDto(
         cost = cost ?: 0,
         category = category.orEmpty(),
         discountRate = discountRate ?: 0,
-        goods = (goods ?: emptyList()).map { it.toModel() }
+        goods = goods.map { it.toModel() }
     )
 }

@@ -421,7 +421,14 @@ class ChattingViewModel @Inject constructor(
                     subtitle = opponentAddress,
                     buttonText = "제안서 초안 전송"
                 )
-                "BLANK", "SUSPEND" -> ChattingBoxUiState(
+                "BLANK" -> ChattingBoxUiState(
+                    isVisible = true,
+                    boxType = BoxType.ADMIN,
+                    title = opponentName,
+                    subtitle = opponentAddress,
+                    buttonText = "제안서 작성중..."
+                )
+                "SUSPEND" -> ChattingBoxUiState(
                     isVisible = true,
                     boxType = BoxType.ADMIN,
                     title = opponentName,

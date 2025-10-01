@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -68,20 +69,30 @@ class AdminHomeFragment :
 
                             val roomId = state.data.roomId
                             val opponentName = state.data.adminViewName
+                            val opponentProfileImage = currentRecommendedPartner?.partnerUrl ?: ""
 
-                            val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
-                                putExtra("roomId", roomId)
-                                putExtra("opponentName", opponentName)
-                                putExtra("entryMessage", "추천 파트너 카드에서 이동했습니다.")
-                                putExtra("phoneNumber", phoneNumber)
-                                putExtra("opponentId", opponentId ?: -1L)
+                            viewLifecycleOwner.lifecycleScope.launch {
+
+                                val status = chattingViewModel.checkPartnershipStatus(authTokenLocalStore.getUserRole(), opponentId ?: -1L)
+
+                                if (status != null) {
+                                    val intent = Intent(requireContext(), ChattingActivity::class.java).apply {
+                                        putExtra("roomId", roomId)
+                                        putExtra("opponentName", opponentName)
+                                        putExtra("opponentProfileImage", opponentProfileImage)
+                                        putExtra("partnershipStatus", status)
+                                        putExtra("opponentId", opponentId ?: -1L)
+                                        putExtra("entryMessage", "추천 파트너 카드에서 이동했습니다.")
+                                        putExtra("phoneNumber", phoneNumber)
+                                    }
+                                    startActivity(intent)
+                                    Log.d("AdminHomeFragment","채팅방 생성 성공")
+                                } else {
+                                    Toast.makeText(requireContext(), "제휴 업체 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                                }
+                                // 한 번 처리 후 상태 리셋
+                                chattingViewModel.resetCreateState()
                             }
-
-                            startActivity(intent)
-                            Log.d("AdminHomeFragment","채팅방 생성 성공")
-
-                            // 한 번 처리 후 상태 리셋
-                            chattingViewModel.resetCreateState()
                         }
 
                         is ChattingViewModel.CreateRoomUiState.Fail -> {

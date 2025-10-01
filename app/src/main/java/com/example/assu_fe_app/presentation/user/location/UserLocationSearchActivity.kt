@@ -62,8 +62,6 @@ class UserLocationSearchActivity :
 
                 searchViewModel.getStoreListByKeyword(keyword)
                 hideKeyboard()
-                binding.fvLocationSearchRank.visibility = android.view.View.INVISIBLE
-                binding.fvLocationSearchSuccess.visibility = android.view.View.VISIBLE
                 true
             } else {
                 false
@@ -76,7 +74,46 @@ class UserLocationSearchActivity :
         }
     }
 
-    override fun initObserver() {}
+    override fun initObserver() {
+        searchViewModel.state.observe(this){ state ->
+            when (state) {
+                "loading" -> {
+                    showLoading()
+                }
+                "success" -> {
+                    hideLoading()
+                    showSuccessState()
+                }
+                else -> {
+                    hideLoading()
+                }
+            }
+
+        }
+    }
+
+    private fun showLoading() {
+        binding.tvLoadingText.text = "검색 중..."
+
+        // 로딩 오버레이만 표시, 나머지 숨김
+        binding.loadingOverlay.visibility = android.view.View.VISIBLE
+        binding.fvLocationSearchRank.visibility = android.view.View.INVISIBLE
+        binding.fvLocationSearchSuccess.visibility = android.view.View.INVISIBLE
+        binding.clLocationSearchFail.visibility = android.view.View.INVISIBLE
+    }
+
+    private fun hideLoading() {
+        // 로딩 오버레이 숨김
+        binding.loadingOverlay.visibility = android.view.View.GONE
+    }
+
+    private fun showSuccessState() {
+        // 검색 성공 시 success fragment 표시
+        // Fragment에서 데이터 유무에 따라 리스트/빈 상태 처리
+        binding.fvLocationSearchSuccess.visibility = android.view.View.VISIBLE
+        binding.fvLocationSearchRank.visibility = android.view.View.INVISIBLE
+        binding.clLocationSearchFail.visibility = android.view.View.INVISIBLE
+    }
 
     private fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()

@@ -23,6 +23,7 @@ import com.example.assu_fe_app.presentation.user.UserMainActivity
 import com.example.assu_fe_app.ui.auth.LoginViewModel
 import com.example.assu_fe_app.ui.auth.LoginViewModel.LoginState
 import com.example.assu_fe_app.ui.deviceToken.DeviceTokenViewModel
+import com.example.assu_fe_app.ui.auth.LoginErrorMessageMapper
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -205,16 +206,10 @@ class LmsLoginActivity : BaseActivity<ActivityLmsLoginBinding>(R.layout.activity
                 }
                 is LoginState.Error -> {
                     hideLoading()
-                    // 더 사용자 친화적인 에러 메시지 표시
-                    val errorMessage = when {
-                        state.message.contains("네트워크") -> "네트워크 연결을 확인해주세요."
-                        state.message.contains("401") || state.message.contains("인증") -> "LMS 로그인 정보를 확인해주세요."
-                        state.message.contains("404") -> "존재하지 않는 계정입니다."
-                        state.message.contains("500") -> "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-                        else -> "LMS 로그인에 실패했습니다: ${state.message}"
-                    }
+                    // 로그인 전용 에러 메시지 매퍼 사용
+                    val errorMessage = LoginErrorMessageMapper.getLoginErrorMessage(state.fail)
                     Toast.makeText(this@LmsLoginActivity, errorMessage, Toast.LENGTH_LONG).show()
-                    Log.e("LmsLoginActivity", "서버 로그인 실패: ${state.message}")
+                    Log.e("LmsLoginActivity", "서버 로그인 실패: code=${state.fail.code}, message=${state.fail.message}")
                 }
                 is LoginState.PendingApproval -> {
                     hideLoading()
