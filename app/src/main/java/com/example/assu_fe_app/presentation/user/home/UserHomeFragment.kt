@@ -56,6 +56,27 @@ class UserHomeFragment :
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.popularStoresState.collect { state ->
+                when (state) {
+                    is UserHomeViewModel.PopularStoresUiState.Idle -> {
+                        // 초기 상태
+                    }
+                    is UserHomeViewModel.PopularStoresUiState.Loading -> {
+                        showLoading()
+                    }
+                    is UserHomeViewModel.PopularStoresUiState.Success -> {
+                        hideLoading()
+                        setupRankingGrid(state.stores)
+                    }
+                    is UserHomeViewModel.PopularStoresUiState.Error -> {
+                        hideLoading()
+                        setupRankingGrid(emptyList())
+                    }
+                }
+            }
+        }
     }
 
     override fun initView() {
@@ -75,30 +96,36 @@ class UserHomeFragment :
             navigateToMyPartnershipDetails()
         }
 
-        // 인기매장 설정 (하드코딩된 데이터)
-        setupRankingGrid(createHardcodedPopularStores())
-
         // 오늘 날짜 업데이트
         binding.tvTodayUpdateDateAndTime.text = getCurrentDateString()
-    }
 
-    // 하드코딩된 인기매장 데이터 생성 (파트너 대시보드와 동일)
-    private fun createHardcodedPopularStores(): List<PopularStoreModel> {
-        return listOf(
-            PopularStoreModel(rank = 1, storeName = "스타벅스", isHighlight = true),
-            PopularStoreModel(rank = 5, storeName = "먹돼지", isHighlight = false),
-            PopularStoreModel(rank = 2, storeName = "역전할머니맥주", isHighlight = true),
-            PopularStoreModel(rank = 6, storeName = "청운음식점", isHighlight = false),
-            PopularStoreModel(rank = 3, storeName = "커피나무", isHighlight = true),
-            PopularStoreModel(rank = 7, storeName = "샹츠마라", isHighlight = false),
-            PopularStoreModel(rank = 4, storeName = "지지고", isHighlight = false),
-            PopularStoreModel(rank = 8, storeName = "상도로 3가", isHighlight = false)
-        )
+        // 인기매장 데이터 로드
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loadPopularStores()
+        }
     }
 
     private fun setupRankingGrid(popularStores: List<PopularStoreModel>) {
         val gridLayout = binding.gridRanking
         gridLayout.removeAllViews()
+
+        if (popularStores.isEmpty()) {
+            val context = requireContext()
+            val noDataTextView = TextView(context).apply {
+                text = "아직 인기매장 데이터가 없어요"
+                textSize = 14f
+                setTextColor(ContextCompat.getColor(context, R.color.assu_font_sub))
+                gravity = android.view.Gravity.CENTER
+                layoutParams = androidx.gridlayout.widget.GridLayout.LayoutParams().apply {
+                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                    height = (80 * resources.displayMetrics.density).toInt()
+                    columnSpec = androidx.gridlayout.widget.GridLayout.spec(0, 2)
+                    rowSpec = androidx.gridlayout.widget.GridLayout.spec(0, 4)
+                }
+            }
+            gridLayout.addView(noDataTextView)
+            return
+        }
 
         // 순서대로 추가하면 GridLayout이 2열로 설정되어 있어서 자동으로 1-5, 2-6, 3-7, 4-8 배치
         popularStores.take(8).forEach { store ->
@@ -178,6 +205,14 @@ class UserHomeFragment :
 
     private fun navigateToMyPartnershipDetails() {
         findNavController().navigate(R.id.myPartnershipDetailsFragment)
+    }
+
+    private fun showLoading() {
+        // 로딩 UI 표시
+    }
+
+    private fun hideLoading() {
+        // 로딩 UI 숨김
     }
 
 }

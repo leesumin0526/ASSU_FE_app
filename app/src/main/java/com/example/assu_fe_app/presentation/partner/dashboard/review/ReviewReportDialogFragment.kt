@@ -20,11 +20,13 @@ class ReviewReportDialogFragment : DialogFragment() {
 
     private var listener: OnReviewReportConfirmedListener? = null
     private var selectedOption: ReportOption? = null
+    private var isStudentReport: Boolean = false  // 추가
 
-    enum class ReportOption {
-        INAPPROPRIATE,
-        FALSE_INFO,
-        PROMOTION
+
+    enum class ReportOption(val apiValue: String) {  // apiValue 추가
+        INAPPROPRIATE("INAPPROPRIATE_CONTENT"),
+        FALSE_INFO("FALSE_INFORMATION"),
+        PROMOTION("SPAM")
     }
 
     override fun onAttach(context: Context) {
@@ -62,10 +64,50 @@ class ReviewReportDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentReviewReportDialogBinding.inflate(inflater, container, false)
-        initializeRadioButtons()
-        setupClickListeners()
+
+        // arguments에서 isStudentReport 가져오기
+        isStudentReport = arguments?.getBoolean("isStudentReport", false) ?: false
+
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // 다이얼로그 제목 변경
+        if (isStudentReport) {
+            binding.tvQuestionRealReportReview.text = "작성자를 신고하는\n사유를 선택해주세요"
+        } else {
+            binding.tvQuestionRealReportReview.text = "고객리뷰를 신고하는\n사유를 선택해주세요"
+        }
+
+
+        // 라디오 버튼 텍스트 변경
+        updateRadioButtonTexts(isStudentReport)
+
+        initializeRadioButtons()
+        setupClickListeners()
+    }
+
+    private fun updateRadioButtonTexts(isStudentReport: Boolean) {
+        val inappropriateText: TextView = binding.rbInappropriate.getChildAt(1) as TextView
+        val falseInfoText: TextView = binding.rbFalseInfo.getChildAt(1) as TextView
+        val promotionText: TextView = binding.rbPromotion.getChildAt(1) as TextView
+
+        if (isStudentReport) {
+            // 작성자 신고 텍스트
+            inappropriateText.text = "부적절한 내용 및 욕설이 포함된 글을 작성했어요"
+            falseInfoText.text = "허위사실 / 거짓이 포함된 글을 작성했어요"
+            promotionText.text = "홍보/광고를 위한 건의글을 작성했어요"
+        } else {
+            // 콘텐츠 신고 텍스트
+            inappropriateText.text = "부적절한 내용 및 욕설이 포함된 리뷰예요"
+            falseInfoText.text = "허위사실 / 거짓이 포함된 리뷰예요"
+            promotionText.text = "홍보/광고를 위한 리뷰예요"
+        }
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -145,19 +187,7 @@ class ReviewReportDialogFragment : DialogFragment() {
         }
     }
 
-    private fun getSelectedReportReason(): String {
-        return when (selectedOption) {
-            ReportOption.INAPPROPRIATE -> "INAPPROPRIATE_CONTENT"
-            ReportOption.FALSE_INFO -> "FALSE_INFORMATION"
-            ReportOption.PROMOTION -> "SPAM_PROMOTION"
-            null -> "OTHER"
-        }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -169,11 +199,25 @@ class ReviewReportDialogFragment : DialogFragment() {
         listener = null
     }
 
+    private fun getSelectedReportReason(): String {
+        val baseType = selectedOption?.apiValue ?: "OTHER"
+
+        // isStudentReport에 따라 접두사 결정
+        val prefix = if (isStudentReport) {
+            "STUDENT_USER_"
+        } else {
+            "REVIEW_"
+        }
+
+        return prefix + baseType
+    }
+
     companion object {
-        fun newInstance(position: Int): ReviewReportDialogFragment {
+        fun newInstance(position: Int, isStudentReport: Boolean = false): ReviewReportDialogFragment {
             val fragment = ReviewReportDialogFragment()
             val args = Bundle().apply {
                 putInt("position", position)
+                putBoolean("isStudentReport", isStudentReport)
             }
             fragment.arguments = args
             return fragment
