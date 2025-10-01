@@ -106,13 +106,13 @@ class AdminSignUpSealFragment :
 
         // 개별 약관 체크박스 리스너 설정
         binding.cbPrivacyAgree.setOnCheckedChangeListener { _, isChecked ->
-            signUpViewModel.setPrivacyAgree(isChecked) // 필수 약관 (UI 검증용, 서버 미전송)
+            signUpViewModel.setLocationAgree(isChecked) // 필수 약관 (개인정보처리방침 + 위치정보 수집동의)
             updateAllAgreeState()
             updateButtonState()
         }
 
         binding.cbMarketingAgree.setOnCheckedChangeListener { _, isChecked ->
-            signUpViewModel.setMarketingAgree(isChecked) // 선택 약관 (마케팅 + 위치정보 동시 설정)
+            signUpViewModel.setMarketingAgree(isChecked) // 선택 약관 (Email 및 SMS 마케팅 수신 동의)
             updateAllAgreeState()
             updateButtonState()
         }
@@ -130,8 +130,8 @@ class AdminSignUpSealFragment :
         binding.cbMarketingAgree.isChecked = isChecked
 
         // ViewModel에 상태 저장
-        signUpViewModel.setPrivacyAgree(isChecked) // 필수 약관 (UI 검증용)
-        signUpViewModel.setMarketingAgree(isChecked) // 선택 약관 (마케팅 + 위치정보 동시 설정)
+        signUpViewModel.setLocationAgree(isChecked) // 필수 약관 (개인정보처리방침 + 위치정보 수집동의)
+        signUpViewModel.setMarketingAgree(isChecked) // 선택 약관 (Email 및 SMS 마케팅 수신 동의)
 
         // 리스너 재설정
         setupCheckboxListeners()

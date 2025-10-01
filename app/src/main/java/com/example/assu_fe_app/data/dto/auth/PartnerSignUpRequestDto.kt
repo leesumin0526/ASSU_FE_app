@@ -1,18 +1,23 @@
 package com.example.assu_fe_app.data.dto.auth
 
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
-@JsonClass(generateAdapter = true)
 data class PartnerSignUpRequestDto(
+    @SerializedName("phoneNumber")
     val phoneNumber: String,
+    @SerializedName("marketingAgree")
     val marketingAgree: Boolean,
+    @SerializedName("locationAgree")
     val locationAgree: Boolean,
+    @SerializedName("commonAuth")
     val commonAuth: PartnerCommonAuthDto,
+    @SerializedName("commonInfo")
     val commonInfo: CommonInfoDto
 )
 
-@JsonClass(generateAdapter = true)
 data class PartnerCommonAuthDto(
+    @SerializedName("email")
     val email: String,
+    @SerializedName("password")
     val password: String
 )

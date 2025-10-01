@@ -49,6 +49,12 @@ class SignUpVerifyFragment :
 
     private var timerStartTime: Long = 0L
     private var timerEndTime: Long = 0L
+    
+    // 토스트 메시지 중복 방지를 위한 플래그
+    private var isShowingToast = false
+    
+    // API 호출 중복 방지를 위한 플래그
+    private var isVerificationInProgress = false
 
     override fun initObserver() {
         viewModel.sendPhoneVerificationState.observe(this) { state ->
@@ -62,8 +68,13 @@ class SignUpVerifyFragment :
                     // 버튼 재활성화
                     binding.tvUserVerifyPhone.isEnabled = true
                     
-                    // ViewModel에서 전달된 메시지 사용
-                    Toast.makeText(requireContext(), state.message ?: "인증번호 발송에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    // 토스트 메시지 중복 방지
+                    if (!isShowingToast) {
+                        isShowingToast = true
+                        Toast.makeText(requireContext(), state.message ?: "인증번호 발송에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        // 토스트 표시 후 플래그 초기화
+                        binding.root.postDelayed({ isShowingToast = false }, 3000)
+                    }
                     
                     // 400, 409 에러 시 UI 업데이트 (빨간색 표시)
                     if (state.code == 400 || state.code == 409) {
@@ -74,8 +85,13 @@ class SignUpVerifyFragment :
                     Log.d("SignUpVerifyViewModel", "네트워크 에러: ${state.message}")
                     // 버튼 재활성화
                     binding.tvUserVerifyPhone.isEnabled = true
-                    // 네트워크 에러 메시지 표시
-                    Toast.makeText(requireContext(), state.message ?: "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                    // 토스트 메시지 중복 방지
+                    if (!isShowingToast) {
+                        isShowingToast = true
+                        Toast.makeText(requireContext(), state.message ?: "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                        // 토스트 표시 후 플래그 초기화
+                        binding.root.postDelayed({ isShowingToast = false }, 3000)
+                    }
                 }
                 is SendPhoneVerificationUiState.Idle -> {
                     // 버튼 활성화
@@ -92,23 +108,36 @@ class SignUpVerifyFragment :
             Log.d("SignUpVerifyFragment", "Verification state changed: $state")
             when (state) {
                 is VerifyPhoneVerificationUiState.Success -> {
+                    isVerificationInProgress = false
                     successVerificationUI()
                 }
                 is VerifyPhoneVerificationUiState.Fail -> {
+                    isVerificationInProgress = false
                     Log.d("SignUpVerifyFragment", "인증번호 검증 실패: code=${state.code}, message=${state.message}")
                     errorVerificationUI()
                     // 버튼 재활성화
                     binding.btnCompleted.isEnabled = true
-                    // 사용자 친화적 메시지 표시 (한 번만)
-                    Toast.makeText(requireContext(), "인증번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+                    // 토스트 메시지 중복 방지
+                    if (!isShowingToast) {
+                        isShowingToast = true
+                        Toast.makeText(requireContext(), "인증번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+                        // 토스트 표시 후 플래그 초기화
+                        binding.root.postDelayed({ isShowingToast = false }, 3000)
+                    }
                 }
                 is VerifyPhoneVerificationUiState.Error -> {
+                    isVerificationInProgress = false
                     errorVerificationUI()
                     Log.d("SignUpVerifyViewModel", "네트워크 에러: ${state.message}")
                     // 버튼 재활성화
                     binding.btnCompleted.isEnabled = true
-                    // 네트워크 에러 메시지 표시 (한 번만)
-                    Toast.makeText(requireContext(), "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                    // 토스트 메시지 중복 방지
+                    if (!isShowingToast) {
+                        isShowingToast = true
+                        Toast.makeText(requireContext(), "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                        // 토스트 표시 후 플래그 초기화
+                        binding.root.postDelayed({ isShowingToast = false }, 3000)
+                    }
                 }
                 is VerifyPhoneVerificationUiState.Idle -> {
                     // 버튼 활성화
@@ -214,25 +243,9 @@ class SignUpVerifyFragment :
                 
                 // 기존 타이머 제거
                 binding.etUserVerifyCode.removeCallbacks(focusClearRunnable)
-                val errorDrawableState = ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.bg_signup_input_bar_error
-                )?.constantState
-
-                val currentBackgroundState = binding.clUserVerifyCode.background.constantState
-
-                if (currentBackgroundState == errorDrawableState) {
-                    binding.clUserVerifyCode.background =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_signup_input_bar_selected)
-
-                    binding.ivUserVerifyCodeCheckIcon.visibility = View.GONE
-
-                    // 오류 문구 대신 타이머 텍스트 복원
-                    binding.tvUserVerifyCode.text = lastTimerText
-                    binding.tvUserVerifyCode.setTextColor(
-                        ContextCompat.getColor(requireContext(), R.color.assu_main)
-                    )
-                }
+                
+                // 텍스트가 변경되면 항상 에러 상태 초기화
+                resetVerificationErrorState()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -252,9 +265,9 @@ class SignUpVerifyFragment :
                         checkVerificationCode()
                     }, 500) // 0.5초 후 검증
                 } else {
-                    // 6자리 미만일 때는 아무것도 하지 않음 (API 호출 안함)
-                    Log.d("SignUpVerifyFragment", "Incomplete code - length: ${text.length}, no API call")
-                    // 타이핑 플래그는 유지하여 focus out에서도 API 호출하지 않도록 함
+                    // 6자리 미만일 때는 타이핑 플래그를 false로 설정하여 focus out에서도 API 호출하지 않도록 함
+                    isTyping = false
+                    Log.d("SignUpVerifyFragment", "Incomplete code - length: ${text.length}, no API call, isTyping set to false")
                 }
             }
         })
@@ -352,24 +365,35 @@ class SignUpVerifyFragment :
     }
 
     private fun checkVerificationCode() {
+        // API 호출 중복 방지
+        if (isVerificationInProgress) {
+            Log.d("SignUpVerifyFragment", "⚠️ API 호출 이미 진행 중 - 중복 호출 방지")
+            return
+        }
+        
         val enteredCode = binding.etUserVerifyCode.text.toString().trim()
         val phoneNumber = binding.etUserVerifyPhone.text.toString().trim()
 
         Log.d("SignUpVerifyFragment", "=== checkVerificationCode() called ===")
-        Log.d("SignUpVerifyFragment", "enteredCode: '$enteredCode'")
-        Log.d("SignUpVerifyFragment", "phoneNumber: '$phoneNumber'")
+        Log.d("SignUpVerifyFragment", "🔍 API 전송 데이터:")
+        Log.d("SignUpVerifyFragment", "   📱 전화번호: '$phoneNumber'")
+        Log.d("SignUpVerifyFragment", "   🔢 인증번호: '$enteredCode'")
+        Log.d("SignUpVerifyFragment", "   📏 인증번호 길이: ${enteredCode.length}")
 
         // 키보드 내리기
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etUserVerifyCode.windowToken, 0)
 
         if (enteredCode.isNotEmpty() && phoneNumber.isNotEmpty()) {
-            Log.d("SignUpVerifyFragment", "Calling viewModel.verifyPhoneVerification()")
+            Log.d("SignUpVerifyFragment", "✅ API 호출 조건 만족 - verifyPhoneVerification() 호출")
+            isVerificationInProgress = true
             // 이전 상태 초기화 (중복 토스트 방지)
             viewModel.resetVerificationState()
             viewModel.verifyPhoneVerification(phoneNumber, enteredCode)
         } else {
-            Log.w("SignUpVerifyFragment", "Verification skipped - missing phone or code")
+            Log.w("SignUpVerifyFragment", "❌ API 호출 조건 불만족")
+            Log.w("SignUpVerifyFragment", "   전화번호 비어있음: ${phoneNumber.isEmpty()}")
+            Log.w("SignUpVerifyFragment", "   인증번호 비어있음: ${enteredCode.isEmpty()}")
             Toast.makeText(requireContext(), "인증번호를 입력해주세요", Toast.LENGTH_SHORT).show()
         }
     }
@@ -434,6 +458,29 @@ class SignUpVerifyFragment :
         binding.tvUserVerifyPhone.setTextColor(ContextCompat.getColor(requireContext(), R.color.assu_main))
     }
 
+    private fun resetVerificationErrorState() {
+        // 인증번호 입력 필드의 에러 상태 초기화
+        val errorDrawableState = ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.bg_signup_input_bar_error
+        )?.constantState
+
+        val currentBackgroundState = binding.clUserVerifyCode.background.constantState
+
+        if (currentBackgroundState == errorDrawableState) {
+            binding.clUserVerifyCode.background =
+                ContextCompat.getDrawable(requireContext(), R.drawable.bg_signup_input_bar_selected)
+
+            binding.ivUserVerifyCodeCheckIcon.visibility = View.GONE
+
+            // 오류 문구 대신 타이머 텍스트 복원
+            binding.tvUserVerifyCode.text = lastTimerText
+            binding.tvUserVerifyCode.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.assu_main)
+            )
+        }
+    }
+
     private fun resetUI() {
         isVerified = false
         binding.etUserVerifyPhone.isEnabled = true
@@ -462,6 +509,8 @@ class SignUpVerifyFragment :
         countDownTimer?.cancel()
         binding.etUserVerifyCode.removeCallbacks(focusClearRunnable)
         isTyping = false
+        isVerificationInProgress = false
+        isShowingToast = false
         super.onDestroyView()
     }
 }

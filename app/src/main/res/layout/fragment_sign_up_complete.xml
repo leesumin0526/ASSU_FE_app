@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="26dp"
-            android:text="이호근님\n환영합니다!"
+            android:text=""
             android:textSize="30sp"
             android:textColor="@color/assu_font_main"
             android:gravity="center"

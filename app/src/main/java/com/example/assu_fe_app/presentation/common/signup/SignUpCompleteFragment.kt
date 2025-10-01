@@ -21,18 +21,7 @@ class SignUpCompleteFragment : BaseFragment<FragmentSignUpCompleteBinding>(R.lay
     private val signUpViewModel: SignUpViewModel by activityViewModels()
 
     override fun initObserver() {
-        // 회원가입 결과 관찰
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                signUpViewModel.signUpResult.collect { result ->
-                    result?.let {
-                        // 회원가입 성공 시 사용자 이름 표시
-                        val welcomeText = getString(R.string.signup_welcome_format, it.username)
-                        binding.tvSignupDoneUsername.text = welcomeText
-                    }
-                }
-            }
-        }
+        // 회원가입 결과 관찰 (로딩 완료 후 이름 표시를 위해 로딩 상태 관찰에서 처리)
 
         // 로딩 상태 관찰
         viewLifecycleOwner.lifecycleScope.launch {
@@ -55,6 +44,12 @@ class SignUpCompleteFragment : BaseFragment<FragmentSignUpCompleteBinding>(R.lay
                             navigateToLogin()
                         } else if (result != null) {
                             Log.d("SignUpCompleteFragment", "회원가입 성공: $result")
+                            // 로딩 완료 후 사용자 이름 표시
+                            val userName = result.basicInfo?.name ?: result.username
+                            val welcomeText = getString(R.string.signup_welcome_format, userName)
+                            binding.tvSignupDoneUsername.text = welcomeText
+                            
+                            Log.d("SignUpCompleteFragment", "로딩 완료 후 사용자 이름 표시: $userName")
                         }
                         Log.d("SignUpCompleteFragment", "=============================")
                     }

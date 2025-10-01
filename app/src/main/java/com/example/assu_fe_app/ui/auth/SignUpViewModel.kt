@@ -107,16 +107,17 @@ class SignUpViewModel @Inject constructor(
         )
     }
 
-    // 필수 약관 동의 설정 (서버에 전송하지 않음, UI 검증용)
-    fun setPrivacyAgree(agree: Boolean) {
-        _signUpData.value = _signUpData.value.copy(privacyAgree = agree)
+    // 필수 동의 설정 (개인정보처리방침 + 위치정보 수집동의)
+    fun setLocationAgree(agree: Boolean) {
+        _signUpData.value = _signUpData.value.copy(
+            locationAgree = agree
+        )
     }
 
-    // 선택 약관 동의 설정 (마케팅 + 위치정보 함께 설정)
+    // 선택 동의 설정 (Email 및 SMS 마케팅 수신 동의)
     fun setMarketingAgree(agree: Boolean) {
         _signUpData.value = _signUpData.value.copy(
-            marketingAgree = agree,
-            locationAgree = agree
+            marketingAgree = agree
         )
     }
 
@@ -355,13 +356,15 @@ class SignUpViewModel @Inject constructor(
             )
 
             // API 호출 직전 전달되는 정보 로그 출력
-            Log.d("SignUpViewModel", "=== 학생 회원가입 API 호출 - 전달되는 정보 ===")
-            Log.d("SignUpViewModel", "Phone Number: ${request.phoneNumber}")
-            Log.d("SignUpViewModel", "Marketing Agree: ${request.marketingAgree}")
-            Log.d("SignUpViewModel", "Location Agree: ${request.locationAgree}")
-            Log.d("SignUpViewModel", "Student Token: ${request.studentTokenAuth.sToken}")
-            Log.d("SignUpViewModel", "Student ID: ${request.studentTokenAuth.sIdno}")
-            Log.d("SignUpViewModel", "University: ${request.studentTokenAuth.university}")
+            // API 요청 데이터 로그 출력
+            Log.d("SignUpViewModel", "=== 학생 회원가입 API 요청 데이터 ===")
+            Log.d("SignUpViewModel", "📱 phoneNumber: '${request.phoneNumber}'")
+            Log.d("SignUpViewModel", "📧 marketingAgree: ${request.marketingAgree}")
+            Log.d("SignUpViewModel", "📍 locationAgree: ${request.locationAgree}")
+            Log.d("SignUpViewModel", "🎓 studentTokenAuth:")
+            Log.d("SignUpViewModel", "   - sToken: '${request.studentTokenAuth.sToken}'")
+            Log.d("SignUpViewModel", "   - sIdno: '${request.studentTokenAuth.sIdno}'")
+            Log.d("SignUpViewModel", "   - university: '${request.studentTokenAuth.university}'")
             Log.d("SignUpViewModel", "==========================================")
 
             when (val result = studentSignUpUseCase(request)) {
@@ -396,13 +399,16 @@ class SignUpViewModel @Inject constructor(
                 }
                 is RetrofitResult.Fail -> {
                     Log.e("SignUpViewModel", "=== 학생 회원가입 API 실패 ===")
-                    Log.e("SignUpViewModel", "Status Code: ${result.statusCode}")
-                    Log.e("SignUpViewModel", "Message: ${result.message}")
+                    Log.e("SignUpViewModel", "❌ Status Code: ${result.statusCode}")
+                    Log.e("SignUpViewModel", "💬 Message: ${result.message}")
+                    Log.e("SignUpViewModel", "==========================================")
                     _errorMessage.value = result.message
                 }
                 is RetrofitResult.Error -> {
                     Log.e("SignUpViewModel", "=== 학생 회원가입 API 에러 ===")
-                    Log.e("SignUpViewModel", "Exception: ${result.exception}")
+                    Log.e("SignUpViewModel", "💥 Exception: ${result.exception}")
+                    Log.e("SignUpViewModel", "📝 Exception Message: ${result.exception.message}")
+                    Log.e("SignUpViewModel", "==========================================")
                     _errorMessage.value = result.exception.message ?: "네트워크 오류가 발생했습니다."
                 }
             }
@@ -434,8 +440,8 @@ class SignUpViewModel @Inject constructor(
                 commonAuth = CommonAuthDto(
                     email = data.email!!,
                     password = data.password!!,
-                    department = data.department?.takeIf { it.isNotEmpty() } ?: "N/A",
-                    major = data.major?.takeIf { it.isNotEmpty() } ?: "N/A",
+                    department = data.department?.takeIf { it.isNotEmpty() },
+                    major = data.major?.takeIf { it.isNotEmpty() },
                     university = data.university!!
                 ),
                 commonInfo = CommonInfoDto(
@@ -444,6 +450,30 @@ class SignUpViewModel @Inject constructor(
                     selectedPlace = data.selectedPlace!!
                 )
             )
+
+            // API 요청 데이터 로그 출력
+            Log.d("SignUpViewModel", "=== 관리자 회원가입 API 요청 데이터 ===")
+            Log.d("SignUpViewModel", "📱 phoneNumber: '${request.phoneNumber}'")
+            Log.d("SignUpViewModel", "📧 marketingAgree: ${request.marketingAgree}")
+            Log.d("SignUpViewModel", "📍 locationAgree: ${request.locationAgree}")
+            Log.d("SignUpViewModel", "🔐 commonAuth:")
+            Log.d("SignUpViewModel", "   - email: '${request.commonAuth.email}'")
+            Log.d("SignUpViewModel", "   - password: '[HIDDEN]'")
+            Log.d("SignUpViewModel", "   - department: ${request.commonAuth.department ?: "null"}")
+            Log.d("SignUpViewModel", "   - major: ${request.commonAuth.major ?: "null"}")
+            Log.d("SignUpViewModel", "   - university: '${request.commonAuth.university}'")
+            Log.d("SignUpViewModel", "🏢 commonInfo:")
+            Log.d("SignUpViewModel", "   - name: '${request.commonInfo.name}'")
+            Log.d("SignUpViewModel", "   - detailAddress: '${request.commonInfo.detailAddress}'")
+            Log.d("SignUpViewModel", "   - selectedPlace:")
+            Log.d("SignUpViewModel", "     * placeId: '${request.commonInfo.selectedPlace.placeId}'")
+            Log.d("SignUpViewModel", "     * name: '${request.commonInfo.selectedPlace.name}'")
+            Log.d("SignUpViewModel", "     * address: '${request.commonInfo.selectedPlace.address}'")
+            Log.d("SignUpViewModel", "     * roadAddress: '${request.commonInfo.selectedPlace.roadAddress}'")
+            Log.d("SignUpViewModel", "     * latitude: ${request.commonInfo.selectedPlace.latitude}")
+            Log.d("SignUpViewModel", "     * longitude: ${request.commonInfo.selectedPlace.longitude}")
+            Log.d("SignUpViewModel", "📎 signImageFile: ${data.signImageFile?.name ?: "null"}")
+            Log.d("SignUpViewModel", "==========================================")
 
             // 이미지 파일을 MultipartBody.Part로 변환
             val signImageFile = data.signImageFile!!
@@ -518,13 +548,16 @@ class SignUpViewModel @Inject constructor(
                 }
                 is RetrofitResult.Fail -> {
                     Log.e("SignUpViewModel", "=== 관리자 회원가입 API 실패 ===")
-                    Log.e("SignUpViewModel", "Status Code: ${result.statusCode}")
-                    Log.e("SignUpViewModel", "Message: ${result.message}")
+                    Log.e("SignUpViewModel", "❌ Status Code: ${result.statusCode}")
+                    Log.e("SignUpViewModel", "💬 Message: ${result.message}")
+                    Log.e("SignUpViewModel", "==========================================")
                     _errorMessage.value = result.message
                 }
                 is RetrofitResult.Error -> {
                     Log.e("SignUpViewModel", "=== 관리자 회원가입 API 에러 ===")
-                    Log.e("SignUpViewModel", "Exception: ${result.exception}")
+                    Log.e("SignUpViewModel", "💥 Exception: ${result.exception}")
+                    Log.e("SignUpViewModel", "📝 Exception Message: ${result.exception.message}")
+                    Log.e("SignUpViewModel", "==========================================")
                     _errorMessage.value = result.exception.message ?: "네트워크 오류가 발생했습니다."
                 }
             }
@@ -629,13 +662,16 @@ class SignUpViewModel @Inject constructor(
                 }
                 is RetrofitResult.Fail -> {
                     Log.e("SignUpViewModel", "=== 제휴업체 회원가입 API 실패 ===")
-                    Log.e("SignUpViewModel", "Status Code: ${result.statusCode}")
-                    Log.e("SignUpViewModel", "Message: ${result.message}")
+                    Log.e("SignUpViewModel", "❌ Status Code: ${result.statusCode}")
+                    Log.e("SignUpViewModel", "💬 Message: ${result.message}")
+                    Log.e("SignUpViewModel", "==========================================")
                     _errorMessage.value = result.message
                 }
                 is RetrofitResult.Error -> {
                     Log.e("SignUpViewModel", "=== 제휴업체 회원가입 API 에러 ===")
-                    Log.e("SignUpViewModel", "Exception: ${result.exception}")
+                    Log.e("SignUpViewModel", "💥 Exception: ${result.exception}")
+                    Log.e("SignUpViewModel", "📝 Exception Message: ${result.exception.message}")
+                    Log.e("SignUpViewModel", "==========================================")
                     _errorMessage.value = result.exception.message ?: "네트워크 오류가 발생했습니다."
                 }
             }
@@ -648,8 +684,7 @@ class SignUpViewModel @Inject constructor(
         val isValid = !data.phoneNumber.isNullOrEmpty() &&
                 !data.sToken.isNullOrEmpty() &&
                 !data.sIdno.isNullOrEmpty() &&
-                data.privacyAgree &&
-                data.termsAgree &&
+                data.locationAgree &&
                 data.userType == "user"
         
         // 유효성 검사 결과 로그 출력
@@ -657,8 +692,8 @@ class SignUpViewModel @Inject constructor(
         Log.d("SignUpViewModel", "Phone Number: '${data.phoneNumber}' (valid: ${!data.phoneNumber.isNullOrEmpty()})")
         Log.d("SignUpViewModel", "Student Token: '${data.sToken}' (valid: ${!data.sToken.isNullOrEmpty()})")
         Log.d("SignUpViewModel", "Student ID: '${data.sIdno}' (valid: ${!data.sIdno.isNullOrEmpty()})")
-        Log.d("SignUpViewModel", "Privacy Agree: ${data.privacyAgree}")
-        Log.d("SignUpViewModel", "Terms Agree: ${data.termsAgree}")
+        Log.d("SignUpViewModel", "Location Agree: ${data.locationAgree}")
+        Log.d("SignUpViewModel", "Marketing Agree: ${data.marketingAgree}")
         Log.d("SignUpViewModel", "User Type: '${data.userType}' (valid: ${data.userType == "user"})")
         Log.d("SignUpViewModel", "Overall Valid: $isValid")
         Log.d("SignUpViewModel", "=====================================")
@@ -675,8 +710,7 @@ class SignUpViewModel @Inject constructor(
                 !data.detailAddress.isNullOrEmpty() &&
                 data.selectedPlace != null &&
                 data.signImageFile != null &&
-                data.privacyAgree &&
-                data.termsAgree &&
+                data.locationAgree &&
                 data.userType == "admin"
         
         // 유효성 검사 결과 로그 출력
@@ -698,8 +732,8 @@ class SignUpViewModel @Inject constructor(
             Log.d("SignUpViewModel", "  - Longitude: ${data.selectedPlace.longitude}")
         }
         Log.d("SignUpViewModel", "Sign Image File: ${data.signImageFile?.name ?: "null"} (valid: ${data.signImageFile != null})")
-        Log.d("SignUpViewModel", "Privacy Agree: ${data.privacyAgree}")
-        Log.d("SignUpViewModel", "Terms Agree: ${data.termsAgree}")
+        Log.d("SignUpViewModel", "Location Agree: ${data.locationAgree}")
+        Log.d("SignUpViewModel", "Marketing Agree: ${data.marketingAgree}")
         Log.d("SignUpViewModel", "User Type: '${data.userType}' (valid: ${data.userType == "admin"})")
         Log.d("SignUpViewModel", "Overall Valid: $isValid")
         Log.d("SignUpViewModel", "=====================================")
@@ -716,8 +750,7 @@ class SignUpViewModel @Inject constructor(
                 !data.detailAddress.isNullOrEmpty() &&
                 data.selectedPlace != null &&
                 data.licenseImageFile != null &&
-                data.privacyAgree &&
-                data.termsAgree &&
+                data.locationAgree &&
                 data.userType == "partner"
         
         // 유효성 검사 결과 로그 출력
@@ -742,8 +775,8 @@ class SignUpViewModel @Inject constructor(
             Log.d("SignUpViewModel", "  - Longitude: ${data.selectedPlace.longitude}")
         }
         Log.d("SignUpViewModel", "License Image File: ${data.licenseImageFile?.name ?: "null"} (valid: ${data.licenseImageFile != null})")
-        Log.d("SignUpViewModel", "Privacy Agree: ${data.privacyAgree}")
-        Log.d("SignUpViewModel", "Terms Agree: ${data.termsAgree}")
+        Log.d("SignUpViewModel", "Location Agree: ${data.locationAgree}")
+        Log.d("SignUpViewModel", "Marketing Agree: ${data.marketingAgree}")
         Log.d("SignUpViewModel", "User Type: '${data.userType}' (valid: ${data.userType == "partner"})")
         Log.d("SignUpViewModel", "Overall Valid: $isValid")
         Log.d("SignUpViewModel", "=====================================")
