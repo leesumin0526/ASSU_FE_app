@@ -33,43 +33,66 @@ class BlockManageFragment : BaseFragment<FragmentBlockManageBinding>(R.layout.fr
     }
 
     override fun initObserver() {
-        // ViewModel의 getBlockListState StateFlow를 관찰하여 UI를 업데이트합니다.
-        // Fragment의 생명주기에 맞게 안전하게 데이터를 수집하기 위해 repeatOnLifecycle를 사용합니다.
+        observeBlockList()
+        observeUnblockState() // 차단 해제 상태를 관찰하는 함수 호출
+    }
+
+    private fun observeBlockList() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.getBlockListState.collect { state ->
-
                     when (state) {
                         is ChattingViewModel.GetBlockListUiState.Loading -> {
-                            // 로딩 중일 때 ProgressBar를 보여줍니다.
+
                         }
                         is ChattingViewModel.GetBlockListUiState.Success -> {
                             val blockList = state.data
-                            // 1. 총 차단 인원 수를 TextView에 업데이트합니다.
-                            // state.data.size를 통해 리스트의 총 개수를 구합니다.
                             binding.tvBlockCount.text = blockList.size.toString()
-
-                            // 2. 어댑터에 새로운 리스트를 전달하여 RecyclerView를 업데이트합니다.
                             blockListAdapter.submitList(blockList)
                         }
                         is ChattingViewModel.GetBlockListUiState.Fail -> {
-                            // API 호출은 성공했으나, 서버에서 실패 응답을 보냈을 때
                             Toast.makeText(requireContext(), "오류가 발생했습니다: ${state.message}", Toast.LENGTH_SHORT).show()
                         }
                         is ChattingViewModel.GetBlockListUiState.Error -> {
-                            // 네트워크 오류 등 예외가 발생했을 때
                             Toast.makeText(requireContext(), "네트워크 오류: ${state.message}", Toast.LENGTH_SHORT).show()
                         }
                         is ChattingViewModel.GetBlockListUiState.Idle -> {
-                            // 초기 상태. 아무것도 하지 않음.
+                            // 초기 상태
                         }
                     }
                 }
             }
         }
+    }
 
-        // TODO: 차단 해제 상태를 관찰하는 Observer를 추가해야 합니다.
-        // viewModel.unblockUserState.collect { ... }
+    // 새로 추가된 차단 해제 상태 관찰 로직
+    private fun observeUnblockState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.unblockOpponentState.collect { state ->
+                    when (state) {
+                        is ChattingViewModel.UnblockOpponentUiState.Loading -> {
+
+                        }
+                        is ChattingViewModel.UnblockOpponentUiState.Success -> {
+                            Toast.makeText(requireContext(), "차단이 해제되었습니다.", Toast.LENGTH_SHORT).show()
+
+                            viewModel.getBlockList()
+                             viewModel.resetUnblockOpponentState()
+                        }
+                        is ChattingViewModel.UnblockOpponentUiState.Fail -> {
+                            Toast.makeText(requireContext(), "차단 해제에 실패했습니다: ${state.message}", Toast.LENGTH_SHORT).show()
+                        }
+                        is ChattingViewModel.UnblockOpponentUiState.Error -> {
+                            Toast.makeText(requireContext(), "오류 발생: ${state.message}", Toast.LENGTH_SHORT).show()
+                        }
+                        is ChattingViewModel.UnblockOpponentUiState.Idle -> {
+                            // 초기 상태
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun initView() {
@@ -92,7 +115,7 @@ class BlockManageFragment : BaseFragment<FragmentBlockManageBinding>(R.layout.fr
 
             // ViewModel에 차단 해제 API를 호출하도록 요청합니다.
             // viewModel.unblockUser(user.memberId)
-            Toast.makeText(requireContext(), "${user.name}님을 차단 해제합니다.", Toast.LENGTH_SHORT).show()
+            viewModel.unblockOpponent(user.memberId)
         }
     }
 

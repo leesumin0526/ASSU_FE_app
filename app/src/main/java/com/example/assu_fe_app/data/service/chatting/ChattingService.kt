@@ -11,12 +11,15 @@ import com.example.assu_fe_app.data.dto.chatting.response.GetChatHistoryResponse
 import com.example.assu_fe_app.data.dto.chatting.response.GetChattingRoomListResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.LeaveChattingRoomResponseDto
 import com.example.assu_fe_app.data.dto.chatting.response.ReadChattingResponseDto
+import com.example.assu_fe_app.data.dto.chatting.response.UnblockResponseDto
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ChattingService {
     // 채팅방 생성 api
@@ -61,4 +64,9 @@ interface ChattingService {
     @GET("chat/blockList")
     suspend fun getBlockList(
     ): BaseResponse<List<GetBlockListResponseDto>>
+
+    @DELETE("chat/unblock")
+    suspend fun unblockOpponent(
+        @Query("opponentId") blockedId: Long,
+    ): BaseResponse<UnblockResponseDto>
 }

@@ -12,6 +12,7 @@ import com.example.assu_fe_app.domain.model.chatting.GetChatHistoryModel
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
 import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
 import com.example.assu_fe_app.domain.model.chatting.ReadChattingModel
+import com.example.assu_fe_app.domain.model.chatting.UnblockOpponentModel
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.apiHandler
 import javax.inject.Inject
@@ -88,6 +89,15 @@ class ChattingRepositoryImpl @Inject constructor(
         return apiHandler(
             {api.getBlockList()},
             {dtoList -> dtoList.map { it.toModel() }}
+        )
+    }
+
+    override suspend fun unblockOpponent(
+        blockedId: Long,
+    ): RetrofitResult<UnblockOpponentModel> {
+        return apiHandler(
+            {api.unblockOpponent(blockedId)},
+            {dto -> dto.toModel()}
         )
     }
 }

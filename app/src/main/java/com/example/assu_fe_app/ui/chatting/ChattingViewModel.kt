@@ -35,6 +35,7 @@ import com.example.assu_fe_app.domain.usecase.chatting.ReadChattingUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.BlockOpponentUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.CheckBlockOpponentUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.GetBlockListUseCase
+import com.example.assu_fe_app.domain.usecase.chatting.UnblockOpponentUseCase
 import com.example.assu_fe_app.domain.usecase.partnership.CheckPartnershipUseCase
 import com.example.assu_fe_app.domain.usecase.partnership.CreateDraftPartnershipUseCase
 import com.example.assu_fe_app.ui.partnership.BoxType
@@ -55,6 +56,7 @@ class ChattingViewModel @Inject constructor(
     private val readChattingUseCase: ReadChattingUseCase,
     private val blockOpponentUseCase: BlockOpponentUseCase,
     private val getBlockListUseCase: GetBlockListUseCase,
+    private val unblockOpponentUseCase: UnblockOpponentUseCase,
 
     private val chatSocket: ChatSocketClient,
     private val checkPartnershipUseCase: CheckPartnershipUseCase,
@@ -102,6 +104,30 @@ class ChattingViewModel @Inject constructor(
                 .onFail    { code -> _checkBlockOpponentState.value = CheckBlockOpponentUiState.Fail(code, "서버 처리 실패") }
                 .onError   { e -> _checkBlockOpponentState.value = CheckBlockOpponentUiState.Error(e.message ?: "Unknown Error") }
         }
+    }
+
+    // ------------------------- 상대방 차단 해제 -------------------------
+    sealed interface UnblockOpponentUiState {
+        data object Idle : UnblockOpponentUiState
+        data object Loading : UnblockOpponentUiState
+        data class Success(val data: Boolean) : UnblockOpponentUiState
+        data class Fail(val code: Int, val message: String?) : UnblockOpponentUiState
+        data class Error(val message: String) : UnblockOpponentUiState
+    }
+    private val _unblockOpponentState = MutableStateFlow<UnblockOpponentUiState>(UnblockOpponentUiState.Idle)
+    val unblockOpponentState: StateFlow<UnblockOpponentUiState> = _unblockOpponentState
+    fun unblockOpponent(blockedId: Long) {
+        viewModelScope.launch {
+            _unblockOpponentState.value = UnblockOpponentUiState.Loading
+            unblockOpponentUseCase(blockedId)
+                .onSuccess { _unblockOpponentState.value = UnblockOpponentUiState.Success(true) }
+                .onFail    { code -> _unblockOpponentState.value = UnblockOpponentUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e -> _unblockOpponentState.value = UnblockOpponentUiState.Error(e.message ?: "Unknown Error") }
+        }
+    }
+
+    fun resetUnblockOpponentState() {
+        _unblockOpponentState.value = UnblockOpponentUiState.Idle
     }
 
     // ------------------------- 차단 상대방 리스트 조회 -------------------------

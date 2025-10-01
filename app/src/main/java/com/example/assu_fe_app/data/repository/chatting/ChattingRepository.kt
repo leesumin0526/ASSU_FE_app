@@ -10,6 +10,7 @@ import com.example.assu_fe_app.domain.model.chatting.GetChatHistoryModel
 import com.example.assu_fe_app.domain.model.chatting.GetChattingRoomListModel
 import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
 import com.example.assu_fe_app.domain.model.chatting.ReadChattingModel
+import com.example.assu_fe_app.domain.model.chatting.UnblockOpponentModel
 import com.example.assu_fe_app.util.RetrofitResult
 
 interface ChattingRepository {
@@ -21,4 +22,5 @@ interface ChattingRepository {
     suspend fun blockOpponent(request: BlockRequestDto): RetrofitResult<BlockOpponentModel>
     suspend fun checkBlockOpponent(opponentId: Long): RetrofitResult<CheckBlockModel>
     suspend fun getBlockList(): RetrofitResult<List<GetBlockListModel>>
+    suspend fun unblockOpponent(blockedId: Long): RetrofitResult<UnblockOpponentModel>
 }
