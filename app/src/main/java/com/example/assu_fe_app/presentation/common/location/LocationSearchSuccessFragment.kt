@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -64,23 +65,35 @@ class LocationSearchSuccessFragment :
                                 else             -> state.data.adminViewName
                             }
                             val opponentId = lastItem?.id ?: -1L
+                            val opponentProfileImage = lastItem?.profileUrl ?: ""
 
                             if (!navigated) {
                                 navigated = true
-                                val intent = Intent(
-                                    requireContext(),
-                                    com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java
-                                ).apply {
-                                    putExtra("roomId", roomId)
-                                    putExtra("opponentName", displayName)
-                                    putExtra("opponentId", opponentId)
-                                    putExtra("entryMessage", "'문의하기' 버튼을 통해 이동했습니다.")
-                                    putExtra("phoneNumber", phoneNum)
+
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    val status = chatVm.checkPartnershipStatus(authTokenLocalStore.getUserRole(), opponentId)
+
+                                    if (status != null) {
+                                        val intent = Intent(
+                                            requireContext(),
+                                            com.example.assu_fe_app.presentation.common.chatting.ChattingActivity::class.java
+                                        ).apply {
+                                            putExtra("roomId", roomId)
+                                            putExtra("opponentName", displayName)
+                                            putExtra("opponentProfileImage", opponentProfileImage)
+                                            putExtra("partnershipStatus", status)
+                                            putExtra("opponentId", opponentId)
+                                            putExtra("entryMessage", "'문의하기' 버튼을 통해 이동했습니다.")
+                                            putExtra("phoneNumber", phoneNum)
+                                        }
+                                        startActivity(intent)
+                                    } else {
+                                        Toast.makeText(requireContext(), "제휴 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                                    }
+                                    chatVm.resetCreateState()
+                                    phoneNum = null
                                 }
-                                startActivity(intent)
                             }
-                            chatVm.resetCreateState()
-                            phoneNum = null
                         }
                         is ChattingViewModel.CreateRoomUiState.Fail,
                         is ChattingViewModel.CreateRoomUiState.Error -> {
