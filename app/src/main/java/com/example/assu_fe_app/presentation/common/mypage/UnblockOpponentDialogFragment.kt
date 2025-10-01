@@ -1,10 +1,11 @@
-package com.example.assu_fe_app
+package com.example.assu_fe_app.presentation.common.mypage
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.assu_fe_app.R
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -13,10 +14,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [FinishBlockOpponentFragment.newInstance] factory method to
+ * Use the [UnblockOpponentDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FinishBlockOpponentFragment : Fragment() {
+class UnblockOpponentDialogFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -34,7 +35,7 @@ class FinishBlockOpponentFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_finish_block_opponent, container, false)
+        return inflater.inflate(R.layout.fragment_unblock_opponent_dialog, container, false)
     }
 
     companion object {
@@ -44,12 +45,12 @@ class FinishBlockOpponentFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment FinishBlockOpponentFragment.
+         * @return A new instance of fragment UnblockOpponentDialogFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            FinishBlockOpponentFragment().apply {
+            UnblockOpponentDialogFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

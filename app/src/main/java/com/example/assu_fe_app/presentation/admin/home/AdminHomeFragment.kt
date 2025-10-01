@@ -33,7 +33,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.assu_fe_app.domain.model.admin.RecommendedPartnerModel
 import com.example.assu_fe_app.ui.admin.PartnerRecommendViewModel
-
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @AndroidEntryPoint
@@ -277,15 +278,16 @@ class AdminHomeFragment :
 
         // 옵션 설명 만들기
         val option = item.options.firstOrNull()
+        val cost = changeLongToMoney(option?.cost)
         descView.text = if (option != null) {
             when (option.optionType) {
                 OptionType.SERVICE -> when (option.criterionType) {
                     CriterionType.HEADCOUNT -> "${option.people}명당 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
-                    CriterionType.PRICE -> "${option.cost}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
+                    CriterionType.PRICE -> "${cost}원 이상 주문 시 ${option.goods.firstOrNull()?.goodsName ?: "상품"} 제공"
                 }
                 OptionType.DISCOUNT -> when (option.criterionType) {
                     CriterionType.HEADCOUNT -> "${option.people}명 이상 ${option.discountRate}% 할인"
-                    CriterionType.PRICE -> "${option.cost}원 이상 주문 시 ${option.discountRate}% 할인"
+                    CriterionType.PRICE -> "${cost}원 이상 주문 시 ${option.discountRate}% 할인"
                 }
             }
         } else {
@@ -308,7 +310,7 @@ class AdminHomeFragment :
                             )
 
                             CriterionType.PRICE -> PartnershipContractItem.Service.ByAmount(
-                                (opt.cost ?: 0L).toInt(),
+                                cost,
                                 opt.goods.firstOrNull()?.goodsName ?:"상품"
                             )
                         }
@@ -320,7 +322,7 @@ class AdminHomeFragment :
                             )
 
                             CriterionType.PRICE -> PartnershipContractItem.Discount.ByAmount(
-                                (opt.cost ?: 0L).toInt(),
+                                cost,
                                 (opt.discountRate ?: 0L).toInt()
                             )
                         }
@@ -332,5 +334,9 @@ class AdminHomeFragment :
             val dialog = PartnershipContractDialogFragment.newInstance(contractData)
             dialog.show(parentFragmentManager, "PartnershipContractDialog")
         }
+    }
+    private fun changeLongToMoney(cost: Long?): String {
+        val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+        return formatter.format(cost)
     }
 }

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="310dp"
     android:layout_height="174dp"
-    tools:context=".FinishBlockOpponentFragment">
+    tools:context=".presentation.common.chatting.FinishBlockOpponentFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

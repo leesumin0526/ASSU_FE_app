@@ -27,6 +27,8 @@ import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 
 @AndroidEntryPoint
 class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layout.fragment_proposal_modify){
@@ -190,7 +192,7 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
 
                 option.optionType == OptionType.SERVICE && option.criterionType == CriterionType.PRICE -> {
                     PartnershipContractItem.Service.ByAmount(
-                        minAmount = option.cost?.toInt() ?: 0,
+                        minAmount = changeLongToMoney(option.cost),
                         items = option.goods?.joinToString(", ") { it.goodsName ?: "" } ?: "",
                         category = option.category
                     )
@@ -205,7 +207,7 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
 
                 option.optionType == OptionType.DISCOUNT && option.criterionType == CriterionType.PRICE -> {
                     PartnershipContractItem.Discount.ByAmount(
-                        minAmount = option.cost?.toInt() ?: 0,
+                        minAmount = changeLongToMoney(option.cost),
                         percent = option.discountRate?.toInt() ?: 0
                     )
                 }
@@ -249,7 +251,7 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
                         id = System.currentTimeMillis().toString(),
                         optionType = com.example.assu_fe_app.data.dto.partnership.OptionType.SERVICE,
                         criterionType = com.example.assu_fe_app.data.dto.partnership.CriterionType.PRICE,
-                        criterionValue = item.minAmount.toString(),
+                        criterionValue = item.minAmount,
                         category = "",
                         goods = listOf(item.items),
                         discountRate = ""
@@ -271,7 +273,7 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
                         id = System.currentTimeMillis().toString(),
                         optionType = com.example.assu_fe_app.data.dto.partnership.OptionType.DISCOUNT,
                         criterionType = com.example.assu_fe_app.data.dto.partnership.CriterionType.PRICE,
-                        criterionValue = item.minAmount.toString(),
+                        criterionValue = item.minAmount,
                         category = "",
                         goods = emptyList(),
                         discountRate = item.percent.toString()
@@ -293,18 +295,14 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
         }
         viewLifecycleOwner.lifecycleScope.launch {
             partnershipViewModel.getPartnershipDetailUiState.collect { state ->
-                Log.d("ProposalModifyFragment", "State collected: ${state::class.simpleName}")
-                Log.d("ProposalModifyFragment", "State is Loading? ${state is PartnershipViewModel.PartnershipDetailUiState.Loading}")
                 when (state) {
                     is PartnershipViewModel.PartnershipDetailUiState.Idle -> {
                         hideLoading()
                     }
                     is PartnershipViewModel.PartnershipDetailUiState.Loading -> {
-                        Log.d("ProposalModifyFragment", "Matched: Loading - calling showLoading")
                         showLoading("로딩 중...")
                     }
                     is PartnershipViewModel.PartnershipDetailUiState.Success -> {
-                        Log.d("ProposalModifyFragment", "Matched: Success")
                         hideLoading()
                         displayProposalData(state.data)
                     }
@@ -382,6 +380,11 @@ class ProposalModifyFragment: BaseFragment<FragmentProposalModifyBinding>(R.layo
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun changeLongToMoney(cost: Long?): String {
+        val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+        return formatter.format(cost)
     }
 
 }

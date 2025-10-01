@@ -22,6 +22,8 @@ import com.example.assu_fe_app.presentation.common.chatting.proposal.adapter.Pro
 import com.example.assu_fe_app.ui.partnership.PartnershipViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 import okhttp3.internal.format
 import kotlin.text.ifEmpty
 
@@ -160,7 +162,7 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
 
                 option.optionType == OptionType.SERVICE && option.criterionType == CriterionType.PRICE -> {
                     PartnershipContractItem.Service.ByAmount(
-                        minAmount = option.cost.toInt(),
+                        minAmount = changeLongToMoney(option.cost),
                         items = option.goods.joinToString(", ") { it.goodsName },
                         category = option.category.ifEmpty { null }
                     )
@@ -175,7 +177,7 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
 
                 option.optionType == OptionType.DISCOUNT && option.criterionType == CriterionType.PRICE -> {
                     PartnershipContractItem.Discount.ByAmount(
-                        minAmount = option.cost.toInt(),
+                        minAmount = changeLongToMoney(option.cost),
                         percent = option.discountRate.toInt()
                     )
                 }
@@ -226,5 +228,10 @@ class ProposalAgreeFragment : BaseFragment<FragmentProposalAgreeBinding>(R.layou
                 }
             }
         }
+    }
+
+    private fun changeLongToMoney(cost: Long?): String {
+        val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+        return formatter.format(cost)
     }
 }

@@ -2,8 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="310dp"
-    android:layout_height="174dp"
-    tools:context=".presentation.common.chatting.dialog.BlockOpponentDialogFragment">
+    android:layout_height="wrap_content"
+    tools:context=".presentation.common.mypage.UnblockOpponentDialogFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,18 +23,18 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="정말로 차단하시겠습니까?"
+                android:text="차단을 해제하시겠습니까?"
                 android:textSize="20sp"
                 android:textColor="@color/assu_font_main"
                 android:fontFamily="@font/pretendard_semibold" />
 
             <ImageView
                 android:id="@+id/ivCross"
-                android:layout_width="wrap_content"
+                android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_cross_gray"
                 android:layout_gravity="end"
-                android:layout_marginStart="50dp"/>
+                android:layout_marginStart="40dp"/>
 
 
         </LinearLayout>
@@ -45,7 +45,7 @@
             android:id="@+id/tvMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="차단하실 경우, 채팅을 할 수 없습니다.\n마이페이지에서 차단 관리를 해주세요."
+            android:text="역전할머니 숭실대점의 차단을 해제합니다."
             android:textSize="14sp"
             android:fontFamily="@font/pretendard_regular"
             android:textColor="@color/assu_font_sub"
