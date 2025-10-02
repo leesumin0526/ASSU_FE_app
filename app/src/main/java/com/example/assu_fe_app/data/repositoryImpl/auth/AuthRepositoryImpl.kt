@@ -1,25 +1,26 @@
 package com.example.assu_fe_app.data.repositoryImpl
 
+import android.util.Log
+import com.example.assu_fe_app.data.dto.auth.AdminSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.CommonLoginRequestDto
+import com.example.assu_fe_app.data.dto.auth.EmailVerificationRequestDto
+import com.example.assu_fe_app.data.dto.auth.PartnerSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.PhoneVerificationSendRequestDto
 import com.example.assu_fe_app.data.dto.auth.PhoneVerificationVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentLoginRequestDto
-import com.example.assu_fe_app.data.dto.auth.AdminSignUpRequestDto
-import com.example.assu_fe_app.data.dto.auth.PartnerSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenSignUpRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyRequestDto
 import com.example.assu_fe_app.data.dto.auth.StudentTokenVerifyResponseDto
-import com.example.assu_fe_app.data.dto.auth.EmailVerificationRequestDto
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import com.example.assu_fe_app.data.repository.auth.AuthRepository
 import com.example.assu_fe_app.data.service.AuthService
 import com.example.assu_fe_app.data.service.NoAuthService
 import com.example.assu_fe_app.domain.model.auth.LoginModel
-import com.example.assu_fe_app.data.repository.auth.AuthRepository
 import com.example.assu_fe_app.util.RetrofitResult
 import com.example.assu_fe_app.util.apiHandler
 import com.example.assu_fe_app.util.apiHandlerForUnit
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -86,6 +87,14 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun adminSignUp(request: AdminSignUpRequestDto, signImage: MultipartBody.Part): RetrofitResult<LoginModel> {
         // JSON을 RequestBody로 변환
         val requestJson = com.google.gson.Gson().toJson(request)
+        
+        // 실제 서버로 전송되는 JSON 로그 출력
+        Log.d("AuthRepositoryImpl", "=== 관리자 회원가입 서버 전송 JSON ===")
+        Log.d("AuthRepositoryImpl", "📤 Request JSON:")
+        Log.d("AuthRepositoryImpl", requestJson)
+        Log.d("AuthRepositoryImpl", "📏 JSON 길이: ${requestJson.length}")
+        Log.d("AuthRepositoryImpl", "==========================================")
+        
         val requestBody = requestJson.toRequestBody("application/json".toMediaTypeOrNull())
         val requestPart = MultipartBody.Part.createFormData("request", null, requestBody)
 

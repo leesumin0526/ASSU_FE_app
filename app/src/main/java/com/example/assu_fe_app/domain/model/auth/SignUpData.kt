@@ -12,8 +12,6 @@ data class SignUpData(
     val sIdno: String? = null,
     val marketingAgree: Boolean = false,
     val locationAgree: Boolean = false,
-    val privacyAgree: Boolean = false,
-    val termsAgree: Boolean = false,
     // 관리자 회원가입 관련 필드들
     val email: String? = null,
     val password: String? = null,

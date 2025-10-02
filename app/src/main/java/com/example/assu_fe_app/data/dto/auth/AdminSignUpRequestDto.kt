@@ -1,38 +1,53 @@
 package com.example.assu_fe_app.data.dto.auth
 
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
-@JsonClass(generateAdapter = true)
 data class AdminSignUpRequestDto(
+    @SerializedName("phoneNumber")
     val phoneNumber: String,
+    @SerializedName("marketingAgree")
     val marketingAgree: Boolean,
+    @SerializedName("locationAgree")
     val locationAgree: Boolean,
+    @SerializedName("commonAuth")
     val commonAuth: CommonAuthDto,
+    @SerializedName("commonInfo")
     val commonInfo: CommonInfoDto
 )
 
-@JsonClass(generateAdapter = true)
 data class CommonAuthDto(
+    @SerializedName("email")
     val email: String,
+    @SerializedName("password")
     val password: String,
-    val department: String,
-    val major: String,
+    @SerializedName("department")
+    val department: String?,
+    @SerializedName("major")
+    val major: String?,
+    @SerializedName("university")
     val university: String
 )
 
-@JsonClass(generateAdapter = true)
 data class CommonInfoDto(
+    @SerializedName("name")
     val name: String,
+    @SerializedName("detailAddress")
     val detailAddress: String,
+    @SerializedName("selectedPlace")
     val selectedPlace: SelectedPlaceDto
 )
 
-@JsonClass(generateAdapter = true)
 data class SelectedPlaceDto(
+    @SerializedName("placeId")
     val placeId: String,
+    @SerializedName("name")
     val name: String,
+    @SerializedName("address")
     val address: String,
+    @SerializedName("roadAddress")
     val roadAddress: String,
+    @SerializedName("latitude")
     val latitude: Double,
+    @SerializedName("longitude")
     val longitude: Double
 )
