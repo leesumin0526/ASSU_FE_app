@@ -8,4 +8,5 @@ data class GetChattingRoomListModel(
     val opponentId: Long,
     val opponentName: String,
     val opponentProfileImage: String,
+    val phoneNumber: String
 )

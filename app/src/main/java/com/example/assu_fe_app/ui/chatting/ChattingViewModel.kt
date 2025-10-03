@@ -26,6 +26,7 @@ import com.example.assu_fe_app.data.dto.chatting.WsMessageDto
 import com.example.assu_fe_app.data.dto.chatting.request.BlockRequestDto
 import com.example.assu_fe_app.data.dto.partnership.request.CreateDraftRequestDto
 import com.example.assu_fe_app.domain.model.chatting.CheckBlockModel
+import com.example.assu_fe_app.domain.model.chatting.GetBlockListModel
 import com.example.assu_fe_app.domain.model.chatting.LeaveChattingRoomModel
 import com.example.assu_fe_app.domain.model.chatting.ReadChattingModel
 import com.example.assu_fe_app.domain.model.partnership.PartnershipStatusModel
@@ -33,6 +34,8 @@ import com.example.assu_fe_app.domain.usecase.chatting.LeaveChattingRoomUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.ReadChattingUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.BlockOpponentUseCase
 import com.example.assu_fe_app.domain.usecase.chatting.CheckBlockOpponentUseCase
+import com.example.assu_fe_app.domain.usecase.chatting.GetBlockListUseCase
+import com.example.assu_fe_app.domain.usecase.chatting.UnblockOpponentUseCase
 import com.example.assu_fe_app.domain.usecase.partnership.CheckPartnershipUseCase
 import com.example.assu_fe_app.domain.usecase.partnership.CreateDraftPartnershipUseCase
 import com.example.assu_fe_app.ui.partnership.BoxType
@@ -52,34 +55,13 @@ class ChattingViewModel @Inject constructor(
     private val checkBlockOpponentUseCase: CheckBlockOpponentUseCase,
     private val readChattingUseCase: ReadChattingUseCase,
     private val blockOpponentUseCase: BlockOpponentUseCase,
+    private val getBlockListUseCase: GetBlockListUseCase,
+    private val unblockOpponentUseCase: UnblockOpponentUseCase,
 
     private val chatSocket: ChatSocketClient,
     private val checkPartnershipUseCase: CheckPartnershipUseCase,
     private val createDraftPartnershipUseCase: CreateDraftPartnershipUseCase
     ) : ViewModel() {
-
-    // ------------------------- 채팅방 생성-------------------------
-    sealed interface CreateRoomUiState {
-        data object Idle : CreateRoomUiState
-        data object Loading : CreateRoomUiState
-        data class Success(val data: CreateChatRoomModel) : CreateRoomUiState
-        data class Fail(val code: Int, val message: String?) : CreateRoomUiState
-        data class Error(val message: String) : CreateRoomUiState
-    }
-    private val _createRoomState = MutableStateFlow<CreateRoomUiState>(CreateRoomUiState.Idle)
-    val createRoomState: StateFlow<CreateRoomUiState> = _createRoomState
-
-    fun createRoom(req: CreateChatRoomRequestDto) {
-        viewModelScope.launch {
-            _createRoomState.value = CreateRoomUiState.Loading
-            createChatRoomUseCase(req)
-                .onSuccess { _createRoomState.value = CreateRoomUiState.Success(it) }
-                .onFail    { code -> _createRoomState.value = CreateRoomUiState.Fail(code, "서버 처리 실패") }
-                .onError   { e -> _createRoomState.value = CreateRoomUiState.Error(e.message ?: "Unknown Error") }
-        }
-    }
-
-    fun resetCreateState() { _createRoomState.value = CreateRoomUiState.Idle }
 
 
     // ------------------------- 상대방 차단 -------------------------
@@ -123,6 +105,74 @@ class ChattingViewModel @Inject constructor(
                 .onError   { e -> _checkBlockOpponentState.value = CheckBlockOpponentUiState.Error(e.message ?: "Unknown Error") }
         }
     }
+
+    // ------------------------- 상대방 차단 해제 -------------------------
+    sealed interface UnblockOpponentUiState {
+        data object Idle : UnblockOpponentUiState
+        data object Loading : UnblockOpponentUiState
+        data class Success(val data: Boolean) : UnblockOpponentUiState
+        data class Fail(val code: Int, val message: String?) : UnblockOpponentUiState
+        data class Error(val message: String) : UnblockOpponentUiState
+    }
+    private val _unblockOpponentState = MutableStateFlow<UnblockOpponentUiState>(UnblockOpponentUiState.Idle)
+    val unblockOpponentState: StateFlow<UnblockOpponentUiState> = _unblockOpponentState
+    fun unblockOpponent(blockedId: Long) {
+        viewModelScope.launch {
+            _unblockOpponentState.value = UnblockOpponentUiState.Loading
+            unblockOpponentUseCase(blockedId)
+                .onSuccess { _unblockOpponentState.value = UnblockOpponentUiState.Success(true) }
+                .onFail    { code -> _unblockOpponentState.value = UnblockOpponentUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e -> _unblockOpponentState.value = UnblockOpponentUiState.Error(e.message ?: "Unknown Error") }
+        }
+    }
+
+    fun resetUnblockOpponentState() {
+        _unblockOpponentState.value = UnblockOpponentUiState.Idle
+    }
+
+    // ------------------------- 차단 상대방 리스트 조회 -------------------------
+    sealed interface GetBlockListUiState {
+        data object Idle : GetBlockListUiState
+        data object Loading : GetBlockListUiState
+        data class Success(val data: List<GetBlockListModel>) : GetBlockListUiState
+        data class Fail(val code: Int, val message: String?) : GetBlockListUiState
+        data class Error(val message: String) : GetBlockListUiState
+    }
+    private val _getBlockListState = MutableStateFlow<GetBlockListUiState>(GetBlockListUiState.Idle)
+    val getBlockListState: StateFlow<GetBlockListUiState> = _getBlockListState
+
+    fun getBlockList() {
+        viewModelScope.launch {
+            _getBlockListState.value = GetBlockListUiState.Loading
+            getBlockListUseCase()
+                .onSuccess { _getBlockListState.value = GetBlockListUiState.Success(it) }
+                .onFail { code -> _getBlockListState.value = GetBlockListUiState.Fail(code, "서버 처리 실패") }
+                .onError { e -> _getBlockListState.value = GetBlockListUiState.Error(e.message ?: "Unknown Error") }
+        }
+    }
+
+    // ------------------------- 채팅방 생성-------------------------
+    sealed interface CreateRoomUiState {
+        data object Idle : CreateRoomUiState
+        data object Loading : CreateRoomUiState
+        data class Success(val data: CreateChatRoomModel) : CreateRoomUiState
+        data class Fail(val code: Int, val message: String?) : CreateRoomUiState
+        data class Error(val message: String) : CreateRoomUiState
+    }
+    private val _createRoomState = MutableStateFlow<CreateRoomUiState>(CreateRoomUiState.Idle)
+    val createRoomState: StateFlow<CreateRoomUiState> = _createRoomState
+
+    fun createRoom(req: CreateChatRoomRequestDto) {
+        viewModelScope.launch {
+            _createRoomState.value = CreateRoomUiState.Loading
+            createChatRoomUseCase(req)
+                .onSuccess { _createRoomState.value = CreateRoomUiState.Success(it) }
+                .onFail    { code -> _createRoomState.value = CreateRoomUiState.Fail(code, "서버 처리 실패") }
+                .onError   { e -> _createRoomState.value = CreateRoomUiState.Error(e.message ?: "Unknown Error") }
+        }
+    }
+
+    fun resetCreateState() { _createRoomState.value = CreateRoomUiState.Idle }
 
 
 
