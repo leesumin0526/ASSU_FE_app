@@ -16,6 +16,7 @@ import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.user.mypage.UserMypagePrivacyDialogFragment
 import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.launch
 
 class UserSignUpStudentCheckFragment : 
@@ -72,6 +73,9 @@ class UserSignUpStudentCheckFragment :
 
         // 완료 버튼 클릭
         binding.btnCompleted.setOnClickListener {
+            val analytics = FirebaseAnalytics.getInstance(requireContext())
+            analytics.setUserProperty("user_type", "student")
+
             findNavController().navigate(R.id.action_user_student_check_to_complete)
         }
         

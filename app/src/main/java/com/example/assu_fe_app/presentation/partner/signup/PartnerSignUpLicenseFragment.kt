@@ -19,6 +19,7 @@ import com.example.assu_fe_app.presentation.user.mypage.UserMypagePrivacyDialogF
 import com.example.assu_fe_app.presentation.user.signup.UserSignUpTermsDialogFragment
 import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
+import com.google.firebase.analytics.FirebaseAnalytics
 import java.io.File
 
 class PartnerSignUpLicenseFragment :
@@ -82,6 +83,9 @@ class PartnerSignUpLicenseFragment :
 
         binding.btnCompleted.setOnClickListener {
             if (binding.btnCompleted.isEnabled) {
+                val analytics = FirebaseAnalytics.getInstance(requireContext())
+                analytics.setUserProperty("user_type", "partner")
+
                 findNavController().navigate(R.id.action_partner_license_to_complete)
             }
         }

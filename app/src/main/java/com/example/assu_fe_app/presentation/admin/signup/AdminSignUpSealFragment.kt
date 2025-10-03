@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +20,8 @@ import com.example.assu_fe_app.presentation.user.mypage.UserMypagePrivacyDialogF
 import com.example.assu_fe_app.presentation.user.signup.UserSignUpTermsDialogFragment
 import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.setProgressBarFillAnimated
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
 import java.io.File
 
 class AdminSignUpSealFragment :
@@ -84,6 +87,9 @@ class AdminSignUpSealFragment :
 
         binding.btnCompleted.setOnClickListener {
             if (binding.btnCompleted.isEnabled) {
+                val analytics = FirebaseAnalytics.getInstance(requireContext())
+                analytics.setUserProperty("user_type", "admin")
+
                 findNavController().navigate(R.id.action_admin_seal_to_complete)
             }
         }
