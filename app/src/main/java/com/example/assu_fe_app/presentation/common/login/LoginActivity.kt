@@ -32,6 +32,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
 
     private val deviceTokenViewModel: DeviceTokenViewModel by viewModels()
     private val loginViewModel: LoginViewModel by viewModels()
+    private var isAutoLoginChecked = false
 
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -45,9 +46,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
             )
             insets
         }
-
-        // 자동 로그인 체크
-        checkAutoLogin()
 
         setLoginButtonEnabled(false)
         binding.etLoginId.addTextChangedListener { checkLoginInputValidity() }
@@ -91,8 +89,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
                 is LoginState.Success -> {
                     setLoginButtonEnabled(true)
                     Log.d("LoginActivity", "로그인 성공!")
-                    // FCM 토큰 등록
-                    fetchAndRegisterFcmToken()
+                    // 자동 로그인 체크 플래그 설정하여 중복 실행 방지
+                    isAutoLoginChecked = true
+                    // 즉시 메인 화면으로 이동 (FCM 토큰 등록은 메인 화면에서 처리)
                     navigateToMainActivity(state.loginData.userRole)
                 }
                 is LoginState.Error -> {
@@ -136,6 +135,12 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
                 }
             }
         }
+        
+        // 자동 로그인 체크 (Observer 설정 후에 호출, 한 번만 실행)
+        if (!isAutoLoginChecked) {
+            checkAutoLogin()
+            isAutoLoginChecked = true
+        }
     }
 
 
@@ -168,10 +173,19 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
 
 
     private fun checkAutoLogin() {
+        // 이미 자동 로그인 체크가 완료되었거나 로그인 중이면 건너뛰기
+        if (isAutoLoginChecked) {
+            Log.d("LoginActivity", "자동 로그인 체크 이미 완료됨 - 건너뛰기")
+            return
+        }
+        
         val loginModel = loginViewModel.checkAutoLogin()
         if (loginModel != null) {
-            // 자동 로그인 성공 - 바로 메인 화면으로 이동
+            Log.d("LoginActivity", "자동 로그인 성공 - 메인 화면으로 이동")
+            isAutoLoginChecked = true
             navigateToMainActivity(loginModel.userRole)
+        } else {
+            Log.d("LoginActivity", "자동 로그인 실패 - 로그인 화면 유지")
         }
     }
 
