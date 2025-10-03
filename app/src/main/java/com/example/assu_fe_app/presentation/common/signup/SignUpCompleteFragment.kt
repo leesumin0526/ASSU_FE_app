@@ -12,6 +12,8 @@ import com.example.assu_fe_app.databinding.FragmentSignUpCompleteBinding
 import com.example.assu_fe_app.presentation.base.BaseFragment
 import com.example.assu_fe_app.presentation.common.login.LoginActivity
 import com.example.assu_fe_app.presentation.user.UserMainActivity
+import com.example.assu_fe_app.presentation.admin.AdminMainActivity
+import com.example.assu_fe_app.presentation.partner.PartnerMainActivity
 import com.example.assu_fe_app.ui.auth.SignUpViewModel
 import com.example.assu_fe_app.util.showErrorToast
 import kotlinx.coroutines.launch
@@ -84,13 +86,31 @@ class SignUpCompleteFragment : BaseFragment<FragmentSignUpCompleteBinding>(R.lay
         // 회원가입 API 호출
         signUpViewModel.signUp()
 
-        // 회원가입 완료 후 Main Activity로 이동
+        // 회원가입 완료 후 사용자 타입에 따른 Main Activity로 이동
         binding.btnCompleted.setOnClickListener {
-            val intent = Intent(requireContext(), UserMainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-            requireActivity().finish()
+            navigateToMainActivity()
         }
+    }
+
+    // 사용자 타입에 따른 Main Activity로 이동하는 함수
+    private fun navigateToMainActivity() {
+        val userType = signUpViewModel.signUpData.value.userType
+        
+        val intent = when (userType) {
+            "admin" -> Intent(requireContext(), AdminMainActivity::class.java)
+            "partner" -> Intent(requireContext(), PartnerMainActivity::class.java)
+            "user" -> {
+                // 학생 계정의 경우 UserMainActivity로 이동하되 학생 탭으로 이동하도록 설정
+                val studentIntent = Intent(requireContext(), UserMainActivity::class.java)
+                studentIntent.putExtra("nav_dest_id", R.id.dashboardFragment) // 학생은 대시보드 탭으로 이동
+                studentIntent
+            }
+            else -> Intent(requireContext(), UserMainActivity::class.java)
+        }
+        
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        requireActivity().finish()
     }
 
     // LoginActivity로 돌아가는 함수

@@ -7,7 +7,7 @@ import com.example.assu_fe_app.MyApplication
 import com.example.assu_fe_app.data.local.AccessTokenProvider
 import com.example.assu_fe_app.data.local.AuthTokenLocalStore
 import com.example.assu_fe_app.data.repository.TokenRefreshRepository
-import com.example.assu_fe_app.presentation.common.login.LmsLoginActivity
+import com.example.assu_fe_app.presentation.common.login.LoginActivity
 import com.example.assu_fe_app.util.RetrofitResult
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -22,6 +22,25 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
+        
+        // LoginActivity에서의 요청인지 확인 (Context 체크)
+        val context = MyApplication.getApplicationContext()
+        if (context != null) {
+            try {
+                val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+                val runningTasks = activityManager.getRunningTasks(1)
+                if (runningTasks.isNotEmpty()) {
+                    val topActivity = runningTasks[0].topActivity
+                    if (topActivity != null && topActivity.className.contains("LoginActivity")) {
+                        Log.d("AuthInterceptor", "Request from LoginActivity - skipping auth interceptor")
+                        return chain.proceed(original)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w("AuthInterceptor", "Could not check current activity: ${e.message}")
+            }
+        }
+        
         val builder = original.newBuilder()
 
         Log.d("AuthInterceptor", "=== REQUEST INTERCEPT ===")
@@ -51,11 +70,17 @@ class AuthInterceptor @Inject constructor(
         Log.d("AuthInterceptor", "Response code: ${response.code}")
         Log.d("AuthInterceptor", "Response headers: ${response.headers}")
         
-        // 리프레시 토큰 API 호출인지 확인 (무한 루프 방지)
-        val isRefreshTokenApi = original.url.toString().contains("/auth/tokens/refresh")
+        // 로그인/회원가입/토큰 관련 API는 제외 (무한 루프 방지)
+        val isAuthRelatedApi = original.url.toString().contains("/auth/") || 
+                              original.url.toString().contains("/login") ||
+                              original.url.toString().contains("/signup") ||
+                              original.url.toString().contains("/tokens/refresh")
         
-        // 401 Unauthorized 또는 403 Forbidden 응답이면 토큰 리프레시 시도 (리프레시 API 제외)
-        if ((response.code == 401 || response.code == 403) && !isRefreshTokenApi) {
+        // LoginActivity에서의 API 호출인지 확인 (추가 보호)
+        val isFromLoginActivity = original.header("X-From-Login-Activity") == "true"
+        
+        // 401 Unauthorized 또는 403 Forbidden 응답이면 토큰 리프레시 시도 (인증 관련 API 및 LoginActivity 제외)
+        if ((response.code == 401 || response.code == 403) && !isAuthRelatedApi && !isFromLoginActivity) {
             Log.w("AuthInterceptor", "Received ${response.code} - Token may be expired or invalid")
             Log.d("AuthInterceptor", "=== ATTEMPTING TOKEN REFRESH ===")
             
@@ -129,14 +154,14 @@ class AuthInterceptor @Inject constructor(
             // 로그인 액티비티로 이동 (Application Context 사용)
             val context = MyApplication.getApplicationContext()
             if (context != null) {
-                val intent = Intent(context, LmsLoginActivity::class.java).apply {
+                val intent = Intent(context, LoginActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
                 context.startActivity(intent)
+                Log.d("AuthInterceptor", "✅ Redirected to login activity")
             } else {
                 Log.e("AuthInterceptor", "❌ Application context is null - cannot start login activity")
             }
-            Log.d("AuthInterceptor", "✅ Redirected to login activity")
             
         } catch (e: Exception) {
             Log.e("AuthInterceptor", "❌ Error during logout: ${e.message}", e)
