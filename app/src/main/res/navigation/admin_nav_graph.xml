@@ -8,7 +8,7 @@
     <!-- 관리자 홈 화면 -->
     <fragment
         android:id="@+id/adminHomeFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.home.AdminHomeFragment"
+        android:name="com.assu.app.presentation.admin.home.AdminHomeFragment"
         android:label="Admin Home">
 
         <!-- 홈 → 제휴업체 목록(Activity) -->
@@ -25,19 +25,19 @@
     <!-- 액티비티: 제휴업체 목록 -->
     <activity
         android:id="@+id/adminHomeViewPartnerListActivity"
-        android:name="com.example.assu_fe_app.presentation.admin.home.AdminHomeViewPartnerListActivity"
+        android:name="com.assu.app.presentation.admin.home.AdminHomeViewPartnerListActivity"
         android:label="Partner List" />
 
     <!-- 주변 매장(지도) 공용 처리 -->
     <fragment
         android:id="@+id/LocationFragment"
-        android:name="com.example.assu_fe_app.presentation.common.location.LocationFragment"
+        android:name="com.assu.app.presentation.common.location.LocationFragment"
         android:label="Location" />
 
     <!-- 관리자 대시보드 -->
     <fragment
         android:id="@+id/adminDashboardFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.dashboard.AdminDashboardFragment"
+        android:name="com.assu.app.presentation.admin.dashboard.AdminDashboardFragment"
         android:label="Admin Dashboard">
 
         <!-- 대시보드 → 제휴 건의함(Activity) -->
@@ -49,19 +49,19 @@
     <!-- 액티비티: 제휴 건의함 -->
     <activity
         android:id="@+id/adminDashboardSuggestionsActivity"
-        android:name="com.example.assu_fe_app.presentation.admin.dashboard.AdminDashboardSuggestionsActivity"
+        android:name="com.assu.app.presentation.admin.dashboard.AdminDashboardSuggestionsActivity"
         android:label="Suggestions" />
 
     <!-- 일단 채팅은 주석 처리 -->
         <fragment
             android:id="@+id/adminChattingFragment"
-            android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingRoomListFragment"
+            android:name="com.assu.app.presentation.common.chatting.ChattingRoomListFragment"
             android:label="Chatting" />
 
     <!-- 마이페이지 공용 처리 -->
     <fragment
         android:id="@+id/adminMyPageFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminMypageFragment"
+        android:name="com.assu.app.presentation.admin.mypage.AdminMypageFragment"
         android:label="My Page">
         <action
             android:id="@+id/action_admin_mypage_to_alarm"
@@ -77,12 +77,12 @@
 
     <dialog
         android:id="@+id/adminMypagePendingPartnershipDialogFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminMypagePendingPartnershipDialogFragment"
+        android:name="com.assu.app.presentation.admin.mypage.AdminMypagePendingPartnershipDialogFragment"
         android:label="AdminMypagePendingPartnershipDialogFragment"/>
 
     <fragment
         android:id="@+id/mypageAccountFragment"
-        android:name="com.example.assu_fe_app.presentation.common.mypage.MypageAccountFragment"
+        android:name="com.assu.app.presentation.common.mypage.MypageAccountFragment"
         tools:layout="@layout/fragment_mypage_account">
         <action
             android:id="@+id/action_my_page_account_to_block_manage_fragment"
@@ -91,19 +91,19 @@
 
     <fragment
         android:id="@+id/blockManageFragment"
-        android:name="com.example.assu_fe_app.presentation.common.mypage.BlockManageFragment"
+        android:name="com.assu.app.presentation.common.mypage.BlockManageFragment"
         tools:layout="@layout/fragment_block_manage" />
 
     <fragment
         android:id="@+id/customerServiceDialogFragment"
-        android:name="com.example.assu_fe_app.presentation.common.mypage.CustomerServiceDialogFragment"
+        android:name="com.assu.app.presentation.common.mypage.CustomerServiceDialogFragment"
         tools:layout="@layout/fragment_user_customer_service" />
 
 
     <!-- 관리자 알림설정 -->
     <fragment
         android:id="@+id/adminMypageAlarmFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.mypage.AdminMypageAlarmFragment"
+        android:name="com.assu.app.presentation.admin.mypage.AdminMypageAlarmFragment"
         android:label="Admin Alarm Settings" >
 
     </fragment>
@@ -111,17 +111,17 @@
     <!-- 관리자 알림 확인 -->
     <fragment
         android:id="@+id/notificationAllFragment"
-        android:name="com.example.assu_fe_app.presentation.common.notification.NotificationAllFragment"
+        android:name="com.assu.app.presentation.common.notification.NotificationAllFragment"
         tools:layout="@layout/fragment_notification_all" />
 
     <fragment
         android:id="@+id/notificationUnreadFragment"
-        android:name="com.example.assu_fe_app.presentation.common.notification.NotificationUnreadFragment"
+        android:name="com.assu.app.presentation.common.notification.NotificationUnreadFragment"
         tools:layout="@layout/fragment_notification_unread" />
 
     <fragment
         android:id="@+id/adminContractPassiveRegisterFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.home.ContractPassivityRegisterFragment">
+        android:name="com.assu.app.presentation.admin.home.ContractPassivityRegisterFragment">
 
         <action
             android:id="@+id/action_contract_passive_register_to_contract_passive_register_finish"
@@ -130,7 +130,7 @@
 
     <fragment
         android:id="@+id/adminPassiveRegisterFinishFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.home.AdminPassivityRegisterFinishFragment">
+        android:name="com.assu.app.presentation.admin.home.AdminPassivityRegisterFinishFragment">
         <action
             android:id="@+id/action_admin_passive_register_finish_to_admin_home"
             app:destination="@id/adminHomeFragment"/>
@@ -141,7 +141,7 @@
 
     <fragment
         android:id="@+id/adminServiceProposalWritingFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.home.ServicePassivityProposalWritingFragment"
+        android:name="com.assu.app.presentation.admin.home.ServicePassivityProposalWritingFragment"
         android:label="제휴 수동등록">
         <action
             android:id="@+id/action_serviceProposalWritingFragment_to_locationSearchFragment"
@@ -153,7 +153,7 @@
 
     <fragment
         android:id="@+id/LocationInfoSearchFragment"
-        android:name="com.example.assu_fe_app.presentation.common.search.LocationInfoSearchFragment"
+        android:name="com.assu.app.presentation.common.search.LocationInfoSearchFragment"
         android:label="제휴업체 이름 검색"/>
 
 </navigation>

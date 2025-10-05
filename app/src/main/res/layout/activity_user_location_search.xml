@@ -167,7 +167,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:name="com.example.assu_fe_app.presentation.user.location.UserLocationSearchRankFragment"
+            android:name="com.assu.app.presentation.user.location.UserLocationSearchRankFragment"
             android:visibility="visible"/>
 
         <androidx.fragment.app.FragmentContainerView
@@ -178,7 +178,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:name="com.example.assu_fe_app.presentation.user.location.UserLocationSearchSuccessFragment"
+            android:name="com.assu.app.presentation.user.location.UserLocationSearchSuccessFragment"
             android:visibility="invisible"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
