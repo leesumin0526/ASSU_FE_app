@@ -9,7 +9,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.assu.app.ui.suggestion.SuggestionViewModel" />
+            type="com.ssu.assu.ui.suggestion.SuggestionViewModel" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout

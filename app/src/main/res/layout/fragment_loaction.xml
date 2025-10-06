@@ -149,7 +149,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fv_location_item"
-            android:name="com.assu.app.presentation.common.location.LocationItemFragment"
+            android:name="com.ssu.assu.presentation.common.location.LocationItemFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/view_location_mg4"

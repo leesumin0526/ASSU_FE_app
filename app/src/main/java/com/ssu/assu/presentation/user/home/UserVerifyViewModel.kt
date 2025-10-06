@@ -1,0 +1,175 @@
+package com.ssu.assu.presentation.user.home
+
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ssu.assu.data.dto.certification.request.PersonalCertificationRequestDto
+import com.ssu.assu.data.dto.certification.request.UserSessionRequestDto
+import com.ssu.assu.data.dto.store.PaperContent
+import com.ssu.assu.data.dto.usage.SaveUsageRequestDto
+import com.ssu.assu.domain.usecase.certification.GetSessionIdUseCase
+import com.ssu.assu.domain.usecase.certification.PostPersonalDataUseCase
+import com.ssu.assu.domain.usecase.store.GetStorePartnershipUseCase
+import com.ssu.assu.domain.usecase.usage.SaveUsageUseCase
+import com.ssu.assu.util.RetrofitResult
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class UserVerifyViewModel @Inject constructor(
+    private val useCase : GetStorePartnershipUseCase,
+    private val certificationUseCase: GetSessionIdUseCase,
+    private val saveUsageUseCase: SaveUsageUseCase,
+    private val personalCertifyUseCase: PostPersonalDataUseCase
+): ViewModel(){
+
+    // 기본 정보
+    var storeId : Long = 0
+
+    private val _sessionId = MutableLiveData<Long>()
+    val sessionId : LiveData<Long> = _sessionId
+
+    var tableNumber : String = ""
+    private val _storeName = MutableLiveData<String>()
+    val storeName : LiveData<String> = _storeName
+
+
+    var isPeopleType : Boolean = false
+
+    var isGoodsList : Boolean = false
+    var isPriceType : Boolean = false
+
+    private val _selectedService = MutableLiveData<String>()
+    val selectedService: LiveData<String> = _selectedService
+
+    private val _contentList = MutableLiveData<List<PaperContent>>()
+    val contentList: LiveData<List<PaperContent>> = _contentList
+
+    private val _selectedContent = MutableLiveData<PaperContent?>()
+    val selectedContent: LiveData<PaperContent?> = _selectedContent
+
+    fun getStorePartnership(){
+        viewModelScope.launch{
+            when (val result = useCase(storeId)) {
+                is RetrofitResult.Success -> {
+                    _storeName.value = result.data.storeName
+                    storeId = result.data.storeId
+                    _contentList.value = result.data.contents
+                    Log.d("조회된 storeName", "${storeName}")
+                    Log.d("조회된 contentList" , contentList.value.toString())
+                }
+
+                is RetrofitResult.Error -> {
+                    // 에러 처리
+                }
+                is RetrofitResult.Fail -> {
+                    // 실패 처리
+                }
+            }
+        }
+    }
+
+    fun requestSessionId(
+        request: UserSessionRequestDto
+    ){
+        viewModelScope.launch {
+            when (val result = certificationUseCase(request)) {
+                is RetrofitResult.Success -> {
+                    _sessionId.value = result.data.sessionId
+                    Log.d("UserVerifyViewModel : requestSessionId()", "업데이트 된 sessionId : ${_sessionId.value}")
+                }
+                is RetrofitResult.Error -> {
+                    Log.d("UserVerifyViewModel : requestSessionId()", "${result.exception.message}")
+                }
+                is RetrofitResult.Fail -> {
+                    Log.d("UserVerifyViewModel : requestSessionId()", "RetrofitResult.Fail : ${result.message}")
+                }
+            }
+
+        }
+
+    }
+
+    // 선택된 제휴사 정보를 저장하는 함수
+    fun selectPartnership(content: PaperContent) {
+        Log.d("선택된 제휴 ", "$content")
+        _selectedContent.value = content
+
+        if(!content.goods.isNullOrEmpty() && content.goods.size > 1){
+            isGoodsList = true
+        }
+        if(content.people != null && content.people > 1){
+            isPeopleType = true
+            Log.d("제휴 타입", "인원 수 제휴 인증이므로 곧 세션 요청이 날라갑니다. ")
+        }
+        content.cost?.let {
+            if(it > 0){
+                isPriceType = true
+                Log.d("제휴 타입", "가격 기준 제휴 이므로 개인 인증으로 넘어갑니다. ")
+            } // 추후에 로직 수정
+        }
+    }
+
+    fun postPersonalUsageData(
+        request : SaveUsageRequestDto
+    ){
+        viewModelScope.launch {
+            when (val result = saveUsageUseCase(request)) {
+                is RetrofitResult.Success -> {
+                    Log.d("데이터 저장 성공", "데이터를 성공적으로 저장하였습니다.")
+                }
+                is RetrofitResult.Error -> {
+                    Log.d("사용내역 데이터 저장 실패", "${result.exception.message}")
+                }
+                is RetrofitResult.Fail -> {
+                    Log.d("사용내역 데이터 저장 실패", "${result.message}")
+                }
+            }
+        }
+    }
+
+    fun postPersonalCertification(
+        request: PersonalCertificationRequestDto
+    ){
+        viewModelScope.launch{
+            when (val result = personalCertifyUseCase(request)) {
+                is RetrofitResult.Success -> {
+                    Log.d("API 호출 성공", "개인 인증 데이터 전송 성공")
+                }
+                is RetrofitResult.Error -> {
+                    Log.d("개인 인증 데이터 저장 실패", "${result.exception.message}")
+                }
+                is RetrofitResult.Fail -> {
+                    Log.d("개인 인증 데이터 저장 실패", "${result.message}")
+                }
+            }
+        }
+
+    }
+
+    fun selectService(service: String) {
+        _selectedService.value = service
+    }
+
+    // selectedContent에서 필요한 정보를 가져오는 편의 함수들
+
+    val selectedContentId: Long
+        get() = selectedContent.value?.contentId ?: 0
+
+    val selectedAdminName: String
+        get() = selectedContent.value?.adminName ?: ""
+
+    val selectedPeople: Int
+        get() = selectedContent.value?.people ?: 0
+
+    val selectedAdminId: Long
+        get() = selectedContent.value?.adminId?: 0
+    val selectedPaperContent: String
+        get() = selectedContent.value?.paperContent ?: ""
+
+    val selectedGoodsList: List<String>
+        get() = selectedContent.value?.goods ?: emptyList()
+}

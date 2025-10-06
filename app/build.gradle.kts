@@ -15,11 +15,11 @@ val lp = Properties().apply {
 }
 
 android {
-    namespace = "com.assu.app"
+    namespace = "com.ssu.assu"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.assu.app"
+        applicationId = "com.ssu.assu"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
