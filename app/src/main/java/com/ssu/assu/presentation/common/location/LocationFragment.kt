@@ -94,7 +94,15 @@ class LocationFragment :
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(requireContext()) }
     private val permLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { _ -> goToMyLocation() }
+    ) { result ->
+        val granted = (result[ACCESS_FINE_LOCATION] == true) || (result[ACCESS_COARSE_LOCATION] == true)
+        if (granted) {
+            goToMyLocation()
+        } else {
+            Log.w("Permission", "Location permission denied")
+            // 필요시 안내 다이얼로그/스낵바만 표시
+        }
+    }
 
     private val DEFAULT_ZOOM = 17
 
@@ -160,7 +168,6 @@ class LocationFragment :
                     }
 
                     goToMyLocation()
-                    requestLocationPermissionsIfNeeded()
 
                     //Test
                     //moveCameraAndQuery(SEOUL_CITY_HALL.latitude, SEOUL_CITY_HALL.longitude)

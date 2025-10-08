@@ -145,7 +145,7 @@ class UserLocationFragment :
                             return true
                         }
                     })
-1
+
                     kakaoMap?.setOnMapClickListener { _, _, _, _ ->
                         hideCapsuleAndBubble()
                     }

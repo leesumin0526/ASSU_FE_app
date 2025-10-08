@@ -244,6 +244,11 @@ class PartnerHomeFragment :
                 }
             }
         }
+
+        val keyHash = getAppKeyHash(requireContext())
+        binding.tvReleaseKey.text = keyHash?.let { keyHash } ?: "N/A"
+        Log.d("KeyHash", "hash=$keyHash")
+
     }
 
     private fun bindAdminItem(
@@ -375,5 +380,53 @@ class PartnerHomeFragment :
     private fun changeLongToMoney(cost: Long?): String {
         val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
         return formatter.format(cost)
+    }
+
+    private fun getAppKeyHash(context: android.content.Context): String? {
+        return try {
+            val pm = context.packageManager
+            val pkg = context.packageName
+
+            val signatures: Array<android.content.pm.Signature>? = when {
+                // Android 13+ (API 33)
+                android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU -> {
+                    val info = pm.getPackageInfo(
+                        pkg,
+                        android.content.pm.PackageManager.PackageInfoFlags.of(
+                            android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES.toLong()
+                        )
+                    )
+                    val si = info.signingInfo
+                    si?.apkContentsSigners ?: si?.signingCertificateHistory
+                }
+
+                // Android 9~12 (API 28~32)
+                android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P -> {
+                    @Suppress("DEPRECATION")
+                    val info = pm.getPackageInfo(pkg,
+                        android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES)
+                    val si = info.signingInfo
+                    si?.apkContentsSigners ?: si?.signingCertificateHistory
+                }
+
+                // Android 8 이하
+                else -> {
+                    @Suppress("DEPRECATION")
+                    val info = pm.getPackageInfo(pkg,
+                        android.content.pm.PackageManager.GET_SIGNATURES)
+                    @Suppress("DEPRECATION")
+                    info.signatures
+                }
+            }
+
+            if (signatures.isNullOrEmpty()) return null
+
+            val md = java.security.MessageDigest.getInstance("SHA")
+            md.update(signatures[0].toByteArray())
+            android.util.Base64.encodeToString(md.digest(), android.util.Base64.NO_WRAP)
+        } catch (e: Exception) {
+            android.util.Log.e("KeyHash", "compute failed", e)
+            null
+        }
     }
 }
