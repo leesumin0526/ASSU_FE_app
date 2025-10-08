@@ -75,14 +75,14 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
         // 에러 메시지 관찰
         certificationViewModel.errorMessage.observe(this) { error ->
             if (error.isNotEmpty()) {
-                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
+                //Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
             }
         }
 
         // 완료 메시지 관찰
         certificationViewModel.completionMessage.observe(this) { message ->
             if (message.isNotEmpty()) {
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
         }
     }

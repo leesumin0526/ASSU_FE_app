@@ -83,10 +83,8 @@ class ServicePassivityProposalWritingFragment
             val options = try {
                 adapter.getItems().map { it.toOptionDtoOrThrow() }   // mapNotNull 금지
             } catch (e: IllegalArgumentException) {
-                Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             } catch (e: IllegalStateException) {
-                Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

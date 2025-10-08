@@ -83,6 +83,9 @@ class LocationFragment :
     private val labelToPartner = mutableMapOf<Label, PartnerOnMap>()
     private val labelToAdmin   = mutableMapOf<Label, AdminOnMap>()
 
+    // 스토어 마커만 추적
+    private val storeLabels = mutableListOf<Label>()
+
     // Test
     //private val SEOUL_CITY_HALL = LatLng.from(37.4947, 126.9576)
 
@@ -360,7 +363,8 @@ class LocationFragment :
 
         labelToPartner.clear()
         labelToAdmin.clear()
-        layer.removeAll()
+        storeLabels.forEach { it.remove() }
+        storeLabels.clear()
 
         items.forEach { p ->
             val label = layer.addLabel(
@@ -368,6 +372,7 @@ class LocationFragment :
                     .setStyles(styles)
             )
             labelToPartner[label] = p
+            storeLabels.add(label)
         }
     }
 
@@ -379,7 +384,8 @@ class LocationFragment :
 
         labelToPartner.clear()
         labelToAdmin.clear()
-        layer.removeAll()
+        storeLabels.forEach { it.remove() }
+        storeLabels.clear()
 
         items.forEach { a ->
             val label = layer.addLabel(
@@ -387,6 +393,7 @@ class LocationFragment :
                     .setStyles(styles)
             )
             labelToAdmin[label] = a
+            storeLabels.add(label)
         }
     }
 

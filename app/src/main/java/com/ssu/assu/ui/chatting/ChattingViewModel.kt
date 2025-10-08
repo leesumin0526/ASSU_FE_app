@@ -521,13 +521,13 @@ class ChattingViewModel @Inject constructor(
                         // 내부 상태 업데이트
                         currentPartnershipStatus = updatedStatus
                         updateChattingBoxState(role, updatedStatus)
-                        _toastEvent.emit("제안서 초안이 생성되었습니다.")
+                        Log.d("제안서","초안 생성 성공")
                     }
                     .onFail { code ->
-                        _toastEvent.emit("초안 생성 실패: $code")
+                       Log.d("제안서","초안 생성 실패")
                     }
                     .onError {
-                        _toastEvent.emit("오류가 발생했습니다.")
+                        Log.d("제안서","오류 발생")
                     }
             }
         }

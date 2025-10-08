@@ -68,6 +68,9 @@ class UserLocationFragment :
 
     private val vm: UserLocationViewModel by viewModels()
 
+    // 스토어 마커만 추적
+    private val storeLabels = mutableListOf<Label>()
+
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(requireContext()) }
     private val permLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -283,7 +286,8 @@ class UserLocationFragment :
         val nStyles = normalStyles ?: return
 
         labelToStore.clear()
-        layer.removeAll()
+        storeLabels.forEach { it.remove() }
+        storeLabels.clear()
 
         items.forEach { s ->
             val styles = if (isPartnerVisual(s)) pStyles else nStyles
@@ -293,6 +297,7 @@ class UserLocationFragment :
                     .setTag(s.storeId.toString())
             )
             labelToStore[label] = s
+            storeLabels.add(label)
         }
     }
 
