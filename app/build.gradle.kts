@@ -22,8 +22,8 @@ android {
         applicationId = "com.ssu.assu"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "KAKAO_MAP_KEY", "${lp.getProperty("KAKAO_MAP_KEY")}")    }

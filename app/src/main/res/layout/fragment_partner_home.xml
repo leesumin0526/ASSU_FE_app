@@ -53,15 +53,6 @@
                 android:layout_weight="76"
                 android:src="@drawable/ic_assu_main_logo" />
 
-            <TextView
-                android:id="@+id/tv_release_key"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="릴리즈 키"
-                android:textSize="12dp"
-                android:textColor="@color/assu_main"/>
-
-
             <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
