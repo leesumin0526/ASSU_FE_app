@@ -12,7 +12,7 @@
             android:layout_height="match_parent" />
 
         <!-- 투명 구멍이 있는 반투명 오버레이 -->
-        <com.example.assu_fe_app.presentation.user.home.TransparentHoleView
+        <com.ssu.assu.presentation.user.home.TransparentHoleView
             android:id="@+id/overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

@@ -150,7 +150,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/include_speech_bubble"
-            android:name="com.example.assu_fe_app.presentation.user.location.UserLocationSpeechBubbleItemFragment"
+            android:name="com.ssu.assu.presentation.user.location.UserLocationSpeechBubbleItemFragment"
             android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fv_user_location_item"
-            android:name="com.example.assu_fe_app.presentation.user.location.UserLocationItemFragment"
+            android:name="com.ssu.assu.presentation.user.location.UserLocationItemFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/view_location_mg4"

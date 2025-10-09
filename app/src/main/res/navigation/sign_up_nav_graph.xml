@@ -7,7 +7,7 @@
     <!-- 1단계: 인증 -->
     <fragment
         android:id="@+id/signUpCommonVerifyFragment"
-        android:name="com.example.assu_fe_app.presentation.common.signup.SignUpVerifyFragment"
+        android:name="com.ssu.assu.presentation.common.signup.SignUpVerifyFragment"
         android:label="회원가입 인증">
         <action
             android:id="@+id/action_verify_to_type"
@@ -22,7 +22,7 @@
     <!-- 2단계: 사용자 유형 선택 -->
     <fragment
         android:id="@+id/signUpCommonTypeFragment"
-        android:name="com.example.assu_fe_app.presentation.common.signup.SignUpTypeFragment"
+        android:name="com.ssu.assu.presentation.common.signup.SignUpTypeFragment"
         android:label="회원 유형 선택">
         <!-- 분기 처리 -->
         <action
@@ -42,7 +42,7 @@
     <!-- 3단계: 계정 입력 -->
     <fragment
         android:id="@+id/signUpCommonAccountFragment"
-        android:name="com.example.assu_fe_app.presentation.common.signup.SignUpAccountFragment"
+        android:name="com.ssu.assu.presentation.common.signup.SignUpAccountFragment"
         android:label="계정 입력">
         <action
             android:id="@+id/action_account_to_admin_info"
@@ -55,7 +55,7 @@
     <!-- 사용자 흐름 -->
     <fragment
         android:id="@+id/signUpUserSchoolFragment"
-        android:name="com.example.assu_fe_app.presentation.user.signup.UserSignUpSchoolFragment"
+        android:name="com.ssu.assu.presentation.user.signup.UserSignUpSchoolFragment"
         android:label="학교 선택">
         <action
             android:id="@+id/action_user_school_to_student"
@@ -64,7 +64,7 @@
 
     <fragment
         android:id="@+id/signUpUserStudentFragment"
-        android:name="com.example.assu_fe_app.presentation.user.signup.UserSignUpStudentFragment"
+        android:name="com.ssu.assu.presentation.user.signup.UserSignUpStudentFragment"
         android:label="학생 인증">
         <action
             android:id="@+id/action_user_student_to_student_check"
@@ -73,7 +73,7 @@
 
     <fragment
         android:id="@+id/signUpUserStudentCheckFragment"
-        android:name="com.example.assu_fe_app.presentation.user.signup.UserSignUpStudentCheckFragment"
+        android:name="com.ssu.assu.presentation.user.signup.UserSignUpStudentCheckFragment"
         android:label="학생 정보 확인">
         <action
             android:id="@+id/action_user_student_check_to_complete"
@@ -83,7 +83,7 @@
     <!-- 관리자 흐름 -->
     <fragment
         android:id="@+id/signUpAdminInfoFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.signup.AdminSignUpInfoFragment"
+        android:name="com.ssu.assu.presentation.admin.signup.AdminSignUpInfoFragment"
         android:label="관리자 정보 입력">
         <action
             android:id="@+id/action_admin_info_to_seal"
@@ -95,7 +95,7 @@
 
     <fragment
         android:id="@+id/signUpAdminSealFragment"
-        android:name="com.example.assu_fe_app.presentation.admin.signup.AdminSignUpSealFragment"
+        android:name="com.ssu.assu.presentation.admin.signup.AdminSignUpSealFragment"
         android:label="관리자 인감 등록">
         <action
             android:id="@+id/action_admin_seal_to_complete"
@@ -105,7 +105,7 @@
     <!-- 제휴업체 흐름 -->
     <fragment
         android:id="@+id/signUpPartnerInfoFragment"
-        android:name="com.example.assu_fe_app.presentation.partner.signup.PartnerSignUpInfoFragment"
+        android:name="com.ssu.assu.presentation.partner.signup.PartnerSignUpInfoFragment"
         android:label="제휴업체 정보">
         <action
             android:id="@+id/action_partner_info_to_license"
@@ -117,13 +117,13 @@
 
     <fragment
         android:id="@+id/locationSearchFragment"
-        android:name="com.example.assu_fe_app.presentation.common.search.LocationInfoSearchFragment"
+        android:name="com.ssu.assu.presentation.common.search.LocationInfoSearchFragment"
         android:label="위치 검색"/>
 
 
     <fragment
         android:id="@+id/signUpPartnerLicenseFragment"
-        android:name="com.example.assu_fe_app.presentation.partner.signup.PartnerSignUpLicenseFragment"
+        android:name="com.ssu.assu.presentation.partner.signup.PartnerSignUpLicenseFragment"
         android:label="제휴업체 사업자 등록증">
         <action
             android:id="@+id/action_partner_license_to_complete"
@@ -133,6 +133,6 @@
     <!-- 공통 완료 화면 -->
     <fragment
         android:id="@+id/signUpCommonCompleteFragment"
-        android:name="com.example.assu_fe_app.presentation.common.signup.SignUpCompleteFragment"
+        android:name="com.ssu.assu.presentation.common.signup.SignUpCompleteFragment"
         android:label="회원가입 완료" />
 </navigation>

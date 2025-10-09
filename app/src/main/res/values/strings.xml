@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ASSU_FE_app</string>
+    <string name="app_name">A:SSU</string>
     <string name="home">홈</string>
     <string name="location">내 주변</string>
     <string name="dashboard">대시보드</string>

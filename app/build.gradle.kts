@@ -15,15 +15,15 @@ val lp = Properties().apply {
 }
 
 android {
-    namespace = "com.example.assu_fe_app"
+    namespace = "com.ssu.assu"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.assu_fe_app"
+        applicationId = "com.ssu.assu"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "KAKAO_MAP_KEY", "${lp.getProperty("KAKAO_MAP_KEY")}")    }

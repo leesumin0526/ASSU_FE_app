@@ -8,7 +8,7 @@
     <!-- 제휴업체 홈 화면 -->
     <fragment
         android:id="@+id/partnerHomeFragment"
-        android:name="com.example.assu_fe_app.presentation.partner.home.PartnerHomeFragment"
+        android:name="com.ssu.assu.presentation.partner.home.PartnerHomeFragment"
         android:label="Partner Home">
 
         <!-- 홈 → 관리자 목록(Activity) -->
@@ -20,19 +20,19 @@
     <!-- 액티비티: 관리자 목록 -->
     <activity
         android:id="@+id/partnerHomeViewAdminListActivity"
-        android:name="com.example.assu_fe_app.presentation.partner.home.PartnerHomeViewAdminListActivity"
+        android:name="com.ssu.assu.presentation.partner.home.PartnerHomeViewAdminListActivity"
         android:label="Admin List" />
 
     <!-- 주변 관리자(지도) 공용 처리 -->
     <fragment
         android:id="@+id/LocationFragment"
-        android:name="com.example.assu_fe_app.presentation.common.location.LocationFragment"
+        android:name="com.ssu.assu.presentation.common.location.LocationFragment"
         android:label="Location" />
 
     <!-- 제휴업체 대시보드 -->
     <fragment
         android:id="@+id/partnerDashboardFragment"
-        android:name="com.example.assu_fe_app.presentation.partner.dashboard.PartnerDashboardFragment"
+        android:name="com.ssu.assu.presentation.partner.dashboard.PartnerDashboardFragment"
         android:label="Partner Dashboard">
         <action
             android:id="@+id/action_partner_dashboard_to_partner_review"
@@ -42,7 +42,7 @@
     <!-- 일단 채팅은 주석 처리 -->
     <fragment
         android:id="@+id/partnerChattingFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingRoomListFragment"
+        android:name="com.ssu.assu.presentation.common.chatting.ChattingRoomListFragment"
         android:label="Chatting" >
         <action
             android:id="@+id/action_partnerChattingFragment_to_serviceProposalTermWritingFragment"
@@ -53,7 +53,7 @@
     <!-- 마이페이지 공용 처리 -->
     <fragment
         android:id="@+id/partnerMyPageFragment"
-        android:name="com.example.assu_fe_app.presentation.partner.mypage.PartnerMypageFragment"
+        android:name="com.ssu.assu.presentation.partner.mypage.PartnerMypageFragment"
         android:label="My Page" >
         <action
             android:id="@+id/action_partner_mypage_to_alarm"
@@ -68,7 +68,7 @@
 
     <fragment
         android:id="@+id/mypageAccountFragment"
-        android:name="com.example.assu_fe_app.presentation.common.mypage.MypageAccountFragment"
+        android:name="com.ssu.assu.presentation.common.mypage.MypageAccountFragment"
         tools:layout="@layout/fragment_mypage_account" >
         <action
             android:id="@+id/action_my_page_account_to_block_manage_fragment"
@@ -77,30 +77,30 @@
 
     <fragment
         android:id="@+id/blockManageFragment"
-        android:name="com.example.assu_fe_app.presentation.common.mypage.BlockManageFragment"
+        android:name="com.ssu.assu.presentation.common.mypage.BlockManageFragment"
         tools:layout="@layout/fragment_block_manage" />
 
     <fragment
         android:id="@+id/customerServiceDialogFragment"
-        android:name="com.example.assu_fe_app.presentation.common.mypage.CustomerServiceDialogFragment"
+        android:name="com.ssu.assu.presentation.common.mypage.CustomerServiceDialogFragment"
         tools:layout="@layout/fragment_user_customer_service" />
 
     <fragment
         android:id="@+id/chattingRoomListFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingRoomListFragment"
+        android:name="com.ssu.assu.presentation.common.chatting.ChattingRoomListFragment"
         tools:layout="@layout/fragment_chatting_list" />
 
 
     <!-- 제휴업체 알림설정 -->
     <fragment
         android:id="@+id/partnerMypageAlarmFragment"
-        android:name="com.example.assu_fe_app.presentation.partner.mypage.PartnerMypageAlarmFragment"
+        android:name="com.ssu.assu.presentation.partner.mypage.PartnerMypageAlarmFragment"
         android:label="Alarm Settings" />
 
     <!-- 제휴업체 알림확인 -->
     <fragment
         android:id="@+id/notificationAllFragment"
-        android:name="com.example.assu_fe_app.presentation.common.notification.NotificationAllFragment"
+        android:name="com.ssu.assu.presentation.common.notification.NotificationAllFragment"
         tools:layout="@layout/fragment_notification_all" >
 
         <action
@@ -111,7 +111,7 @@
 
     <fragment
         android:id="@+id/notificationUnreadFragment"
-        android:name="com.example.assu_fe_app.presentation.common.notification.NotificationUnreadFragment"
+        android:name="com.ssu.assu.presentation.common.notification.NotificationUnreadFragment"
         tools:layout="@layout/fragment_notification_unread" >
 
         <action
@@ -124,7 +124,7 @@
     <!--리뷰 모아보는 페이지-->
     <fragment
         android:id="@+id/partnerReviewFragment"
-        android:name="com.example.assu_fe_app.presentation.partner.dashboard.review.PartnerReviewFragment"
+        android:name="com.ssu.assu.presentation.partner.dashboard.review.PartnerReviewFragment"
         android:label="Review">
         <action
             android:id="@+id/action_partnerReviewFragment_to_partnerReviewNoneFragment"
@@ -134,13 +134,13 @@
     <!--리뷰리스트가 null이나 갯수가 null로 들어올때 들어가지는 페이지-->
     <fragment
         android:id="@+id/partnerReviewNoneFragment"
-        android:name="com.example.assu_fe_app.presentation.partner.dashboard.review.PartnerReviewNoneFragment"
+        android:name="com.ssu.assu.presentation.partner.dashboard.review.PartnerReviewNoneFragment"
         android:label="Review None" />
 
 
     <fragment
         android:id="@+id/serviceProposalWritingFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalWritingFragment">
+        android:name="com.ssu.assu.presentation.common.chatting.proposal.ServiceProposalWritingFragment">
         <action
             android:id="@+id/action_serviceProposalWritingFragment_to_serviceProposalTermWritingFragment"
             app:destination="@id/serviceProposalTermWritingFragment" />
@@ -165,7 +165,7 @@
 
     <fragment
         android:id="@+id/serviceProposalTermWritingFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.proposal.ServiceProposalTermWritingFragment">
+        android:name="com.ssu.assu.presentation.common.chatting.proposal.ServiceProposalTermWritingFragment">
         <action
             android:id="@+id/action_serviceProposalTermWritingFragment_to_chattingSentProposalFragment"
             app:destination="@id/chattingSentProposalFragment" />
@@ -174,16 +174,16 @@
 
     <fragment
         android:id="@+id/partnerLocationInfoSearchFragment"
-        android:name="com.example.assu_fe_app.presentation.common.search.LocationInfoSearchFragment"
+        android:name="com.ssu.assu.presentation.common.search.LocationInfoSearchFragment"
         android:label="제휴업체 이름 검색"/>
 
     <fragment
         android:id="@+id/chattingSentProposalFragment"
-        android:name="com.example.assu_fe_app.presentation.common.chatting.ChattingSentProposalFragment" />
+        android:name="com.ssu.assu.presentation.common.chatting.ChattingSentProposalFragment" />
 
     <fragment
         android:id="@+id/proposalModifyFragment"
-        android:name="com.example.assu_fe_app.presentation.common.contract.ProposalModifyFragment"
+        android:name="com.ssu.assu.presentation.common.contract.ProposalModifyFragment"
         tools:layout="@layout/fragment_proposal_modify">
 
         <argument
@@ -200,7 +200,7 @@
 
         <argument
             android:name="viewMode"
-            app:argType="com.example.assu_fe_app.presentation.common.contract.ViewMode"/>
+            app:argType="com.ssu.assu.presentation.common.contract.ViewMode"/>
 
     </fragment>
 </navigation>

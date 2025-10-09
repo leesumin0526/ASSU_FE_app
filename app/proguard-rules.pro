@@ -19,5 +19,5 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class com.example.**.dto.** { *; }
+-keep class com.ssu.**.dto.** { *; }
 -keep @com.squareup.moshi.JsonClass class * { *; }

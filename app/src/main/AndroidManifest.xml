@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ssu.assu"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature
@@ -45,7 +46,7 @@
 
         <!-- FCM 서비스 등록 -->
         <service
-            android:name=".fcm.MyFirebaseMessagingService"
+            android:name="com.ssu.assu.fcm.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -53,16 +54,16 @@
         </service>
 
         <activity
-            android:name=".presentation.common.notification.NotificationActivity"
+            android:name="com.ssu.assu.presentation.common.notification.NotificationActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.common.chatting.ChattingActivity"
+            android:name="com.ssu.assu.presentation.common.chatting.ChattingActivity"
             android:windowSoftInputMode="adjustResize|stateVisible"
             android:exported="false">
         </activity>
 
         <activity
-            android:name=".presentation.common.login.LoginActivity"
+            android:name="com.ssu.assu.presentation.common.login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -71,34 +72,34 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.common.signup.SignUpActivity"
+            android:name="com.ssu.assu.presentation.common.signup.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.user.UserMainActivity"
+            android:name="com.ssu.assu.presentation.user.UserMainActivity"
             android:exported="false" />
 
-        <activity android:name=".presentation.user.home.UserQRVerifyActivity" />
-        <activity android:name=".presentation.user.dashboard.UserSuggestCompleteActivity" />
-        <activity android:name=".presentation.user.dashboard.UserServiceSuggestActivity" />
-        <activity android:name=".presentation.user.review.mypage.UserMyReviewActivity" />
-        <activity android:name=".presentation.user.review.writing.UserFinishReviewActivity" />
-        <activity android:name=".presentation.user.review.writing.UserPhotoReviewActivity" />
-        <activity android:name=".presentation.user.review.writing.UserStarReviewActivity" />
-        <activity android:name=".presentation.common.location.LocationSearchActivity" />
-        <activity android:name=".presentation.user.review.store.UserReviewStoreActivity" />
-        <activity android:name=".presentation.user.home.CertifyActivity" />
-        <activity android:name=".presentation.user.location.UserLocationSearchActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.home.UserQRVerifyActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.dashboard.UserSuggestCompleteActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.dashboard.UserServiceSuggestActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.review.mypage.UserMyReviewActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.review.writing.UserFinishReviewActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.review.writing.UserPhotoReviewActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.review.writing.UserStarReviewActivity" />
+        <activity android:name="com.ssu.assu.presentation.common.location.LocationSearchActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.review.store.UserReviewStoreActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.home.CertifyActivity" />
+        <activity android:name="com.ssu.assu.presentation.user.location.UserLocationSearchActivity" />
         <activity
-            android:name=".presentation.admin.AdminMainActivity"
+            android:name="com.ssu.assu.presentation.admin.AdminMainActivity"
             android:exported="false" />
-        <activity android:name=".presentation.admin.home.AdminHomeViewPartnerListActivity" />
-        <activity android:name=".presentation.admin.dashboard.AdminDashboardSuggestionsActivity" />
+        <activity android:name="com.ssu.assu.presentation.admin.home.AdminHomeViewPartnerListActivity" />
+        <activity android:name="com.ssu.assu.presentation.admin.dashboard.AdminDashboardSuggestionsActivity" />
         <activity
-            android:name=".presentation.partner.PartnerMainActivity"
+            android:name="com.ssu.assu.presentation.partner.PartnerMainActivity"
             android:exported="false" />
-        <activity android:name=".presentation.partner.home.PartnerHomeViewAdminListActivity" />
+        <activity android:name="com.ssu.assu.presentation.partner.home.PartnerHomeViewAdminListActivity" />
         <activity
-            android:name=".presentation.common.login.LmsLoginActivity"
+            android:name="com.ssu.assu.presentation.common.login.LmsLoginActivity"
             android:exported="false" />
     </application>
 
