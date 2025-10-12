@@ -1,6 +1,7 @@
 package com.ssu.assu.presentation.partner.dashboard.review
 
 import android.os.Build
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
@@ -48,12 +49,15 @@ class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layou
     override fun initObserver() {
         getReviewViewModel.reviewList.observe(viewLifecycleOwner) { reviews ->
             if (reviews.isNullOrEmpty()) {
-                userReviewAdapter.submitList(emptyList())
-                findNavController().navigate(R.id.action_partnerReviewFragment_to_partnerReviewNoneFragment)
+                binding.rvCustomerReview.visibility = View.GONE
+                binding.flPartnerReviewNone.visibility = View.VISIBLE
             } else {
+                binding.rvCustomerReview.visibility = View.VISIBLE
+                binding.flPartnerReviewNone.visibility = View.GONE
                 userReviewAdapter.submitList(reviews)
                 val count = reviews.size.toString()
                 binding.tvReviewStoreReviewCount.text = "${count}개의 평가"
+
             }
         }
 
@@ -167,12 +171,13 @@ class PartnerReviewFragment : BaseFragment<FragmentPartnerReviewBinding>(R.layou
             userReviewAdapter.submitList(currentList)
 
             binding.tvReviewStoreReviewCount.text = "${currentList.size}개의 평가"
-
-            if (currentList.isEmpty()) {
-                findNavController().navigate(R.id.action_partnerReviewFragment_to_partnerReviewNoneFragment)
-            }
         }
 
         selectedItemPosition = -1
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        (requireActivity() as? PartnerMainActivity)?.showBottomNavigation()
     }
 }
