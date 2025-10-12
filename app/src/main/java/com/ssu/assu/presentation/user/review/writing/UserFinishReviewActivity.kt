@@ -19,7 +19,7 @@ class UserFinishReviewActivity : BaseActivity<ActivityUserFinishReviewBinding>(R
                 systemBars.left,
                 systemBars.top + extraPaddingTop.dpToPx(v.context),
                 systemBars.right,
-                0
+                systemBars.bottom
             )
             insets
         }
