@@ -241,7 +241,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.1251"
             app:layout_constraintTop_toBottomOf="@id/view_photo_review_mg7"
             app:layout_constraintStart_toEndOf="@id/view_photo_review_mg8"
             app:layout_constraintEnd_toStartOf="@id/view_photo_review_mg9">
@@ -250,7 +251,8 @@
             <ImageView
                 android:id="@+id/iv_photo_review_photo1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_constraintDimensionRatio="1:1"
                 android:src="@drawable/ic_select_photo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -260,7 +262,8 @@
             <ImageView
                 android:id="@+id/iv_photo_review_photo2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_constraintDimensionRatio="1:1"
                 android:src="@drawable/ic_select_photo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -271,9 +274,10 @@
             <ImageView
                 android:id="@+id/iv_photo_review_photo3"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:src="@drawable/ic_select_photo"
-                android:visibility="invisible"
+                app:layout_constraintDimensionRatio="1:1"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
