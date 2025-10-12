@@ -440,6 +440,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="역전할머니맥주"
+                        android:textcolor="@color/assu_font_main"
                         android:textSize="14sp"/>
                 </LinearLayout>
 
@@ -461,6 +462,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="취향"
+                        android:textColor="@color/assu_font_main"
                         android:textSize="14sp"/>
                 </LinearLayout>
 
@@ -483,6 +485,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="Bread * co"
+                        android:textColor="@color/assu_font_main"
                         android:textSize="14sp"/>
                 </LinearLayout>
 
@@ -505,6 +508,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="인생맥주"
+                        android:textColor="@color/assu_font_main"
                         android:textSize="14sp"/>
                 </LinearLayout>
 
@@ -527,6 +531,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="역전할머니맥주"
+                        android:textColor="@color/assu_font_main"
                         android:textSize="14sp"/>
                 </LinearLayout>
 
@@ -549,6 +554,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="취향"
+                        android:textColor="@color/assu_font_main"
                         android:textSize="14sp"/>
                 </LinearLayout>
 
@@ -570,6 +576,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="Bread * co"
+                        android:textColor="@color/assu_font_main"
                         android:textSize="14sp"/>
                 </LinearLayout>
 
@@ -591,6 +598,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="인생맥주"
+                        android:textColor="@color/assu_font_main"
                         android:textSize="14sp"/>
                 </LinearLayout>
 
