@@ -97,6 +97,11 @@ class UserHomeFragment :
         }
     }
 
+    override fun onResume(){
+        super.onResume()
+        viewModel.loadStampCount()
+    }
+
     private fun setupRankingGrid(popularStores: List<PopularStoreModel>) {
         val gridLayout = binding.gridRanking
         gridLayout.removeAllViews()
