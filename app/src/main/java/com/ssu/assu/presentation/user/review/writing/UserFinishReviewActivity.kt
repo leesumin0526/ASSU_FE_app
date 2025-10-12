@@ -33,6 +33,13 @@ class UserFinishReviewActivity : BaseActivity<ActivityUserFinishReviewBinding>(R
         seeMyReviewButton.setOnClickListener {
             navigateToMyReview()
         }
+        val callback = object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 뒤로 가기 버튼을 눌렀을 때 홈으로 가는 함수를 호출합니다.
+                navigateToHome()
+            }
+        }
+        this.onBackPressedDispatcher.addCallback(this, callback)
 
 
     }

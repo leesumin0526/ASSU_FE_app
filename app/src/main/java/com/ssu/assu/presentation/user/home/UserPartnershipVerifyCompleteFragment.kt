@@ -1,6 +1,7 @@
 package com.ssu.assu.presentation.user.home
 
 import android.content.Intent
+import androidx.activity.OnBackPressedCallback
 import com.ssu.assu.R
 import com.ssu.assu.databinding.FragmentUserPartnershipVerifyCompleteBinding
 import com.ssu.assu.presentation.base.BaseFragment
@@ -19,6 +20,14 @@ class UserPartnershipVerifyCompleteFragment :
                 // Activity 종료 후 HomeFragment가 있는 이전 화면으로 돌아감
                 requireActivity().finish()
             }
+            val callback: Any = object : OnBackPressedCallback(true) { // true로 콜백을 활성화합니다.
+                override fun handleOnBackPressed() {
+                    requireActivity().finish()
+                }
+            }
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+                callback as OnBackPressedCallback
+            )
 
             binding
 
