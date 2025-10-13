@@ -24,7 +24,7 @@
             android:id="@+id/view_admin_chatting_item_mg1"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            app:layout_constraintWidth_percent="0.06870229008"
+            app:layout_constraintWidth_percent="0.04870229008"
             app:layout_constraintStart_toEndOf="@id/iv_item_chatting_list_restaurant_profile"
             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -36,7 +36,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_unread_message_count"
-            app:layout_goneMarginEnd="10dp"
+            app:layout_goneMarginEnd="19dp"
             android:orientation="vertical">
 
             <TextView
