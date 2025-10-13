@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssu.assu.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.ssu.assu.data.local.AuthTokenLocalStore
+import com.ssu.assu.domain.usecase.dashboard.GetTodayBestStoreUseCase
 import com.ssu.assu.domain.usecase.location.AdminSearchPartnerByKeywordUseCase
 import com.ssu.assu.domain.usecase.location.PartnerSearchAdminByKeywordUseCase
 import com.ssu.assu.util.RetrofitResult
@@ -19,7 +20,8 @@ class AdminPartnerKeyWordSearchViewModel @Inject
 constructor(
     private val adminSearchPartnerCase: AdminSearchPartnerByKeywordUseCase,
     private val partnerSearchAdminCase: PartnerSearchAdminByKeywordUseCase,
-    private val authTokenLocalStore: AuthTokenLocalStore
+    private val authTokenLocalStore: AuthTokenLocalStore,
+    private val bestUseCase: GetTodayBestStoreUseCase
 ) : ViewModel() {
 
     private val _state = MutableLiveData<String>()
@@ -34,12 +36,16 @@ constructor(
     private val _contentList = MutableLiveData<List<LocationAdminPartnerSearchResultItem>>()
     val contentList: LiveData<List<LocationAdminPartnerSearchResultItem>> = _contentList
 
+    // Top Rank 관련 추가
+    private val _bestStores = MutableLiveData<List<String>>()
+    val bestStores: LiveData<List<String>> get() = _bestStores
+
     fun search(keyword: String) = viewModelScope.launch {
         _state.value = "loading"
         val result = when (role) {
             com.ssu.assu.data.dto.UserRole.ADMIN   -> adminSearchPartnerCase(keyword)
             com.ssu.assu.data.dto.UserRole.PARTNER -> partnerSearchAdminCase(keyword)
-            else                                              -> adminSearchPartnerCase(keyword)
+            else                                   -> adminSearchPartnerCase(keyword)
         }
         when (result) {
             is RetrofitResult.Success -> {
@@ -50,9 +56,20 @@ constructor(
             is RetrofitResult.Fail, is RetrofitResult.Error -> {
                 _contentList.value = emptyList()
                 _isEmptyList.value = true
-                _state.value = "error"  // 이 부분이 누락되어 있었음!
+                _state.value = "error"
             }
         }
     }
 
+    fun getPopularSearch() {
+        viewModelScope.launch {
+            when (val result = bestUseCase()) {
+                is RetrofitResult.Success -> {
+                    _bestStores.value = result.data.bestStores
+                }
+                is RetrofitResult.Error -> {}
+                is RetrofitResult.Fail -> {}
+            }
+        }
+    }
 }
