@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ssu.assu.R
+import com.ssu.assu.data.local.AuthTokenLocalStore
 import com.ssu.assu.databinding.FragmentMypageAccountBinding
 import com.ssu.assu.presentation.base.BaseFragment
 import com.ssu.assu.presentation.common.login.LoginActivity
@@ -16,6 +17,7 @@ import com.ssu.assu.ui.common.mypage.MypageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MypageAccountFragment
@@ -23,7 +25,17 @@ class MypageAccountFragment
 
     private val viewModel: MypageViewModel by viewModels()
 
-    override fun initView() { /* no-op */ }
+    @Inject
+    lateinit var authTokenLocalStore: AuthTokenLocalStore
+
+    override fun initView() {
+        val userRole = authTokenLocalStore.getUserRole()
+        if (userRole == "PARTNER" || userRole == "ADMIN") {
+            binding.clAdmAccountComponent1.visibility = View.VISIBLE
+        } else {
+            binding.clAdmAccountComponent1.visibility = View.GONE
+        }
+    }
 
     override fun initObserver() {
         // MypageViewModel의 로그아웃 상태 관찰
