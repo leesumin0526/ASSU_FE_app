@@ -4,15 +4,21 @@ package com.ssu.assu.presentation.common.chatting
 import android.app.FragmentManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -59,13 +65,30 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     override fun initView() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val extraPaddingTop = 3
-            v.setPadding(
-                systemBars.left,
-                systemBars.top + extraPaddingTop.dpToPx(v.context),
-                systemBars.right,
-                systemBars.bottom
-            )
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+            // 상태바 높이만큼 루트 뷰의 상단 패딩을 설정
+            v.updatePadding(top = systemBars.top)
+
+            // 키보드와 시스템 네비게이션 바 중 더 큰 값을 하단 여백으로 사용
+            val bottomInset = maxOf(systemBars.bottom, ime.bottom)
+
+            // ✅ 핵심 변경: 자식 뷰의 마진/패딩 대신, 컨테이너의 하단 패딩을 조절합니다.
+            // 이렇게 하면 내부에 있는 뷰들이(input box, recyclerview) 자동으로 밀려 올라갑니다.
+            binding.clChattingContainer.updatePadding(bottom = bottomInset)
+
+            val isImeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            if (isImeVisible) {
+                // 키보드가 올라왔다면, RecyclerView의 레이아웃 계산이 끝난 직후에
+                // 맨 아래로 스크롤하도록 명령합니다.
+                binding.rvChattingMessageList.post {
+                    val itemCount = messageAdapter.itemCount
+                    if (itemCount > 0) {
+                        binding.rvChattingMessageList.scrollToPosition(itemCount - 1)
+                    }
+                }
+            }
+
             insets
         }
 
@@ -108,15 +131,6 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         }
 
         viewModel.checkBlockOpponent(opponentId)
-
-
-
-        binding.etChattingInput.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                val inputMethodManager = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.showSoftInput(v, InputMethodManager.SHOW_FORCED)
-            }
-        }
 
         // 메시지 전송
         binding.btnChattingSend.setOnClickListener {
@@ -570,5 +584,31 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
     override fun onStop() {
         super.onStop()
         viewModel.disconnectSocket()
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        // ACTION_DOWN 이벤트일 때만 확인합니다. (터치가 시작될 때)
+        if (ev?.action == MotionEvent.ACTION_DOWN) {
+            // 현재 포커스를 가진 뷰를 가져옵니다.
+            val v = currentFocus
+
+            // 포커스를 가진 뷰가 EditText인 경우에만 로직을 수행합니다.
+            if (v is EditText) {
+                val outRect = Rect()
+                // EditText의 화면상 좌표를 계산합니다. (보이는 영역)
+                v.getGlobalVisibleRect(outRect)
+
+                // 터치 이벤트의 좌표가 EditText의 바깥 영역인지 확인합니다.
+                if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
+                    // 키보드를 숨깁니다.
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.windowToken, 0)
+                    // EditText의 포커스를 제거해서 커서도 사라지게 합니다.
+                    v.clearFocus()
+                }
+            }
+        }
+        // 원래의 터치 이벤트를 계속 진행시킵니다.
+        return super.dispatchTouchEvent(ev)
     }
 }
