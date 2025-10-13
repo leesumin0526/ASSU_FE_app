@@ -183,30 +183,41 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         }
 
         // 하단 + 버튼 클릭
+        // 하단 + 버튼 클릭 (토글 기능으로 수정)
         binding.ivChattingPlus.setOnClickListener {
-
-            Log.d(
-                "PlusButtonCheck",
-                "Button clicked! Role: $currentUserRole, Status: ${currentPartnershipStatus?.status}"
-            )
-
-            // ✅ 파트너이고 제휴 상태가 NONE이면 아무것도 하지 않고 함수 종료
-            if (currentUserRole.equals("PARTNER", ignoreCase = true) &&
-                currentPartnershipStatus?.status == "NONE") {
-                Log.d("ChattingPlusButton", "Partner's partnership status is NONE. No action taken.")
-                Toast.makeText(this, "학생회가 제안서를 먼저 보내야합니다.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // 위의 조건에 해당하지 않으면 기존 로직 수행
-            binding.flChattingOverlay.visibility = View.VISIBLE
-
-            if (currentUserRole.equals("ADMIN", ignoreCase = true)) {
-                binding.layoutChattingLocationBoxAdmin.visibility = View.VISIBLE
+            // 먼저, 오버레이가 현재 보이는지 확인하여 토글 동작을 결정합니다.
+            if (binding.flChattingOverlay.visibility == View.VISIBLE) {
+                // 이미 보이고 있다면, 모든 관련 뷰를 숨깁니다.
+                binding.flChattingOverlay.visibility = View.GONE
+                binding.layoutChattingLocationBoxAdmin.visibility = View.GONE
                 binding.layoutChattingLocationBoxPartner.visibility = View.GONE
             } else {
-                binding.layoutChattingLocationBoxAdmin.visibility = View.GONE
-                binding.layoutChattingLocationBoxPartner.visibility = View.VISIBLE
+                // 보이지 않는다면, 기존의 '보여주기' 로직을 실행합니다.
+
+                Log.d(
+                    "PlusButtonCheck",
+                    "Button clicked! Role: $currentUserRole, Status: ${currentPartnershipStatus?.status}"
+                )
+
+                // ✅ 파트너이고 제휴 상태가 NONE이면 아무것도 하지 않고 함수 종료 (이 조건은 보여줄 때만 필요)
+                if (currentUserRole.equals("PARTNER", ignoreCase = true) &&
+                    currentPartnershipStatus?.status == "NONE"
+                ) {
+                    Log.d("ChattingPlusButton", "Partner's partnership status is NONE. No action taken.")
+                    Toast.makeText(this, "학생회가 제안서를 먼저 보내야합니다.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // 위의 조건에 해당하지 않으면 기존 로직 수행
+                binding.flChattingOverlay.visibility = View.VISIBLE
+
+                if (currentUserRole.equals("ADMIN", ignoreCase = true)) {
+                    binding.layoutChattingLocationBoxAdmin.visibility = View.VISIBLE
+                    binding.layoutChattingLocationBoxPartner.visibility = View.GONE
+                } else {
+                    binding.layoutChattingLocationBoxAdmin.visibility = View.GONE
+                    binding.layoutChattingLocationBoxPartner.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -594,17 +605,40 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
             // 포커스를 가진 뷰가 EditText인 경우에만 로직을 수행합니다.
             if (v is EditText) {
-                val outRect = Rect()
-                // EditText의 화면상 좌표를 계산합니다. (보이는 영역)
-                v.getGlobalVisibleRect(outRect)
+                // 1. 각 뷰에 대해 별도의 Rect 객체를 생성합니다.
+                val inputRect = Rect()
+                binding.layoutChattingInputBox.getGlobalVisibleRect(inputRect)
 
-                // 터치 이벤트의 좌표가 EditText의 바깥 영역인지 확인합니다.
-                if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
+                val partnerModalRect = Rect()
+                binding.layoutChattingLocationBoxPartner.getGlobalVisibleRect(partnerModalRect)
+
+                val adminModalRect = Rect()
+                binding.layoutChattingLocationBoxAdmin.getGlobalVisibleRect(adminModalRect)
+
+                val touchX = ev.rawX.toInt()
+                val touchY = ev.rawY.toInt()
+
+                // 2. 터치 위치가 상호작용이 필요한 '모든' 영역의 바깥인지 확인합니다.
+                //    - 입력창 영역 바깥
+                //    - 파트너 모달이 '보이는 상태'이고, 그 영역 바깥
+                //    - 어드민 모달이 '보이는 상태'이고, 그 영역 바깥
+                val touchIsOutside =
+                    !inputRect.contains(touchX, touchY) &&
+                            !(binding.layoutChattingLocationBoxPartner.visibility == View.VISIBLE && partnerModalRect.contains(touchX, touchY)) &&
+                            !(binding.layoutChattingLocationBoxAdmin.visibility == View.VISIBLE && adminModalRect.contains(touchX, touchY))
+
+                // 3. 만약 터치가 모든 관련 영역의 '바깥'이라면, 키보드와 모달을 숨깁니다.
+                if (touchIsOutside) {
                     // 키보드를 숨깁니다.
                     val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(v.windowToken, 0)
                     // EditText의 포커스를 제거해서 커서도 사라지게 합니다.
                     v.clearFocus()
+
+                    // ✅ UX 개선: 열려있는 모달과 오버레이도 함께 숨깁니다.
+                    binding.flChattingOverlay.visibility = View.GONE
+                    binding.layoutChattingLocationBoxAdmin.visibility = View.GONE
+                    binding.layoutChattingLocationBoxPartner.visibility = View.GONE
                 }
             }
         }
