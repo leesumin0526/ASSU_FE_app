@@ -50,4 +50,15 @@
     <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <style name="AssuDatePickerTheme" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <!-- 캘린더 헤더 색 -->
+        <item name="colorPrimary">@color/assu_main</item>
+        <!-- 확인/취소 버튼 색 -->
+        <item name="colorAccent">@color/assu_main</item>
+        <!-- 날짜 선택 시 점/원 색 -->
+        <item name="colorControlActivated">@color/assu_main</item>
+        <!-- 텍스트 기본 색 -->
+        <item name="android:textColorPrimary">@color/assu_font_main</item>
+    </style>
+
 </resources>

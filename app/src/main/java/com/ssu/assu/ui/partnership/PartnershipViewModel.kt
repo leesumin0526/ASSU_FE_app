@@ -410,8 +410,9 @@ class PartnershipViewModel @Inject constructor(
             append(adminName.value.ifEmpty { "-" })
             append("와의\n제휴를 제안합니다.\n\n")
             append(signDate.value)
-            append("\n대표 ")
-            append(partnerName.value.ifEmpty { "-" })
+            append("\n",partnerName.value.ifEmpty { "-" })
+            append(" 대표")
+
         }
         _summaryText.value = summaryText
 

@@ -1,19 +1,25 @@
 package com.ssu.assu.presentation.user.home
 
 import android.content.Intent
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ssu.assu.R
 import com.ssu.assu.data.local.AuthTokenLocalStore
 import com.ssu.assu.databinding.FragmentUserHomeBinding
 import com.ssu.assu.domain.model.dashboard.PopularStoreModel
 import com.ssu.assu.presentation.base.BaseFragment
+import com.ssu.assu.ui.deviceToken.DeviceTokenViewModel
 import com.ssu.assu.ui.user.UserHomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -24,6 +30,7 @@ class UserHomeFragment :
     BaseFragment<FragmentUserHomeBinding>(R.layout.fragment_user_home){
 
     private val viewModel: UserHomeViewModel by viewModels()
+    private val deviceTokenViewModel: DeviceTokenViewModel by viewModels()
 
     @Inject
     lateinit var authTokenLocalStore: AuthTokenLocalStore
@@ -69,9 +76,40 @@ class UserHomeFragment :
                 }
             }
         }
+
+        // FCM 토큰 등록 상태 관찰
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                deviceTokenViewModel.uiState.collect { state ->
+                    when (state) {
+                        is DeviceTokenViewModel.UiState.Idle -> Unit
+                        is DeviceTokenViewModel.UiState.Loading -> {
+                            // 필요하면 로딩 표시
+                            Log.d("FCM", "디바이스 토큰 등록 중…")
+                        }
+                        is DeviceTokenViewModel.UiState.Success -> {
+                            val tokenId = state.tokenId
+                            Log.i("FCM", "등록 성공: ${tokenId}")
+                        }
+                        is DeviceTokenViewModel.UiState.Fail -> {
+                            Log.e("FCM", "등록 실패: ${state.code} ${state.msg}")
+                            // FCM 토큰 등록 실패해도 앱을 종료하지 않음
+                            // 로그인은 성공했으므로 사용자가 계속 사용할 수 있도록 함
+                        }
+                        is DeviceTokenViewModel.UiState.Error -> {
+                            Log.e("FCM", "등록 오류: ${state.msg}")
+                            // FCM 토큰 등록 오류가 발생해도 앱을 종료하지 않음
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun initView() {
+        // 화면 종료 전에 토큰 등록까지 먼저 처리
+        fetchAndRegisterFcmToken()
+
         val name = authTokenLocalStore.getUserName()
         binding.tvHome1.text = "안녕하세요, ${name}님!"
 
@@ -205,6 +243,29 @@ class UserHomeFragment :
 
     private fun hideLoading() {
         // 로딩 UI 숨김
+    }
+
+    // 서버 등록까지 한 번에
+    private fun fetchAndRegisterFcmToken() {
+        try {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FCM", "토큰 가져오기 실패", task.exception)
+                    // FCM 토큰 가져오기 실패해도 앱을 종료하지 않음
+                    return@addOnCompleteListener
+                }
+                val token = task.result
+                if (token.isNullOrEmpty()) {
+                    Log.w("FCM", "FCM 토큰이 비어있음")
+                    return@addOnCompleteListener
+                }
+                Log.d("FCM", "FCM 토큰: $token")
+                deviceTokenViewModel.register(token)
+            }
+        } catch (e: Exception) {
+            Log.e("FCM", "FCM 토큰 등록 중 예외 발생", e)
+            // 예외가 발생해도 앱을 종료하지 않음
+        }
     }
 
 }

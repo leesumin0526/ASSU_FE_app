@@ -30,6 +30,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LocationSearchSuccessFragment :
     BaseFragment<FragmentLocationSearchSuccessBinding>(R.layout.fragment_location_search_success) {
+
     @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
 
     private val sharedViewModel: LocationSharedViewModel by viewModels()
@@ -40,8 +41,9 @@ class LocationSearchSuccessFragment :
     private lateinit var adapter: AdminPartnerLocationAdapter
     private lateinit var role: UserRole
 
-    private var phoneNum: String? = null
+    private var phoneNumber: String? = null
     private var navigated = false
+    private var isCreatingRoom = false
 
     override fun onResume() {
         super.onResume()
@@ -54,7 +56,10 @@ class LocationSearchSuccessFragment :
                 chatVm.createRoomState.collect { state ->
                     when (state) {
                         is ChattingViewModel.CreateRoomUiState.Loading -> Unit
+
                         is ChattingViewModel.CreateRoomUiState.Success -> {
+                            if (navigated) return@collect
+
                             val roomId = state.data.roomId
                             val displayName = when (role) {
                                 UserRole.ADMIN   -> state.data.adminViewName
@@ -64,50 +69,56 @@ class LocationSearchSuccessFragment :
                             val opponentId = lastItem?.id ?: -1L
                             val opponentProfileImage = lastItem?.profileUrl ?: ""
 
-                            if (!navigated) {
-                                navigated = true
+                            navigated = true
 
-                                viewLifecycleOwner.lifecycleScope.launch {
-                                    val status = chatVm.checkPartnershipStatus(authTokenLocalStore.getUserRole(), opponentId)
+                            // 파트너십 상태 조회 후 이동
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                val status = chatVm.checkPartnershipStatus(
+                                    authTokenLocalStore.getUserRole(),
+                                    opponentId
+                                )
 
-                                    if (status != null) {
-                                        val intent = Intent(
-                                            requireContext(),
-                                            com.ssu.assu.presentation.common.chatting.ChattingActivity::class.java
-                                        ).apply {
-                                            putExtra("roomId", roomId)
-                                            putExtra("opponentName", displayName)
-                                            putExtra("opponentProfileImage", opponentProfileImage)
-                                            putExtra("partnershipStatus", status)
-                                            putExtra("opponentId", opponentId)
-                                            putExtra("entryMessage", "'문의하기' 버튼을 통해 이동했습니다.")
-                                            putExtra("phoneNumber", phoneNum)
-                                        }
-                                        startActivity(intent)
-                                    } else {
-                                        Toast.makeText(requireContext(), "제휴 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                                if (status != null) {
+                                    val intent = Intent(
+                                        requireContext(),
+                                        com.ssu.assu.presentation.common.chatting.ChattingActivity::class.java
+                                    ).apply {
+                                        putExtra("roomId", roomId)
+                                        putExtra("opponentName", displayName)
+                                        putExtra("opponentProfileImage", opponentProfileImage)
+                                        putExtra("partnershipStatus", status)
+                                        putExtra("opponentId", opponentId)
+                                        putExtra("entryMessage", "'문의하기' 버튼을 통해 이동했습니다.")
+                                        putExtra("phoneNumber", phoneNumber)
                                     }
-                                    chatVm.resetCreateState()
-                                    phoneNum = null
+                                    startActivity(intent)
+                                } else {
+                                    Toast.makeText(requireContext(), "제휴 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
                                 }
+
+                                chatVm.resetCreateState()
+                                phoneNumber = null
+                                isCreatingRoom = false
                             }
                         }
+
                         is ChattingViewModel.CreateRoomUiState.Fail,
                         is ChattingViewModel.CreateRoomUiState.Error -> {
                             chatVm.resetCreateState()
-                            phoneNum = null
+                            phoneNumber = null
+                            isCreatingRoom = false
                         }
+
                         else -> Unit
                     }
                 }
             }
         }
 
+        // 이하 목록/빈 목록 관찰 로직은 그대로
         searchViewModel.contentList.observe(viewLifecycleOwner){ contentList ->
             adapter.submitList(contentList)
-            Log.d("LocationSearchSuccessFragment", "관찰된 데이터: $contentList")
             binding.tvLocationSearchSuccessCount.text = contentList.size.toString()
-
         }
         searchViewModel.isEmptyList.observe(viewLifecycleOwner){ isEmpty ->
             if(isEmpty){
@@ -116,56 +127,19 @@ class LocationSearchSuccessFragment :
                 binding.rvLocationSearchSuccess.visibility = View.GONE
 
                 val userRole = authTokenLocalStore.getUserRole()
-                if (userRole.equals("PARTNER", ignoreCase = true)) {
-                    binding.tvSearchErrorMessage.text="관리자를 찾지 못해 페이지를 표시할 수 없어요\n이용에 불편을 드려 죄송합니다."
-                } else {
-                    binding.tvSearchErrorMessage.text="매장을 찾지 못해 페이지를 표시할 수 없어요\n이용에 불편을 드려 죄송합니다."
-                }
+                binding.tvSearchErrorMessage.text =
+                    if (userRole.equals("PARTNER", ignoreCase = true)) {
+                        "관리자를 찾지 못해 페이지를 표시할 수 없어요\n이용에 불편을 드려 죄송합니다."
+                    } else {
+                        "매장을 찾지 못해 페이지를 표시할 수 없어요\n이용에 불편을 드려 죄송합니다."
+                    }
+
                 binding.llLocationAdminPartnerItemEmpty.visibility=  View.VISIBLE
-            }
-            else {
+            } else {
                 binding.tvLocationSearchSuccessTitle.visibility = View.VISIBLE
                 binding.tvLocationSearchSuccessCount.visibility= View.VISIBLE
                 binding.rvLocationSearchSuccess.visibility = View.VISIBLE
                 binding.llLocationAdminPartnerItemEmpty.visibility=  View.GONE
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                chatVm.createRoomState.collect { state ->
-                    when (state) {
-                        is ChattingViewModel.CreateRoomUiState.Idle -> Log.d("Chatting", "Loading")
-                        is ChattingViewModel.CreateRoomUiState.Loading -> Log.d("Chatting", "Loading")
-                        is ChattingViewModel.CreateRoomUiState.Success -> {
-
-                            val roomId = state.data.roomId
-                            val displayName = when (role) {
-                                UserRole.ADMIN   -> state.data.adminViewName
-                                UserRole.PARTNER -> state.data.partnerViewName
-                                else             -> state.data.adminViewName
-                            }
-                            val opponentId = lastItem?.id ?: -1L
-
-                            val intent = Intent(requireContext(), com.ssu.assu.presentation.common.chatting.ChattingActivity::class.java).apply {
-                                putExtra("roomId", roomId)
-                                putExtra("opponentName", displayName)
-                                putExtra("opponentId", opponentId)
-                                putExtra("entryMessage", "'문의하기' 버튼을 통해 이동했습니다.")
-                                putExtra("phoneNum", phoneNum)
-                            }
-                            startActivity(intent)
-
-                            chatVm.resetCreateState()
-                        }
-                        is ChattingViewModel.CreateRoomUiState.Fail -> {
-                            chatVm.resetCreateState()
-                        }
-                        is ChattingViewModel.CreateRoomUiState.Error -> {
-                            chatVm.resetCreateState()
-                        }
-                    }
-                }
             }
         }
     }
@@ -175,10 +149,6 @@ class LocationSearchSuccessFragment :
         initAdapter()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
     private fun initAdapter() {
         val myName = authTokenLocalStore.getUserName()
 
@@ -186,41 +156,42 @@ class LocationSearchSuccessFragment :
             role = role,
             myName = myName,
             onOpenContract = { args ->
-                // 제휴 중: 계약서 보기 → 결과 반환해서 현재 검색 액티비티 종료
-                val data = Intent().apply {
-                    putExtra("open_contract_args", args) // Serializable/Parcelable
-                }
+                val data = Intent().apply { putExtra("open_contract_args", args) }
                 requireActivity().setResult(android.app.Activity.RESULT_OK, data)
                 requireActivity().finish()
             },
             onAskChat = { item ->
+                if (isCreatingRoom) return@AdminPartnerLocationAdapter
+                isCreatingRoom = true
+
                 lastItem = item
-                // 제휴 아님: 문의하기 → 채팅방 생성
+
                 val opponentId = item.id ?: run {
+                    isCreatingRoom = false
                     return@AdminPartnerLocationAdapter
                 }
 
-                phoneNum = item.phoneNumber
+                phoneNumber = item.phoneNumber
 
                 val req = when (role) {
                     UserRole.ADMIN -> {
-                        val adminId   = authTokenLocalStore.getUserId()
-                        val partnerId = opponentId
                         CreateChatRoomRequestDto(
-                            adminId = adminId, partnerId = partnerId
+                            adminId = authTokenLocalStore.getUserId(),
+                            partnerId = opponentId
                         )
                     }
                     UserRole.PARTNER -> {
-                        val adminId   = opponentId
-                        val partnerId = authTokenLocalStore.getUserId()
                         CreateChatRoomRequestDto(
-                            adminId = adminId, partnerId = partnerId
+                            adminId = opponentId,
+                            partnerId = authTokenLocalStore.getUserId()
                         )
                     }
-                    else -> return@AdminPartnerLocationAdapter
+                    else -> {
+                        isCreatingRoom = false
+                        return@AdminPartnerLocationAdapter
+                    }
                 }
 
-                // ChattingViewModel 로 채팅방 생성
                 chatVm.createRoom(req)
             }
         )
@@ -229,7 +200,5 @@ class LocationSearchSuccessFragment :
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@LocationSearchSuccessFragment.adapter
         }
-
     }
-
 }

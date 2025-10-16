@@ -73,15 +73,17 @@ class LocationSearchActivity :
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
 
-                val keyword = keyword.text.toString().trim()
-                searchViewModel.search(keyword)
-                hideKeyboard()
-                binding.fvLocationSearchRank.visibility = View.INVISIBLE
-                binding.fvLocationSearchSuccess.visibility = View.VISIBLE
+                val keywordText = keyword.text.toString().trim()
+                triggerSearch(keywordText)
                 true
             } else {
                 false
             }
+        }
+
+        binding.ivLocationSearchIc.setOnClickListener {
+            val keywordText = binding.etLocationSearch.text.toString().trim()
+            triggerSearch(keywordText)
         }
 
         // 4. 검색 취소 버튼 누르면 입력 초기화
@@ -171,5 +173,14 @@ class LocationSearchActivity :
         }
         setResult(RESULT_CODE_ADDRESS_SELECTED, resultIntent)
         finish()
+    }
+
+    private fun triggerSearch(keywordText: String) {
+        if (keywordText.isNotEmpty()) {
+            searchViewModel.search(keywordText)
+            hideKeyboard()
+            binding.fvLocationSearchRank.visibility = View.INVISIBLE
+            binding.fvLocationSearchSuccess.visibility = View.VISIBLE
+        }
     }
 }

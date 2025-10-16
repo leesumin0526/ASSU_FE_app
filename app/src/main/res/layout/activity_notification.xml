@@ -16,7 +16,7 @@
             android:id="@+id/partner_noti_mg1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.0346"
+            app:layout_constraintHeight_percent="0.0546"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -70,7 +70,8 @@
             android:background="@color/assu_background"
             app:tabIndicatorHeight="2dp"
             app:tabIndicatorColor="@color/black"
-            app:tabIndicatorFullWidth="false"
+            app:tabIndicatorFullWidth="true"
+            app:tabRippleColor="@android:color/transparent"
             app:tabTextColor="@color/tab_text_selector"
             app:tabTextAppearance="@style/CustomTabTextStyle"
             app:tabMode="fixed"

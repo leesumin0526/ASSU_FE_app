@@ -1,7 +1,16 @@
 package com.ssu.assu.presentation.common.mypage
 
+import android.graphics.Rect
+import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.ScrollView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -26,13 +35,68 @@ class CustomerServiceDialogFragment :
 
     override fun initObserver() { /* 필요 시 */ }
 
-    // BaseFragment가 이미 DataBinding inflate → 여기서 바로 binding 사용
     override fun initView() {
         setupTabs()
         setupInquirySubmit()
         setupHistoryList()
         showInquiryTab()
         bindLoading()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val root = view.findViewById<View>(R.id.root_container)
+        val inquiryRoot = binding.inquiryLayout.root
+        val scroll = inquiryRoot.findViewById<ScrollView>(R.id.scroll_view)
+        val button = inquiryRoot.findViewById<View>(R.id.btn_submit_inquiry)
+
+        scroll.clipToPadding = false
+
+        // ✅ adjustNothing으로 전체 레이아웃은 안 움직이게 (버튼 고정)
+        requireActivity().window.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED or
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+        )
+
+        var lastImeVisible = false
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            val sysHeight = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+
+            // ✅ IME가 보일 때 ScrollView에 패딩을 줘서 가려지지 않게 함
+            scroll.setPadding(
+                scroll.paddingLeft,
+                scroll.paddingTop,
+                scroll.paddingRight,
+                if (imeVisible) imeHeight else sysHeight
+            )
+
+            // ✅ 버튼 표시 제어
+            if (imeVisible && !lastImeVisible) {
+                // 키보드가 막 올라올 때
+                button.visibility = View.GONE
+
+                // 현재 포커스된 EditText 자동으로 보이게 스크롤
+                root.post {
+                    val focused = root.findFocus()
+                    if (focused != null && focused.isShown) {
+                        val rect = Rect()
+                        focused.getDrawingRect(rect)
+                        scroll.offsetDescendantRectToMyCoords(focused, rect)
+                        scroll.smoothScrollTo(0, rect.bottom)
+                    }
+                }
+            } else if (!imeVisible && lastImeVisible) {
+                // 키보드가 내려갈 때 버튼 다시 표시
+                button.visibility = View.VISIBLE
+            }
+
+            lastImeVisible = imeVisible
+            insets
+        }
     }
 
     /** 문의하기 탭 - 제출 */

@@ -28,7 +28,7 @@
         android:id="@+id/item_noti_mg2"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        app:layout_constraintWidth_percent="0.0279"
+        app:layout_constraintWidth_percent="0.0379"
         app:layout_constraintStart_toEndOf="@id/ic_noti_logo"
         app:layout_constraintTop_toTopOf="@id/ic_noti_logo"/>
 
@@ -44,9 +44,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_notification_content"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.7506"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@id/item_noti_mg4"
         app:layout_constraintStart_toEndOf="@id/item_noti_mg2"
         app:layout_constraintTop_toTopOf="@id/ic_noti_logo"
         app:layout_constraintBottom_toBottomOf="@id/ic_noti_logo">
@@ -64,17 +64,25 @@
         <TextView
             android:id="@+id/tv_item_noti_content"
             android:layout_width="0dp"
-            app:layout_constraintWidth_percent="0.959"
             android:layout_height="wrap_content"
-            android:text="notification content blalbla"
-            android:textSize="15sp"
+            android:text="notification content blalblanotification content blalblanotification content blalbla"
+            android:textSize="14sp"
             android:fontFamily="@font/pretendard_medium"
             android:textColor="@color/assu_font_main"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:layout_marginBottom="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_item_noti_type"
             app:layout_constraintStart_toStartOf="@id/tv_item_noti_type"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        app:layout_constraintWidth_percent="0.0865"
+        android:id="@+id/item_noti_mg4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
     <TextView
@@ -85,8 +93,18 @@
         android:textSize="13sp"
         android:fontFamily="@font/pretendard_semibold"
         android:text="10분전"
-        app:layout_constraintEnd_toEndOf="@id/cl_notification_content"
+        app:layout_constraintEnd_toStartOf="@id/item_noti_mg4"
         app:layout_constraintTop_toTopOf="@id/cl_notification_content"/>
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/assu_box"
+        android:layout_marginTop="1dp"
+        android:layout_marginHorizontal="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

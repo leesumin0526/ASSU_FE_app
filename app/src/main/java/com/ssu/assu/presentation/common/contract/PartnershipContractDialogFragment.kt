@@ -74,7 +74,7 @@ class PartnershipContractDialogFragment() : DialogFragment( ) {
                 append("와의\n 제휴를 제안합니다.\n\n")
                 append(data.periodStart?: "")
                 append("\n")
-                append(data.partnerName + "(인)")
+                append(data.partnerName)
             }
             binding.tvPartnershipContentSummary.text = summaryText
 

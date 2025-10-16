@@ -2,7 +2,13 @@ package com.ssu.assu.presentation.common.chatting.proposal
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.WindowManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -26,10 +32,45 @@ class ServiceProposalWritingFragment
     private val viewModel: PartnershipViewModel by activityViewModels()
     private lateinit var adapter: ServiceProposalAdapter
 
-    @Inject
-    lateinit var authTokenLocalStore: AuthTokenLocalStore
-
+    @Inject lateinit var authTokenLocalStore: AuthTokenLocalStore
     private var isEditMode: Boolean = false
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val root   = view.findViewById<View>(R.id.fragment_service_proposal)
+        val scroll = view.findViewById<NestedScrollView>(R.id.nested_scroll_view)
+        val fixed  = view.findViewById<View>(R.id.cl_fixed)
+
+        // 스크롤이 아래 패딩을 잘 쓰도록
+        scroll.clipToPadding = false
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+
+            // 1) 하단 고정바는 마진으로 '레이아웃'을 올린다 (겹치지 않게!)
+            (fixed.layoutParams as ConstraintLayout.LayoutParams).apply {
+                bottomMargin = ime
+                fixed.layoutParams = this
+            }
+
+            // 2) 스크롤은 시스템바만큼만 패딩(IME는 고정바가 먹었으므로 불필요)
+            scroll.setPadding(
+                scroll.paddingLeft,
+                scroll.paddingTop,
+                scroll.paddingRight,
+                sys
+            )
+            insets
+        }
+
+        // adjustResize가 켜져 있어야 함 (Manifest 또는 코드 한 군데만)
+        requireActivity().window.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED or
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        )
+    }
 
     override fun initView() {
         binding.lifecycleOwner = viewLifecycleOwner

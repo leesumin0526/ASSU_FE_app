@@ -57,22 +57,17 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
 
         binding.etLocationInfoSearch.setOnEditorActionListener { v, actionId, event ->
             when {
-                actionId == EditorInfo.IME_ACTION_DONE -> {
-                    val keyword = v.text.toString().trim()
-                    if (keyword.isNotEmpty()) {
-                        searchViewModel.searchLocationByKakao(keyword)
-                    }
-                    true
-                }
-                event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER -> {
-                    val keyword = v.text.toString().trim()
-                    if (keyword.isNotEmpty()) {
-                        searchViewModel.searchLocationByKakao(keyword)
-                    }
+                actionId == EditorInfo.IME_ACTION_DONE ||
+                        (event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) -> {
+                    performSearch(v.text.toString().trim())
                     true
                 }
                 else -> false
             }
+        }
+
+        binding.ivLocationInfoSearchIc.setOnClickListener {
+            performSearch(binding.etLocationInfoSearch.text.toString().trim())
         }
 
         binding.fragmentLocationInfoSearchLeftArrow.setOnClickListener {
@@ -131,5 +126,18 @@ class LocationInfoSearchFragment : BaseFragment<FragmentLocationInfoSearchBindin
                 parentFragmentManager.popBackStack()
             }
         }
+    }
+
+    private fun performSearch(keyword: String) {
+        if (keyword.isNotEmpty()) {
+            searchViewModel.searchLocationByKakao(keyword)
+            hideKeyboard() // 필요 시 추가
+        }
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        val view = requireActivity().currentFocus ?: View(requireContext())
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
