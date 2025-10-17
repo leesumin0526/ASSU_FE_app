@@ -83,6 +83,7 @@ class AdminHomeFragment :
                                         putExtra("opponentId", opponentId ?: -1L)
                                         putExtra("entryMessage", "추천 파트너 카드에서 이동했습니다.")
                                         putExtra("phoneNumber", phoneNumber)
+                                        putExtra("isNew",state.data.isNew)
                                     }
                                     startActivity(intent)
                                     Log.d("AdminHomeFragment","채팅방 생성 성공")
@@ -195,7 +196,7 @@ class AdminHomeFragment :
                     }
                     else -> Unit
                 }
-    }
+            }
         }
     }
 
@@ -268,7 +269,7 @@ class AdminHomeFragment :
                 opponentId = partner.partnerId
 
                 val req = CreateChatRoomRequestDto(
-                    adminId = authTokenLocalStore.getUserId() ?: 1L,
+                    adminId = authTokenLocalStore.getUserId(),
                     partnerId = partner.partnerId
                 )
                 chattingViewModel.createRoom(req)

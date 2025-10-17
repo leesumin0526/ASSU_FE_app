@@ -97,6 +97,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         val opponentName = intent.getStringExtra("opponentName") ?: ""
         val opponentId = intent.getLongExtra("opponentId",-1)
         val phoneNumber = intent.getStringExtra("phoneNumber")
+        val isNew = intent.getBooleanExtra("isNew",false)
         opponentProfileImage = intent.getStringExtra("opponentProfileImage") ?: ""
 
         Log.d("ChattingActivity", "roomId=$roomId, name=$opponentName")
