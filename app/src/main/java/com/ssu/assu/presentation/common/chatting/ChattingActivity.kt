@@ -14,10 +14,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.marginBottom
-import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -329,34 +328,13 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
 
                 // ✅✅✅ 이제 messages Flow 하나만 구독하여 모든 리스트 업데이트를 처리합니다. ✅✅✅
                 launch {
-                    viewModel.messages.collect { list ->
-                        // Domain → UI 변환(증분 반영을 위해 간단히 전체 다시 맵핑)
-                        val uiItems = list.map { m ->
-                            if (m.isMyMessage) {
-                                ChattingMessageItem.MyMessage(
-                                    messageId = m.messageId,
-                                    message = m.message ?: "",
-                                    sentAt = formatTime(m.sendTime),
-                                    isRead = m.isRead,
-                                    unreadCountForSender = m.unreadCountForSender ?: 0
-                                )
-                            } else {
-                                // ✅ 상대방 프로필 이미지는 ViewModel에서 내려주는 값을 사용하는 것이 더 안정적입니다.
-                                //     (현재는 Intent에서 받은 값을 임시로 사용)
-                                ChattingMessageItem.OtherMessage(
-                                    messageId = m.messageId,
-                                    profileImageUrl = if (m.profileImageUrl.isNullOrBlank()) opponentProfileImage else m.profileImageUrl,
-                                    message = m.message ?: "",
-                                    sentAt = formatTime(m.sendTime),
-                                    isRead = m.isRead
-                                )
-                            }
-                        }
-                        Log.d("ADAPTER_FLOW", "messages submitList called with size=${uiItems.size}")
-                        messageAdapter.submitList(uiItems) {
+                    viewModel.chatItems.collect { items ->
+                        Log.d("ADAPTER_FLOW", "chatItems submitList called with size=${items.size}")
+                        // ViewModel이 이미 모든 가공을 끝냈으므로, 'items'를 그대로 어댑터에 넘겨줍니다.
+                        messageAdapter.submitList(items) {
                             // 리스트가 업데이트 된 후, 마지막으로 스크롤
-                            if (uiItems.isNotEmpty()) {
-                                binding.rvChattingMessageList.scrollToPosition(uiItems.size - 1)
+                            if (items.isNotEmpty()) {
+                                binding.rvChattingMessageList.scrollToPosition(items.size - 1)
                             }
                         }
                     }
@@ -567,6 +545,7 @@ class ChattingActivity : BaseActivity<ActivityChattingBinding>(R.layout.activity
         return if (raw.length >= 16) raw.substring(11, 16) else raw
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
         val roomId = intent.getLongExtra("roomId", -1L)

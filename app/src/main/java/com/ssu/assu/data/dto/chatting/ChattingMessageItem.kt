@@ -16,4 +16,8 @@ sealed class ChattingMessageItem {
         val sentAt: String,
         val isRead: Boolean,
     ) : ChattingMessageItem()
+
+    data class DateSeparatorItem(
+        val date: String
+    ) : ChattingMessageItem()
 }

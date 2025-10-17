@@ -11,6 +11,7 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.ssu.assu.R
 import com.ssu.assu.data.dto.chatting.ChattingMessageItem
+import com.ssu.assu.databinding.ItemChatDateSeparatorBinding
 import com.ssu.assu.databinding.ItemChatMineBinding
 import com.ssu.assu.databinding.ItemChatOtherBinding
 
@@ -20,6 +21,7 @@ class ChattingMessageAdapter
     companion object {
         private const val TYPE_ME = 0
         private const val TYPE_OTHER = 1
+        private const val TYPE_DATE_SEPARATOR=2
 
         val DIFF = object : DiffUtil.ItemCallback<ChattingMessageItem>() {
             override fun areItemsTheSame(
@@ -32,6 +34,9 @@ class ChattingMessageAdapter
 
                     old is ChattingMessageItem.OtherMessage && new is ChattingMessageItem.OtherMessage ->
                         old.messageId == new.messageId
+
+                    old is ChattingMessageItem.DateSeparatorItem && new is ChattingMessageItem.DateSeparatorItem ->
+                        old.date == new.date
 
                     else -> false
                 }
@@ -82,13 +87,22 @@ class ChattingMessageAdapter
     override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         is ChattingMessageItem.MyMessage -> TYPE_ME
         is ChattingMessageItem.OtherMessage -> TYPE_OTHER
+        is ChattingMessageItem.DateSeparatorItem -> TYPE_DATE_SEPARATOR
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inf = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_ME -> MyMessageViewHolder(ItemChatMineBinding.inflate(inf, parent, false))
-            else -> OtherMessageViewHolder(ItemChatOtherBinding.inflate(inf, parent, false))
+            TYPE_OTHER -> OtherMessageViewHolder(ItemChatOtherBinding.inflate(inf, parent, false))
+            TYPE_DATE_SEPARATOR-> DateSeparatorViewHolder(
+                ItemChatDateSeparatorBinding.inflate(
+                    inf,
+                    parent,
+                    false
+                )
+            )
+            else -> throw IllegalArgumentException("Invalid view type")
         }
     }
 
@@ -111,6 +125,7 @@ class ChattingMessageAdapter
         when (holder) {
             is MyMessageViewHolder -> holder.bind(getItem(position) as ChattingMessageItem.MyMessage)
             is OtherMessageViewHolder -> holder.bind(getItem(position) as ChattingMessageItem.OtherMessage)
+            is DateSeparatorViewHolder -> holder.bind(getItem(position) as ChattingMessageItem.DateSeparatorItem)
         }
     }
 
@@ -120,7 +135,7 @@ class ChattingMessageAdapter
         fun bind(item: ChattingMessageItem.MyMessage) {
             Log.d("ADAPTER", "bind MyMessage id=${item.messageId}, unread=${item.unreadCountForSender}")
             binding.tvMyMessage.text = item.message
-            binding.tvMyMessageTime.text = item.sentAt
+            binding.tvMyMessageTime.text = formatTime(item.sentAt)
             setUnread(item.unreadCountForSender)
         }
 
@@ -137,12 +152,41 @@ class ChattingMessageAdapter
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ChattingMessageItem.OtherMessage) {
             binding.tvOtherMessage.text = item.message
-            binding.tvOtherMessageTime.text = item.sentAt
+            binding.tvOtherMessageTime.text = formatTime(item.sentAt)
             binding.ivRestaurantProfileImage.load(item.profileImageUrl) {
                 placeholder(R.drawable.img_partner)
                 error(R.drawable.img_partner)
                 transformations(CircleCropTransformation())
             }
         }
+    }
+    inner class DateSeparatorViewHolder(private val binding: ItemChatDateSeparatorBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: ChattingMessageItem.DateSeparatorItem) {
+            binding.tvDateSeparator.text = item.date
+        }
+    }
+    private fun formatTime(raw: String): String {
+        val inputPatterns = arrayOf(
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS", // 마이크로초까지 오는 경우 대비
+            "yyyy-MM-dd HH:mm",
+            "yyyy-MM-dd'T'HH:mm"
+        )
+
+        for (pattern in inputPatterns) {
+            try {
+                val inFmt = java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).apply {
+                    isLenient = false
+                }
+                val date = inFmt.parse(raw)
+                if (date != null) {
+                    val outFmt = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+                    return outFmt.format(date)
+                }
+            } catch (_: Exception) { /* 다음 패턴 시도 */ }
+        }
+        return if (raw.length >= 16) raw.substring(11, 16) else raw
     }
 }
