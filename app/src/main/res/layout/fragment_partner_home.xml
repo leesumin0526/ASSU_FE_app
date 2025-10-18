@@ -89,446 +89,458 @@
             app:layout_constraintTop_toBottomOf="@id/tv_partner_home_name"
             app:layout_constraintHeight_percent="0.030" />
 
-        <!-- 콘텐츠 묶음 -->
-        <LinearLayout
-            android:id="@+id/ll_partner_home_content"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsv_partner_home"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:orientation="vertical"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            android:overScrollMode="never"
             app:layout_constraintTop_toBottomOf="@id/view_partner_home_mg3"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- 헤더 -->
+            <!-- 콘텐츠 묶음 -->
             <LinearLayout
+                android:id="@+id/ll_partner_home_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="0dp"
+                <!-- 헤더 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="제휴업체 목록"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="제휴업체 목록"
+                        android:fontFamily="@font/pretendard_semibold"
+                        android:textColor="@color/assu_font_main"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/btn_partner_home_view_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="전체보기"
+                        android:clickable="true"
+                        android:fontFamily="@font/pretendard_medium"
+                        android:textColor="@color/assu_font_sub"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_no_admin_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_assu_background_radius_8"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tv_no_partner_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="아직 등록된 제휴 업체가 없어요!"
+                        android:visibility="visible"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:fontFamily="@font/pretendard_medium"
+                        android:textColor="@color/assu_font_main"
+                        android:textSize="16sp"
+                        android:paddingTop="20dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="지금 다른 업체와의 제휴를 시작해보세요!"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:fontFamily="@font/pretendard_regular"
+                        android:textColor="@color/assu_font_sub"
+                        android:textSize="14sp"
+                        android:paddingBottom="20dp"/>
+                </LinearLayout>
+
+                <!-- 제휴업체 항목 2개 (item_partner_list.xml 포함) -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/partner_home_list_item1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_assu_background_radius_8"
+                    android:paddingVertical="20dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <!-- 매장 이름 -->
+                        <TextView
+                            android:id="@+id/tv_admin_name1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="숭실대학교 총학생회"
+                            android:textSize="17sp"
+                            android:textColor="@color/assu_font_main"
+                            android:fontFamily="@font/pretendard_medium"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <!-- 제휴내용 라벨 -->
+                        <TextView
+                            android:id="@+id/tv_label_benefit1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:background="@drawable/bg_assu_sub3_home_list_label"
+                            android:text="제휴내용"
+                            android:textColor="@color/assu_main"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:includeFontPadding="false"
+                            app:layout_constraintTop_toBottomOf="@id/tv_admin_name1"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <!-- 제휴내용 설명 -->
+                        <TextView
+                            android:id="@+id/tv_benefit_description1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="100,000원 이상 주문시 안주 1개 서비스"
+                            android:textColor="@color/assu_font_sub"
+                            android:textSize="13sp"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/pretendard_regular"
+                            app:layout_constraintTop_toTopOf="@id/tv_label_benefit1"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_label_benefit1"
+                            app:layout_constraintStart_toEndOf="@id/tv_label_benefit1"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <!-- 제휴기간 라벨 -->
+                        <TextView
+                            android:id="@+id/tv_label_period1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:background="@drawable/bg_assu_sub3_home_list_label"
+                            android:text="제휴기간"
+                            android:textColor="@color/assu_main"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:includeFontPadding="false"
+                            app:layout_constraintTop_toBottomOf="@id/tv_label_benefit1"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <!-- 제휴기간 날짜 -->
+                        <TextView
+                            android:id="@+id/tv_benefit_period1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2025-03-15  ~  2025-06-15"
+                            android:textColor="@color/assu_font_sub"
+                            android:textSize="13sp"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/pretendard_regular"
+                            app:layout_constraintTop_toTopOf="@id/tv_label_period1"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_label_period1"
+                            app:layout_constraintStart_toEndOf="@id/tv_label_period1" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/view_partner_home_mg4"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/partner_home_list_item2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_assu_background_radius_8"
+                    android:paddingVertical="20dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <!-- 매장 이름 -->
+                        <TextView
+                            android:id="@+id/tv_admin_name2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="숭실대학교 IT대학 학생회"
+                            android:textSize="17sp"
+                            android:textColor="@color/assu_font_main"
+                            android:fontFamily="@font/pretendard_medium"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <!-- 제휴내용 라벨 -->
+                        <TextView
+                            android:id="@+id/tv_label_benefit2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:background="@drawable/bg_assu_sub3_home_list_label"
+                            android:text="제휴내용"
+                            android:textColor="@color/assu_main"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:includeFontPadding="false"
+                            app:layout_constraintTop_toBottomOf="@id/tv_admin_name2"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <!-- 제휴내용 설명 -->
+                        <TextView
+                            android:id="@+id/tv_benefit_description2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="100,000원 이상 주문시 안주 1개 서비스"
+                            android:textColor="@color/assu_font_sub"
+                            android:textSize="13sp"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/pretendard_regular"
+                            app:layout_constraintTop_toTopOf="@id/tv_label_benefit2"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_label_benefit2"
+                            app:layout_constraintStart_toEndOf="@id/tv_label_benefit2"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <!-- 제휴기간 라벨 -->
+                        <TextView
+                            android:id="@+id/tv_label_period2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:background="@drawable/bg_assu_sub3_home_list_label"
+                            android:text="제휴기간"
+                            android:textColor="@color/assu_main"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:includeFontPadding="false"
+                            app:layout_constraintTop_toBottomOf="@id/tv_label_benefit2"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <!-- 제휴기간 날짜 -->
+                        <TextView
+                            android:id="@+id/tv_benefit_period2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2025-03-15  ~  2025-06-15"
+                            android:textColor="@color/assu_font_sub"
+                            android:textSize="13sp"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/pretendard_regular"
+                            app:layout_constraintTop_toTopOf="@id/tv_label_period2"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_label_period2"
+                            app:layout_constraintStart_toEndOf="@id/tv_label_period2" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- 추천 헤더 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:drawablePadding="6dp"
+                    android:text="🔍 제휴단체 추천"
                     android:fontFamily="@font/pretendard_semibold"
                     android:textColor="@color/assu_font_main"
                     android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/btn_partner_home_view_all"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="전체보기"
-                    android:clickable="true"
-                    android:fontFamily="@font/pretendard_medium"
-                    android:textColor="@color/assu_font_sub"
-                    android:textSize="13sp" />
-            </LinearLayout>
+                <!-- 추천 카드 -->
 
-            <LinearLayout
-                android:id="@+id/ll_no_admin_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_assu_background_radius_8"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/tv_no_partner_list"
+                <!-- 추천 카드 그룹 -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="아직 등록된 제휴 업체가 없어요!"
-                    android:visibility="visible"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:fontFamily="@font/pretendard_medium"
-                    android:textColor="@color/assu_font_main"
-                    android:textSize="16sp"
-                    android:paddingTop="20dp"/>
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_marginBottom="8dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="지금 다른 업체와의 제휴를 시작해보세요!"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:fontFamily="@font/pretendard_regular"
-                    android:textColor="@color/assu_font_sub"
-                    android:textSize="14sp"
-                    android:paddingBottom="20dp"/>
-            </LinearLayout>
-
-            <!-- 제휴업체 항목 2개 (item_partner_list.xml 포함) -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/partner_home_list_item1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_assu_background_radius_8"
-                android:paddingVertical="20dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
-
-                    <!-- 매장 이름 -->
-                    <TextView
-                        android:id="@+id/tv_admin_name1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="숭실대학교 총학생회"
-                        android:textSize="17sp"
-                        android:textColor="@color/assu_font_main"
-                        android:fontFamily="@font/pretendard_medium"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <!-- 제휴내용 라벨 -->
-                    <TextView
-                        android:id="@+id/tv_label_benefit1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
-                        android:background="@drawable/bg_assu_sub3_home_list_label"
-                        android:text="제휴내용"
-                        android:textColor="@color/assu_main"
-                        android:textSize="13sp"
-                        android:fontFamily="@font/pretendard_medium"
-                        android:includeFontPadding="false"
-                        app:layout_constraintTop_toBottomOf="@id/tv_admin_name1"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <!-- 제휴내용 설명 -->
-                    <TextView
-                        android:id="@+id/tv_benefit_description1"
+                    <!-- 첫 번째 카드 -->
+                    <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="100,000원 이상 주문시 안주 1개 서비스"
-                        android:textColor="@color/assu_font_sub"
-                        android:textSize="13sp"
-                        android:layout_marginStart="8dp"
-                        android:fontFamily="@font/pretendard_regular"
-                        app:layout_constraintTop_toTopOf="@id/tv_label_benefit1"
-                        app:layout_constraintBottom_toBottomOf="@id/tv_label_benefit1"
-                        app:layout_constraintStart_toEndOf="@id/tv_label_benefit1"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        android:layout_marginEnd="10dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="13dp"
+                        app:cardElevation="0dp"
+                        app:cardUseCompatPadding="false"
+                        app:cardPreventCornerOverlap="false">
 
-                    <!-- 제휴기간 라벨 -->
-                    <TextView
-                        android:id="@+id/tv_label_period1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
-                        android:background="@drawable/bg_assu_sub3_home_list_label"
-                        android:text="제휴기간"
-                        android:textColor="@color/assu_main"
-                        android:textSize="13sp"
-                        android:fontFamily="@font/pretendard_medium"
-                        android:includeFontPadding="false"
-                        app:layout_constraintTop_toBottomOf="@id/tv_label_benefit1"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <!-- 제휴기간 날짜 -->
-                    <TextView
-                        android:id="@+id/tv_benefit_period1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2025-03-15  ~  2025-06-15"
-                        android:textColor="@color/assu_font_sub"
-                        android:textSize="13sp"
-                        android:layout_marginStart="8dp"
-                        android:fontFamily="@font/pretendard_regular"
-                        app:layout_constraintTop_toTopOf="@id/tv_label_period1"
-                        app:layout_constraintBottom_toBottomOf="@id/tv_label_period1"
-                        app:layout_constraintStart_toEndOf="@id/tv_label_period1" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <View
-                android:id="@+id/view_partner_home_mg4"
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/partner_home_list_item2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_assu_background_radius_8"
-                android:paddingVertical="20dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
-
-                    <!-- 매장 이름 -->
-                    <TextView
-                        android:id="@+id/tv_admin_name2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="숭실대학교 IT대학 학생회"
-                        android:textSize="17sp"
-                        android:textColor="@color/assu_font_main"
-                        android:fontFamily="@font/pretendard_medium"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <!-- 제휴내용 라벨 -->
-                    <TextView
-                        android:id="@+id/tv_label_benefit2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
-                        android:background="@drawable/bg_assu_sub3_home_list_label"
-                        android:text="제휴내용"
-                        android:textColor="@color/assu_main"
-                        android:textSize="13sp"
-                        android:fontFamily="@font/pretendard_medium"
-                        android:includeFontPadding="false"
-                        app:layout_constraintTop_toBottomOf="@id/tv_admin_name2"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <!-- 제휴내용 설명 -->
-                    <TextView
-                        android:id="@+id/tv_benefit_description2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="100,000원 이상 주문시 안주 1개 서비스"
-                        android:textColor="@color/assu_font_sub"
-                        android:textSize="13sp"
-                        android:layout_marginStart="8dp"
-                        android:fontFamily="@font/pretendard_regular"
-                        app:layout_constraintTop_toTopOf="@id/tv_label_benefit2"
-                        app:layout_constraintBottom_toBottomOf="@id/tv_label_benefit2"
-                        app:layout_constraintStart_toEndOf="@id/tv_label_benefit2"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
-                    <!-- 제휴기간 라벨 -->
-                    <TextView
-                        android:id="@+id/tv_label_period2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
-                        android:background="@drawable/bg_assu_sub3_home_list_label"
-                        android:text="제휴기간"
-                        android:textColor="@color/assu_main"
-                        android:textSize="13sp"
-                        android:fontFamily="@font/pretendard_medium"
-                        android:includeFontPadding="false"
-                        app:layout_constraintTop_toBottomOf="@id/tv_label_benefit2"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <!-- 제휴기간 날짜 -->
-                    <TextView
-                        android:id="@+id/tv_benefit_period2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2025-03-15  ~  2025-06-15"
-                        android:textColor="@color/assu_font_sub"
-                        android:textSize="13sp"
-                        android:layout_marginStart="8dp"
-                        android:fontFamily="@font/pretendard_regular"
-                        app:layout_constraintTop_toTopOf="@id/tv_label_period2"
-                        app:layout_constraintBottom_toBottomOf="@id/tv_label_period2"
-                        app:layout_constraintStart_toEndOf="@id/tv_label_period2" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!-- 추천 헤더 -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:drawablePadding="6dp"
-                android:text="🔍 제휴단체 추천"
-                android:fontFamily="@font/pretendard_semibold"
-                android:textColor="@color/assu_font_main"
-                android:textSize="16sp" />
-
-            <!-- 추천 카드 -->
-
-            <!-- 추천 카드 그룹 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_marginBottom="8dp">
-
-                <!-- 첫 번째 카드 -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="13dp"
-                    app:cardElevation="0dp"
-                    app:cardUseCompatPadding="false"
-                    app:cardPreventCornerOverlap="false">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@drawable/bg_recommend_card"
-                        android:paddingTop="18dp"
-                        android:paddingBottom="18dp"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/tv_partner_home_recommend_admin_name"
-                            android:layout_width="124dp"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="숭실대 법학과"
-                            android:textSize="17sp"
-                            android:maxLength="15"
-                            android:lines="2"
-                            android:fontFamily="@font/pretendard_medium"
-                            android:textColor="@color/assu_font_main" />
-
-                        <TextView
-                            android:id="@+id/tv_partner_home_recommend_admin_address"
-                            android:layout_width="124dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:fontFamily="@font/pretendard_regular"
-                            android:text="서울 동작구 사당로 36-1 서경예술 서울 동작구 사당로 36-1 서경예술"
-                            android:maxLength="25"
-                            android:textColor="@color/assu_font_sub"
-                            android:textSize="13sp" />
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/cl_recommend_inquiry1"
-                            android:layout_marginTop="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <View
-                                android:id="@+id/view_partner_home_card_bg"
-                                android:layout_width="124dp"
-                                android:layout_height="32dp"
-                                android:background="@drawable/bg_common_home_card"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent"/>
+                            android:orientation="vertical"
+                            android:background="@drawable/bg_recommend_card"
+                            android:paddingTop="18dp"
+                            android:paddingBottom="18dp"
+                            android:gravity="center">
 
                             <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="문의하기"
-                                android:textColor="@android:color/white"
-                                android:textSize="11sp"
-                                app:layout_constraintEnd_toEndOf="@id/view_partner_home_card_bg"
-                                app:layout_constraintStart_toStartOf="@id/view_partner_home_card_bg"
-                                app:layout_constraintBottom_toBottomOf="@id/view_partner_home_card_bg"
-                                app:layout_constraintTop_toTopOf="@+id/view_partner_home_card_bg"
-                                android:fontFamily="@font/pretendard_regular" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- 두 번째 카드 -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    app:cardCornerRadius="13dp"
-                    app:cardElevation="0dp"
-                    app:cardUseCompatPadding="false"
-                    app:cardPreventCornerOverlap="false">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@drawable/bg_recommend_card"
-                        android:paddingTop="18dp"
-                        android:paddingBottom="18dp"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/tv_partner_home_recommend_admin_name2"
-                            android:layout_width="124dp"
-                            android:layout_height="wrap_content"
-                            android:text="숭실대학교\n스포츠학부 학생회"
-                            android:textSize="17sp"
-                            android:maxLength="15"
-                            android:lines="2"
-                            android:fontFamily="@font/pretendard_medium"
-                            android:textColor="@color/assu_font_main" />
-
-                        <TextView
-                            android:id="@+id/tv_partner_home_recommend_admin_address2"
-                            android:layout_width="124dp"
-                            android:layout_height="wrap_content"
-                            android:text="서울 동작구 사당로 36-1 서경예술"
-                            android:textSize="13sp"
-                            android:maxLength="25"
-                            android:textColor="@color/assu_font_sub"
-                            android:layout_marginTop="10dp"
-                            android:fontFamily="@font/pretendard_regular" />
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/cl_recommend_inquiry2"
-                            android:layout_marginTop="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <View
-                                android:id="@+id/view_partner_home_card_bg2"
+                                android:id="@+id/tv_partner_home_recommend_admin_name"
                                 android:layout_width="124dp"
-                                android:layout_height="32dp"
-                                android:background="@drawable/bg_common_home_card"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent"/>
+                                android:layout_height="wrap_content"
+                                android:text="숭실대 법학과"
+                                android:textSize="17sp"
+                                android:maxLength="15"
+                                android:lines="2"
+                                android:fontFamily="@font/pretendard_medium"
+                                android:textColor="@color/assu_font_main" />
 
                             <TextView
+                                android:id="@+id/tv_partner_home_recommend_admin_address"
+                                android:layout_width="124dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/pretendard_regular"
+                                android:text="서울 동작구 사당로 36-1 서경예술 서울 동작구 사당로 36-1 서경예술"
+                                android:maxLength="25"
+                                android:textColor="@color/assu_font_sub"
+                                android:textSize="13sp" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/cl_recommend_inquiry1"
+                                android:layout_marginTop="10dp"
                                 android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="문의하기"
-                                android:textColor="@android:color/white"
-                                android:textSize="11sp"
-                                android:textAlignment="center"
-                                app:layout_constraintEnd_toEndOf="@id/view_partner_home_card_bg2"
-                                app:layout_constraintStart_toStartOf="@id/view_partner_home_card_bg2"
-                                app:layout_constraintBottom_toBottomOf="@id/view_partner_home_card_bg2"
-                                app:layout_constraintTop_toTopOf="@+id/view_partner_home_card_bg2"
+                                android:layout_height="wrap_content">
+
+                                <View
+                                    android:id="@+id/view_partner_home_card_bg"
+                                    android:layout_width="124dp"
+                                    android:layout_height="32dp"
+                                    android:background="@drawable/bg_common_home_card"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="문의하기"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="11sp"
+                                    app:layout_constraintEnd_toEndOf="@id/view_partner_home_card_bg"
+                                    app:layout_constraintStart_toStartOf="@id/view_partner_home_card_bg"
+                                    app:layout_constraintBottom_toBottomOf="@id/view_partner_home_card_bg"
+                                    app:layout_constraintTop_toTopOf="@+id/view_partner_home_card_bg"
+                                    android:fontFamily="@font/pretendard_regular" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- 두 번째 카드 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        app:cardCornerRadius="13dp"
+                        app:cardElevation="0dp"
+                        app:cardUseCompatPadding="false"
+                        app:cardPreventCornerOverlap="false">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:background="@drawable/bg_recommend_card"
+                            android:paddingTop="18dp"
+                            android:paddingBottom="18dp"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tv_partner_home_recommend_admin_name2"
+                                android:layout_width="124dp"
+                                android:layout_height="wrap_content"
+                                android:text="숭실대학교\n스포츠학부 학생회"
+                                android:textSize="17sp"
+                                android:maxLength="15"
+                                android:lines="2"
+                                android:fontFamily="@font/pretendard_medium"
+                                android:textColor="@color/assu_font_main" />
+
+                            <TextView
+                                android:id="@+id/tv_partner_home_recommend_admin_address2"
+                                android:layout_width="124dp"
+                                android:layout_height="wrap_content"
+                                android:text="서울 동작구 사당로 36-1 서경예술"
+                                android:textSize="13sp"
+                                android:maxLength="25"
+                                android:textColor="@color/assu_font_sub"
+                                android:layout_marginTop="10dp"
                                 android:fontFamily="@font/pretendard_regular" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/cl_recommend_inquiry2"
+                                android:layout_marginTop="10dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <View
+                                    android:id="@+id/view_partner_home_card_bg2"
+                                    android:layout_width="124dp"
+                                    android:layout_height="32dp"
+                                    android:background="@drawable/bg_common_home_card"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="문의하기"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="11sp"
+                                    android:textAlignment="center"
+                                    app:layout_constraintEnd_toEndOf="@id/view_partner_home_card_bg2"
+                                    app:layout_constraintStart_toStartOf="@id/view_partner_home_card_bg2"
+                                    app:layout_constraintBottom_toBottomOf="@id/view_partner_home_card_bg2"
+                                    app:layout_constraintTop_toTopOf="@+id/view_partner_home_card_bg2"
+                                    android:fontFamily="@font/pretendard_regular" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

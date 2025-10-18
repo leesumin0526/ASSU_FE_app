@@ -1,6 +1,8 @@
 package com.ssu.assu.ui.chatting
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssu.assu.data.dto.chatting.request.CreateChatRoomRequestDto
@@ -22,6 +24,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.ssu.assu.data.dto.chatting.ChattingMessageItem
 import com.ssu.assu.data.dto.chatting.WsMessageDto
 import com.ssu.assu.data.dto.chatting.request.BlockRequestDto
 import com.ssu.assu.data.dto.partnership.request.CreateDraftRequestDto
@@ -44,6 +47,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 @HiltViewModel
@@ -253,15 +259,40 @@ class ChattingViewModel @Inject constructor(
                 .onSuccess { result ->
                     _readChattingState.value = ReadChattingUiState.Success(result)
 
-                    // ✅ 메시지 리스트에 읽음 반영
-                    val updated = _messages.value.map { msg ->
-                        if (result.readMessagesId.contains(msg.messageId)) {
-                            msg.copy(isRead = true)
-                        } else {
-                            msg
+                    val updatedItems = _chatItems.value.map { item ->
+                        // when을 사용해 item의 실제 타입을 확인합니다.
+                        when (item) {
+                            // item이 MyMessage 타입일 경우
+                            is ChattingMessageItem.MyMessage -> {
+                                // 이 블록 안에서는 item이 MyMessage인 것을 알기 때문에
+                                // item.messageId와 item.copy()를 안전하게 사용할 수 있습니다.
+                                if (result.readMessagesId.contains(item.messageId)) {
+                                    item.copy(isRead = true)
+                                } else {
+                                    item
+                                }
+                            }
+                            // item이 OtherMessage 타입일 경우
+                            is ChattingMessageItem.OtherMessage -> {
+                                // 여기서도 마찬가지로 안전하게 사용 가능합니다.
+                                if (result.readMessagesId.contains(item.messageId)) {
+                                    item.copy(isRead = true)
+                                } else {
+                                    item
+                                }
+                            }
+                            // item이 DateSeparatorItem 타입일 경우
+                            is ChattingMessageItem.DateSeparatorItem -> {
+                                // 날짜 구분선은 messageId가 없으므로 아무것도 하지 않고 그대로 반환합니다.
+                                item
+                            }
+                            //TODO
+                            is ChattingMessageItem.GuideMessageItem -> {
+                                item
+                            }
                         }
                     }
-                    _messages.value = updated
+                    _chatItems.value = updatedItems
                 }
                 .onFail    { code -> _readChattingState.value = ReadChattingUiState.Fail(code, "서버 처리 실패") }
                 .onError   { e -> _readChattingState.value = ReadChattingUiState.Error(e.message ?: "Unknown Error") }
@@ -274,8 +305,11 @@ class ChattingViewModel @Inject constructor(
     private val _socketConnected = MutableStateFlow(false)
     val socketConnected: StateFlow<Boolean> = _socketConnected
 
-    private val _messages = MutableStateFlow<List<ChatMessageModel>>(emptyList())
-    val messages: StateFlow<List<ChatMessageModel>> = _messages
+    private val _chatItems = MutableStateFlow<List<ChattingMessageItem>>(emptyList())
+    val chatItems: StateFlow<List<ChattingMessageItem>> = _chatItems
+
+//    private val _messages = MutableStateFlow<List<ChatMessageModel>>(emptyList())
+//    val messages: StateFlow<List<ChatMessageModel>> = _messages
 
     private var roomId: Long = -1L
     private var myId: Long = -1L
@@ -293,10 +327,11 @@ class ChattingViewModel @Inject constructor(
         this.opponentId = opponentId
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun enterRoom(roomId: Long, myId: Long, opponentId: Long) {
         initSocket(roomId, myId, opponentId)
         // ✅ 이전 방 메시지 즉시 비움
-        _messages.value = emptyList()
+        _chatItems.value = emptyList()
         viewModelScope.launch {
             // 1. 로딩 상태 UI에 알리기
             _getChatHistoryState.value = GetChatHistoryUiState.Loading
@@ -306,7 +341,11 @@ class ChattingViewModel @Inject constructor(
                 .onSuccess { history ->
                     Log.d("VM", "history success: ${history.messages.size}")
                     // 3. 과거 내역으로 message 리스트 업데이트
-                    _messages.value = history.messages
+//                    _chatItems.value = history.messages
+//                    _getChatHistoryState.value = GetChatHistoryUiState.Success(history)
+
+                    val processedList = processChatMessages(history.messages)
+                    _chatItems.value = processedList
                     _getChatHistoryState.value = GetChatHistoryUiState.Success(history)
 
                     // 4. ✅ 과거 내역 조회가 성공했을 때만 소켓 연결 시작
@@ -340,16 +379,35 @@ class ChattingViewModel @Inject constructor(
                         return@connect
                     }
                     Log.d("CHAT", "RECV dto=$dto")
-                    val arrived = ChatMessageModel(
-                        messageId = dto.messageId,
-                        message = dto.message,
-                        sendTime = dto.sentAt,               // "yyyy-MM-dd HH:mm:ss"
-                        isRead = true,
-                        isMyMessage = (dto.senderId == myId),
-                        profileImageUrl = "",                 // 서버가 내려주면 채워넣기
-                        unreadCountForSender = dto.unreadCountForSender ?: 0
-                    )
-                    _messages.value = _messages.value + arrived
+
+                    val arrivedItem: ChattingMessageItem = if (dto.messageType == "GUIDE") {
+                        // 타입이 "GUIDE"이면 GuideMessageItem을 만듭니다.
+                        ChattingMessageItem.GuideMessageItem(
+                            messageId = dto.messageId,
+                            guideMessage = dto.message ?: "",
+                            sentAt = dto.sentAt
+                        )
+                    } else {
+                        if (dto.senderId == myId) {
+                            ChattingMessageItem.MyMessage(
+                                messageId = dto.messageId,
+                                message = dto.message,
+                                sentAt = dto.sentAt,
+                                isRead = true,
+                                unreadCountForSender = dto.unreadCountForSender ?: 0
+                            )
+                        } else {
+                            ChattingMessageItem.OtherMessage(
+                                messageId = dto.messageId,
+                                profileImageUrl = "", // DTO에 profileImageUrl이 없으므로 빈 값 처리
+                                message = dto.message,
+                                sentAt = dto.sentAt,
+                                isRead = true
+                            )
+                        }
+                    }
+                    // 2. "과일 바구니"에 "새 과일"을 추가합니다. 이제 타입이 완벽히 일치합니다.
+                    _chatItems.value = _chatItems.value + arrivedItem
                 } else {
                     //android.util.Log.w("CHAT", "WS parse fail: $json")
                 }
@@ -531,5 +589,66 @@ class ChattingViewModel @Inject constructor(
                     }
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun processChatMessages(
+        // 👇 파라미터가 사용자님의 DTO 클래스로 변경되었습니다.
+        rawMessages: List<ChatMessageModel>
+    ): List<ChattingMessageItem> {
+
+        val finalChatList = mutableListOf<ChattingMessageItem>()
+        var lastDate: String? = null
+
+        // "2025-08-22T14:30:00" 형식
+        val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        // "2025년 08월 22일" 형식
+        val outputFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 E요일", Locale.KOREAN)
+
+        rawMessages.forEach { message ->
+            // 👇 'sendTime' 필드를 사용합니다.
+            val messageDateTime = LocalDateTime.parse(message.sendTime, inputFormatter)
+            val currentDate = messageDateTime.format(outputFormatter)
+
+            if (currentDate != lastDate) {
+                finalChatList.add(ChattingMessageItem.DateSeparatorItem(date = currentDate))
+                lastDate = currentDate
+            }
+
+            if (message.messageType == "GUIDE") {
+                // 메시지 타입이 "GUIDE"이면 GuideMessageItem을 만듭니다.
+                finalChatList.add(
+                    ChattingMessageItem.GuideMessageItem(
+                        messageId = message.messageId,
+                        guideMessage = message.message ?: "",
+                        sentAt = message.sendTime
+                    )
+                )
+            } else {
+                // 👇 'isMyMessage' 플래그로 내 메시지인지 상대방 메시지인지 바로 구분합니다.
+                if (message.isMyMessage == true) {
+                    finalChatList.add(
+                        ChattingMessageItem.MyMessage(
+                            messageId = message.messageId,
+                            message = message.message ?: "", // Nullable 처리
+                            sentAt = message.sendTime,
+                            isRead = message.isRead ?: false, // Nullable 처리
+                            unreadCountForSender = message.unreadCountForSender ?: 0 // Nullable 처리
+                        )
+                    )
+                } else {
+                    finalChatList.add(
+                        ChattingMessageItem.OtherMessage(
+                            messageId = message.messageId,
+                            profileImageUrl = message.profileImageUrl ?: "", // Nullable 처리
+                            message = message.message ?: "", // Nullable 처리
+                            sentAt = message.sendTime,
+                            isRead = message.isRead ?: false // Nullable 처리
+                        )
+                    )
+                }
+            }
+        }
+        return finalChatList
     }
 }

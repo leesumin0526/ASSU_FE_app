@@ -23,7 +23,8 @@ data class ChatMessageResponseDto(
     val isRead: Boolean ?= false,
     val isMyMessage: Boolean ?= false ,
     val profileImageUrl: String ?= null,
-    val unreadCountForSender: Int ?= 0
+    val unreadCountForSender: Int ?= 0,
+    val messageType: String ?= "TEXT"
 ) {
     fun toModel() = ChatMessageModel(
         messageId = this.messageId,
@@ -32,6 +33,7 @@ data class ChatMessageResponseDto(
         isRead = this.isRead ?: false,
         isMyMessage = this.isMyMessage ?: false,
         profileImageUrl = this.profileImageUrl ?: "",
-        unreadCountForSender = this.unreadCountForSender ?: 0
+        unreadCountForSender = this.unreadCountForSender ?: 0,
+        messageType = this.messageType ?: "TEXT"
     )
 }
