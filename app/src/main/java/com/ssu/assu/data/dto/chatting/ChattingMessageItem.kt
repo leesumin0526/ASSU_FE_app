@@ -20,4 +20,10 @@ sealed class ChattingMessageItem {
     data class DateSeparatorItem(
         val date: String
     ) : ChattingMessageItem()
+
+    data class GuideMessageItem(
+        val messageId: Long,
+        val guideMessage: String,
+        val sentAt: String,
+    ): ChattingMessageItem()
 }

@@ -286,6 +286,10 @@ class ChattingViewModel @Inject constructor(
                                 // 날짜 구분선은 messageId가 없으므로 아무것도 하지 않고 그대로 반환합니다.
                                 item
                             }
+                            //TODO
+                            is ChattingMessageItem.GuideMessageItem -> {
+                                item
+                            }
                         }
                     }
                     _chatItems.value = updatedItems
@@ -375,24 +379,33 @@ class ChattingViewModel @Inject constructor(
                         return@connect
                     }
                     Log.d("CHAT", "RECV dto=$dto")
-                    val arrivedItem: ChattingMessageItem = if (dto.senderId == myId) {
-                        ChattingMessageItem.MyMessage(
+
+                    val arrivedItem: ChattingMessageItem = if (dto.messageType == "GUIDE") {
+                        // 타입이 "GUIDE"이면 GuideMessageItem을 만듭니다.
+                        ChattingMessageItem.GuideMessageItem(
                             messageId = dto.messageId,
-                            message = dto.message,
-                            sentAt = dto.sentAt,
-                            isRead = true,
-                            unreadCountForSender = dto.unreadCountForSender ?: 0
+                            guideMessage = dto.message ?: "",
+                            sentAt = dto.sentAt
                         )
                     } else {
-                        ChattingMessageItem.OtherMessage(
-                            messageId = dto.messageId,
-                            profileImageUrl = "", // DTO에 profileImageUrl이 없으므로 빈 값 처리
-                            message = dto.message,
-                            sentAt = dto.sentAt,
-                            isRead = true
-                        )
+                        if (dto.senderId == myId) {
+                            ChattingMessageItem.MyMessage(
+                                messageId = dto.messageId,
+                                message = dto.message,
+                                sentAt = dto.sentAt,
+                                isRead = true,
+                                unreadCountForSender = dto.unreadCountForSender ?: 0
+                            )
+                        } else {
+                            ChattingMessageItem.OtherMessage(
+                                messageId = dto.messageId,
+                                profileImageUrl = "", // DTO에 profileImageUrl이 없으므로 빈 값 처리
+                                message = dto.message,
+                                sentAt = dto.sentAt,
+                                isRead = true
+                            )
+                        }
                     }
-
                     // 2. "과일 바구니"에 "새 과일"을 추가합니다. 이제 타입이 완벽히 일치합니다.
                     _chatItems.value = _chatItems.value + arrivedItem
                 } else {
@@ -602,27 +615,38 @@ class ChattingViewModel @Inject constructor(
                 lastDate = currentDate
             }
 
-            // 👇 'isMyMessage' 플래그로 내 메시지인지 상대방 메시지인지 바로 구분합니다.
-            if (message.isMyMessage == true) {
+            if (message.messageType == "GUIDE") {
+                // 메시지 타입이 "GUIDE"이면 GuideMessageItem을 만듭니다.
                 finalChatList.add(
-                    ChattingMessageItem.MyMessage(
+                    ChattingMessageItem.GuideMessageItem(
                         messageId = message.messageId,
-                        message = message.message ?: "", // Nullable 처리
-                        sentAt = message.sendTime,
-                        isRead = message.isRead ?: false, // Nullable 처리
-                        unreadCountForSender = message.unreadCountForSender ?: 0 // Nullable 처리
+                        guideMessage = message.message ?: "",
+                        sentAt = message.sendTime
                     )
                 )
             } else {
-                finalChatList.add(
-                    ChattingMessageItem.OtherMessage(
-                        messageId = message.messageId,
-                        profileImageUrl = message.profileImageUrl ?: "", // Nullable 처리
-                        message = message.message ?: "", // Nullable 처리
-                        sentAt = message.sendTime,
-                        isRead = message.isRead ?: false // Nullable 처리
+                // 👇 'isMyMessage' 플래그로 내 메시지인지 상대방 메시지인지 바로 구분합니다.
+                if (message.isMyMessage == true) {
+                    finalChatList.add(
+                        ChattingMessageItem.MyMessage(
+                            messageId = message.messageId,
+                            message = message.message ?: "", // Nullable 처리
+                            sentAt = message.sendTime,
+                            isRead = message.isRead ?: false, // Nullable 처리
+                            unreadCountForSender = message.unreadCountForSender ?: 0 // Nullable 처리
+                        )
                     )
-                )
+                } else {
+                    finalChatList.add(
+                        ChattingMessageItem.OtherMessage(
+                            messageId = message.messageId,
+                            profileImageUrl = message.profileImageUrl ?: "", // Nullable 처리
+                            message = message.message ?: "", // Nullable 처리
+                            sentAt = message.sendTime,
+                            isRead = message.isRead ?: false // Nullable 처리
+                        )
+                    )
+                }
             }
         }
         return finalChatList

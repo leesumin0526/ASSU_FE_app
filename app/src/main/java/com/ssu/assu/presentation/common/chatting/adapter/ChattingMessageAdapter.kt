@@ -12,6 +12,7 @@ import coil.transform.CircleCropTransformation
 import com.ssu.assu.R
 import com.ssu.assu.data.dto.chatting.ChattingMessageItem
 import com.ssu.assu.databinding.ItemChatDateSeparatorBinding
+import com.ssu.assu.databinding.ItemChatGuideMessageBinding
 import com.ssu.assu.databinding.ItemChatMineBinding
 import com.ssu.assu.databinding.ItemChatOtherBinding
 
@@ -21,7 +22,8 @@ class ChattingMessageAdapter
     companion object {
         private const val TYPE_ME = 0
         private const val TYPE_OTHER = 1
-        private const val TYPE_DATE_SEPARATOR=2
+        private const val TYPE_DATE_SEPARATOR = 2
+        private const val TYPE_GUIDE = 3
 
         val DIFF = object : DiffUtil.ItemCallback<ChattingMessageItem>() {
             override fun areItemsTheSame(
@@ -59,6 +61,8 @@ class ChattingMessageAdapter
                                 old.message == new.message &&
                                 old.sentAt == new.sentAt
                     }
+                    old is ChattingMessageItem.DateSeparatorItem && new is ChattingMessageItem.DateSeparatorItem -> old.date == new.date
+                    old is ChattingMessageItem.GuideMessageItem && new is ChattingMessageItem.GuideMessageItem -> old.messageId == new.messageId
                     else -> false
                 }
             }
@@ -88,6 +92,7 @@ class ChattingMessageAdapter
         is ChattingMessageItem.MyMessage -> TYPE_ME
         is ChattingMessageItem.OtherMessage -> TYPE_OTHER
         is ChattingMessageItem.DateSeparatorItem -> TYPE_DATE_SEPARATOR
+        is ChattingMessageItem.GuideMessageItem -> TYPE_GUIDE
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -102,6 +107,10 @@ class ChattingMessageAdapter
                     false
                 )
             )
+            TYPE_GUIDE -> { // 5. ViewHolder 생성 추가
+                val binding = ItemChatGuideMessageBinding.inflate(inf, parent, false)
+                GuideMessageViewHolder(binding)
+            }
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
@@ -188,5 +197,12 @@ class ChattingMessageAdapter
             } catch (_: Exception) { /* 다음 패턴 시도 */ }
         }
         return if (raw.length >= 16) raw.substring(11, 16) else raw
+    }
+
+    inner class GuideMessageViewHolder(private val binding: ItemChatGuideMessageBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: ChattingMessageItem.GuideMessageItem) {
+            binding.tvGuideMessage.text = item.guideMessage
+        }
     }
 }
