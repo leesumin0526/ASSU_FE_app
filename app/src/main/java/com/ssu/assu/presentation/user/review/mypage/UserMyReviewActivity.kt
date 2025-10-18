@@ -14,9 +14,10 @@ import com.ssu.assu.databinding.ActivityUserMyReviewBinding
 import com.ssu.assu.presentation.base.BaseActivity
 import com.ssu.assu.presentation.common.report.OnItemClickListener
 import com.ssu.assu.presentation.user.review.adapter.UserReviewAdapter
+import com.ssu.assu.presentation.user.review.store.ReviewSortBottomSheet
+import com.ssu.assu.presentation.user.review.store.SortType
 import com.ssu.assu.ui.review.GetReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.getValue
 
 @AndroidEntryPoint
 class UserMyReviewActivity :
@@ -24,10 +25,9 @@ class UserMyReviewActivity :
     OnItemClickListener, OnReviewDeleteConfirmedListener {
 
     private val getReviewViewModel: GetReviewViewModel by viewModels()
-
     private lateinit var userReviewAdapter: UserReviewAdapter
     private val manager = supportFragmentManager
-
+    private var currentSort: SortType = SortType.LATEST
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun initView() {
@@ -45,6 +45,22 @@ class UserMyReviewActivity :
 
         binding.btnManageReviewBack.setOnClickListener {
             finish()
+        }
+
+        // 정렬 버튼 클릭 이벤트 추가
+        binding.llMySort.setOnClickListener {
+            val bottomSheet = ReviewSortBottomSheet { selected ->
+                currentSort = selected
+                // 정렬 텍스트 업데이트 (필요한 경우)
+                 binding.tvPreorder.text = selected.label
+
+                // ViewModel의 updateSort만 호출 (내부에서 getReviews 호출됨)
+                getReviewViewModel.updateSort(selected.apiValue)
+
+                // 리스트를 맨 위로 스크롤
+                binding.rvManageReview.scrollToPosition(0)
+            }
+            bottomSheet.show(manager, bottomSheet.tag)
         }
 
         initAdapter()
@@ -75,20 +91,19 @@ class UserMyReviewActivity :
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initAdapter() {
-        //adapter초기화
-        userReviewAdapter = UserReviewAdapter(showDeleteButton = true, listener = this
-            , showReportButton = false, reportListener = null)
+        userReviewAdapter = UserReviewAdapter(
+            showDeleteButton = true,
+            listener = this,
+            showReportButton = false,
+            reportListener = null
+        )
 
         binding.rvManageReview.apply {
             layoutManager = LinearLayoutManager(this@UserMyReviewActivity)
             adapter = userReviewAdapter
         }
 
-        // 여기에 review List가 null 일때 ui 업데이트 관련 사항도 해줘야 함.
-
-
         binding.tvManageReviewReviewCount.text = userReviewAdapter.itemCount.toString()
-
     }
 
     private fun initScrollListener() {
@@ -97,13 +112,13 @@ class UserMyReviewActivity :
                 super.onScrolled(recyclerView, dx, dy)
 
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val lastVisibleItemPosition =
-                    layoutManager.findLastCompletelyVisibleItemPosition()
+                val lastVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition()
                 val totalItemCount = layoutManager.itemCount
 
-                // 스크롤이 마지막 아이템에 도달했고, 현재 로딩 중이 아니라면
-                if (lastVisibleItemPosition == totalItemCount - 1 && !getReviewViewModel.isFetchingReviews) {
-                    // 다음 페이지 로드
+                // 마지막 아이템이 보이고, 현재 로딩 중이 아니며, 마지막 페이지가 아닐 때만 다음 페이지 로드
+                if (lastVisibleItemPosition == totalItemCount - 1 &&
+                    !getReviewViewModel.isFetchingReviews &&
+                    !getReviewViewModel.isLastPage) {
                     getReviewViewModel.getReviews()
                 }
             }

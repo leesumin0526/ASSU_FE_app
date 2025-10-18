@@ -33,12 +33,12 @@ class UserStoreGetReviewViewModel @Inject constructor(
     var storeName: String = ""
     private var storeId : Long = 0L
     fun initStoreId(id: Long) {
-        if (this.storeId == 0L) { // storeId가 아직 설정되지 않았을 때만 초기화
+        if (this.storeId == 0L) {
             this.storeId = id
         }
     }
 
-    private var currentPage=1
+    private var currentPage = 1
     var isFetchingReviews = false
     var isLastPage = false
     var sort: String = "createdAt,desc"
@@ -48,7 +48,7 @@ class UserStoreGetReviewViewModel @Inject constructor(
 
 
     fun getReviews(){
-        if(isFetchingReviews|| isLastPage) return
+        if(isFetchingReviews || isLastPage) return
 
         isFetchingReviews = true
         viewModelScope.launch {
@@ -63,8 +63,12 @@ class UserStoreGetReviewViewModel @Inject constructor(
                         currentPage++
                     }
                 }
-                is RetrofitResult.Error -> { /* 오류 처리 */ }
-                is RetrofitResult.Fail -> { /* 실패 처리 */ }
+                is RetrofitResult.Error -> {
+                    Log.e("getReviews", "Error: ${result.exception}")
+                }
+                is RetrofitResult.Fail -> {
+                    Log.e("getReviews", "Fail: ${result.message}")
+                }
             }
             isFetchingReviews = false
         }
@@ -82,11 +86,9 @@ class UserStoreGetReviewViewModel @Inject constructor(
                 }
                 is RetrofitResult.Fail -> {
                     Log.d("getPartnershipForMe","${result.message}" )
-
                 }
             }
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -100,11 +102,16 @@ class UserStoreGetReviewViewModel @Inject constructor(
         if (sort != newSort) {
             sort = newSort
             // 정렬 변경 시 리스트 초기화 & 첫 페이지 다시 불러오기
-            currentPage = 1
-            isLastPage = false
-            _reviewList.value = emptyList()
-            getReviews()
+            resetPagination()
+            getReviews() // Fragment에서 추가 호출하지 않도록 여기서만 호출
         }
+    }
+
+    // 페이지네이션 상태 초기화 메서드 추가
+    private fun resetPagination() {
+        currentPage = 1
+        isLastPage = false
+        _reviewList.value = emptyList()
     }
 
     fun getAverage(){
@@ -112,14 +119,15 @@ class UserStoreGetReviewViewModel @Inject constructor(
             when (val result = averageUseCase(storeId)){
                 is RetrofitResult.Success -> {
                     _average.value = result.data.score
-                    Log.d("평점", average.toString())
+                    Log.d("평점", average.value.toString())
                 }
-                is RetrofitResult.Error -> { /* 오류 처리 */ }
-                is RetrofitResult.Fail -> { /* 실패 처리 */ }
+                is RetrofitResult.Error -> {
+                    Log.e("getAverage", "Error: ${result.exception}")
+                }
+                is RetrofitResult.Fail -> {
+                    Log.e("getAverage", "Fail: ${result.message}")
+                }
             }
         }
     }
-
-
-
 }

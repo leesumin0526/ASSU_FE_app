@@ -111,33 +111,43 @@
         app:layout_constraintStart_toEndOf="@id/manageReview_mg6"/>
 
 
-    <TextView
-        android:id="@+id/tv_preorder"
+    <LinearLayout
+        android:id="@+id/ll_my_sort"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="최신 순"
-        android:textColor="@color/assu_font_main"
-        android:textSize="13sp"
-        android:fontFamily="@font/pretendard_semibold"
-        app:layout_constraintEnd_toStartOf="@id/manageReview_mg8"
-        app:layout_constraintTop_toTopOf="@id/tv_isExist"/>
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintEnd_toStartOf="@id/manageReview_mg9"
+        app:layout_constraintTop_toTopOf="@id/tv_isExist">
+        <TextView
+            android:id="@+id/tv_preorder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="최신 순"
+            android:textColor="@color/assu_font_main"
+            android:textSize="13sp"
+            android:fontFamily="@font/pretendard_semibold"/>
+        <ImageView
+            android:id="@+id/iv_manageReview_preorder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:src="@drawable/ic_sort_pre"
+            app:layout_constraintTop_toTopOf="@id/tv_preorder"
+            app:layout_constraintEnd_toStartOf="@id/manageReview_mg9"
+            app:layout_constraintBottom_toBottomOf="@id/tv_preorder"/>
+    </LinearLayout>
+
 
     <View
         android:id="@+id/manageReview_mg8"
         android:layout_width="0dp"
         android:layout_height="10dp"
         app:layout_constraintWidth_percent="0.0152"
-        app:layout_constraintEnd_toStartOf="@id/iv_manageReview_preorder"
-        app:layout_constraintTop_toTopOf="@id/tv_preorder"/>
+        app:layout_constraintEnd_toStartOf="@id/ll_my_sort"
+        app:layout_constraintTop_toTopOf="@id/ll_my_sort"/>
 
-    <ImageView
-        android:id="@+id/iv_manageReview_preorder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_sort_pre"
-        app:layout_constraintTop_toTopOf="@id/tv_preorder"
-        app:layout_constraintEnd_toStartOf="@id/manageReview_mg9"
-        app:layout_constraintBottom_toBottomOf="@id/tv_preorder"/>
+
 
     <View
         android:id="@+id/manageReview_mg9"
@@ -145,7 +155,7 @@
         android:layout_height="10dp"
         app:layout_constraintWidth_percent="0.0809"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_preorder"/>
+        app:layout_constraintTop_toTopOf="@id/ll_my_sort"/>
 
     <View
         android:id="@+id/manageReview_mg10"

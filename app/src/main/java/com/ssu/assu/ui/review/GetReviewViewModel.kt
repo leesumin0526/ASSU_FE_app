@@ -20,7 +20,7 @@ class GetReviewViewModel @Inject constructor(
     private val deleteReviewUseCase: DeleteReviewUseCase
 ): ViewModel(){
 
-    private val _reviewList = MutableLiveData<List<Review>>() // 🚨 리뷰 목록을 담을 LiveData
+    private val _reviewList = MutableLiveData<List<Review>>()
     val reviewList: LiveData<List<Review>> = _reviewList
 
     // 삭제 결과를 위한 LiveData 추가
@@ -32,7 +32,7 @@ class GetReviewViewModel @Inject constructor(
     var isFetchingReviews = false
     var isLastPage = false
 
-    private val _sort : String = "createdAt,desc"
+    var sort: String = "createdAt,desc"
 
     init {
         // ViewModel이 생성될 때 초기 데이터 로드
@@ -43,7 +43,7 @@ class GetReviewViewModel @Inject constructor(
     fun getReviews(){
         Log.d("viewModel✨", "getReviews called")
         // 이미 로딩 중이거나 마지막 페이지라면 중복 호출 방지
-        if (isFetchingReviews || isLastPage ) {
+        if (isFetchingReviews || isLastPage) {
             Log.d("viewModel✨", "getReviews isFetchingReviews or isLastPage")
             return
         }
@@ -52,7 +52,7 @@ class GetReviewViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d("viewModel✨", "getReviews called and launched")
             // UseCase를 통해 API 호출
-            when (val result = getReviewUseCase(currentPage, 10, _sort)) {
+            when (val result = getReviewUseCase(currentPage, 10, sort)) {
                 is RetrofitResult.Success -> {
                     Log.d("viewModel✨", "RetrofitResult.Success received")
                     val pageReviewList = result.data
@@ -77,8 +77,7 @@ class GetReviewViewModel @Inject constructor(
                     }
                 }
                 is RetrofitResult.Error -> {
-                    // 오류 처리 (예: Toast 메시지, SnackBar 등)
-                    Log.d("❌", "RetrofitResult.Fail: The API call ERROR with message: ${result.exception.message}")
+                    Log.d("❌", "RetrofitResult.Error: The API call ERROR with message: ${result.exception.message}")
                 }
                 is RetrofitResult.Fail -> {
                     Log.d("❌", "RetrofitResult.Fail: The API call failed with message: ${result.message}")
@@ -86,6 +85,22 @@ class GetReviewViewModel @Inject constructor(
             }
             isFetchingReviews = false
         }
+    }
+
+    fun updateSort(newSort: String) {
+        if (sort != newSort) {
+            sort = newSort
+            // 정렬 변경 시 리스트 초기화 & 첫 페이지 다시 불러오기
+            resetPagination()
+            getReviews()
+        }
+    }
+
+    // 페이지네이션 상태 초기화 메서드
+    private fun resetPagination() {
+        currentPage = 1
+        isLastPage = false
+        _reviewList.value = emptyList()
     }
 
     fun deleteReview(reviewId: Long) {
