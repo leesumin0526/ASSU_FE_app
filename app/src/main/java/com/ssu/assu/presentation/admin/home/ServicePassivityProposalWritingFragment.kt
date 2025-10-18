@@ -152,6 +152,15 @@ class ServicePassivityProposalWritingFragment
                 R.id.action_serviceProposalWritingFragment_to_locationSearchFragment, bundle)
         }
 
+        binding.ivFragmentServiceProposalSearch.setOnClickListener {
+            val bundle = Bundle().apply{
+                putString("type", "passive")
+            }
+
+            findNavController().navigate(
+                R.id.action_serviceProposalWritingFragment_to_locationSearchFragment, bundle)
+        }
+
 
         setUpFragmentEditTextWatchers()
         checkAllFieldsFilled()

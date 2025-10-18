@@ -29,13 +29,13 @@ interface PartnershipService {
     // 관리자가 제휴업체 리스트 보는 api
     @GET("partnership/admin")
     suspend fun getProposalPartnerList(
-        @Query("isAll") isAll: Boolean,
+        @Query("all") isAll: Boolean,
     ): BaseResponse<List<GetProposalPartnerListResponseDto>>
 
     // 제휴업체가 관리자 리스트 보는 api
     @GET("partnership/partner")
     suspend fun getProposalAdminList (
-        @Query("isAll") isAll: Boolean
+        @Query("all") isAll: Boolean
     ): BaseResponse<List<GetProposalAdminListResponseDto>>
 
     //제휴 제안서 초안 작성 API

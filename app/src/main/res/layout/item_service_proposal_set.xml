@@ -279,6 +279,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:hint="10,000"
+                android:inputType="number"
+                android:digits="0123456789"
                 android:textColor="@color/assu_font_main"
                 android:textSize="15sp"
                 android:background="@color/assu_box"

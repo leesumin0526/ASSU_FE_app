@@ -423,11 +423,12 @@
                                 android:id="@+id/tv_partner_home_recommend_admin_address"
                                 android:layout_width="124dp"
                                 android:layout_height="wrap_content"
-                                android:text="서울 동작구 사당로 36-1 서경예술"
-                                android:textSize="13sp"
-                                android:textColor="@color/assu_font_sub"
                                 android:layout_marginTop="10dp"
-                                android:fontFamily="@font/pretendard_regular" />
+                                android:fontFamily="@font/pretendard_regular"
+                                android:text="서울 동작구 사당로 36-1 서경예술 서울 동작구 사당로 36-1 서경예술"
+                                android:maxLength="25"
+                                android:textColor="@color/assu_font_sub"
+                                android:textSize="13sp" />
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/cl_recommend_inquiry1"
@@ -498,6 +499,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="서울 동작구 사당로 36-1 서경예술"
                                 android:textSize="13sp"
+                                android:maxLength="25"
                                 android:textColor="@color/assu_font_sub"
                                 android:layout_marginTop="10dp"
                                 android:fontFamily="@font/pretendard_regular" />

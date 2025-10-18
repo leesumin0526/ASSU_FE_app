@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -13,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ssu.assu.R
 import com.ssu.assu.data.dto.chatting.request.CreateChatRoomRequestDto
 import com.ssu.assu.data.dto.partner_admin.home.PartnershipContractItem
@@ -33,6 +35,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.ssu.assu.domain.model.admin.RecommendedPartnerModel
 import com.ssu.assu.ui.admin.PartnerRecommendViewModel
+import com.ssu.assu.ui.deviceToken.DeviceTokenViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -45,6 +48,7 @@ class AdminHomeFragment :
     private val partnershipViewModel: PartnershipViewModel by viewModels()
     private val partnerRecommendViewModel: PartnerRecommendViewModel by viewModels()
     private var currentRecommendedPartner: RecommendedPartnerModel? = null
+    private val deviceTokenViewModel: DeviceTokenViewModel by viewModels()
 
     private var phoneNumber: String? = null
     private var opponentId: Long? = null
@@ -198,6 +202,34 @@ class AdminHomeFragment :
                 }
             }
         }
+
+        // FCM 토큰 등록 상태 관찰
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                deviceTokenViewModel.uiState.collect { state ->
+                    when (state) {
+                        is DeviceTokenViewModel.UiState.Idle -> Unit
+                        is DeviceTokenViewModel.UiState.Loading -> {
+                            // 필요하면 로딩 표시
+                            Log.d("FCM", "디바이스 토큰 등록 중…")
+                        }
+                        is DeviceTokenViewModel.UiState.Success -> {
+                            val tokenId = state.tokenId
+                            Log.i("FCM", "등록 성공: ${tokenId}")
+                        }
+                        is DeviceTokenViewModel.UiState.Fail -> {
+                            Log.e("FCM", "등록 실패: ${state.code} ${state.msg}")
+                            // FCM 토큰 등록 실패해도 앱을 종료하지 않음
+                            // 로그인은 성공했으므로 사용자가 계속 사용할 수 있도록 함
+                        }
+                        is DeviceTokenViewModel.UiState.Error -> {
+                            Log.e("FCM", "등록 오류: ${state.msg}")
+                            // FCM 토큰 등록 오류가 발생해도 앱을 종료하지 않음
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -208,6 +240,9 @@ class AdminHomeFragment :
     }
 
     override fun initView() {
+
+        // 화면 종료 전에 토큰 등록까지 먼저 처리
+        fetchAndRegisterFcmToken()
 
         // authTokenLocalStore는 @Inject로 주입됨
         val userName = authTokenLocalStore.getUserName() ?: "사용자"
@@ -349,5 +384,28 @@ class AdminHomeFragment :
     private fun changeLongToMoney(cost: Long?): String {
         val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
         return formatter.format(cost)
+    }
+
+    //  서버 등록까지 한 번에
+    private fun fetchAndRegisterFcmToken() {
+        try {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FCM", "토큰 가져오기 실패", task.exception)
+                    // FCM 토큰 가져오기 실패해도 앱을 종료하지 않음
+                    return@addOnCompleteListener
+                }
+                val token = task.result
+                if (token.isNullOrEmpty()) {
+                    Log.w("FCM", "FCM 토큰이 비어있음")
+                    return@addOnCompleteListener
+                }
+                Log.d("FCM", "FCM 토큰: $token")
+                deviceTokenViewModel.register(token)
+            }
+        } catch (e: Exception) {
+            Log.e("FCM", "FCM 토큰 등록 중 예외 발생", e)
+            // 예외가 발생해도 앱을 종료하지 않음
+        }
     }
 }

@@ -1,9 +1,16 @@
 package com.ssu.assu.presentation.admin.home
 
+import android.app.DatePickerDialog
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,6 +25,9 @@ import com.ssu.assu.ui.partnership.PassiveProposalViewModel
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import kotlin.getValue
 
 @AndroidEntryPoint
@@ -34,10 +44,12 @@ class ContractPassivityRegisterFragment : BaseFragment<FragmentContractPassiveRe
         SelectedPlaceDto(placeId = null, name = null, address = null, roadAddress = null, latitude = null, longitude = null)
     private var passedOptions: List<OptionDto> = emptyList()
 
-
     // 이미지 저장
     private var pickedImage: ContractImageParam? = null
     private val viewModel: PassiveProposalViewModel by viewModels()
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val DISPLAY_FMT = DateTimeFormatter.ofPattern("yyyy - MM - dd")
 
     override fun initObserver() {
         lifecycleScope.launchWhenStarted {
@@ -59,6 +71,7 @@ class ContractPassivityRegisterFragment : BaseFragment<FragmentContractPassiveRe
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun initView() {
         arguments?.let { args ->
             // 1) 기본 값
@@ -89,6 +102,51 @@ class ContractPassivityRegisterFragment : BaseFragment<FragmentContractPassiveRe
                 optionListAdapter.fromJson(optionsJson).orEmpty()
             else emptyList()
         }
+
+        // ── 시작일: 오늘부터 선택
+        bindDateTriggers(
+            triggers = listOf(
+                binding.etFragmentContractPassiveRegisterStartDate,   // 입력필드
+                binding.ivFragmentContractPassiveRegisterContent,
+                binding.ivFragmentContractPassiveRegisterCalendar    // 달력/아이콘(있다면)
+            ),
+            target = binding.etFragmentContractPassiveRegisterStartDate,
+            defaultDateProvider = {
+                // 현재 필드에 값이 있으면 그걸 기본값으로
+                parseLocalDateFromAny(binding.etFragmentContractPassiveRegisterStartDate.text?.toString())
+                    ?: LocalDate.now()
+            },
+            minDateProvider = { todayMillis() }
+        ) { picked ->
+            // 시작일 변경 시 종료일 초기화 권장
+            binding.etFragmentContractPassiveRegisterEndDate.text?.clear()
+            binding.etFragmentContractPassiveRegisterEndDate.hint = "2025 - 05 - 05"
+        }
+
+        // ── 종료일: 시작일 이후만 선택
+        bindDateTriggers(
+            triggers = listOf(
+                binding.etFragmentContractPassiveRegisterEndDate,
+                binding.ivFragmentContractPassiveRegisterContent3,
+                binding.ivFragmentContractPassiveRegisterCalendar2
+            ),
+            target = binding.etFragmentContractPassiveRegisterEndDate,
+            defaultDateProvider = {
+                // 종료일 기본값: 현재 종료일 값 or (시작일 있으시면 시작일) or 오늘
+                parseLocalDateFromAny(binding.etFragmentContractPassiveRegisterEndDate.text?.toString())
+                    ?: parseLocalDateFromAny(binding.etFragmentContractPassiveRegisterStartDate.text?.toString())
+                    ?: LocalDate.now()
+            },
+            minDateProvider = {
+                // 시작일을 클릭 시점에 읽어와 minDate로 설정
+                parseLocalDateFromAny(binding.etFragmentContractPassiveRegisterStartDate.text?.toString())?.let { d ->
+                    Calendar.getInstance().apply {
+                        set(d.year, d.monthValue - 1, d.dayOfMonth, 0, 0, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }.timeInMillis
+                } ?: todayMillis()
+            }
+        )
 
         // 이미지 선택
         binding.layoutFragmentContractPassiveRegister.setOnClickListener { imagePicker.launch("image/*") }
@@ -132,15 +190,17 @@ class ContractPassivityRegisterFragment : BaseFragment<FragmentContractPassiveRe
         return ContractImageParam(fileName = name, mimeType = mime, bytes = bytes)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun submit() {
         val rawStart = binding.etFragmentContractPassiveRegisterStartDate.text?.toString().orEmpty()
         val rawEnd   = binding.etFragmentContractPassiveRegisterEndDate.text?.toString().orEmpty()
 
-        val start = normalizeDateToIso(rawStart)
-        val end   = normalizeDateToIso(rawEnd)
+        val startDate = parseLocalDateFromAny(rawStart).toString()
+        val endDate   = parseLocalDateFromAny(rawEnd).toString()
 
-        if (start.isBlank() || end.isBlank()) {
-            Log.d("ContractPassivityRegisterFragment","제휴 기간을 입력해 주세요.")
+        if (startDate == null || endDate == null) {
+            Log.d("ContractPassivityRegisterFragment", "제휴 기간을 입력해 주세요.")
+            Toast.makeText(requireContext(), "제휴 기간을 입력해 주세요.", Toast.LENGTH_SHORT).show()
             return
         }
         if (pickedImage == null) {
@@ -156,35 +216,75 @@ class ContractPassivityRegisterFragment : BaseFragment<FragmentContractPassiveRe
             storeName = passedStoreName,
             selectedPlace = passedSelectedPlace,
             storeDetailAddress = passedSelectedPlace.roadAddress,
-            partnershipPeriodStart = start,
-            partnershipPeriodEnd = end,
+            partnershipPeriodStart = startDate,
+            partnershipPeriodEnd = endDate,
             options = passedOptions
         )
 
         viewModel.submit(req, pickedImage)
     }
 
-    private fun normalizeDateToIso(input: String): String {
-        // 숫자만 추출: "2025 - 2 - 3", "2025.2.3", "2025/02/03", "2025 2 3" 모두 OK
+    private fun todayMillis(): Long = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+
+    // ── 자유형 문자열(2025-10-16 / 2025.10.16 / 2025 - 10 - 16 등) → LocalDate?
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun parseLocalDateFromAny(input: String?): LocalDate? {
+        if (input.isNullOrBlank()) return null
+        // 숫자만 뽑아서 yyyy-MM-dd 구성
         val nums = Regex("""\d+""").findAll(input).map { it.value }.toList()
-        if (nums.size < 3) return "" // 연-월-일 최소 3개 숫자 필요
+        if (nums.size < 3) return null
+        var (y, m, d) = listOf(nums[0], nums[1], nums[2])
+        if (y.length == 2) y = "20$y"
+        m = m.padStart(2, '0'); d = d.padStart(2, '0')
+        return runCatching { LocalDate.parse("$y-$m-$d") }.getOrNull()
+    }
 
-        var year  = nums[0]
-        var month = nums[1]
-        var day   = nums[2]
+    // ── DatePickerDialog 보여주기
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showDatePicker(
+        defaultDate: LocalDate? = null,
+        minDateMillis: Long? = null,
+        maxDateMillis: Long? = null,
+        onPicked: (LocalDate) -> Unit
+    ) {
+        val base = defaultDate ?: LocalDate.now()
+        val dlg = DatePickerDialog(
+            requireContext(),
+            { _, y, m, d -> onPicked(LocalDate.of(y, m + 1, d)) },
+            base.year, base.monthValue - 1, base.dayOfMonth
+        )
+        minDateMillis?.let { dlg.datePicker.minDate = it }
+        maxDateMillis?.let { dlg.datePicker.maxDate = it }
+        dlg.show()
+    }
 
-        // 2자리 연도가 들어오면 20xx로 보정 (원치 않으면 이 블록 삭제)
-        if (year.length == 2) year = "20$year"
-
-        // 월/일 0 패딩
-        month = month.padStart(2, '0')
-        day   = day.padStart(2, '0')
-
-        // 간단 범위 체크 (원하면 더 엄격하게 검사 가능)
-        val m = month.toIntOrNull() ?: return ""
-        val d = day.toIntOrNull() ?: return ""
-        if (year.length != 4 || m !in 1..12 || d !in 1..31) return ""
-
-        return "$year-$month-$day"
+    // ── 여러 트리거(View)로 하나의 타깃(EditText/TextView)에 날짜 주입
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun bindDateTriggers(
+        triggers: List<View>,
+        target: TextView,
+        defaultDateProvider: () -> LocalDate? = { null }, // 클릭 시점에 계산
+        minDateProvider: () -> Long? = { null },          // 클릭 시점에 계산
+        maxDateProvider: () -> Long? = { null },
+        onPickedExtra: (LocalDate) -> Unit = {}
+    ) {
+        if (target is EditText) {
+            target.inputType = EditorInfo.TYPE_NULL
+            target.isFocusable = false
+            target.isCursorVisible = false
+        }
+        val listener = View.OnClickListener {
+            val def = defaultDateProvider()
+            val min = minDateProvider()
+            val max = maxDateProvider()
+            showDatePicker(def, min, max) { picked ->
+                target.text = picked.format(DISPLAY_FMT)
+                onPickedExtra(picked)
+            }
+        }
+        triggers.forEach { it.setOnClickListener(listener) }
     }
 }
