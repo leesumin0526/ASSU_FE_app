@@ -40,6 +40,9 @@ class ChattingMessageAdapter
                     old is ChattingMessageItem.DateSeparatorItem && new is ChattingMessageItem.DateSeparatorItem ->
                         old.date == new.date
 
+                    old is ChattingMessageItem.GuideMessageItem && new is ChattingMessageItem.GuideMessageItem ->
+                        old.messageId == new.messageId
+
                     else -> false
                 }
             }
@@ -135,6 +138,7 @@ class ChattingMessageAdapter
             is MyMessageViewHolder -> holder.bind(getItem(position) as ChattingMessageItem.MyMessage)
             is OtherMessageViewHolder -> holder.bind(getItem(position) as ChattingMessageItem.OtherMessage)
             is DateSeparatorViewHolder -> holder.bind(getItem(position) as ChattingMessageItem.DateSeparatorItem)
+            is GuideMessageViewHolder -> holder.bind(getItem(position) as ChattingMessageItem.GuideMessageItem)
         }
     }
 
