@@ -86,7 +86,8 @@ class LocationRepositoryImpl @Inject constructor(
                 storeId = storeDto.storeId,
                 shopName = storeDto.name,
                 organization = storeDto.name,
-                content = toContent(storeDto)
+                content = toContent(storeDto),
+                profileUrl = storeDto.profileUrl
             )
         }
     }

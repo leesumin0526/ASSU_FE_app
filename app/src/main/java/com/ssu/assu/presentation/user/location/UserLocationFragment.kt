@@ -316,7 +316,8 @@ class UserLocationFragment :
             UserLocationItemFragment.UserStoreItem(
                 shopName = item.name ?: "-",
                 criterionType = description,
-                rating = (item.rate ?: 0).toFloat()
+                rating = (item.rate ?: 0).toFloat(),
+                profileImg = item.profileUrl
             )
         )
 
