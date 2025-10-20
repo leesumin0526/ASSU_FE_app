@@ -235,6 +235,7 @@
         android:id="@+id/tv_partner_account_service_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/assu_font_main"
         android:text="고객센터"
         android:fontFamily="@font/pretendard_regular"
         android:textSize="13sp"

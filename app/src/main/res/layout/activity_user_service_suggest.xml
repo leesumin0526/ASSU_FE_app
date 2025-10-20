@@ -204,7 +204,7 @@
             android:layout_height="wrap_content"
             android:minHeight="134dp"
             android:layout_marginTop="5dp"
-            android:inputType="text"
+            android:inputType="textMultiLine"
             android:textColor="@color/assu_font_main"
             android:background="@drawable/bg_item_spinner"
             android:hint="ex) 식사 시 음료 제공을 원해요!"

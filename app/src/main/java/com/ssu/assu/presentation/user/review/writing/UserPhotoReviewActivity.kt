@@ -87,7 +87,7 @@ class UserPhotoReviewActivity : BaseActivity<ActivityUserPhotoReviewBinding>(R.l
                 systemBars.left,
                 systemBars.top + extraPaddingTop.dpToPx(v.context),
                 systemBars.right,
-                0
+                systemBars.bottom
             )
             insets
         }

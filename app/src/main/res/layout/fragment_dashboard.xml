@@ -58,7 +58,8 @@
             android:fontFamily="@font/pretendard_medium"
             android:textSize="17sp"
             android:layout_marginStart="13dp"
-            android:text="7"
+            android:text="10"
+            android:textColor="@color/assu_font_main"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_dash_back_arrow"/>
         <TextView

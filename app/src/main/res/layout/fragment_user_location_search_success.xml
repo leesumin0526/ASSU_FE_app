@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14dp"
-            android:text="3"
+            android:text="0"
             android:bufferType="spannable"
             android:textColor="@color/assu_font_sub"
             android:fontFamily="@font/pretendard_regular"

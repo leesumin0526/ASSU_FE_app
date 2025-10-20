@@ -58,6 +58,7 @@
         app:layout_constraintBottom_toBottomOf="@id/btn_serviceRecord_back"
         app:layout_constraintStart_toEndOf="@id/serviceRecord_mg3"
         android:text="제휴 내역"
+        android:textColor="@color/assu_font_main"
         android:fontFamily="@font/pretendard_semibold"
         android:textSize="20sp"/>
 
@@ -113,6 +114,7 @@
                 android:textSize="17sp"
                 android:layout_marginStart="13dp"
                 android:text="3"
+                android:textColor="@color/assu_font_main"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_serviceRecord_back_arrow"/>
 
@@ -121,6 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/pretendard_medium"
+                android:textColor="@color/assu_font_main"
                 android:textSize="17sp"
                 android:text="월"
                 app:layout_constraintTop_toTopOf="parent"

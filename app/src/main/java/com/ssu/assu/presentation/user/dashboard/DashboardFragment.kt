@@ -41,7 +41,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragme
         }
 
         // 초기 데이터 로딩
-        usageViewModel.getMonthUsage()
+//        usageViewModel.getMonthUsage()
 
         binding.ivDashBackArrow.setOnClickListener {
             val currentSelectedYear = usageViewModel.getCurrentYear()
@@ -87,6 +87,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(R.layout.fragme
         binding.tvDashSeeAll.setOnClickListener { view ->
             findNavController().navigate(R.id.action_dashboardFragment_to_userServiceRecordFragment)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        usageViewModel.getMonthUsage()
     }
 
     override fun initObserver() {
