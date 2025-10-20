@@ -40,7 +40,7 @@
             android:id="@+id/iv_location_search_result_item_"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/img_location_beer"/>
+            android:src="@drawable/img_partner"/>
     </androidx.cardview.widget.CardView>
 
     <View
@@ -52,11 +52,21 @@
         app:layout_constraintStart_toEndOf="@id/cv_location_search_result_item_"
         app:layout_constraintTop_toTopOf="@id/iv_location_search_result_item_bg" />
 
+    <View
+        android:id="@+id/view_location_search_result_item_mg5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="11:122"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/iv_location_search_result_item_bg"
+        app:layout_constraintBottom_toBottomOf="@id/iv_location_search_result_item_bg"/>
+
     <LinearLayout
         android:id="@+id/ll_location_search_result_item_content"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@id/view_location_search_result_item_mg5"
         app:layout_constraintTop_toTopOf="@id/iv_location_search_result_item_bg"
         app:layout_constraintBottom_toBottomOf="@id/iv_location_search_result_item_bg"
         app:layout_constraintStart_toEndOf="@id/view_location_search_result_item_mg3">
@@ -75,26 +85,30 @@
             android:id="@+id/ll_location_search_result_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tv_location_search_result_item_organization"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="IT대 학생회"
+            android:text="법학과 학생회입니다"
             android:textSize="11sp"
             android:fontFamily="@font/pretendard_regular"
             android:textColor="@color/assu_font_sub"
             android:textAlignment="center"
-            android:paddingTop="5dp"
+            android:padding="5dp"
             android:background="@drawable/bg_location_search_result_item_round"/>
 
         <TextView
             android:id="@+id/tv_location_item_content"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="4인 이상 식사시, 음료 제공"
+            android:text="15,000원 이상 구매시 파인애플 샤베트 증정"
             android:textSize="13sp"
+            android:ellipsize="end"
+            android:layout_weight="1"
+            android:maxLines="1"
             android:layout_marginStart="6dp"
             android:fontFamily="@font/pretendard_regular"
             android:textColor="@color/assu_font_sub"/>

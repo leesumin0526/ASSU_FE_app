@@ -4,5 +4,6 @@ data class LocationUserSearchResultItem(
     val storeId: Long? = null,
     val shopName: String,
     val organization: String,
-    val content: String
+    val content: String,
+    val profileUrl: String?
 )
