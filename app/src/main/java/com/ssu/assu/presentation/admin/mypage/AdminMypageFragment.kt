@@ -81,8 +81,8 @@ class AdminMypageFragment : BaseFragment<FragmentAdminMypageBinding>(R.layout.fr
                 s.remoteUrl?.let { url ->
                     Glide.with(this@AdminMypageFragment)
                         .load(url)
-                        .placeholder(R.drawable.img_student)
-                        .error(R.drawable.img_student)
+                        .placeholder(R.drawable.img_admin2)
+                        .error(R.drawable.img_admin2)
                         .into(binding.ivAdmAccountProfileImg)
                 }
 
