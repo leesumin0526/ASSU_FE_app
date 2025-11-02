@@ -14,6 +14,7 @@ data class StoreMapResponseDto(
     val optionType: String?,
     val people: Int?,
     val cost: Int?,
+    val note: String?,
     val category: String?,
     val discountRate: Int?,
     val hasPartner: Boolean,

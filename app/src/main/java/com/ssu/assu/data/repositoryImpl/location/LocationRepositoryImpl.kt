@@ -1,6 +1,7 @@
 package com.ssu.assu.data.repositoryImpl.location
 
 import android.util.Log
+import androidx.collection.emptyLongSet
 import com.ssu.assu.data.dto.location.LocationAdminPartnerSearchResultItem
 import com.ssu.assu.data.dto.location.LocationUserSearchResultItem
 import com.ssu.assu.data.dto.location.ViewportQuery
@@ -161,26 +162,30 @@ class LocationRepositoryImpl @Inject constructor(
     }
 
     private fun toContent(store : StoreMapResponseDto): String{
-        return when {
-            // 1. 인원수 기준 + 서비스 제공
-            store.criterionType == "HEADCOUNT" && store.optionType == "SERVICE"->
-                "${store.people}명 이상 식사 시 ${store.category} 제공"
 
-            // 2. 인원수 기준 + 할인
-            store.criterionType == "HEADCOUNT" && store.optionType =="DISCOUNT" ->
-                "${store.people}명 이상 식사 시 ${store.discountRate}% 할인"
+        if (store.note != null )
+            return store.note;
+        else
+            return when {
+                // 1. 인원수 기준 + 서비스 제공
+                store.criterionType == "HEADCOUNT" && store.optionType == "SERVICE"->
+                    "${store.people}명 이상 식사 시 ${store.category} 제공"
 
-            // 3. 가격 기준 + 서비스 제공
-            store.criterionType == "PRICE" && store.optionType == "SERVICE" ->
-                "${store.cost}원 이상 주문 시 ${store.category} 제공"
+                // 2. 인원수 기준 + 할인
+                store.criterionType == "HEADCOUNT" && store.optionType =="DISCOUNT" ->
+                    "${store.people}명 이상 식사 시 ${store.discountRate}% 할인"
 
-            // 4. 가격 기준 + 할인
-            store.criterionType == "PRICE" && store.optionType == "DISCOUNT" ->
-                "${store.cost}원 이상 주문 시 ${store.discountRate}% 할인"
+                // 3. 가격 기준 + 서비스 제공
+                store.criterionType == "PRICE" && store.optionType == "SERVICE" ->
+                    "${store.cost}원 이상 주문 시 ${store.category} 제공"
 
-            // 위 조건에 해당하지 않는 경우 빈 문자열 반환
-            else -> ""
-        }
+                // 4. 가격 기준 + 할인
+                store.criterionType == "PRICE" && store.optionType == "DISCOUNT" ->
+                    "${store.cost}원 이상 주문 시 ${store.discountRate}% 할인"
+
+                // 위 조건에 해당하지 않는 경우 빈 문자열 반환
+                else -> ""
+            }
     }
 
 
