@@ -2,11 +2,11 @@ package com.ssu.assu.presentation.user.home
 
 import android.content.Intent
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -18,6 +18,7 @@ import com.ssu.assu.R
 import com.ssu.assu.data.local.AuthTokenLocalStore
 import com.ssu.assu.databinding.FragmentUserHomeBinding
 import com.ssu.assu.domain.model.dashboard.PopularStoreModel
+import com.ssu.assu.domain.model.user.GetUsablePartnershipModel
 import com.ssu.assu.presentation.base.BaseFragment
 import com.ssu.assu.ui.deviceToken.DeviceTokenViewModel
 import com.ssu.assu.ui.user.UserHomeViewModel
@@ -57,25 +58,54 @@ class UserHomeFragment :
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.popularStoresState.collect { state ->
+            // GetUsableProposalUiState가 ViewModel 내부에 정의되었다고 가정
+            // 만약 외부에 있다면 UserHomeViewModel.GetUsableProposalUiState -> GetUsableProposalUiState
+            viewModel.getUsableProposalState.collect { state ->
                 when (state) {
-                    is UserHomeViewModel.PopularStoresUiState.Idle -> {
-                        // 초기 상태
+                    is UserHomeViewModel.GetUsableProposalUiState.Idle -> {
+                        //
                     }
-                    is UserHomeViewModel.PopularStoresUiState.Loading -> {
-                        showLoading()
+                    is UserHomeViewModel.GetUsableProposalUiState.Loading -> {
+                        showLoading() // 로딩 UI 표시 (필요시)
                     }
-                    is UserHomeViewModel.PopularStoresUiState.Success -> {
+                    is UserHomeViewModel.GetUsableProposalUiState.Success -> {
+                        hideLoading() // 로딩 UI 숨김
+                        updateUsablePartnershipViews(state.data) // UI 업데이트
+                    }
+                    is UserHomeViewModel.GetUsableProposalUiState.Fail -> {
                         hideLoading()
-                        setupRankingGrid(state.stores)
+                        Log.e("UserHomeFragment", "Fail: ${state.code} ${state.message}")
+                        updateUsablePartnershipViews(emptyList()) // 실패 시 목록 숨김
                     }
-                    is UserHomeViewModel.PopularStoresUiState.Error -> {
+                    is UserHomeViewModel.GetUsableProposalUiState.Error -> {
                         hideLoading()
-                        setupRankingGrid(emptyList())
+                        Log.e("UserHomeFragment", "Error: ${state.message}")
+                        updateUsablePartnershipViews(emptyList()) // 오류 시 목록 숨김
                     }
                 }
             }
         }
+
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewModel.popularStoresState.collect { state ->
+//                when (state) {
+//                    is UserHomeViewModel.PopularStoresUiState.Idle -> {
+//                        // 초기 상태
+//                    }
+//                    is UserHomeViewModel.PopularStoresUiState.Loading -> {
+//                        showLoading()
+//                    }
+//                    is UserHomeViewModel.PopularStoresUiState.Success -> {
+//                        hideLoading()
+//                        setupRankingGrid(state.stores)
+//                    }
+//                    is UserHomeViewModel.PopularStoresUiState.Error -> {
+//                        hideLoading()
+//                        setupRankingGrid(emptyList())
+//                    }
+//                }
+//            }
+//        }
 
         // FCM 토큰 등록 상태 관찰
         lifecycleScope.launch {
@@ -126,43 +156,51 @@ class UserHomeFragment :
             navigateToMyPartnershipDetails()
         }
 
+        binding.llSeeMorePartnershipPlace.setOnClickListener {
+            val intent = Intent(requireContext(), UserMyPartnershipListActivity::class.java)
+            startActivity(intent)
+
+        }
+
         // 오늘 날짜 업데이트
-        binding.tvTodayUpdateDateAndTime.text = getCurrentDateString()
+//        binding.tvTodayUpdateDateAndTime.text = getCurrentDateString()
 
         // 인기매장 데이터 로드
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.loadPopularStores()
         }
+
+        viewModel.getUsableProposalList(false)
     }
 
-    private fun setupRankingGrid(popularStores: List<PopularStoreModel>) {
-        val gridLayout = binding.gridRanking
-        gridLayout.removeAllViews()
-
-        if (popularStores.isEmpty()) {
-            val context = requireContext()
-            val noDataTextView = TextView(context).apply {
-                text = "아직 인기매장 데이터가 없어요"
-                textSize = 14f
-                setTextColor(ContextCompat.getColor(context, R.color.assu_font_sub))
-                gravity = android.view.Gravity.CENTER
-                layoutParams = androidx.gridlayout.widget.GridLayout.LayoutParams().apply {
-                    width = ViewGroup.LayoutParams.MATCH_PARENT
-                    height = (80 * resources.displayMetrics.density).toInt()
-                    columnSpec = androidx.gridlayout.widget.GridLayout.spec(0, 2)
-                    rowSpec = androidx.gridlayout.widget.GridLayout.spec(0, 4)
-                }
-            }
-            gridLayout.addView(noDataTextView)
-            return
-        }
-
-        // 순서대로 추가하면 GridLayout이 2열로 설정되어 있어서 자동으로 1-5, 2-6, 3-7, 4-8 배치
-        popularStores.take(8).forEach { store ->
-            val itemView = createRankingItem(store)
-            gridLayout.addView(itemView)
-        }
-    }
+//    private fun setupRankingGrid(popularStores: List<PopularStoreModel>) {
+//        val gridLayout = binding.gridRanking
+//        gridLayout.removeAllViews()
+//
+//        if (popularStores.isEmpty()) {
+//            val context = requireContext()
+//            val noDataTextView = TextView(context).apply {
+//                text = "아직 인기매장 데이터가 없어요"
+//                textSize = 14f
+//                setTextColor(ContextCompat.getColor(context, R.color.assu_font_sub))
+//                gravity = android.view.Gravity.CENTER
+//                layoutParams = androidx.gridlayout.widget.GridLayout.LayoutParams().apply {
+//                    width = ViewGroup.LayoutParams.MATCH_PARENT
+//                    height = (80 * resources.displayMetrics.density).toInt()
+//                    columnSpec = androidx.gridlayout.widget.GridLayout.spec(0, 2)
+//                    rowSpec = androidx.gridlayout.widget.GridLayout.spec(0, 4)
+//                }
+//            }
+//            gridLayout.addView(noDataTextView)
+//            return
+//        }
+//
+//        // 순서대로 추가하면 GridLayout이 2열로 설정되어 있어서 자동으로 1-5, 2-6, 3-7, 4-8 배치
+//        popularStores.take(8).forEach { store ->
+//            val itemView = createRankingItem(store)
+//            gridLayout.addView(itemView)
+//        }
+//    }
 
     private fun createRankingItem(store: PopularStoreModel): LinearLayout {
         val context = requireContext()
@@ -268,4 +306,42 @@ class UserHomeFragment :
         }
     }
 
+    private fun updateUsablePartnershipViews(proposals: List<GetUsablePartnershipModel>) {
+        binding.apply {
+            when (proposals.size) {
+                0 -> {
+                    // 0개면 둘 다 숨김
+                    clPartnership1.visibility = View.GONE
+                    viewUserHome3.visibility = View.GONE // 사이 공백
+                    clPartnership2.visibility = View.GONE
+                }
+                1 -> {
+                    // 1개면 첫 번째만 표시
+                    val item1 = proposals[0]
+                    clPartnership1.visibility = View.VISIBLE
+                    tvPartnershipPartner1.text = item1.partnerName
+                    tvPartnershipAdmin1.text = item1.adminName
+                    tvPartnershipContent1.text = item1.note
+
+                    viewUserHome3.visibility = View.GONE
+                    clPartnership2.visibility = View.GONE
+                }
+                else -> { // 2개 이상 (API상 2개)
+                    // 2개면 둘 다 표시
+                    val item1 = proposals[0]
+                    clPartnership1.visibility = View.VISIBLE
+                    tvPartnershipPartner1.text = item1.partnerName
+                    tvPartnershipAdmin1.text = item1.adminName
+                    tvPartnershipContent1.text = item1.note
+
+                    val item2 = proposals[1]
+                    clPartnership2.visibility = View.VISIBLE
+                    viewUserHome3.visibility = View.VISIBLE // 사이 공백 표시
+                    tvPartnershipPartner2.text = item2.partnerName
+                    tvPartnershipAdmin2.text = item2.adminName
+                    tvPartnershipContent2.text = item2.note
+                }
+            }
+        }
+    }
 }
