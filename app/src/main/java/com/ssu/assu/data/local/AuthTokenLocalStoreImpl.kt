@@ -228,7 +228,16 @@ class AuthTokenLocalStoreImpl @Inject constructor(
 
     /****************************** 상태 관련 메소드 ******************************/
     override fun isLoggedIn(): Boolean {
-        return prefs.getBoolean(KEY_IS_LOGGED_IN, false) && getAccessToken() != null
+        val isLoggedInFlag = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+        val accessToken = getAccessToken()
+        val result = isLoggedInFlag && accessToken != null
+        
+        android.util.Log.d("AuthTokenLocalStore", "=== isLoggedIn() 체크 ===")
+        android.util.Log.d("AuthTokenLocalStore", "KEY_IS_LOGGED_IN: $isLoggedInFlag")
+        android.util.Log.d("AuthTokenLocalStore", "Access Token 존재: ${accessToken != null}")
+        android.util.Log.d("AuthTokenLocalStore", "최종 결과: $result")
+        
+        return result
     }
 
     override fun isAccessTokenExpired(): Boolean {

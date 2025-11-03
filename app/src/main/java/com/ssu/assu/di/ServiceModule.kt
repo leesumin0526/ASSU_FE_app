@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import com.ssu.assu.BuildConfig
 import com.ssu.assu.data.dto.converter.LocalDateAdapter
 import com.ssu.assu.data.dto.converter.LocalDateTimeAdapter
+import com.ssu.assu.data.remote.AuthAuthenticator
 import com.ssu.assu.data.remote.AuthInterceptor
 import com.ssu.assu.data.remote.TokenRefreshInterceptor
 import com.ssu.assu.data.service.AuthService
@@ -75,9 +76,13 @@ object ServiceModule {
     }
 
     @Provides @Singleton @Auth
-    fun provideOkHttp(authInterceptor: AuthInterceptor): OkHttpClient =
+    fun provideOkHttp(
+        authInterceptor: AuthInterceptor,
+        authAuthenticator: AuthAuthenticator
+    ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
+            .authenticator(authAuthenticator)
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY // 개발에서만
             })
