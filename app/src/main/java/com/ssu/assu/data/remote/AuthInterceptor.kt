@@ -6,17 +6,12 @@ import android.util.Log
 import com.ssu.assu.MyApplication
 import com.ssu.assu.data.local.AccessTokenProvider
 import com.ssu.assu.data.local.AuthTokenLocalStore
-import com.ssu.assu.data.repository.TokenRefreshRepository
-import com.ssu.assu.presentation.common.login.LoginActivity
-import com.ssu.assu.util.RetrofitResult
-import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
     private val accessTokenProvider: AccessTokenProvider,
-    private val tokenRefreshRepository: TokenRefreshRepository,
     private val authTokenLocalStore: AuthTokenLocalStore
 ) : Interceptor {
 
@@ -70,101 +65,19 @@ class AuthInterceptor @Inject constructor(
         Log.d("AuthInterceptor", "Response code: ${response.code}")
         Log.d("AuthInterceptor", "Response headers: ${response.headers}")
         
-        // 로그인/회원가입/토큰 관련 API는 제외 (무한 루프 방지)
-        val isAuthRelatedApi = original.url.toString().contains("/auth/") || 
-                              original.url.toString().contains("/login") ||
-                              original.url.toString().contains("/signup") ||
-                              original.url.toString().contains("/tokens/refresh")
-        
-        // LoginActivity에서의 API 호출인지 확인 (추가 보호)
-        val isFromLoginActivity = original.header("X-From-Login-Activity") == "true"
-        
-        // 401 Unauthorized 또는 403 Forbidden 응답이면 토큰 리프레시 시도 (인증 관련 API 및 LoginActivity 제외)
-        if ((response.code == 401 || response.code == 403) && !isAuthRelatedApi && !isFromLoginActivity) {
-            Log.w("AuthInterceptor", "Received ${response.code} - Token may be expired or invalid")
-            Log.d("AuthInterceptor", "=== ATTEMPTING TOKEN REFRESH ===")
-            
-            val refreshResult = runBlocking {
-                Log.d("AuthInterceptor", "Calling tokenRefreshRepository.refreshToken()")
-                tokenRefreshRepository.refreshToken()
+        // response 헤더에 Authorization 키 값 존재하면 Access Token 업데이트
+        val newAccessToken = response.header("Authorization")
+        if (!newAccessToken.isNullOrBlank()) {
+            // "Bearer " 접두사 제거
+            val token = newAccessToken.removePrefix("Bearer ").trim()
+            if (token.isNotEmpty()) {
+                Log.d("AuthInterceptor", "New access token found in response header - updating")
+                authTokenLocalStore.updateAccessToken(token)
+                Log.i("AuthInterceptor", "✅ Access token updated from response header")
             }
-            
-            when (refreshResult) {
-                is RetrofitResult.Success -> {
-                    Log.i("AuthInterceptor", "✅ Token refresh SUCCESSFUL - Retrying original request")
-                    
-                    // 새로운 토큰으로 원래 요청 재시도
-                    val newBearer = accessTokenProvider.bearer()
-                    val retryBuilder = original.newBuilder()
-                    
-                    newBearer?.let { token ->
-                        retryBuilder.removeHeader("Authorization")
-                        retryBuilder.addHeader("Authorization", token)
-                        Log.d("AuthInterceptor", "New token (first 20 chars): ${token.take(20)}...")
-                        Log.d("AuthInterceptor", "Retrying original request with new token")
-                        
-                        response.close() // 원래 응답 닫기
-                        val retryResponse = chain.proceed(retryBuilder.build())
-                        
-                        Log.d("AuthInterceptor", "=== RETRY RESPONSE ===")
-                        Log.d("AuthInterceptor", "Retry response code: ${retryResponse.code}")
-                        Log.i("AuthInterceptor", "✅ Original request succeeded after token refresh")
-                        
-                        return retryResponse
-                    } ?: Log.e("AuthInterceptor", "❌ New token is null after successful refresh")
-                }
-                is RetrofitResult.Fail -> {
-                    Log.e("AuthInterceptor", "❌ Token refresh FAILED: ${refreshResult.message}")
-                    Log.e("AuthInterceptor", "Status code: ${refreshResult.statusCode}")
-                    
-                    // 리프레시 토큰도 만료된 경우 로그아웃 처리
-                    if (refreshResult.statusCode == 401 || refreshResult.statusCode == 403) {
-                        Log.w("AuthInterceptor", "Refresh token expired - performing logout")
-                        performLogout()
-                    }
-                }
-                is RetrofitResult.Error -> {
-                    Log.e("AuthInterceptor", "❌ Token refresh ERROR: ${refreshResult.exception.message}")
-                    Log.e("AuthInterceptor", "Exception type: ${refreshResult.exception.javaClass.simpleName}")
-                    
-                    // 네트워크 오류가 아닌 경우 로그아웃 처리
-                    val isNetworkError = refreshResult.exception.message?.contains("network", ignoreCase = true) ?: false
-                    if (!isNetworkError) {
-                        Log.w("AuthInterceptor", "Token refresh error - performing logout")
-                        performLogout()
-                    }
-                }
-            }
-        } else {
-            Log.d("AuthInterceptor", "Response code ${response.code} - No token refresh needed")
         }
         
         Log.d("AuthInterceptor", "=== REQUEST COMPLETED ===")
         return response
-    }
-    
-    private fun performLogout() {
-        try {
-            Log.d("AuthInterceptor", "=== PERFORMING LOGOUT ===")
-            
-            // 로컬 토큰 삭제
-            authTokenLocalStore.clearTokens()
-            Log.d("AuthInterceptor", "✅ Local tokens cleared")
-            
-            // 로그인 액티비티로 이동 (Application Context 사용)
-            val context = MyApplication.getApplicationContext()
-            if (context != null) {
-                val intent = Intent(context, LoginActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
-                context.startActivity(intent)
-                Log.d("AuthInterceptor", "✅ Redirected to login activity")
-            } else {
-                Log.e("AuthInterceptor", "❌ Application context is null - cannot start login activity")
-            }
-            
-        } catch (e: Exception) {
-            Log.e("AuthInterceptor", "❌ Error during logout: ${e.message}", e)
-        }
     }
 }
