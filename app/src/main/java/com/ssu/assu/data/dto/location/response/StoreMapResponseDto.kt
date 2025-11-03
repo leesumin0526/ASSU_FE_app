@@ -7,6 +7,7 @@ import com.squareup.moshi.JsonClass
 data class StoreMapResponseDto(
     val storeId: Long? = null,
     val adminId: Long? = null,
+    val adminName: String,
     val name: String,
     val address: String?,
     val rate: Double?,
@@ -25,6 +26,7 @@ data class StoreMapResponseDto(
     fun toModel() = StoreOnMap(
         storeId = this.storeId,
         adminId = this.adminId,
+        adminName = this.adminName,
         name = this.name,
         address = this.address,
         rate = this.rate,

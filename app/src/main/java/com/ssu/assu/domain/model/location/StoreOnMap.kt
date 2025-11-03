@@ -3,6 +3,7 @@ package com.ssu.assu.domain.model.location
 data class StoreOnMap(
     val storeId: Long?,
     val adminId: Long?,
+    val adminName: String,
     val name: String,
     val address: String?,
     val rate: Double?,
