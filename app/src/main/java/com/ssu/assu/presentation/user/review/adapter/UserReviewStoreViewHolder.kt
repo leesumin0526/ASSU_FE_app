@@ -29,7 +29,7 @@ class UserReviewStoreViewHolder(
             binding.ivReviewImg2,
             binding.ivReviewImg3
         )
-        imageViews.forEach { it.visibility = View.GONE }
+        imageViews.forEach { it.visibility = View.INVISIBLE }
         review.reviewImage.take(3).forEachIndexed { index, _ ->
             imageViews[index].visibility = View.VISIBLE
         }

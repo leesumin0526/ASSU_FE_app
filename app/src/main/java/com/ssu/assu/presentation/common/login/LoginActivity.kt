@@ -113,9 +113,14 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         }
         
         // 자동 로그인 체크 (Observer 설정 후에 호출, 한 번만 실행)
+        Log.d("LoginActivity", "=== initObserver - 자동 로그인 체크 준비 ===")
+        Log.d("LoginActivity", "isAutoLoginChecked 현재 값: $isAutoLoginChecked")
         if (!isAutoLoginChecked) {
+            Log.d("LoginActivity", "자동 로그인 체크 호출")
             checkAutoLogin()
             isAutoLoginChecked = true
+        } else {
+            Log.d("LoginActivity", "자동 로그인 이미 체크됨 - 건너뛰기")
         }
     }
 
@@ -149,20 +154,10 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
 
 
     private fun checkAutoLogin() {
-        // 이미 자동 로그인 체크가 완료되었거나 로그인 중이면 건너뛰기
-        if (isAutoLoginChecked) {
-            Log.d("LoginActivity", "자동 로그인 체크 이미 완료됨 - 건너뛰기")
-            return
-        }
-        
-        val loginModel = loginViewModel.checkAutoLogin()
-        if (loginModel != null) {
-            Log.d("LoginActivity", "자동 로그인 성공 - 메인 화면으로 이동")
-            isAutoLoginChecked = true
-            navigateToMainActivity(loginModel.userRole)
-        } else {
-            Log.d("LoginActivity", "자동 로그인 실패 - 로그인 화면 유지")
-        }
+        Log.d("LoginActivity", "=== 자동 로그인 체크 시작 ===")
+        // 토큰 리프레시를 포함한 자동 로그인 체크
+        // LoginState.Success가 발생하면 Observer에서 자동으로 메인 화면으로 이동
+        loginViewModel.checkAutoLoginWithRefresh()
     }
 
     private fun Int.dpToPx(context: Context): Int =

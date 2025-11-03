@@ -86,9 +86,12 @@ class UserReviewViewHolder(
             binding.ivReviewImg3
         )
 
+        // 이미지가 하나라도 있으면 INVISIBLE, 없으면 GONE
+        val defaultVisibility = if (imageUrls.isNotEmpty()) View.INVISIBLE else View.GONE
+
         // 모든 이미지뷰 초기화
         imageViews.forEach { imageView ->
-            imageView.visibility = View.GONE
+            imageView.visibility = defaultVisibility
             // 기존 이미지 클리어
             Glide.with(imageView.context).clear(imageView)
         }
@@ -111,4 +114,36 @@ class UserReviewViewHolder(
                 .into(imageView)
         }
     }
+//    private fun loadReviewImages(imageUrls: List<String>) {
+//        val imageViews = listOf(
+//            binding.ivReviewImg1,
+//            binding.ivReviewImg2,
+//            binding.ivReviewImg3
+//        )
+//
+//        // 모든 이미지뷰 초기화
+//        imageViews.forEach { imageView ->
+//            imageView.visibility = View.GONE
+//            // 기존 이미지 클리어
+//            Glide.with(imageView.context).clear(imageView)
+//        }
+//
+//        // 이미지 URL이 있는 만큼만 표시 (최대 3개)
+//        imageUrls.take(3).forEachIndexed { index, imageUrl ->
+//            val imageView = imageViews[index]
+//            imageView.visibility = View.VISIBLE
+//
+//            // Glide로 이미지 로딩
+//            Glide.with(imageView.context)
+//                .load(imageUrl)
+//                .apply(
+//                    RequestOptions()
+//                        .placeholder(R.drawable.bg_review_image_box) // 로딩 중 표시
+//                        .error(R.drawable.bg_review_image_box) // 로딩 실패 시 표시
+//                        .centerCrop() // 이미지를 뷰에 맞게 크롭
+//                        .transform(RoundedCorners(12)) // 모서리 둥글게 (선택사항)
+//                )
+//                .into(imageView)
+//        }
+//    }
 }

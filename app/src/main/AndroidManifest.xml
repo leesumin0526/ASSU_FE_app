@@ -61,9 +61,11 @@
             android:name=".presentation.common.notification.NotificationActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.common.chatting.ChattingActivity"
-            android:exported="false"
-            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
+            android:name="com.ssu.assu.presentation.common.chatting.ChattingActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:exported="false">
+        </activity>
+
         <activity
             android:name=".presentation.common.login.LoginActivity"
             android:exported="true"

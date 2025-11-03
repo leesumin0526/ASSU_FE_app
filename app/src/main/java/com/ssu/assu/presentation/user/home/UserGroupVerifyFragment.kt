@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import com.ssu.assu.R
 import com.ssu.assu.data.dto.usage.SaveUsageRequestDto
@@ -101,6 +102,14 @@ class UserGroupVerifyFragment : BaseFragment<FragmentUserGroupVerifyBinding>(R.l
 
         // 초기 버튼 상태 설정
         setupInitialUI()
+
+        // 시스템 뒤로가기 시 homeFragment 로 이동
+        val callback = object : OnBackPressedCallback(true) { // true로 콜백을 활성화합니다.
+            override fun handleOnBackPressed() {
+                requireActivity().finish()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         // WebSocket 연결 시작
 //        connectToWebSocket()

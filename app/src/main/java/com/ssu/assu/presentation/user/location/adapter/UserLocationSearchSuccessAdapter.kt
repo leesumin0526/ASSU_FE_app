@@ -21,7 +21,13 @@ class UserLocationSearchSuccessAdapter :
         fun bind(item: LocationUserSearchResultItem, isLastItem: Boolean) {
             binding.tvLocationSearchResultItemShopName.text = item.shopName
             binding.tvLocationSearchResultItemOrganization.text = item.organization
-            binding.tvLocationItemContent.text = item.content
+            if (item.content == "") {
+                binding.tvLocationSearchResultItemOrganization.visibility = View.GONE
+                binding.tvLocationItemContent.text = item.address
+            } else {
+                binding.tvLocationSearchResultItemOrganization.visibility = View.VISIBLE
+                binding.tvLocationItemContent.text = item.content
+            }
 
             binding.viewLocationSearchResultItemLine.visibility =
                 if (isLastItem) View.GONE else View.VISIBLE
