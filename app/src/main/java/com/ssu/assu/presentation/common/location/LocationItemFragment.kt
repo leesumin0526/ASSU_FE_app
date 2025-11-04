@@ -241,7 +241,7 @@ class LocationItemFragment :
         // 역할별 기본 이미지 id
         val fallbackRes = when (role) {
             UserRole.ADMIN   -> R.drawable.img_partner
-            UserRole.PARTNER -> R.drawable.img_student
+            UserRole.PARTNER -> R.drawable.img_admin2
             else             -> R.drawable.img_ssu
         }
 

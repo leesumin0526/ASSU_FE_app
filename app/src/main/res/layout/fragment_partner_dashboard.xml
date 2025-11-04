@@ -80,7 +80,7 @@
                 app:layout_constraintTop_toBottomOf="@id/lineChart_partnership" />
 
             <TextView
-                android:id="@+id/tv_today_popular_place"
+                android:id="@+id/tv_my_partnership_place"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="7dp"
@@ -100,8 +100,8 @@
                 android:text="2024년 04월 20일 12:00 기준"
                 android:textColor="@color/assu_font_sub"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@id/tv_today_popular_place"
-                app:layout_constraintTop_toBottomOf="@id/tv_today_popular_place" />
+                app:layout_constraintStart_toStartOf="@id/tv_my_partnership_place"
+                app:layout_constraintTop_toBottomOf="@id/tv_my_partnership_place" />
 
             <LinearLayout
                 android:id="@+id/layout_ranking_box"

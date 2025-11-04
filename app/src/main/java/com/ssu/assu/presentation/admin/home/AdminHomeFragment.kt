@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -287,7 +286,7 @@ class AdminHomeFragment :
         val url = partner.partnerUrl
         if (url.isNullOrEmpty()) {
             // 기본 이미지 리소스
-            binding.ivAdminHomeRecommendShopImg.setImageResource(R.drawable.img_student)
+            binding.ivAdminHomeRecommendShopImg.setImageResource(R.drawable.img_admin2)
         } else {
             Glide.with(this)
                 .load(url)

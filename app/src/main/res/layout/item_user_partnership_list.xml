@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_home_list_item"
+        android:paddingVertical="20dp"
+        android:layout_marginBottom="10dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- 매장 이름 -->
+            <TextView
+                android:id="@+id/tv_partnership_partner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="역전할머니맥주 숭실대점"
+                android:textSize="17sp"
+                android:textColor="@color/assu_font_main"
+                android:fontFamily="@font/pretendard_medium"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- 제휴내용 라벨 -->
+            <TextView
+                android:id="@+id/tv_label_admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_home_list_label"
+                android:text="제휴단체"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:fontFamily="@font/pretendard_medium"
+                android:includeFontPadding="false"
+                app:layout_constraintTop_toBottomOf="@id/tv_partnership_partner"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- 제휴내용 설명 -->
+            <TextView
+                android:id="@+id/tv_admin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="IT대 학생회"
+                android:textColor="@color/assu_font_sub"
+                android:textSize="13sp"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/pretendard_regular"
+                app:layout_constraintTop_toTopOf="@id/tv_label_admin"
+                app:layout_constraintBottom_toBottomOf="@id/tv_label_admin"
+                app:layout_constraintStart_toEndOf="@id/tv_label_admin"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- 제휴기간 라벨 -->
+            <TextView
+                android:id="@+id/tv_label_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:background="@drawable/bg_home_list_label"
+                android:text="제휴내용"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:fontFamily="@font/pretendard_medium"
+                android:includeFontPadding="false"
+                app:layout_constraintTop_toBottomOf="@id/tv_label_admin"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- 제휴기간 날짜 -->
+            <TextView
+                android:id="@+id/tv_partnership_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="2인 이상 식사 시 음료 1개 제공"
+                android:textColor="@color/assu_font_sub"
+                android:textSize="13sp"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/pretendard_regular"
+                app:layout_constraintTop_toTopOf="@id/tv_label_content"
+                app:layout_constraintBottom_toBottomOf="@id/tv_label_content"
+                app:layout_constraintStart_toEndOf="@id/tv_label_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

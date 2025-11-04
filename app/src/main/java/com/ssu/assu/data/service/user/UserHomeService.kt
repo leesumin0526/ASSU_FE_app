@@ -2,8 +2,10 @@ package com.ssu.assu.data.service.user
 
 import com.ssu.assu.data.dto.BaseResponse
 import com.ssu.assu.data.dto.dashboard.response.TodayBestResponseDto
+import com.ssu.assu.data.dto.user.home.GetUsablePartnershipResponseDto
 import com.ssu.assu.data.dto.user.home.StampResponseDto
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface UserHomeService {
 
@@ -12,4 +14,9 @@ interface UserHomeService {
 
     @GET("/store/best")
     suspend fun getTodayBestStores(): BaseResponse<TodayBestResponseDto>
+
+    @GET("/students/usable")
+    suspend fun getUsablePartnership(
+        @Query("all") all: Boolean
+    ): BaseResponse<List<GetUsablePartnershipResponseDto>>
 }
