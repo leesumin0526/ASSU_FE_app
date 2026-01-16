@@ -22,11 +22,13 @@ class WriteReviewViewModel @Inject constructor(
     private val _writeResult = MutableLiveData<RetrofitResult<ReviewWriteResponseDto>>()
     val writeResult: LiveData<RetrofitResult<ReviewWriteResponseDto>> = _writeResult
 
+    private var isSubmitting = false
     fun writeReview(
         request: ReviewWriteRequestDto,
         images: List<MultipartBody.Part>
     ) {
         viewModelScope.launch {
+
             _writeResult.value = writeReviewUseCase(request, images)
         }
     }

@@ -7,10 +7,10 @@
         android:layout_height="match_parent"
         android:background="@color/assu_background"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context=".presentation.user.home.GroupVerifyFragment">
+        tools:context=".presentation.user.home.partnership_selectVerifyFragment">
 
         <View
-            android:id="@+id/group_h1"
+            android:id="@+id/partnership_select_h1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_percent="0.0158"
@@ -18,11 +18,11 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
         <View
-            android:id="@+id/group_w1"
+            android:id="@+id/partnership_select_w1"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent="0.0763"
-            app:layout_constraintTop_toBottomOf="@id/group_h1"
+            app:layout_constraintTop_toBottomOf="@id/partnership_select_h1"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <ImageView
@@ -30,11 +30,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_back"
-            app:layout_constraintTop_toBottomOf="@id/group_h1"
-            app:layout_constraintStart_toEndOf="@id/group_w1"/>
+            app:layout_constraintTop_toBottomOf="@id/partnership_select_h1"
+            app:layout_constraintStart_toEndOf="@id/partnership_select_w1"/>
 
         <View
-            android:id="@+id/group_h2"
+            android:id="@+id/partnership_select_h2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_percent="0.0563"
@@ -42,7 +42,7 @@
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:id="@+id/tv_group_market_name"
+            android:id="@+id/tv_partnership_select_market_name"
             android:fontFamily="@font/pretendard_semibold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,18 +52,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:includeFontPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/group_h2"/>
+            app:layout_constraintTop_toBottomOf="@id/partnership_select_h2"/>
 
         <View
-            android:id="@+id/group_h3"
+            android:id="@+id/partnership_select_h3"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_percent="0.0158"
-            app:layout_constraintTop_toBottomOf="@id/tv_group_market_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_partnership_select_market_name"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:id="@+id/tv_select_partnership_guide"
+            android:id="@+id/tv_partnership_select_guide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="제휴 혜택을 선택해주세요"
@@ -72,19 +72,19 @@
             android:fontFamily="@font/pretendard_bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/group_h3"
+            app:layout_constraintTop_toBottomOf="@id/partnership_select_h3"
             android:includeFontPadding="false"/>
 
         <View
-            android:id="@+id/group_h4"
+            android:id="@+id/partnership_select_h4"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_percent="0.0657"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_select_partnership_guide"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_partnership_select_guide"/>
 
         <View
-            android:id="@+id/group_w3"
+            android:id="@+id/partnership_select_w3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             app:layout_constraintWidth_percent="0.061"
@@ -92,7 +92,7 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
         <View
-            android:id="@+id/group_w4"
+            android:id="@+id/partnership_select_w4"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             app:layout_constraintWidth_percent="0.061"
@@ -101,18 +101,18 @@
 
 
         <LinearLayout
-            android:id="@+id/ll_partnership_buttons"
+            android:id="@+id/ll_partnership_select_buttons"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
-            app:layout_constraintStart_toEndOf="@id/group_w3"
-            app:layout_constraintTop_toBottomOf="@id/group_h4"
-            app:layout_constraintEnd_toStartOf="@id/group_w4">
+            app:layout_constraintStart_toEndOf="@id/partnership_select_w3"
+            app:layout_constraintTop_toBottomOf="@id/partnership_select_h4"
+            app:layout_constraintEnd_toStartOf="@id/partnership_select_w4">
 
             <!-- 버튼 1 -->
             <LinearLayout
-                android:id="@+id/btn_partnership_1"
+                android:id="@+id/btn_partnership_select_1"
                 android:layout_width="match_parent"
                 android:layout_height="78dp"
                 android:orientation="vertical"
@@ -133,7 +133,7 @@
                     android:textAlignment="center" />
 
                 <TextView
-                    android:id="@+id/tv_partnership_1_desc"
+                    android:id="@+id/tv_partnership_select_1_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="IT대학 학생인증 시, 10% 할인"
@@ -152,7 +152,7 @@
 
             <!-- 버튼 2 -->
             <LinearLayout
-                android:id="@+id/btn_partnership_2"
+                android:id="@+id/btn_partnership_select_2"
                 android:layout_width="match_parent"
                 android:layout_height="78dp"
                 android:orientation="vertical"
@@ -162,7 +162,7 @@
                 android:paddingVertical="8dp">
 
                 <TextView
-                    android:id="@+id/tv_partnership_2_title"
+                    android:id="@+id/tv_partnership_select_2_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="컴퓨터학부 학생회"
@@ -173,7 +173,7 @@
                     android:textAlignment="center" />
 
                 <TextView
-                    android:id="@+id/tv_partnership_2_desc"
+                    android:id="@+id/tv_partnership_select_2_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="4인 이상 식사시, 캔 음료 제공"
@@ -192,7 +192,7 @@
 
             <!-- 버튼 3 -->
             <LinearLayout
-                android:id="@+id/btn_partnership_3"
+                android:id="@+id/btn_partnership_select_3"
                 android:layout_width="match_parent"
                 android:layout_height="78dp"
                 android:orientation="vertical"
@@ -202,7 +202,7 @@
                 android:paddingVertical="8dp">
 
                 <TextView
-                    android:id="@+id/tv_partnership_3_title"
+                    android:id="@+id/tv_partnership_select_3_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="숭실대학교 총학생회"
@@ -213,7 +213,7 @@
                     android:textAlignment="center" />
 
                 <TextView
-                    android:id="@+id/tv_partnership_3_desc"
+                    android:id="@+id/tv_partnership_select_3_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="4인 이상 식사시, 캔 음료 제공"
@@ -232,7 +232,7 @@
 
             <!-- 버튼 3 -->
             <LinearLayout
-                android:id="@+id/btn_partnership_4"
+                android:id="@+id/btn_partnership_select_4"
                 android:layout_width="match_parent"
                 android:layout_height="78dp"
                 android:orientation="vertical"
@@ -242,7 +242,7 @@
                 android:paddingVertical="8dp">
 
                 <TextView
-                    android:id="@+id/tv_partnership_4_title"
+                    android:id="@+id/tv_partnership_select_4_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="숭실대학교 총학생회"
@@ -253,7 +253,7 @@
                     android:textAlignment="center" />
 
                 <TextView
-                    android:id="@+id/tv_partnership_4_desc"
+                    android:id="@+id/tv_partnership_select_4_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="4인 이상 식사시, 캔 음료 제공"
@@ -269,7 +269,7 @@
 
 
         <View
-            android:id="@+id/group_h6"
+            android:id="@+id/partnership_select_h6"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_percent="0.0606"
@@ -290,7 +290,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintWidth_percent="0.879"
             app:layout_constraintHeight_percent="0.0657"
-            app:layout_constraintBottom_toTopOf="@id/group_h6"/>
+            app:layout_constraintBottom_toTopOf="@id/partnership_select_h6"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

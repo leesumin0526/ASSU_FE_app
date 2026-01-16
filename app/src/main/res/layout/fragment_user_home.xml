@@ -46,541 +46,565 @@
             app:layout_constraintTop_toBottomOf="@id/home_linear_layout_1"
             app:layout_constraintHeight_percent="0.02857142857"/>
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nsv_user_home"
+        <TextView
+            android:id="@+id/tv_home_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="안녕하세요, 이호근님!"
+            android:fontFamily="@font/pretendard_semibold"
+            android:textColor="@color/assu_font_main"
+            android:textSize="22sp"
+            app:layout_constraintWidth_percent="0.8778625954"
+            app:layout_constraintHeight_percent="0.03"
+            android:layout_marginStart="4dp"
+            app:layout_constraintTop_toBottomOf="@id/view_home_mg2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <View
+            android:id="@+id/view_home_mg3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_home_1"
+            app:layout_constraintHeight_percent="0.00714285714"/>
+
+        <TextView
+            android:id="@+id/tv_home_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="오늘은 어떤 할인을 받을까요?"
+            android:fontFamily="@font/pretendard_semibold"
+            android:textSize="22sp"
+            android:textColor="@color/assu_font_main"
+            android:layout_marginStart="4dp"
+            app:layout_constraintWidth_percent="0.8778625954"
+            app:layout_constraintTop_toBottomOf="@id/view_home_mg3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <View
+            android:id="@+id/view_partner_home_mg4"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_home_2"
+            app:layout_constraintHeight_percent="0.02857142857"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_home_qr_box"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:fillViewport="true"
-            android:overScrollMode="never"
-            app:layout_constraintTop_toBottomOf="@id/view_home_mg2"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:clickable="true"
+            app:layout_constraintWidth_percent="0.8778625954"
+            app:layout_constraintHeight_percent="0.1285714286"
+            android:background="@drawable/ic_home_basic_box"
+            app:layout_constraintTop_toBottomOf="@id/view_partner_home_mg4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/ic_home_qr_certify"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/ic_home_qr"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="10dp"/>
+
+            <LinearLayout
+                android:id="@+id/layout_home_qr_certify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ic_home_qr_certify"
+                android:orientation="vertical"
+                android:layout_marginStart="30dp">
 
                 <TextView
-                    android:id="@+id/tv_home_1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="안녕하세요, 이호근님!"
-                    android:fontFamily="@font/pretendard_semibold"
-                    android:textColor="@color/assu_font_main"
-                    android:textSize="22sp"
-                    app:layout_constraintWidth_percent="0.8778625954"
-                    app:layout_constraintHeight_percent="0.03"
-                    android:layout_marginStart="4dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-
-                <View
-                    android:id="@+id/view_home_mg3"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintTop_toBottomOf="@id/tv_home_1"
-                    app:layout_constraintHeight_percent="0.00714285714"/>
-
-                <TextView
-                    android:id="@+id/tv_home_2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="오늘은 어떤 할인을 받을까요?"
-                    android:fontFamily="@font/pretendard_semibold"
-                    android:textSize="22sp"
-                    android:textColor="@color/assu_font_main"
-                    android:layout_marginStart="4dp"
-                    app:layout_constraintWidth_percent="0.8778625954"
-                    app:layout_constraintTop_toBottomOf="@id/view_home_mg3"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-
-                <View
-                    android:id="@+id/view_partner_home_mg4"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintTop_toBottomOf="@id/tv_home_2"
-                    app:layout_constraintHeight_percent="0.02857142857"/>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/cl_home_qr_box"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:clickable="true"
-                    app:layout_constraintWidth_percent="0.8778625954"
-                    app:layout_constraintHeight_percent="0.1285714286"
-                    android:background="@drawable/ic_home_basic_box"
-                    app:layout_constraintTop_toBottomOf="@id/view_partner_home_mg4"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                    <ImageView
-                        android:id="@+id/ic_home_qr_certify"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:src="@drawable/ic_home_qr"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:layout_marginStart="10dp"/>
-
-                    <LinearLayout
-                        android:id="@+id/layout_home_qr_certify"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/ic_home_qr_certify"
-                        android:orientation="vertical"
-                        android:layout_marginStart="30dp">
-
-                        <TextView
-                            android:id="@+id/tv_home_qr_certify"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="제휴 QR 인증하기"
-                            android:fontFamily="@font/pretendard_medium"
-                            android:textSize="16sp"
-                            android:textColor="@color/assu_font_main" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical">
-
-                            <ImageView
-                                android:id="@+id/ic_home_qr_info_circle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/ic_info_circle_empty"
-                                app:layout_constraintStart_toStartOf="@id/tv_home_qr_certify" />
-
-                            <TextView
-                                android:id="@+id/tv_home_qr_info"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="숭실대학교 학생인증이 완료된 사용자"
-                                android:fontFamily="@font/pretendard_regular"
-                                android:textSize="11sp"
-                                android:textColor="@color/assu_font_sub"
-                                android:layout_marginStart="6dp"/>
-
-                        </LinearLayout>
-                    </LinearLayout>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-                <View
-                    android:id="@+id/view_home_mg5"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintTop_toBottomOf="@id/cl_home_qr_box"
-                    app:layout_constraintHeight_percent="0.02857142857"/>
-
-
-                <LinearLayout
-                    android:id="@+id/layout_my_stamp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintWidth_percent="0.8778625954"
-                    app:layout_constraintTop_toBottomOf="@id/view_home_mg5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/tv_my_stamp"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="7dp"
-                        android:layout_height="wrap_content"
-                        android:text="나의 스탬프 적립 현황"
-                        android:fontFamily="@font/pretendard_medium"
-                        android:textColor="@color/assu_font_main"
-                        android:textSize="16sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_see_more_my_stamp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="적립내역 더보기"
-                        android:fontFamily="@font/pretendard_regular"
-                        android:textSize="11sp"
-                        android:textColor="@color/assu_font_sub" />
-
-                    <ImageView
-                        android:id="@+id/iv_see_more_my_stamp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_home_arrow_right"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="7dp"/>
-
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/view_home_mg6"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintTop_toBottomOf="@id/layout_my_stamp"
-                    app:layout_constraintHeight_percent="0.01142857143"/>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/layout_home_stamp_box"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintWidth_percent="0.8778625954"
-                    app:layout_constraintHeight_percent="0.1714285714"
-                    app:layout_constraintTop_toBottomOf="@id/view_home_mg6"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:background="@drawable/ic_home_basic_box">
-
-                    <!-- ① 실제 스탬프 뷰들: 크기는 고정 40dp×40dp -->
-                    <ImageView
-                        android:id="@+id/iv_home_stamp1"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <ImageView
-                        android:id="@+id/iv_home_stamp2"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <ImageView
-                        android:id="@+id/iv_home_stamp3"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <ImageView
-                        android:id="@+id/iv_home_stamp4"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <ImageView
-                        android:id="@+id/iv_home_stamp5"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <ImageView
-                        android:id="@+id/iv_home_stamp6"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <ImageView
-                        android:id="@+id/iv_home_stamp7"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <ImageView
-                        android:id="@+id/iv_home_stamp8"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <ImageView
-                        android:id="@+id/iv_home_stamp9"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <ImageView
-                        android:id="@+id/iv_home_stamp10"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:layout_constraintEnd_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent"
-                        android:src="@drawable/ic_home_stamp" />
-
-                    <!-- ② Flow helper:
-                           - maxElementsWrap="5" → 한 줄에 5개씩
-                           - wrapMode="chain"   → 체인 모드(스프레드)
-                           - horizontalGap, verticalGap → 뷰 사이 간격
-                           - horizontalStyle="spread" → 좌우 여백 포함 모두 동일 간격 배분
-                    -->
-                    <androidx.constraintlayout.helper.widget.Flow
-                        android:id="@+id/flow_stamps"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-
-                        app:flow_wrapMode="chain"
-                        app:flow_maxElementsWrap="5"
-
-                        app:flow_horizontalGap="0dp"
-                        app:flow_verticalGap="0dp"
-
-                        app:flow_horizontalStyle="spread"
-                        app:flow_verticalStyle="spread"
-
-                        app:constraint_referenced_ids="
-                      iv_home_stamp1,
-                      iv_home_stamp2,
-                      iv_home_stamp3,
-                      iv_home_stamp4,
-                      iv_home_stamp5,
-                      iv_home_stamp6,
-                      iv_home_stamp7,
-                      iv_home_stamp8,
-                      iv_home_stamp9,
-                      iv_home_stamp10"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout_home_prize_info"
+                    android:id="@+id/tv_home_qr_certify"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@+id/layout_home_stamp_box"
-                    app:layout_constraintStart_toStartOf="@+id/layout_home_stamp_box"
-                    android:layout_marginTop="8dp"
+                    android:text="제휴 QR 인증하기"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:textSize="16sp"
+                    android:textColor="@color/assu_font_main" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical">
 
                     <ImageView
+                        android:id="@+id/ic_home_qr_info_circle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_info_circle_empty"
-                        android:layout_marginStart="7dp"/>
+                        app:layout_constraintStart_toStartOf="@id/tv_home_qr_certify" />
+
                     <TextView
+                        android:id="@+id/tv_home_qr_info"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="스탬프 10개 적립 시 기프티콘이 지급됩니다!"
-                        android:textColor="@color/assu_font_sub"
-                        android:textSize="11sp"
+                        android:text="숭실대학교 학생인증이 완료된 사용자"
                         android:fontFamily="@font/pretendard_regular"
-                        android:layout_marginStart="5dp"/>
+                        android:textSize="11sp"
+                        android:textColor="@color/assu_font_sub"
+                        android:layout_marginStart="6dp"/>
 
                 </LinearLayout>
+            </LinearLayout>
 
-                <View
-                    android:id="@+id/view_home_mg7"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintTop_toBottomOf="@id/layout_home_prize_info"
-                    app:layout_constraintHeight_percent="0.02857142857"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+        <View
+            android:id="@+id/view_home_mg5"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/cl_home_qr_box"
+            app:layout_constraintHeight_percent="0.01857142857"/>
+
+
+        <LinearLayout
+            android:id="@+id/layout_my_stamp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintWidth_percent="0.8778625954"
+            app:layout_constraintTop_toBottomOf="@id/view_home_mg5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_my_stamp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_marginStart="7dp"
+                android:layout_height="wrap_content"
+                android:text="나의 스탬프 적립 현황"
+                android:fontFamily="@font/pretendard_medium"
+                android:textColor="@color/assu_font_main"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/tv_see_more_my_stamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="적립내역 더보기"
+                android:fontFamily="@font/pretendard_regular"
+                android:textSize="11sp"
+                android:textColor="@color/assu_font_sub" />
+
+            <ImageView
+                android:id="@+id/iv_see_more_my_stamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_home_arrow_right"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="7dp"/>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view_home_mg6"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/layout_my_stamp"
+            app:layout_constraintHeight_percent="0.01142857143"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_home_stamp_box"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.8778625954"
+            app:layout_constraintHeight_percent="0.1714285714"
+            app:layout_constraintTop_toBottomOf="@id/view_home_mg6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/ic_home_basic_box">
+
+            <!-- ① 실제 스탬프 뷰들: 크기는 고정 40dp×40dp -->
+            <ImageView
+                android:id="@+id/iv_home_stamp1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <ImageView
+                android:id="@+id/iv_home_stamp2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <ImageView
+                android:id="@+id/iv_home_stamp3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <ImageView
+                android:id="@+id/iv_home_stamp4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <ImageView
+                android:id="@+id/iv_home_stamp5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <ImageView
+                android:id="@+id/iv_home_stamp6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <ImageView
+                android:id="@+id/iv_home_stamp7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <ImageView
+                android:id="@+id/iv_home_stamp8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <ImageView
+                android:id="@+id/iv_home_stamp9"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <ImageView
+                android:id="@+id/iv_home_stamp10"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:src="@drawable/ic_home_stamp" />
+
+            <!-- ② Flow helper:
+                   - maxElementsWrap="5" → 한 줄에 5개씩
+                   - wrapMode="chain"   → 체인 모드(스프레드)
+                   - horizontalGap, verticalGap → 뷰 사이 간격
+                   - horizontalStyle="spread" → 좌우 여백 포함 모두 동일 간격 배분
+            -->
+            <androidx.constraintlayout.helper.widget.Flow
+                android:id="@+id/flow_stamps"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:flow_wrapMode="chain"
+                app:flow_maxElementsWrap="5"
+
+                app:flow_horizontalGap="0dp"
+                app:flow_verticalGap="0dp"
+
+                app:flow_horizontalStyle="spread"
+                app:flow_verticalStyle="spread"
+
+                app:constraint_referenced_ids="
+              iv_home_stamp1,
+              iv_home_stamp2,
+              iv_home_stamp3,
+              iv_home_stamp4,
+              iv_home_stamp5,
+              iv_home_stamp6,
+              iv_home_stamp7,
+              iv_home_stamp8,
+              iv_home_stamp9,
+              iv_home_stamp10"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_home_prize_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/layout_home_stamp_box"
+            app:layout_constraintStart_toStartOf="@+id/layout_home_stamp_box"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_info_circle_empty"
+                android:layout_marginStart="7dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="스탬프 10개 적립 시 기프티콘이 지급됩니다!"
+                android:textColor="@color/assu_font_sub"
+                android:textSize="11sp"
+                android:fontFamily="@font/pretendard_regular"
+                android:layout_marginStart="5dp"/>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view_home_mg7"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/layout_home_prize_info"
+            app:layout_constraintHeight_percent="0.02857142857"/>
+
+        <TextView
+            android:id="@+id/tv_today_popular_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔥Today 제휴 인기 매장"
+            android:fontFamily="@font/pretendard_medium"
+            android:textSize="16sp"
+            android:textColor="@color/assu_font_main"
+            app:layout_constraintTop_toBottomOf="@id/view_home_mg7"
+            app:layout_constraintStart_toStartOf="@id/layout_home_prize_info"
+            android:layout_marginStart="7dp"/>
+
+        <TextView
+            android:id="@+id/tv_today_update_date_and_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2024년 04월 20일 12:00 기준"
+            android:fontFamily="@font/pretendard_regular"
+            android:layout_marginTop="8dp"
+            android:textSize="12sp"
+            android:textColor="@color/assu_font_sub"
+            app:layout_constraintTop_toBottomOf="@id/tv_today_popular_place"
+            app:layout_constraintStart_toStartOf="@id/tv_today_popular_place"/>
+
+        <LinearLayout
+            android:id="@+id/layout_ranking_box"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@drawable/bg_empty_line_box"
+            android:padding="16dp"
+            app:layout_constraintWidth_percent="0.8779"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_today_update_date_and_time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- 2) GridLayout 설정 -->
+            <androidx.gridlayout.widget.GridLayout
+                android:id="@+id/grid_ranking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:columnCount="2"
+                app:alignmentMode="alignMargins"
+                app:useDefaultMargins="false">
+
+                <!-- 3) 각 아이템: width=0dp + columnWeight=1 으로 동일 너비 -->
                 <LinearLayout
-                    android:id="@+id/ll_my_partnership_place"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintWidth_percent="0.8778625954"
-                    app:layout_constraintTop_toBottomOf="@id/view_home_mg7"
-                    android:gravity="center_vertical">
-
+                    app:layout_columnWeight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
                     <TextView
-                        android:id="@+id/tv_my_partnership_place"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="나의 제휴 매장"
-                        android:fontFamily="@font/pretendard_medium"
-                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:text="1"
+                        android:textSize="14sp"
+                        android:textColor="@color/assu_main"/>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="역전할머니맥주"
                         android:textColor="@color/assu_font_main"
-                        android:layout_weight="1"
-                        android:layout_marginStart="7dp"/>
-
-                    <LinearLayout
-                        android:id="@+id/ll_see_more_partnership_place"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="제휴 매장 더보기"
-                            android:fontFamily="@font/pretendard_regular"
-                            android:textSize="11sp"
-                            android:textColor="@color/assu_font_sub"/>
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_home_arrow_right"
-                            android:layout_marginEnd="7dp"
-                            android:layout_marginStart="4dp"/>
-
-                    </LinearLayout>
+                        android:textSize="14sp"/>
                 </LinearLayout>
 
-                <View
-                    android:id="@+id/view_user_home1"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/ll_my_partnership_place"
-                    app:layout_constraintStart_toStartOf="parent"/>
-
+                <!-- item2 -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintWidth_percent="0.8778625954"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/view_user_home1"
-                    android:orientation="vertical">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/cl_partnership_1"
-                        android:layout_width="match_parent"
+                    app:layout_columnWeight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_review_box_radius_8"
-                        android:paddingTop="20dp"
-                        android:paddingBottom="20dp"
-                        android:paddingStart="14dp"
-                        android:paddingEnd="14dp">
-                        <TextView
-                            android:id="@+id/tv_partnership_partner1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="면식당 숭실대점"
-                            android:fontFamily="@font/pretendard_medium"
-                            android:textSize="16sp"
-                            android:textColor="@color/assu_font_main"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"/>
-
-                        <View
-                            android:id="@+id/view_user_home2"
-                            android:layout_width="match_parent"
-                            android:layout_height="10dp"
-                            app:layout_constraintTop_toBottomOf="@id/tv_partnership_partner1"
-                            app:layout_constraintStart_toStartOf="parent"/>
-
-                        <TextView
-                            android:id="@+id/tv_partnership_admin1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_home_list_label"
-                            app:layout_constraintTop_toBottomOf="@+id/view_user_home2"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:text="컴퓨터학부 학생회"
-                            android:fontFamily="@font/pretendard_regular"
-                            android:textSize="11sp"
-                            android:textColor="@color/white"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:paddingTop="6dp"
-                            android:paddingBottom="6dp"/>
-
-                        <TextView
-                            android:id="@+id/tv_partnership_content1"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:maxLines="2"
-                            android:ellipsize="end"
-                            android:text="2인이하 식사 시, 음료 1개 제공w제공제공제공제공제공"
-                            app:layout_constraintTop_toTopOf="@id/tv_partnership_admin1"
-                            app:layout_constraintBottom_toBottomOf="@id/tv_partnership_admin1"
-                            app:layout_constraintStart_toEndOf="@id/tv_partnership_admin1"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:fontFamily="@font/pretendard_regular"
-                            android:textSize="12sp"
-                            android:textColor="@color/assu_font_sub"
-                            android:layout_marginStart="6dp"
-                            />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <View
-                        android:id="@+id/view_user_home3"
-                        android:layout_width="match_parent"
-                        android:layout_height="10dp"
-                        app:layout_constraintTop_toBottomOf="@id/ll_my_partnership_place"
-                        app:layout_constraintStart_toStartOf="parent"/>
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/cl_partnership_2"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
+                        android:text="5"
+                        android:textSize="14sp"
+                        android:textColor="@color/assu_font_main"/>
+                    <TextView
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_review_box_radius_8"
-                        android:paddingTop="20dp"
-                        android:paddingBottom="20dp"
-                        android:paddingStart="14dp"
-                        android:layout_marginBottom="10dp">
-                        <TextView
-                            android:id="@+id/tv_partnership_partner2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="면식당 숭실대점"
-                            android:fontFamily="@font/pretendard_medium"
-                            android:textSize="16sp"
-                            android:textColor="@color/assu_font_main"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"/>
-
-                        <View
-                            android:id="@+id/view_user_home4"
-                            android:layout_width="match_parent"
-                            android:layout_height="10dp"
-                            app:layout_constraintTop_toBottomOf="@id/tv_partnership_partner2"
-                            app:layout_constraintStart_toStartOf="parent"/>
-
-                        <TextView
-                            android:id="@+id/tv_partnership_admin2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_home_list_label"
-                            app:layout_constraintTop_toBottomOf="@+id/view_user_home4"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:text="컴퓨터학부 학생회"
-                            android:fontFamily="@font/pretendard_regular"
-                            android:textSize="11sp"
-                            android:textColor="@color/white"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:paddingTop="6dp"
-                            android:paddingBottom="6dp"/>
-
-                        <TextView
-                            android:id="@+id/tv_partnership_content2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="2인이하 식사 시, 음료 1개 제공"
-                            app:layout_constraintTop_toTopOf="@id/tv_partnership_admin2"
-                            app:layout_constraintBottom_toBottomOf="@id/tv_partnership_admin2"
-                            app:layout_constraintStart_toEndOf="@id/tv_partnership_admin2"
-                            android:fontFamily="@font/pretendard_regular"
-                            android:textSize="12sp"
-                            android:textColor="@color/assu_font_sub"
-                            android:layout_marginStart="6dp"/>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="취향"
+                        android:textColor="@color/assu_font_main"
+                        android:textSize="14sp"/>
                 </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.core.widget.NestedScrollView>
+
+                <!-- item3 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_columnWeight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="2"
+                        android:textSize="14sp"
+                        android:textColor="@color/assu_main"/>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Bread * co"
+                        android:textColor="@color/assu_font_main"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <!-- item4 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_columnWeight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="6"
+                        android:textSize="14sp"
+                        android:textColor="@color/assu_font_main"/>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="인생맥주"
+                        android:textColor="@color/assu_font_main"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <!-- item5 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_columnWeight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="3"
+                        android:textSize="14sp"
+                        android:textColor="@color/assu_main"/>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="역전할머니맥주"
+                        android:textColor="@color/assu_font_main"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <!-- item6 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_columnWeight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="7"
+                        android:textSize="14sp"
+                        android:textColor="@color/assu_font_main"/>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="취향"
+                        android:textColor="@color/assu_font_main"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <!-- item7 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_columnWeight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="4"
+                        android:textSize="14sp"
+                        android:textColor="@color/assu_font_main"/>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Bread * co"
+                        android:textColor="@color/assu_font_main"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <!-- item8 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_columnWeight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="8"
+                        android:textSize="14sp"
+                        android:textColor="@color/assu_font_main"/>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="인생맥주"
+                        android:textColor="@color/assu_font_main"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+            </androidx.gridlayout.widget.GridLayout>
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>
 
