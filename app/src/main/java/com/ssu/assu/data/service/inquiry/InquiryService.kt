@@ -11,19 +11,19 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface InquiryService {
-    @POST("/member/inquiries")
+    @POST("/inquiries")
     suspend fun create(
         @Body body: InquiryCreateRequestDto
     ): BaseResponse<Long>
 
-    @GET("/member/inquiries")
+    @GET("/inquiries")
     suspend fun list(
         @Query("status") status: String = "all",
         @Query("page") page: Int = 1,
         @Query("size") size: Int = 20
     ): BaseResponse<InquiriesPageDto>
 
-    @GET("/member/inquiries/{inquiryId}")
+    @GET("/inquiries/{inquiryId}")
     suspend fun get(
         @Path("inquiryId") id: Long
     ): BaseResponse<InquiryResponseDto>

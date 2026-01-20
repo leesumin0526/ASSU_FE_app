@@ -26,7 +26,7 @@ interface NotificationService {
         @Query("size") size: Int = 20
     ): BaseResponse<NotificationsPageDto>
 
-    @POST("/notifications/{notification-id}/read")
+    @POST("/notifications/{notificationId}/read")
     suspend fun markRead(
         @Path("notification-id") notificationId: Long
     ): BaseResponse<String>

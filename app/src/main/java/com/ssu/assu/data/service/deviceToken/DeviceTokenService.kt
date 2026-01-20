@@ -13,7 +13,7 @@ interface DeviceTokenService {
         @Query("token") token: String
     ): BaseResponse<Long>
 
-    @DELETE("/device-tokens/{token-id}")
+    @DELETE("/device-tokens/{tokenId}")
     suspend fun unregisterToken(
         @Path("token-id") tokenId: Long
     ): BaseResponse<String>

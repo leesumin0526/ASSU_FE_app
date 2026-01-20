@@ -12,11 +12,11 @@ import retrofit2.http.Part
 interface ProfileService {
 
     @Multipart
-    @PUT("/member/profile/image")
+    @PUT("/members/me/profile-image")
     suspend fun uploadOrReplaceProfileImage(
         @Part image: MultipartBody.Part
     ): BaseResponse<ProfileImageResponseDto>
 
-    @GET("/member/profile/image")
+    @GET("/members/me/profile-image")
     suspend fun getProfileImage(): BaseResponse<ProfileImageGetResponseDto>
 }
