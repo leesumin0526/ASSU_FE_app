@@ -1,6 +1,8 @@
 # A:SSU Frontend App
 
 > 숭실대학교 학생들을 위한 종합 서비스 플랫폼 ASSU의 Android 애플리케이션입니다.
+<img width="2048" height="853" alt="image" src="https://github.com/user-attachments/assets/c56eb04a-e3cd-4590-8930-8dccacc7e467" />
+
 
 <div align="center">
 
