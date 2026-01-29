@@ -158,9 +158,7 @@ app/src/main/java/com/ssu/assu/
 
 프로젝트에 대한 문의사항이 있으시면 다음을 통해 연락해 주세요:
 
-- **팀 이메일**: assu.soongsil.cse@gmail.com
-- **개인 이메일**: assu.soongsil.cse@gmail.com
-
+- **이메일**: assu.soongsil.cse@gmail.com
 ---
 
 **A:SSU** © 2026
